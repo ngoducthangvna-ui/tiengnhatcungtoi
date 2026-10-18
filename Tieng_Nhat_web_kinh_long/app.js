@@ -1547,7 +1547,10 @@ window.handleSearchClick = function(targetId) {
   const dropdown = document.getElementById('search-dropdown');
   const input = document.getElementById('quick-search-input');
   if (dropdown) dropdown.classList.remove('active');
-  if (input) input.value = '';
+  if (input) {
+    input.value = '';
+    input.blur();
+  }
 
   switchModule(targetId);
 };
@@ -1682,6 +1685,11 @@ function initMenuToggle() {
 
   btn.addEventListener('click', toggleMenu);
 
+  const closeSidebarBtn = document.getElementById('close-sidebar-btn');
+  if (closeSidebarBtn) {
+    closeSidebarBtn.addEventListener('click', closeMobileSidebar);
+  }
+
   if (overlay) {
     overlay.addEventListener('click', closeMobileSidebar);
   }
@@ -1775,12 +1783,31 @@ window.enterAppWithLesson = function(targetId) {
   switchModule(targetId);
 };
 
+function initBackToTop() {
+  const btn = document.getElementById('back-to-top-btn');
+  const mainContent = document.getElementById('main-content');
+  if (!btn || !mainContent) return;
+
+  mainContent.addEventListener('scroll', () => {
+    if (mainContent.scrollTop > 350) {
+      btn.classList.add('visible');
+    } else {
+      btn.classList.remove('visible');
+    }
+  }, { passive: true });
+
+  btn.addEventListener('click', () => {
+    mainContent.scrollTo({ top: 0, behavior: 'smooth' });
+  });
+}
+
 document.addEventListener('DOMContentLoaded', () => {
   initThemeToggle();
   initCoverPage();
   initMenuToggle();
   initQuickSearch();
   initResetProgress();
+  initBackToTop();
 
   renderSidebar();
   updateHeaderProgress();

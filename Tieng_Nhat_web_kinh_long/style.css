@@ -36,7 +36,7 @@
   --shadow-lg: 0 10px 25px rgba(0, 0, 0, 0.45);
 
   --sidebar-width: 280px;       /* Cột sidebar chiếm đúng 280px thanh thoát, chuẩn công thái học */
-  --header-height: 5vh;       /* Menu phía trên chiếm đúng 5% chiều cao trang */
+  --header-height: 52px;        /* Chiều cao chuẩn 52px cố định, chống giật layout trên mobile */
   --font-japanese: 'Noto Sans JP', 'Hiragino Kaku Gothic Pro', sans-serif;
   --font-main: 'Inter', var(--font-japanese), -apple-system, BlinkMacSystemFont, sans-serif;
   --radius-sm: 6px;
@@ -113,15 +113,33 @@ button {
   border: none;
   background: none;
   color: inherit;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
 }
 
-input {
+input,
+select,
+textarea {
   font-family: inherit;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.japanese-text,
+.jp-sentence,
+.quiz-question-title,
+.dokkai-passage,
+.vocab-kanji-wrap,
+.lesson-desc {
+  overflow-wrap: break-word;
+  word-break: break-word;
 }
 
 a {
   color: var(--accent-primary);
   text-decoration: none;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
 }
 
 a:hover {
@@ -2490,28 +2508,242 @@ rt,
   opacity: 1;
 }
 
-/* --- RESPONSIVE MOBILE (< 768px) --- */
+/* --- NÚT CUỘN LÊN ĐẦU TRANG (BACK TO TOP) NỔI TRÊN DI ĐỘNG & DESKTOP --- */
+.back-to-top-btn {
+  position: fixed;
+  bottom: calc(20px + env(safe-area-inset-bottom, 0px));
+  right: calc(18px + env(safe-area-inset-right, 0px));
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: rgba(30, 41, 59, 0.78);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(56, 189, 248, 0.35);
+  color: var(--accent-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.35);
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(16px) scale(0.9);
+  transition: opacity 0.25s ease, transform 0.25s ease, visibility 0.25s ease, background-color 0.2s ease, border-color 0.2s ease;
+  z-index: 95;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+
+[data-theme="light"] .back-to-top-btn {
+  background: rgba(255, 255, 255, 0.88);
+  border: 1px solid rgba(2, 132, 199, 0.35);
+  color: var(--accent-primary);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+}
+
+.back-to-top-btn.visible {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0) scale(1);
+}
+
+.back-to-top-btn:hover {
+  background: var(--accent-primary);
+  color: #ffffff;
+  border-color: var(--accent-primary);
+  transform: translateY(-2px) scale(1.05);
+  box-shadow: 0 6px 22px rgba(56, 189, 248, 0.45);
+}
+
+.back-to-top-btn:active {
+  transform: scale(0.92);
+}
+
+/* Header ẩn trên Desktop của Sidebar (chỉ hiện trên Mobile) */
+.mobile-sidebar-header {
+  display: none;
+}
+
+/* ==========================================================================
+   TỐI ƯU TOÀN DIỆN CHO GIAO DIỆN ĐIỆN THOẠI DI ĐỘNG & MÀN HÌNH NHỎ (< 768px)
+   Chuẩn công thái học ngón cái, thẻ từ vựng di động, chống tràn ngang, hỗ trợ Safe Area iOS/Android
+   ========================================================================== */
 @media (max-width: 768px) {
+  /* 1. Tối ưu hiệu năng kính lỏng nền: giảm tải GPU, tiết kiệm pin, vuốt chạm 60fps mượt mà */
+  .liquid-glass-bg .glass-blob {
+    filter: blur(35px);
+    opacity: 0.32;
+  }
+  .liquid-glass-bg .glass-blob.blob-3,
+  .liquid-glass-bg .glass-blob.blob-4 {
+    display: none;
+  }
+
+  /* 2. Trang bìa giới thiệu (Cover Slide) trên điện thoại */
+  .cover-page-slide {
+    height: 100dvh;
+    min-height: 100vh;
+    padding-bottom: env(safe-area-inset-bottom, 24px);
+  }
+
+  .cover-top-bar {
+    padding: 12px 14px;
+    padding-top: max(12px, env(safe-area-inset-top, 0px));
+  }
+
+  .cover-container {
+    padding: 10px 14px 28px;
+    gap: 14px;
+  }
+
+  .japan-sun {
+    width: 200px;
+    height: 200px;
+    top: 4%;
+  }
+
+  .japan-fuji-svg {
+    height: 160px;
+    opacity: 0.18;
+  }
+
+  .cover-title-hero {
+    font-size: clamp(32px, 8.5vw, 50px);
+  }
+
+  .cover-title-desc {
+    font-size: clamp(14px, 3.8vw, 17px);
+  }
+
+  .cover-zen-badge {
+    font-size: 10.5px;
+    padding: 5px 12px;
+    text-align: center;
+  }
+
+  .cover-features-grid {
+    grid-template-columns: 1fr;
+    gap: 8px;
+    margin: 8px 0 14px;
+  }
+
+  .cover-feature-card {
+    padding: 10px 14px;
+    gap: 12px;
+  }
+
+  .feature-icon-box {
+    font-size: 20px;
+  }
+
+  .feature-title {
+    font-size: 13px;
+    margin-bottom: 2px;
+  }
+
+  .feature-desc {
+    font-size: 11.5px;
+    line-height: 1.45;
+  }
+
+  .btn-enter-app {
+    width: 100%;
+    max-width: 320px;
+    padding: 13px 24px;
+    font-size: 15.5px;
+    justify-content: center;
+  }
+
+  /* 3. Thanh Header & Tìm kiếm tức thì trên điện thoại */
+  .app-header {
+    height: calc(var(--header-height) + env(safe-area-inset-top, 0px));
+    padding: 0 12px;
+    padding-top: env(safe-area-inset-top, 0px);
+    gap: 8px;
+  }
+
+  .header-left {
+    gap: 8px;
+  }
+
+  .menu-toggle-btn,
   .mobile-menu-btn {
     display: inline-flex;
+    width: 38px;
+    height: 38px;
+  }
+
+  .theme-toggle-btn {
+    width: 38px;
+    height: 38px;
   }
 
   .header-search-container {
-    max-width: 180px;
+    flex: 1 1 auto;
+    max-width: 190px;
+    transition: max-width 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .header-search-container:focus-within {
+    max-width: 100%;
+    z-index: 150;
+  }
+
+  .search-box-wrapper {
+    padding: 6px 10px;
+    gap: 6px;
+  }
+
+  .quick-search-input {
+    font-size: 13.5px;
   }
 
   .search-shortcut {
     display: none;
   }
 
+  /* Dropdown tìm kiếm trải rộng chuẩn Mobile UX */
+  .search-dropdown {
+    position: fixed;
+    top: calc(var(--header-height) + env(safe-area-inset-top, 0px) + 6px);
+    left: 10px;
+    right: 10px;
+    width: auto;
+    max-height: calc(75vh - var(--header-height));
+    border-radius: var(--radius-md);
+    box-shadow: 0 14px 45px rgba(0, 0, 0, 0.45);
+    z-index: 1000;
+  }
+
+  .search-dropdown-header {
+    padding: 10px 14px;
+    font-size: 12px;
+  }
+
+  .search-result-item {
+    padding: 10px 12px;
+    min-height: 48px;
+    gap: 8px;
+  }
+
+  .search-item-main {
+    font-size: 14px;
+  }
+
+  .search-item-sub {
+    font-size: 12px;
+  }
+
+  /* 4. Sidebar Drawer ngăn nắp, dễ bấm ngón cái */
   .sidebar {
     position: fixed;
-    top: var(--header-height);
+    top: calc(var(--header-height) + env(safe-area-inset-top, 0px));
     left: 0;
     bottom: 0;
-    width: 290px;
+    width: 300px;
     min-width: 280px;
-    max-width: 85vw;
+    max-width: 86vw;
     z-index: 90;
     margin-left: 0 !important;
     transform: translate3d(-100%, 0, 0);
@@ -2519,6 +2751,9 @@ rt,
                 box-shadow 0.22s cubic-bezier(0.2, 0.9, 0.3, 1);
     box-shadow: none;
     will-change: transform;
+    display: flex;
+    flex-direction: column;
+    padding-bottom: env(safe-area-inset-bottom, 16px);
   }
 
   .sidebar.mobile-open {
@@ -2526,19 +2761,111 @@ rt,
     box-shadow: 14px 0 40px rgba(0, 0, 0, 0.55);
   }
 
+  .mobile-sidebar-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 14px;
+    border-bottom: 1px solid var(--border-color);
+    background: var(--bg-tertiary);
+    flex-shrink: 0;
+  }
+
+  .mobile-sidebar-brand {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13.5px;
+    font-weight: 700;
+    color: var(--text-primary);
+  }
+
+  .close-sidebar-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border-radius: var(--radius-sm);
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: var(--transition);
+  }
+
+  .close-sidebar-btn:hover,
+  .close-sidebar-btn:active {
+    background: rgba(248, 113, 113, 0.2);
+    color: var(--accent-red);
+    border-color: var(--accent-red);
+  }
+
+  .sidebar-menu {
+    padding: 10px 10px 20px;
+  }
+
+  .accordion-header {
+    padding: 12px 14px;
+    min-height: 46px;
+    font-size: 13.5px;
+    font-weight: 600;
+  }
+
+  .accordion-badge {
+    font-size: 11px;
+    padding: 2px 7px;
+  }
+
+  .accordion-chevron {
+    width: 17px;
+    height: 17px;
+  }
+
+  /* Khắc phục triệt để lỗi kẹt cuộn: Hủy max-height lồng nhau trên điện thoại */
+  .accordion-body {
+    max-height: none !important;
+    overflow: visible !important;
+    padding: 6px 6px 10px;
+  }
+
+  .menu-item-btn {
+    padding: 10px 12px;
+    min-height: 42px;
+    font-size: 13px;
+  }
+
+  .item-tag {
+    font-size: 10px;
+    padding: 2px 6px;
+  }
+
+  .sidebar-footer {
+    padding: 12px 14px;
+  }
+
+  .btn-redo {
+    width: 100%;
+    justify-content: center;
+    min-height: 38px;
+    font-size: 12.5px;
+  }
+
   .sidebar-overlay {
     position: fixed;
-    top: var(--header-height);
+    top: calc(var(--header-height) + env(safe-area-inset-top, 0px));
     left: 0;
     right: 0;
     bottom: 0;
     background: rgba(11, 17, 32, 0.65);
+    backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(5px);
     z-index: 80;
     opacity: 0;
     visibility: hidden;
     pointer-events: none;
-    transition: opacity 0.5s cubic-bezier(0.2, 0.9, 0.3, 1),
-                visibility 0.5s cubic-bezier(0.2, 0.9, 0.3, 1);
+    transition: opacity 0.35s cubic-bezier(0.2, 0.9, 0.3, 1),
+                visibility 0.35s cubic-bezier(0.2, 0.9, 0.3, 1);
     will-change: opacity, visibility;
   }
 
@@ -2548,14 +2875,199 @@ rt,
     pointer-events: auto;
   }
 
+  /* 5. Vùng nội dung chính (Main Content) */
   .main-content {
     width: 100%;
-    padding: 20px 16px;
+    padding: 16px 12px calc(28px + env(safe-area-inset-bottom, 0px));
   }
 
+  .lesson-content {
+    gap: 18px;
+  }
+
+  .lesson-hero-card {
+    padding: 16px 14px;
+    border-radius: var(--radius-md);
+  }
+
+  .lesson-title {
+    font-size: clamp(20px, 5.2vw, 24px);
+    line-height: 1.35;
+    margin-bottom: 8px;
+  }
+
+  .lesson-desc {
+    font-size: 14px;
+    line-height: 1.6;
+  }
+
+  .hero-meta {
+    gap: 6px;
+    margin-bottom: 10px;
+  }
+
+  .badge {
+    font-size: 11.5px;
+    padding: 4px 10px;
+  }
+
+  .section-card {
+    padding: 16px 14px;
+    border-radius: var(--radius-md);
+  }
+
+  .section-header {
+    margin-bottom: 14px;
+    padding-bottom: 10px;
+  }
+
+  .section-title {
+    font-size: 18px;
+  }
+
+  .btn-complete-lesson {
+    width: 100%;
+    justify-content: center;
+    min-height: 46px;
+    font-size: 14.5px;
+    padding: 12px 18px;
+  }
+
+  /* 6. Phần Ngữ Pháp & Ví Dụ trên điện thoại */
+  .grammar-list {
+    gap: 16px;
+  }
+
+  .grammar-item-card {
+    padding: 16px 14px;
+    border-radius: var(--radius-md);
+  }
+
+  .grammar-formula-bar {
+    padding: 10px 14px;
+    border-left-width: 3px;
+    margin-bottom: 12px;
+  }
+
+  .grammar-formula {
+    font-size: 17px;
+  }
+
+  .grammar-usage {
+    padding: 12px 14px;
+    font-size: 14px;
+    line-height: 1.65;
+    margin-bottom: 12px;
+  }
+
+  .usage-title {
+    font-size: 14.5px;
+    margin-bottom: 4px;
+  }
+
+  .usage-text {
+    font-size: 14px;
+  }
+
+  .grammar-note {
+    padding: 12px 14px;
+    font-size: 13.5px;
+    line-height: 1.6;
+    border-left-width: 3px;
+    margin-bottom: 14px;
+  }
+
+  .note-title {
+    font-size: 14px;
+    margin-bottom: 4px;
+  }
+
+  .note-text {
+    font-size: 13.5px;
+  }
+
+  .grammar-examples-section {
+    margin-top: 14px;
+    gap: 10px;
+  }
+
+  .examples-header-title {
+    font-size: 12.5px;
+  }
+
+  .example-cards-list {
+    gap: 10px;
+  }
+
+  .example-card {
+    padding: 12px 14px;
+    border-radius: var(--radius-sm);
+  }
+
+  .example-card-badge {
+    margin-bottom: 8px;
+    gap: 6px;
+  }
+
+  .sentence-jp .jp-sentence {
+    font-size: 17.5px;
+    line-height: 2.1;
+  }
+
+  /* Khắc phục khoảng thụt lề 44px gây chật chội trên điện thoại */
+  .sentence-vi {
+    padding-left: 0;
+    margin-top: 4px;
+    font-size: 14.5px;
+    line-height: 1.55;
+  }
+
+  .dialogue-lines {
+    gap: 8px;
+  }
+
+  .dialogue-jp .jp-sentence {
+    font-size: 17px;
+    line-height: 2.0;
+  }
+
+  .dialogue-vi {
+    padding-left: 0;
+    margin-top: 4px;
+    font-size: 14px;
+  }
+
+  .dialogue-bubble {
+    padding: 8px 12px;
+  }
+
+  .speaker-badge {
+    width: 26px;
+    height: 26px;
+    font-size: 12px;
+    margin-top: 4px;
+  }
+
+  .speak-btn {
+    min-width: 34px;
+    min-height: 34px;
+  }
+
+  /* 7. Trắc Nghiệm JLPT & Đề Thi 50 Câu */
   .quiz-wrapper {
     grid-template-columns: 1fr;
-    gap: 14px;
+    gap: 12px;
+  }
+
+  .quiz-card {
+    padding: 14px 14px;
+    border-radius: var(--radius-md);
+  }
+
+  .quiz-question-title {
+    font-size: 16px;
+    line-height: 2.1;
+    margin-bottom: 12px;
   }
 
   .options-grid {
@@ -2564,23 +3076,333 @@ rt,
     grid-template-columns: 1fr;
     grid-template-rows: none;
     grid-auto-flow: row;
+    gap: 8px;
+    margin-bottom: 10px;
   }
 
-  .quiz-submit-section,
-  .quiz-result-banner {
+  .option-btn {
+    min-height: 48px;
     padding: 10px 12px;
+    font-size: 15px;
+    line-height: 1.5;
+    border-radius: var(--radius-sm);
+  }
+
+  .option-letter {
+    width: 26px;
+    height: 26px;
+    font-size: 12.5px;
+  }
+
+  .quiz-feedback {
+    padding: 10px 12px;
+    font-size: 14px;
+    margin-top: 10px;
+  }
+
+  .feedback-explanation {
+    font-size: 14px;
+    line-height: 1.6;
+  }
+
+  .quiz-submit-section {
+    padding: 12px 14px;
     gap: 10px;
+    flex-direction: column;
+    align-items: stretch;
+    border-radius: var(--radius-md);
   }
 
   .submit-progress-info {
     width: 100%;
-    min-width: 100%;
+    min-width: 0;
+    gap: 10px;
   }
 
-  .btn-submit-exam,
+  .submit-progress-badge {
+    font-size: 13px;
+  }
+
+  .btn-submit-exam {
+    width: 100%;
+    justify-content: center;
+    min-height: 48px;
+    font-size: 15px;
+    padding: 12px 18px;
+  }
+
+  .quiz-result-banner {
+    padding: 14px 14px;
+    gap: 12px;
+    flex-direction: column;
+    align-items: stretch;
+    border-radius: var(--radius-md);
+  }
+
+  .result-left {
+    width: 100%;
+    min-width: 0;
+  }
+
   .btn-redo-result {
     width: 100%;
     justify-content: center;
+    min-height: 46px;
+    font-size: 14.5px;
+  }
+
+  /* 8. Bài Đọc Hiểu (Dokkai) */
+  .dokkai-passage {
+    padding: 16px 14px;
+    font-size: 16.5px;
+    line-height: 2.1;
+    border-radius: var(--radius-md);
+    margin-bottom: 18px;
+  }
+
+  /* 9. Module 176 Bộ Thủ Kanji */
+  .radicals-container {
+    gap: 16px;
+    margin-top: 16px;
+  }
+
+  .radical-card {
+    flex-direction: column;
+    align-items: center;
+    padding: 16px 14px;
+    gap: 14px;
+    border-radius: var(--radius-md);
+  }
+
+  .radical-stroke-box {
+    width: 145px;
+    height: 145px;
+    border-radius: var(--radius-md);
+  }
+
+  .radical-stroke-svg {
+    width: 115px;
+    height: 115px;
+  }
+
+  .radical-info-body {
+    width: 100%;
+    gap: 12px;
+  }
+
+  .radical-name-value {
+    justify-content: flex-start;
+    align-items: baseline;
+    gap: 10px;
+  }
+
+  .radical-main-char {
+    font-size: 2rem;
+  }
+
+  .radical-full-name {
+    font-size: 1.25rem;
+  }
+
+  .radical-meaning-value {
+    font-size: 0.95rem;
+    line-height: 1.55;
+  }
+
+  .radical-kanji-meaning-value {
+    font-size: 0.92rem;
+    line-height: 1.6;
+  }
+
+  .radical-examples-wrap {
+    padding: 10px 12px;
+    border-radius: var(--radius-sm);
+    gap: 6px;
+  }
+
+  .kanji-example-chips {
+    gap: 6px 8px;
+  }
+
+  .kanji-chip {
+    padding: 5px 10px;
+    font-size: 0.85rem;
+  }
+
+  .chip-char {
+    font-size: 1.15rem;
+  }
+
+  /* 10. Toast Notification căn giữa trên điện thoại */
+  .toast-notification {
+    left: 14px;
+    right: 14px;
+    max-width: calc(100vw - 28px);
+    bottom: calc(14px + env(safe-area-inset-bottom, 0px));
+    justify-content: center;
+    text-align: center;
+    font-size: 13px;
+    padding: 10px 14px;
+    border-radius: var(--radius-sm);
+    margin: 0 auto;
+  }
+}
+
+/* ==========================================================================
+   CHUYỂN ĐỔI BẢNG TỪ VỰNG THÀNH DẠNG THẺ THÔNG MINH CHO MÀN HÌNH NHỎ (<= 680px)
+   Không cần vuốt ngang, đọc mượt như ứng dụng Mazii / Duolingo bản địa
+   ========================================================================== */
+@media (max-width: 680px) {
+  .table-container {
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+    overflow-x: visible !important;
+    padding: 0 !important;
+  }
+
+  .vocab-table {
+    display: block !important;
+    width: 100% !important;
+    border: none !important;
+  }
+
+  .vocab-table thead {
+    display: none !important;
+  }
+
+  .vocab-table tbody {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 10px !important;
+    width: 100% !important;
+  }
+
+  .vocab-table tbody tr {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 8px !important;
+    background: var(--bg-card-inner) !important;
+    border: 1px solid var(--border-card) !important;
+    border-radius: var(--radius-md) !important;
+    padding: 12px 14px !important;
+    position: relative !important;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15) !important;
+    transition: transform 0.15s ease, border-color 0.15s ease !important;
+  }
+
+  .vocab-table tbody tr:active {
+    transform: scale(0.99);
+  }
+
+  .vocab-table td {
+    display: block !important;
+    width: 100% !important;
+    min-width: 0 !important;
+    padding: 0 !important;
+    border: none !important;
+  }
+
+  .vocab-col-kanji {
+    display: flex !important;
+    align-items: center !important;
+    padding-right: 76px !important; /* Chừa vị trí góc phải cho thẻ từ loại */
+  }
+
+  .vocab-kanji-wrap {
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 8px !important;
+    flex-wrap: wrap !important;
+  }
+
+  .vocab-kanji-wrap strong {
+    font-size: 19px !important;
+  }
+
+  .vocab-col-type {
+    position: absolute !important;
+    top: 12px !important;
+    right: 14px !important;
+    width: auto !important;
+    text-align: right !important;
+  }
+
+  .type-pill {
+    font-size: 11px !important;
+    padding: 2px 8px !important;
+  }
+
+  .vocab-col-hira {
+    font-size: 15px !important;
+    font-weight: 600 !important;
+    color: var(--accent-primary) !important;
+    padding-left: 38px !important; /* Căn thẳng hàng bên phải nút phát âm */
+  }
+
+  .vocab-col-meaning {
+    font-size: 14.5px !important;
+    line-height: 1.5 !important;
+    color: var(--text-primary) !important;
+    padding-top: 6px !important;
+    border-top: 1px dashed var(--border-color) !important;
+    margin-top: 2px !important;
+  }
+}
+
+/* ==========================================================================
+   TINH CHỈNH BỔ SUNG CHO MÀN HÌNH SIÊU NHỎ (<= 420px: iPhone SE, v.v.)
+   ========================================================================== */
+@media (max-width: 420px) {
+  .app-header {
+    padding: 0 8px;
+    gap: 6px;
+  }
+
+  .header-left {
+    gap: 6px;
+  }
+
+  .brand-badge {
+    font-size: 10.5px;
+    padding: 2px 5px;
+  }
+
+  .menu-toggle-btn,
+  .mobile-menu-btn,
+  .theme-toggle-btn {
+    width: 36px;
+    height: 36px;
+  }
+
+  .main-content {
+    padding: 12px 8px calc(24px + env(safe-area-inset-bottom, 0px));
+  }
+
+  .lesson-hero-card {
+    padding: 14px 10px;
+  }
+
+  .section-card {
+    padding: 14px 10px;
+  }
+
+  .vocab-col-kanji {
+    padding-right: 68px !important;
+  }
+
+  .vocab-kanji-wrap strong {
+    font-size: 17.5px !important;
+  }
+
+  .option-btn {
+    font-size: 14px;
+    padding: 8px 10px;
+    min-height: 46px;
+  }
+
+  .cover-title-hero {
+    font-size: 32px;
   }
 }
 
@@ -2919,22 +3741,6 @@ rt,
   color: var(--text-muted);
 }
 
-@media (max-width: 768px) {
-  .radical-card {
-    flex-direction: column;
-    align-items: center;
-    padding: 18px;
-    gap: 18px;
-  }
-
-  .radical-info-body {
-    width: 100%;
-  }
-
-  .radical-name-value {
-    justify-content: flex-start;
-  }
-}
 
 /* ==========================================================================
    12. HIỆU ỨNG KÍNH LỎNG (LIQUID GLASS EFFECT) - HOÀN THIỆN TOÀN BỘ TRANG WEB
