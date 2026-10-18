@@ -50,4 +50,11 @@ if (!appJs.includes('sidebar-open-lock') || !appJs.includes('touchstart')) {
 }
 console.log('6. Khóa cuộn trang khi mở menu và sự kiện chạm cảm ứng 0ms trên Sidebar Backdrop: ĐẠT');
 
+// 7. Kiểm tra thanh cuộn độc lập cho 4 phần: Bài Học, Bài Tập, Đọc Hiểu, Bộ Thủ trên điện thoại
+const mobileQueryBlock = css.substring(css.indexOf('@media (max-width: 768px)'));
+if (!mobileQueryBlock.includes('group-lessons .accordion-body') || !mobileQueryBlock.includes('max-height: 280px !important') || !mobileQueryBlock.includes('overflow-y: auto !important')) {
+  throw new Error('Chưa cấu hình thanh cuộn độc lập cho Bài Học, Bài Tập, Đọc Hiểu, Bộ Thủ trên điện thoại!');
+}
+console.log('7. Thanh cuộn độc lập cho 4 phần (Bài Học, Bài Tập, Đọc Hiểu, Bộ Thủ) trên điện thoại: ĐẠT');
+
 console.log('=== TOÀN BỘ KIỂM THỬ TƯƠNG TÁC TRÊN ĐIỆN THOẠI DI ĐỘNG ĐÃ VƯỢT QUA 100% ===');

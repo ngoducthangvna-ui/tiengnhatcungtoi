@@ -1572,10 +1572,21 @@ rt,
   white-space: nowrap;
 }
 
-.vocab-kanji-wrap strong {
+.vocab-kanji-wrap strong,
+.vocab-term-main {
   font-size: 20px;
   font-family: var(--font-japanese);
   font-weight: 600;
+}
+
+.vocab-term-group {
+  display: inline-flex;
+  align-items: center;
+}
+
+.vocab-mobile-hira,
+.vocab-mobile-type {
+  display: none;
 }
 
 .vocab-col-hira {
@@ -2683,7 +2694,7 @@ rt,
 
 .voice-modal-card {
   width: 100%;
-  max-width: 480px;
+  max-width: 380px;
   background: rgba(30, 41, 59, 0.88);
   backdrop-filter: blur(24px) saturate(160%);
   -webkit-backdrop-filter: blur(24px) saturate(160%);
@@ -2724,18 +2735,6 @@ rt,
 .voice-modal-title-wrap {
   display: flex;
   align-items: center;
-  gap: 10px;
-}
-
-.voice-badge {
-  background: linear-gradient(135deg, var(--accent-primary), #0284c7);
-  color: #ffffff;
-  font-size: 11px;
-  font-weight: 700;
-  padding: 2px 8px;
-  border-radius: 999px;
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
 }
 
 .voice-modal-title {
@@ -2770,107 +2769,6 @@ rt,
   overflow-y: auto;
 }
 
-.voice-info-card {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-  padding: 12px 14px;
-  border-radius: var(--radius-md);
-  background: rgba(15, 23, 42, 0.45);
-  border: 1px solid rgba(255, 255, 255, 0.07);
-}
-
-[data-theme="light"] .voice-info-card {
-  background: rgba(241, 245, 249, 0.7);
-  border: 1px solid rgba(0, 0, 0, 0.05);
-}
-
-.voice-avatar {
-  width: 44px;
-  height: 44px;
-  border-radius: 50%;
-  background: linear-gradient(135deg, rgba(56, 189, 248, 0.2), rgba(251, 113, 133, 0.2));
-  border: 1px solid rgba(56, 189, 248, 0.35);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: var(--accent-primary);
-  flex-shrink: 0;
-}
-
-.voice-details {
-  flex: 1;
-  min-width: 0;
-}
-
-.voice-name {
-  font-weight: 700;
-  font-size: 14px;
-  color: var(--text-primary);
-}
-
-.voice-source {
-  font-size: 11.5px;
-  color: var(--text-secondary);
-  margin-top: 2px;
-}
-
-.voice-source a {
-  color: var(--accent-primary);
-  text-decoration: underline;
-}
-
-.voice-status-pill {
-  display: inline-block;
-  margin-top: 6px;
-  font-size: 11px;
-  font-weight: 600;
-  padding: 2px 8px;
-  border-radius: 999px;
-  background: rgba(56, 189, 248, 0.15);
-  color: var(--accent-primary);
-  border: 1px solid rgba(56, 189, 248, 0.25);
-}
-
-.voice-status-pill.status-active-cloud {
-  background: rgba(52, 211, 153, 0.18);
-  color: var(--accent-green);
-  border-color: rgba(52, 211, 153, 0.35);
-}
-
-.voice-test-row {
-  display: flex;
-  justify-content: center;
-}
-
-.btn-test-voice {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  padding: 9px 20px;
-  border-radius: 999px;
-  background: rgba(56, 189, 248, 0.14);
-  border: 1px solid rgba(56, 189, 248, 0.35);
-  color: var(--accent-primary);
-  font-weight: 600;
-  font-size: 13.5px;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  touch-action: manipulation;
-}
-
-.btn-test-voice:hover {
-  background: rgba(56, 189, 248, 0.25);
-  transform: translateY(-1px);
-  box-shadow: 0 4px 14px rgba(56, 189, 248, 0.25);
-}
-
-.btn-test-voice.is-speaking {
-  background: var(--accent-primary);
-  color: #ffffff;
-  animation: pulse 1s infinite;
-}
-
 .voice-slider-group {
   display: flex;
   flex-direction: column;
@@ -2899,79 +2797,6 @@ rt,
   width: 100%;
   accent-color: var(--accent-primary);
   cursor: pointer;
-}
-
-.speechgen-api-details {
-  border: 1px dashed rgba(255, 255, 255, 0.12);
-  border-radius: var(--radius-md);
-  padding: 10px 14px;
-}
-
-[data-theme="light"] .speechgen-api-details {
-  border-color: rgba(0, 0, 0, 0.12);
-}
-
-.speechgen-api-details summary {
-  cursor: pointer;
-  font-size: 12.5px;
-  font-weight: 600;
-  color: var(--text-secondary);
-  user-select: none;
-}
-
-.speechgen-api-fields {
-  margin-top: 10px;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-
-.api-help-text {
-  font-size: 11.5px;
-  color: var(--text-muted);
-  line-height: 1.5;
-  margin: 0;
-}
-
-.voice-form-group {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
-
-.voice-form-group label {
-  font-size: 11.5px;
-  font-weight: 600;
-  color: var(--text-secondary);
-}
-
-.voice-form-group input {
-  padding: 7px 10px;
-  border-radius: var(--radius-sm);
-  background: rgba(15, 23, 42, 0.5);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  color: var(--text-primary);
-  font-size: 12.5px;
-  outline: none;
-  transition: border-color 0.2s ease;
-}
-
-[data-theme="light"] .voice-form-group input {
-  background: rgba(255, 255, 255, 0.9);
-  border: 1px solid rgba(0, 0, 0, 0.12);
-}
-
-.voice-form-group input:focus {
-  border-color: var(--accent-primary);
-}
-
-.api-link-hint {
-  font-size: 11.5px;
-}
-
-.api-link-hint a {
-  color: var(--accent-primary);
-  text-decoration: none;
 }
 
 .voice-modal-footer {
@@ -3638,18 +3463,98 @@ rt,
 
   .sidebar-menu {
     padding: 10px 10px 20px;
+    scrollbar-width: thin !important;
+    scrollbar-color: var(--border-color) transparent !important;
+    -webkit-overflow-scrolling: touch !important;
   }
+  .sidebar-menu::-webkit-scrollbar {
+    width: 6px !important;
+    display: block !important;
+  }
+  .sidebar-menu::-webkit-scrollbar-track {
+    background: transparent !important;
+  }
+  .sidebar-menu::-webkit-scrollbar-thumb {
+    background-color: var(--border-color) !important;
+    border-radius: 999px;
+  }
+
   .accordion-header {
     padding: 12px 14px;
     min-height: 46px;
     font-size: 13.5px;
     font-weight: 600;
   }
-  .accordion-body {
-    max-height: none !important;
-    overflow: visible !important;
+
+  /* Bổ sung thanh cuộn độc lập cho cả 4 phần: Bài Học, Bài Tập, Đọc Hiểu, Bộ Thủ trên điện thoại */
+  .accordion-body,
+  #group-lessons .accordion-body,
+  #group-quiz .accordion-body,
+  #group-dokkai .accordion-body,
+  #group-radicals .accordion-body {
+    max-height: 280px !important;
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
+    -webkit-overflow-scrolling: touch !important;
+    scroll-behavior: smooth;
+    scrollbar-width: thin !important;
+    scrollbar-color: var(--accent-primary) rgba(255, 255, 255, 0.08) !important;
     padding: 6px 6px 10px;
+    border-top: 1px solid var(--border-color);
   }
+
+  [data-theme="light"] .accordion-body,
+  [data-theme="light"] #group-lessons .accordion-body,
+  [data-theme="light"] #group-quiz .accordion-body,
+  [data-theme="light"] #group-dokkai .accordion-body,
+  [data-theme="light"] #group-radicals .accordion-body {
+    scrollbar-color: var(--accent-primary) rgba(0, 0, 0, 0.06) !important;
+  }
+
+  .accordion-body::-webkit-scrollbar,
+  #group-lessons .accordion-body::-webkit-scrollbar,
+  #group-quiz .accordion-body::-webkit-scrollbar,
+  #group-dokkai .accordion-body::-webkit-scrollbar,
+  #group-radicals .accordion-body::-webkit-scrollbar {
+    width: 6px !important;
+    display: block !important;
+  }
+
+  .accordion-body::-webkit-scrollbar-track,
+  #group-lessons .accordion-body::-webkit-scrollbar-track,
+  #group-quiz .accordion-body::-webkit-scrollbar-track,
+  #group-dokkai .accordion-body::-webkit-scrollbar-track,
+  #group-radicals .accordion-body::-webkit-scrollbar-track {
+    background: rgba(15, 23, 42, 0.35) !important;
+    border-radius: 999px;
+    margin: 4px 0;
+  }
+
+  [data-theme="light"] .accordion-body::-webkit-scrollbar-track,
+  [data-theme="light"] #group-lessons .accordion-body::-webkit-scrollbar-track,
+  [data-theme="light"] #group-quiz .accordion-body::-webkit-scrollbar-track,
+  [data-theme="light"] #group-dokkai .accordion-body::-webkit-scrollbar-track,
+  [data-theme="light"] #group-radicals .accordion-body::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.06) !important;
+  }
+
+  .accordion-body::-webkit-scrollbar-thumb,
+  #group-lessons .accordion-body::-webkit-scrollbar-thumb,
+  #group-quiz .accordion-body::-webkit-scrollbar-thumb,
+  #group-dokkai .accordion-body::-webkit-scrollbar-thumb,
+  #group-radicals .accordion-body::-webkit-scrollbar-thumb {
+    background-color: var(--accent-primary) !important;
+    border-radius: 999px;
+  }
+
+  .accordion-body::-webkit-scrollbar-thumb:hover,
+  #group-lessons .accordion-body::-webkit-scrollbar-thumb:hover,
+  #group-quiz .accordion-body::-webkit-scrollbar-thumb:hover,
+  #group-dokkai .accordion-body::-webkit-scrollbar-thumb:hover,
+  #group-radicals .accordion-body::-webkit-scrollbar-thumb:hover {
+    background-color: #38bdf8 !important;
+  }
+
   .menu-item-btn {
     padding: 11px 12px;
     min-height: 44px;
@@ -3677,6 +3582,23 @@ rt,
   .main-content {
     width: 100%;
     padding: 16px 12px calc(32px + env(safe-area-inset-bottom, 0px));
+    scrollbar-width: thin !important;
+    scrollbar-color: rgba(56, 189, 248, 0.5) transparent !important;
+    -webkit-overflow-scrolling: touch !important;
+  }
+  .main-content::-webkit-scrollbar {
+    width: 6px !important;
+    display: block !important;
+  }
+  .main-content::-webkit-scrollbar-track {
+    background: transparent !important;
+  }
+  .main-content::-webkit-scrollbar-thumb {
+    background-color: rgba(56, 189, 248, 0.45) !important;
+    border-radius: 999px;
+  }
+  [data-theme="light"] .main-content::-webkit-scrollbar-thumb {
+    background-color: rgba(2, 132, 199, 0.45) !important;
   }
   .lesson-content {
     gap: 16px;
@@ -3976,7 +3898,7 @@ rt,
   .vocab-table tbody tr {
     display: flex;
     flex-direction: column;
-    gap: 6px;
+    gap: 8px;
     background: var(--bg-card-inner);
     border: 1px solid var(--border-card);
     border-radius: var(--radius-md);
@@ -3992,45 +3914,74 @@ rt,
     padding: 0;
     border: none;
   }
+
+  /* Ẩn các cột chỉ dành riêng cho bố cục table desktop để tránh lặp từ và đè chữ */
+  .vocab-col-hira,
+  .vocab-col-type {
+    display: none !important;
+  }
+
+  /* Hàng chính: Nút phát âm + Từ tiếng Nhật ở bên trái; Huy hiệu từ loại ở bên phải (KHÔNG BAO GIỜ BỊ ĐÈ LÊN NHAU) */
   .vocab-col-kanji {
-    display: flex;
+    display: flex !important;
     align-items: center;
     justify-content: space-between;
     gap: 10px;
-    padding-right: 0;
-    position: relative;
-    z-index: 5;
+    width: 100% !important;
+    padding: 0 !important;
+    border: none !important;
   }
   .vocab-kanji-wrap {
-    display: inline-flex;
+    display: flex !important;
     align-items: center;
     gap: 10px;
-    flex-wrap: wrap;
+    min-width: 0;
+    flex: 1 1 auto;
   }
-  .vocab-kanji-wrap strong {
-    font-size: 19px;
+  .vocab-term-group {
+    display: flex !important;
+    flex-direction: column;
+    min-width: 0;
   }
-  .vocab-col-type {
-    position: absolute;
-    top: 14px;
-    right: 14px;
-    width: auto;
-    text-align: right;
-    z-index: 2;
-  }
-  .vocab-col-hira {
-    font-size: 15px;
+  .vocab-term-main {
+    font-size: 18.5px;
+    font-family: var(--font-japanese);
     font-weight: 600;
-    color: var(--accent-primary);
-    padding-left: 54px;
-  }
-  .vocab-col-meaning {
-    font-size: 14.5px;
-    line-height: 1.5;
+    line-height: 1.45;
     color: var(--text-primary);
-    padding-top: 6px;
-    border-top: 1px dashed var(--border-color);
-    margin-top: 2px;
+    word-break: break-word;
+  }
+  .vocab-term-main ruby rt {
+    font-size: 11px;
+    color: var(--accent-primary);
+  }
+  .vocab-mobile-hira {
+    display: block !important;
+    font-size: 13.5px;
+    font-weight: 500;
+    color: var(--accent-primary);
+    font-family: var(--font-japanese);
+    margin-top: 1px;
+  }
+  .vocab-mobile-type {
+    display: block !important;
+    flex-shrink: 0;
+    text-align: right;
+  }
+  .vocab-mobile-type .type-pill {
+    margin: 0;
+  }
+
+  /* Hàng nghĩa tiếng Việt: Phân cách rõ ràng, dễ đọc, không bị che khuất */
+  .vocab-col-meaning {
+    display: block !important;
+    width: 100% !important;
+    padding-top: 8px !important;
+    border-top: 1px dashed var(--border-color) !important;
+    font-size: 14.5px;
+    line-height: 1.55;
+    color: var(--text-primary);
+    word-break: break-word;
   }
 }
 
@@ -4051,9 +4002,6 @@ rt,
   }
   .main-content {
     padding: 12px 8px calc(28px + env(safe-area-inset-bottom, 0px));
-  }
-  .vocab-col-hira {
-    padding-left: 50px;
   }
   .option-btn {
     font-size: 14px;

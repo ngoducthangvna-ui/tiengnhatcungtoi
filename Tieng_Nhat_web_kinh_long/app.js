@@ -111,6 +111,126 @@ function cleanSpeechText(text) {
     .trim();
 }
 
+// Hàm chuẩn hóa và tạo nhịp ngắt nghỉ tự nhiên theo ngữ pháp tiếng Nhật (Prosody & Syntactic Phrasing)
+function formatJapaneseGrammarSpeech(text) {
+  if (!text) return '';
+  let str = String(text).trim();
+
+  // 1. Loại bỏ các thẻ HTML / Ruby furigana và ký tự escape
+  str = str.replace(/<rt>.*?<\/rt>/g, '').replace(/<[^>]*>/g, '');
+  str = str.replace(/['"\\]/g, ' ');
+
+  // 2. Chuẩn hóa dấu câu half-width sang full-width tiếng Nhật chuẩn
+  str = str.replace(/,/g, '、')
+           .replace(/\.(?!\d)/g, '。')
+           .replace(/\?/g, '？')
+           .replace(/!/g, '！')
+           .replace(/;/g, '、')
+           .replace(/:/g, '：');
+
+  // Chuẩn hóa khoảng trắng quanh dấu câu
+  str = str.replace(/([、。！？])\s+/g, '$1')
+           .replace(/\s+([、。！？])/g, '$1');
+
+  // Đơn từ rất ngắn (từ vựng đơn lẻ <= 6 ký tự không phải câu ghép hay câu hỏi): giữ nguyên phát âm chuẩn từ vựng
+  const rawClean = str.replace(/[、。！？\s]/g, '');
+  const isQuestion = /(?:か|ですか|ますか|でしょうか)$/.test(rawClean);
+  const hasMultipleClausesOrParticles = /[ぁ-んァ-ヶ一-龥]+(?:は|が|を|に|で|へ|と|も)\s*[ぁ-んァ-ヶ一-龥]+/.test(str);
+  const hasSpaces = /\s/.test(str);
+
+  if (rawClean.length <= 6 && !isQuestion && !hasMultipleClausesOrParticles && !hasSpaces && !/[、。！？]/.test(str)) {
+    return str;
+  }
+
+  // 3. Ngắt nghỉ sau liên từ / thán từ ở đầu câu hoặc sau dấu chấm câu
+  const discourseWords = [
+    'そして', 'それから', 'それに', 'それで', 'ですから', 'だから',
+    'しかし', 'でも', 'けれども', 'だけど', 'また', 'あるいは', 'または',
+    'では', 'それでは', 'じゃ', 'ところで', 'たとえば', '例えば',
+    '実は', 'じつは', 'まず', 'つぎに', '次に', 'さいごに', '最後に',
+    'はい', 'いいえ', 'ええ', 'すみません', 'すいません', 'ごめんなさい',
+    'おはようございます', 'こんにちは', 'こんばんは', 'はじめまして',
+    'どうぞ', 'あのう', 'ええと'
+  ];
+  const discoursePattern = new RegExp(
+    `(^|[。！？\\n])\\s*(${discourseWords.join('|')})(?:\\s*|(?=[ぁ-んァ-ヶ一-龥A-Za-z0-9]))(?!([、。！？』」）\\)]|$))`,
+    'g'
+  );
+  str = str.replace(discoursePattern, '$1$2、');
+
+  // 4. Ngắt nghỉ sau các liên từ nối mệnh đề phụ (Subordinate clause conjunctions)
+  // 4.1. Điều kiện: 〜たら / 〜だら
+  str = str.replace(/([ぁ-んァ-ヶ一-龥]{2,})(たら|だら)(?!(?:[、。！？』」）\\)]|$))(?=[ぁ-んァ-ヶ一-龥A-Za-z0-9])/g, '$1$2、');
+
+  // 4.2. Điều kiện: 〜なら (loại trừ さようなら, さよなら)
+  str = str.replace(/(?!さようなら|さよなら)([ぁ-んァ-ヶ一-龥]{2,})(なら)(?!(?:[、。！？』」）\\)]|$))(?=[ぁ-んァ-ヶ一-龥A-Za-z0-9])/g, '$1$2、');
+
+  // 4.3. Điều kiện thể 〜ば
+  str = str.replace(/([ぁ-んァ-ヶ一-龥]+)(えば|けば|せば|てば|ねば|べば|めば|れば|いれば|ければ)(?!(?:[、。！？』」）\\)]|$))(?=[ぁ-んァ-ヶ一-龥A-Za-z0-9])/g, '$1$2、');
+
+  // 4.4. Mốc thời gian / hoàn cảnh: 〜ときは / 〜時は / 〜場合は (ưu tiên chuỗi dài hơn trước)
+  str = str.replace(/([ぁ-んァ-ヶ一-龥]+(?:ときは|ときに|とき|場合は|場合))(?!(?:[、。！？』」）\\)]|$))(?=[ぁ-んァ-ヶ一-龥A-Za-z0-9]{3,})/g, '$1、');
+
+  // 4.5. Nguyên nhân: 〜から (sau vị ngữ thể ngắn hoặc です/ます), loại trừ からです / からだ
+  str = str.replace(/([ぁ-んァ-ヶ一-龥]+(?:ます|です|ました|でした|だ|た|かった|ない|たい|る|う|く|い))から(?!(?:です|だ|でした|だろう|[、。！？』」）\\)]|$))(?=[ぁ-んァ-ヶ一-龥A-Za-z0-9])/g, '$1から、');
+
+  // 4.6. Nguyên nhân: 〜ので (loại trừ のです / のですか / のだ)
+  str = str.replace(/([ぁ-んァ-ヶ一-龥]{2,})ので(?!(?:す|すか|だ|である|[、。！？』」）\\)]|$))(?=[ぁ-んァ-ヶ一-龥A-Za-z0-9])/g, '$1ので、');
+
+  // 4.7. Trái ngược / nhượng bộ: 〜のに (mặc dù)
+  str = str.replace(/([ぁ-んァ-ヶ一-龥]{2,})のに(?!(?:に|[、。！？』」）\\)]|$))(?=[ぁ-んァ-ヶ一-龥A-Za-z0-9])/g, '$1のに、');
+
+  // 4.8. Trái ngược / nhượng bộ: 〜ても / 〜でも (loại trừ đại từ phiếm chỉ: いつでも, どこでも, だれでも, なんでも...)
+  str = str.replace(/(?<![ぁ-んァ-ヶ一-龥])(?!いつでも|どこでも|だれでも|誰でも|何でも|なんでも|どちらでも|どれでも|いくらでも|そうでも)([ぁ-んァ-ヶ一-龥]{2,})(ても|でも)(?!(?:も|[、。！？』」）\\)]|$))(?=[ぁ-んァ-ヶ一-龥A-Za-z0-9])/g, '$1$2、');
+  str = str.replace(/([ぁ-んァ-ヶ一-龥]{3,})(ても|でも)(?!(?:も|[、。！？』」）\\)]|$))(?=[ぁ-んァ-ヶ一-龥A-Za-z0-9])/g, (match, p1, p2) => {
+    if (/^(?:いつでも|どこでも|だれでも|誰でも|何でも|なんでも|どちらでも|どれでも|いくらでも|そうでも)$/.test(p1 + p2)) {
+      return match;
+    }
+    return p1 + p2 + '、';
+  });
+
+  // 4.9. Nhượng bộ ngắn: 〜けど / 〜けれど / 〜けれども
+  str = str.replace(/(けど|けれど|けれども)(?!(?:[、。！？』」）\\)]|$))(?=[ぁ-んァ-ヶ一-龥A-Za-z0-9])/g, '$1、');
+
+  // 4.10. Liên kết nhượng bộ lịch sự: 〜ですが / 〜ますが / 〜ましたが
+  str = str.replace(/([ぁ-んァ-ヶ一-龥]+(?:ですが|ますが|でしたが|ましたが|思いますが))(?!(?:[、。！？』」）\\)]|$))(?=[ぁ-んァ-ヶ一-龥A-Za-z0-9])/g, '$1、');
+
+  // 4.11. Hành động đồng thời: 〜ながら
+  str = str.replace(/([ぁ-んァ-ヶ一-龥]{2,})ながら(?!(?:[、。！？』」）\\)]|$))(?=[ぁ-んァ-ヶ一-龥A-Za-z0-9])/g, '$1ながら、');
+
+  // 4.12. Hành động tuần tự: 〜てから / 〜でから
+  str = str.replace(/([ぁ-んァ-ヶ一-龥]{2,})(てから|でから)(?!(?:[、。！？』」）\\)]|$))(?=[ぁ-んァ-ヶ一-龥A-Za-z0-9])/g, '$1$2、');
+
+  // 4.13. Liệt kê hành động: 〜たり、〜たり
+  str = str.replace(/([ぁ-んァ-ヶ一-龥]{2,})(たり|だり)(?!(?:[、。！？』」）\\)]|$))(?=[ぁ-んァ-ヶ一-龥]+(?:たり|だり))/g, '$1$2、');
+
+  // 5. Ngắt sau cấu trúc chủ đề phức hợp (compound topic markers)
+  str = str.replace(/(については|というのは|にとっては|に対しては|においては)(?!(?:[、。！？』」）\\)]|$))(?=[ぁ-んァ-ヶ一-龥A-Za-z0-9]{3,})/g, '$1、');
+
+  // 6. Ngắt sau dấu trích dẫn「...」với trợ từ trích dẫn と
+  str = str.replace(/([」』])と(?!(?:[、。！？』」）\\)]|$))(?=(?:言い|いい|聞き|きき|思い|おもい|答え|こたえ|書い|かい|話|叫び))/g, '$1と、');
+
+  // 7. Dọn dẹp dấu trùng lặp và khoảng trắng dư
+  str = str.replace(/、+/g, '、')
+           .replace(/。+/g, '。')
+           .replace(/、([。！？])/g, '$1')
+           .replace(/([。！？])、/g, '$1')
+           .replace(/\s+/g, ' ')
+           .trim();
+
+  // 8. Thêm dấu câu ngắt câu tự nhiên ở cuối nếu là câu hoàn chỉnh
+  if (!/[。！？]$/.test(str)) {
+    if (/(?:か|でしょうか|ですか|ますか|のか|かい)$/.test(str)) {
+      str += '？';
+    } else if (str.length >= 6 || /(?:です|ます|だ|でした|ました|ません|だった|ではない|じゃない|ですよ|ですね|ますよ|ますね|のだ|んだ)$/.test(str)) {
+      str += '。';
+    }
+  }
+
+  return str;
+}
+window.formatJapaneseGrammarSpeech = formatJapaneseGrammarSpeech;
+
 function hasKanjiCharacter(text) {
   if (!text) return false;
   const clean = String(text).replace(/<[^>]*>/g, '');
@@ -190,10 +310,10 @@ if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
 }
 
 // Gọi API SpeechGen.io chính thức để tạo file âm thanh giọng Leda JP
-async function fetchSpeechGenAudio(cleanText, cfg) {
+async function fetchSpeechGenAudio(speechText, cfg) {
   if (!cfg.token || !cfg.email) return null;
-  if (speechAudioCache.has(cleanText)) {
-    return speechAudioCache.get(cleanText);
+  if (speechAudioCache.has(speechText)) {
+    return speechAudioCache.get(speechText);
   }
 
   const pitchVal = Math.round((cfg.pitch - 1.0) * 10);
@@ -201,10 +321,12 @@ async function fetchSpeechGenAudio(cleanText, cfg) {
     token: cfg.token,
     email: cfg.email,
     voice: SPEECHGEN_VOICE,
-    text: cleanText,
+    text: speechText,
     format: 'mp3',
     speed: String(cfg.speed || 0.92),
-    pitch: String(pitchVal)
+    pitch: String(pitchVal),
+    pause_sentence: '350',
+    pause_paragraph: '500'
   });
 
   const response = await fetch('https://speechgen.io/index.php?r=api/text', {
@@ -217,14 +339,14 @@ async function fetchSpeechGenAudio(cleanText, cfg) {
   const data = await response.json();
   if (data && (data.status === 1 || data.status === '1') && (data.file || data.file_cors)) {
     const audioUrl = data.file_cors || data.file;
-    speechAudioCache.set(cleanText, audioUrl);
+    speechAudioCache.set(speechText, audioUrl);
     return audioUrl;
   }
   throw new Error((data && data.error) || 'SpeechGen generation failed');
 }
 
 // Phát âm qua Web Speech API với profile âm học được tinh chỉnh tương đương Leda JP
-function speakWithLedaWebSpeech(cleanText, stopRelay, safetyTimer, cfg) {
+function speakWithLedaWebSpeech(speechText, stopRelay, safetyTimer, cfg) {
   if (typeof window === 'undefined' || !('speechSynthesis' in window)) {
     clearTimeout(safetyTimer);
     stopRelay();
@@ -235,7 +357,7 @@ function speakWithLedaWebSpeech(cleanText, stopRelay, safetyTimer, cfg) {
     if (window.speechSynthesis.paused) {
       window.speechSynthesis.resume();
     }
-    const utterance = new SpeechSynthesisUtterance(cleanText);
+    const utterance = new SpeechSynthesisUtterance(speechText);
     utterance.lang = 'ja-JP';
 
     const voice = cachedLedaVoice || findLedaJpVoice();
@@ -264,7 +386,7 @@ function speakWithLedaWebSpeech(cleanText, stopRelay, safetyTimer, cfg) {
   }
 }
 
-// Hàm phát âm chính toàn ứng dụng (Đồng bộ giọng Leda JP)
+// Hàm phát âm chính toàn ứng dụng (Đồng bộ giọng Leda JP & Ngắt nghỉ chuẩn ngữ pháp)
 async function speakJapanese(text, btnElement, ev) {
   if (ev && ev.stopPropagation) {
     ev.stopPropagation();
@@ -287,6 +409,9 @@ async function speakJapanese(text, btnElement, ev) {
     return;
   }
 
+  // Tự động phân tích ngữ pháp, ngắt nghỉ mệnh đề & nhịp thở tiếng Nhật (Bunsetsu prosodic pauses)
+  const speechText = formatJapaneseGrammarSpeech(cleanText);
+
   if (btn && btn.classList) {
     btn.classList.add('is-speaking');
   }
@@ -306,14 +431,14 @@ async function speakJapanese(text, btnElement, ev) {
   const hasSpeechSynth = typeof window !== 'undefined' && 'speechSynthesis' in window && typeof SpeechSynthesisUtterance !== 'undefined';
 
   if (isTouchDevice && hasSpeechSynth && (!cfg.token || !cfg.email)) {
-    speakWithLedaWebSpeech(cleanText, stopRelay, safetyTimer, cfg);
+    speakWithLedaWebSpeech(speechText, stopRelay, safetyTimer, cfg);
     return;
   }
 
   // Tier 1: Nếu người dùng đã cài đặt API Token SpeechGen.io -> phát trực tiếp file Leda JP từ SpeechGen
   if (cfg.token && cfg.email) {
     try {
-      const audioUrl = await fetchSpeechGenAudio(cleanText, cfg);
+      const audioUrl = await fetchSpeechGenAudio(speechText, cfg);
       if (audioUrl) {
         const audio = new Audio(audioUrl);
         currentSpeechAudio = audio;
@@ -323,12 +448,12 @@ async function speakJapanese(text, btnElement, ev) {
           if (currentSpeechAudio === audio) currentSpeechAudio = null;
         };
         audio.onerror = () => {
-          speakWithLedaWebSpeech(cleanText, stopRelay, safetyTimer, cfg);
+          speakWithLedaWebSpeech(speechText, stopRelay, safetyTimer, cfg);
         };
         const p = audio.play();
         if (p !== undefined) {
           p.catch(() => {
-            speakWithLedaWebSpeech(cleanText, stopRelay, safetyTimer, cfg);
+            speakWithLedaWebSpeech(speechText, stopRelay, safetyTimer, cfg);
           });
         }
         return;
@@ -339,7 +464,7 @@ async function speakJapanese(text, btnElement, ev) {
   }
 
   // Tier 2: Phát âm qua bộ tổng hợp Leda JP Neural Engine (hỗ trợ 100% di động, máy tính, offline)
-  speakWithLedaWebSpeech(cleanText, stopRelay, safetyTimer, cfg);
+  speakWithLedaWebSpeech(speechText, stopRelay, safetyTimer, cfg);
 }
 
 // Luôn gán vào window để sự kiện inline onclick trên điện thoại nhận 100%
@@ -702,15 +827,23 @@ function renderContent(id) {
               ${lesson.vocabulary.map(v => {
                 const hasKanji = hasKanjiCharacter(v.kanji);
                 const speechTarget = cleanSpeechText(v.hiragana || v.kanji);
+                const displayKanji = hasKanji ? v.kanji : (v.kanji || v.hiragana);
+                const showSubReading = hasKanji && v.hiragana && cleanSpeechText(v.hiragana) !== cleanSpeechText(v.kanji);
                 return `
                 <tr>
                   <td class="vocab-col-kanji">
                     <div class="vocab-kanji-wrap">
                       <button class="speak-btn" onclick="speakJapanese('${speechTarget}', this, event)" title="Phát âm từ này (Leda JP)">${SPEAKER_ICON_HTML}</button>
-                      ${hasKanji ? `<strong>${v.kanji}</strong>` : `<span class="vocab-no-kanji">—</span>`}
+                      <div class="vocab-term-group">
+                        <strong class="vocab-term-main">${displayKanji}</strong>
+                        ${showSubReading ? `<span class="vocab-mobile-hira">${v.hiragana}</span>` : ''}
+                      </div>
+                    </div>
+                    <div class="vocab-mobile-type">
+                      ${formatWordTypeBadge(v.type)}
                     </div>
                   </td>
-                  <td class="vocab-col-hira">${v.hiragana}</td>
+                  <td class="vocab-col-hira">${hasKanji ? v.hiragana : `<span class="vocab-no-kanji">—</span>`}</td>
                   <td class="vocab-col-type">${formatWordTypeBadge(v.type)}</td>
                   <td class="vocab-col-meaning">${v.meaning}</td>
                 </tr>
@@ -2020,32 +2153,13 @@ function initVoiceSettingsModal() {
   const triggerBtn = document.getElementById('voice-settings-btn');
   const modal = document.getElementById('voice-settings-modal');
   const closeBtn = document.getElementById('close-voice-modal-btn');
-  const testBtn = document.getElementById('btn-test-voice');
   const speedSlider = document.getElementById('voice-speed-slider');
   const speedVal = document.getElementById('voice-speed-val');
   const pitchSlider = document.getElementById('voice-pitch-slider');
   const pitchVal = document.getElementById('voice-pitch-val');
-  const emailInput = document.getElementById('sg-email-input');
-  const tokenInput = document.getElementById('sg-token-input');
   const saveBtn = document.getElementById('save-voice-modal-btn');
-  const statusPill = document.getElementById('voice-status-pill');
 
   if (!modal) return;
-
-  const updateStatusDisplay = () => {
-    const cfg = getSpeechGenConfig();
-    if (cfg.token && cfg.email) {
-      if (statusPill) {
-        statusPill.textContent = 'Đang dùng: SpeechGen Cloud TTS (Leda JP)';
-        statusPill.classList.add('status-active-cloud');
-      }
-    } else {
-      if (statusPill) {
-        statusPill.textContent = 'Đang dùng: Leda JP Neural Engine';
-        statusPill.classList.remove('status-active-cloud');
-      }
-    }
-  };
 
   const openModal = () => {
     const cfg = getSpeechGenConfig();
@@ -2057,9 +2171,6 @@ function initVoiceSettingsModal() {
       pitchSlider.value = cfg.pitch || 1.04;
       if (pitchVal) pitchVal.textContent = (cfg.pitch || 1.04) + 'x';
     }
-    if (emailInput) emailInput.value = cfg.email || '';
-    if (tokenInput) tokenInput.value = cfg.token || '';
-    updateStatusDisplay();
 
     modal.classList.add('show-modal');
     modal.setAttribute('aria-hidden', 'false');
@@ -2097,34 +2208,20 @@ function initVoiceSettingsModal() {
     });
   }
 
-  if (testBtn) {
-    testBtn.addEventListener('click', (e) => {
-      const sampleText = 'こんにちは！Leda JPの音声へようこそ。一緒に日本語を勉強しましょう！';
-      speakJapanese(sampleText, testBtn, e);
-    });
-  }
-
   if (saveBtn) {
     saveBtn.addEventListener('click', () => {
       const newSpeed = speedSlider ? parseFloat(speedSlider.value) : 0.92;
       const newPitch = pitchSlider ? parseFloat(pitchSlider.value) : 1.04;
-      const newEmail = emailInput ? emailInput.value.trim() : '';
-      const newToken = tokenInput ? tokenInput.value.trim() : '';
 
       setSpeechGenConfig({
         speed: newSpeed,
-        pitch: newPitch,
-        email: newEmail,
-        token: newToken
+        pitch: newPitch
       });
 
-      updateStatusDisplay();
       closeModal();
-      showToast('Đã lưu cấu hình giọng đọc Leda JP (SpeechGen.io) thành công!');
+      showToast('Đã lưu cài đặt giọng đọc thành công!');
     });
   }
-
-  updateStatusDisplay();
 }
 
 document.addEventListener('DOMContentLoaded', () => {
