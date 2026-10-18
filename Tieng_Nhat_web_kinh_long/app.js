@@ -237,6 +237,15 @@ function hasKanjiCharacter(text) {
   return /[\u4e00-\u9faf\u3400-\u4dbf\uf900-\ufaff]/.test(clean);
 }
 
+function isVocabTermLong(v) {
+  if (!v) return false;
+  const cleanKanji = cleanSpeechText(v.kanji || '');
+  const cleanHira = cleanSpeechText(v.hiragana || '');
+  if (cleanKanji.includes('/') || cleanHira.includes('/')) return true;
+  if (cleanKanji.length >= 8 || cleanHira.length >= 8) return true;
+  return false;
+}
+
 function getSpeechGenConfig() {
   try {
     const token = localStorage.getItem('speechgen_token') || (typeof window !== 'undefined' && window.SPEECHGEN_CONFIG && window.SPEECHGEN_CONFIG.token) || '';
@@ -829,15 +838,14 @@ function renderContent(id) {
                 const speechTarget = cleanSpeechText(v.hiragana || v.kanji);
                 const displayKanji = hasKanji ? v.kanji : (v.kanji || v.hiragana);
                 const showSubReading = hasKanji && v.hiragana && cleanSpeechText(v.hiragana) !== cleanSpeechText(v.kanji);
+                const isLongWord = isVocabTermLong(v);
                 return `
                 <tr>
-                  <td class="vocab-col-kanji">
-                    <div class="vocab-kanji-wrap">
-                      <button class="speak-btn" onclick="speakJapanese('${speechTarget}', this, event)" title="Phát âm từ này (Leda JP)">${SPEAKER_ICON_HTML}</button>
-                      <div class="vocab-term-group">
-                        <strong class="vocab-term-main">${displayKanji}</strong>
-                        ${showSubReading ? `<span class="vocab-mobile-hira">${v.hiragana}</span>` : ''}
-                      </div>
+                  <td class="vocab-col-kanji ${isLongWord ? 'vocab-is-long' : ''}">
+                    <button class="speak-btn" onclick="speakJapanese('${speechTarget}', this, event)" title="Phát âm từ này (Leda JP)">${SPEAKER_ICON_HTML}</button>
+                    <div class="vocab-term-group">
+                      <strong class="vocab-term-main">${displayKanji}</strong>
+                      ${showSubReading ? `<span class="vocab-mobile-hira">${v.hiragana}</span>` : ''}
                     </div>
                     <div class="vocab-mobile-type">
                       ${formatWordTypeBadge(v.type)}
