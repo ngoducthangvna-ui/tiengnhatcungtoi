@@ -2438,6 +2438,8 @@ function closeMobileSidebar() {
 // --------------------------------------------------------------------------
 // 9. TRANG BÌA GIỚI THIỆU PHONG CÁCH NHẬT BẢN (COVER SLIDE SCREEN)
 // --------------------------------------------------------------------------
+let selectedCoverTarget = null;
+
 function initCoverPage() {
   const cover = document.getElementById('cover-page-slide');
   const btnEnter = document.getElementById('btn-enter-app');
@@ -2447,21 +2449,37 @@ function initCoverPage() {
 
   if (!cover) return;
 
-  // Tự động vượt qua trang bìa nếu người dùng đã từng vào học trước đó, hoặc truy cập thẳng qua URL hash
-  const hasEntered = localStorage.getItem(STORAGE_ENTERED_KEY) === 'true';
-  const hasHash = Boolean(window.location.hash && window.location.hash.length > 1);
-  if (hasEntered || hasHash) {
-    cover.classList.add('hide-cover');
-  }
+  // Luôn đảm bảo trang bìa hiển thị khi tải hoặc làm mới trang
+  cover.classList.remove('hide-cover');
 
-  // Khi bấm Bắt đầu học: ẩn trang bìa với hiệu ứng lướt mượt mà và ghi nhớ cờ đã vào
+  // Hỗ trợ phím bấm Enter / Space cho các thẻ mục tiêu trên trang bìa
+  document.querySelectorAll('.cover-feature-card').forEach(card => {
+    card.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        card.click();
+      }
+    });
+  });
+
+  // Khi bấm "Bắt Đầu Học Ngay": Đây là thao tác DUY NHẤT để vào trang nội dung!
   if (btnEnter) {
     const handleEnter = (e) => {
       if (e && e.stopPropagation) e.stopPropagation();
       cover.classList.add('hide-cover');
-      try {
-        localStorage.setItem(STORAGE_ENTERED_KEY, 'true');
-      } catch (err) {}
+
+      const targetHash = selectedCoverTarget || window.location.hash || '#bai-1';
+      const cleanId = targetHash.replace('#', '');
+
+      if (window.location.hash === targetHash) {
+        if (typeof switchModule === 'function') {
+          switchModule(cleanId, false);
+        } else {
+          window.dispatchEvent(new Event('hashchange'));
+        }
+      } else {
+        window.location.hash = targetHash;
+      }
     };
     btnEnter.addEventListener('click', handleEnter);
   }
@@ -2496,6 +2514,69 @@ function initCoverPage() {
     });
   }
 }
+
+// Hàm chọn mục tiêu trên trang bìa: KHÔNG thoát trang bìa, chỉ highlight và chờ bấm "Bắt Đầu Học Ngay"
+window.selectCoverTarget = function(targetHash, el, label) {
+  selectedCoverTarget = targetHash;
+
+  // Gỡ bỏ class active cũ
+  document.querySelectorAll('.cover-feature-card, .target-chip').forEach(item => {
+    item.classList.remove('active-target', 'active');
+  });
+
+  // Gắn class active vào phần tử vừa click
+  if (el) {
+    el.classList.add('active-target', 'active');
+  }
+
+  // Đồng bộ trạng thái active với các phần tử khác cùng targetHash
+  if (targetHash) {
+    document.querySelectorAll(`.cover-feature-card[data-target="${targetHash}"], .target-chip[data-target="${targetHash}"]`).forEach(item => {
+      item.classList.add('active-target', 'active');
+    });
+  }
+
+  // Xác định tên nhãn để hiển thị gợi ý
+  let targetTitle = label;
+  if (!targetTitle && el) {
+    const titleEl = el.querySelector('.feature-title');
+    targetTitle = titleEl ? titleEl.textContent.trim() : el.textContent.trim();
+  }
+  targetTitle = targetTitle || 'Mục tiêu đã chọn';
+
+  // Cập nhật thông điệp hướng dẫn rõ ràng ngay dưới nút CTA
+  const hintEl = document.querySelector('.cover-sub-hint');
+  if (hintEl) {
+    hintEl.innerHTML = `Đã chọn: <strong style="color:var(--accent-primary);">${targetTitle}</strong> • Bấm <em>"Bắt Đầu Học Ngay"</em> để vào học!`;
+  }
+
+  // Kích hoạt hiệu ứng pulse trên nút "Bắt Đầu Học Ngay" để điều hướng mắt người dùng
+  const btnEnter = document.getElementById('btn-enter-app');
+  if (btnEnter) {
+    btnEnter.classList.remove('pulse-highlight');
+    void btnEnter.offsetWidth; // Force reflow
+    btnEnter.classList.add('pulse-highlight');
+  }
+
+  if (typeof showToast === 'function') {
+    showToast(`Đã chọn: ${targetTitle}. Hãy bấm "Bắt Đầu Học Ngay" để vào bài học!`);
+  }
+};
+
+// Tương thích ngược: Nếu bất kỳ đâu gọi enterAppAt thì vẫn chỉ chọn mục tiêu chứ không tự ý ẩn trang bìa
+window.enterAppAt = function(targetHash, el, label) {
+  window.selectCoverTarget(targetHash, el, label);
+};
+
+window.speakTokyoGreeting = function(btn, ev) {
+  if (ev && ev.stopPropagation) ev.stopPropagation();
+  speakJapanese("こんにちは！日本語の世界へようこそ。", btn, ev);
+};
+
+window.speakCoverQuote = function(quoteText, btn, ev) {
+  if (ev && ev.stopPropagation) ev.stopPropagation();
+  speakJapanese(quoteText, btn, ev);
+};
 
 function initBackToTop() {
   const btn = document.getElementById('back-to-top-btn');

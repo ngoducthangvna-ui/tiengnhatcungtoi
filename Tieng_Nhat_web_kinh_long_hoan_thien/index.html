@@ -35,14 +35,82 @@
 
   <!-- 0. TRANG BÌA GIỚI THIỆU PHONG CÁCH NHẬT BẢN (COVER SLIDE SCREEN) -->
   <section id="cover-page-slide" class="cover-page-slide" aria-label="Trang bìa giới thiệu khóa học Tiếng Nhật">
-    <!-- Nền trang trí phong cách Nhật Bản: Mặt trời đỏ Hinomaru, Núi Phú Sĩ & Cánh hoa anh đào -->
+    <!-- Nền nghệ thuật Nhật Bản: Mặt trời/Mặt trăng, Núi Phú Sĩ, Chùa Gojūnotō, Cổng Torii & Cánh hoa anh đào -->
     <div class="cover-bg-art" aria-hidden="true">
-      <div class="japan-sun"></div>
-      <svg class="japan-fuji-svg" viewBox="0 0 1200 360" preserveAspectRatio="none">
-        <path class="fuji-base" d="M 0,360 L 0,260 Q 350,220 540,110 Q 580,85 600,85 Q 620,85 660,110 Q 850,220 1200,260 L 1200,360 Z"></path>
-        <path class="fuji-snow" d="M 540,110 Q 580,85 600,85 Q 620,85 660,110 Q 635,145 615,135 Q 595,150 575,135 Q 555,145 540,110 Z"></path>
+      <div class="japan-celestial">
+        <div class="celestial-orb"></div>
+        <div class="celestial-glow"></div>
+        <div class="celestial-ring"></div>
+      </div>
+      
+      <!-- Lớp tinh tú lấp lánh ban đêm -->
+      <div class="cover-stars-layer">
+        <span class="star s1"></span>
+        <span class="star s2"></span>
+        <span class="star s3"></span>
+        <span class="star s4"></span>
+        <span class="star s5"></span>
+        <span class="star s6"></span>
+        <span class="star s7"></span>
+        <span class="star s8"></span>
+      </div>
+
+      <!-- Tác phẩm phong cảnh Nhật Bản SVG: Núi Phú Sĩ, Chùa 5 tầng, Cổng Torii và mây Kasumi -->
+      <svg class="japan-landscape-svg" viewBox="0 0 1440 420" preserveAspectRatio="none">
+        <defs>
+          <linearGradient id="fujiGradDark" x1="0%" y1="0%" x2="0%" y2="100%">
+            <stop offset="0%" stop-color="#38bdf8" stop-opacity="0.2"/>
+            <stop offset="50%" stop-color="#1e293b" stop-opacity="0.85"/>
+            <stop offset="100%" stop-color="#0f172a" stop-opacity="0.95"/>
+          </linearGradient>
+          <linearGradient id="fujiGradLight" x1="0%" y1="0%" x2="0%" y2="100%">
+            <stop offset="0%" stop-color="#f43f5e" stop-opacity="0.2"/>
+            <stop offset="60%" stop-color="#cbd5e1" stop-opacity="0.7"/>
+            <stop offset="100%" stop-color="#94a3b8" stop-opacity="0.9"/>
+          </linearGradient>
+          <linearGradient id="cloudGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%" stop-color="currentColor" stop-opacity="0"/>
+            <stop offset="25%" stop-color="currentColor" stop-opacity="0.18"/>
+            <stop offset="75%" stop-color="currentColor" stop-opacity="0.25"/>
+            <stop offset="100%" stop-color="currentColor" stop-opacity="0"/>
+          </linearGradient>
+        </defs>
+
+        <!-- Dãy núi xa xăm -->
+        <path class="landscape-far-mountains" d="M 0,380 Q 220,310 460,340 T 960,320 T 1440,360 L 1440,420 L 0,420 Z"></path>
+
+        <!-- Núi Phú Sĩ hùng vĩ ở trung tâm -->
+        <path class="fuji-base" d="M 180,420 L 480,240 Q 660,130 720,70 Q 780,130 960,240 L 1260,420 Z"></path>
+        <path class="fuji-snow" d="M 660,130 Q 685,160 705,145 Q 720,165 735,145 Q 755,160 780,130 Q 755,100 720,70 Q 685,100 660,130 Z"></path>
+
+        <!-- Chùa năm tầng (Gojūnotō) bên trái -->
+        <g class="landscape-pagoda">
+          <line x1="160" y1="140" x2="160" y2="185" stroke="currentColor" stroke-width="3"></line>
+          <circle cx="160" cy="138" r="4" fill="currentColor"></circle>
+          <path d="M 135,195 Q 160,185 185,195 L 175,202 L 145,202 Z" fill="currentColor"></path>
+          <path d="M 130,215 Q 160,205 190,215 L 180,222 L 140,222 Z" fill="currentColor"></path>
+          <path d="M 125,238 Q 160,226 195,238 L 185,245 L 135,245 Z" fill="currentColor"></path>
+          <path d="M 120,262 Q 160,248 200,262 L 190,270 L 130,270 Z" fill="currentColor"></path>
+          <path d="M 112,288 Q 160,272 208,288 L 198,298 L 122,298 Z" fill="currentColor"></path>
+          <rect x="135" y="298" width="50" height="85" fill="currentColor" opacity="0.9"></rect>
+          <path d="M 0,360 Q 150,330 320,380 L 320,420 L 0,420 Z" fill="currentColor"></path>
+        </g>
+
+        <!-- Cổng Torii bên phải -->
+        <g class="landscape-torii">
+          <path d="M 1270,305 Q 1315,296 1360,305 L 1357,311 Q 1315,303 1273,311 Z" fill="currentColor"></path>
+          <rect x="1278" y="312" width="74" height="4" fill="currentColor"></rect>
+          <rect x="1276" y="324" width="78" height="5" fill="currentColor"></rect>
+          <rect x="1290" y="312" width="7" height="75" fill="currentColor"></rect>
+          <rect x="1333" y="312" width="7" height="75" fill="currentColor"></rect>
+          <path d="M 1180,390 Q 1320,345 1440,370 L 1440,420 L 1180,420 Z" fill="currentColor"></path>
+        </g>
+
+        <!-- Dải mây Kasumi bồng bềnh uốn lượn -->
+        <path class="landscape-clouds" d="M 0,395 Q 360,360 720,395 T 1440,395 L 1440,420 L 0,420 Z" fill="url(#cloudGrad)"></path>
       </svg>
-      <!-- Cánh hoa anh đào rơi bồng bềnh nhẹ nhàng -->
+
+      <!-- 16 Cánh hoa anh đào rơi tự nhiên (Sakura Rain) -->
       <div class="sakura-petals-layer">
         <span class="petal p1"></span>
         <span class="petal p2"></span>
@@ -54,11 +122,20 @@
         <span class="petal p8"></span>
         <span class="petal p9"></span>
         <span class="petal p10"></span>
+        <span class="petal p11"></span>
+        <span class="petal p12"></span>
+        <span class="petal p13"></span>
+        <span class="petal p14"></span>
+        <span class="petal p15"></span>
+        <span class="petal p16"></span>
       </div>
     </div>
 
     <!-- Thanh công cụ trên cùng của trang bìa -->
     <div class="cover-top-bar">
+      <div class="cover-top-badge">
+        <span class="cover-top-edition">Minna no Nihongo N5 - N4</span>
+      </div>
       <button id="cover-theme-toggle" class="cover-theme-toggle" aria-label="Đổi giao diện Sáng / Tối" title="Đổi giao diện Sáng / Tối">
         <span class="theme-icon light-icon" title="Chuyển sang giao diện Sáng">
           <svg class="theme-svg sun-svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
@@ -83,52 +160,106 @@
 
     <!-- Khối nội dung trung tâm của trang bìa -->
     <div class="cover-container">
-      <!-- Cột thư pháp tiếng Nhật bên trái (Tatechugoki) -->
-      <div class="cover-vertical-kanji cover-kanji-left" aria-hidden="true">
-        <span>千里の道も一歩から</span>
+      <!-- Cột thư pháp tiếng Nhật bên trái kèm triện đỏ và phát âm -->
+      <div class="cover-vertical-kanji cover-kanji-left">
+        <div class="cover-kanji-card" onclick="speakCoverQuote('千里の道も一歩から', this, event)" role="button" tabindex="0" title="Chạm để nghe phát âm: Vạn dặm khởi đầu từ một bước chân">
+          <span class="kanji-vertical-text">千里の道も一歩から</span>
+          <span class="cover-kanji-audio-btn" aria-label="Nghe câu châm ngôn">
+            <svg class="voice-icon-svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+              <path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+              <path d="M19.07 4.93a10 10 0 0 1 0 14.14"></path>
+            </svg>
+          </span>
+          <div class="cover-hanko-seal">努力</div>
+        </div>
       </div>
 
       <!-- Khối chính trung tâm -->
       <div class="cover-hero-content">
         <!-- Huy hiệu phong cách Zen -->
         <div class="cover-zen-badge">
+          <span class="zen-pulse-dot"></span>
           <span class="zen-text">TỰ HỌC TIẾNG NHẬT • MINNA NO NIHONGO N5 & N4</span>
         </div>
 
         <h1 class="cover-main-title">
           <span class="cover-title-hero">日本語の道</span>
-          <span class="cover-title-desc">Hành Trình Chinh Phục Tiếng Nhật Toàn Diện</span>
+          <span class="cover-title-romaji">NIHONGO NO MICHI</span>
+          <span class="cover-title-desc">Hành Trình Chinh Phục Tiếng Nhật Toàn Diện & Đầy Cảm Hứng</span>
         </h1>
 
-        <!-- Thẻ tóm tắt 4 trụ cột học tập -->
+        <!-- Thẻ tương tác: Lời chào tiếng Nhật Tokyo -->
+        <div class="cover-greeting-card" onclick="speakTokyoGreeting(this, event)" role="button" tabindex="0" title="Chạm để nghe phát âm giọng chuẩn Tokyo">
+          <div class="greeting-speaker-badge">
+            <svg class="voice-icon-svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+              <path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+              <path d="M19.07 4.93a10 10 0 0 1 0 14.14"></path>
+            </svg>
+          </div>
+          <div class="greeting-text-wrap">
+            <span class="greeting-jp">「こんにちは！日本語の世界へようこそ」</span>
+            <span class="greeting-vi">Xin chào! Chào mừng bạn đến với hành trình học Tiếng Nhật</span>
+          </div>
+          <span class="greeting-listen-tag">Chạm nghe</span>
+        </div>
+
+        <!-- Bảng 4 trụ cột tri thức dàn ngang 1 hàng gọn gàng -->
         <div class="cover-features-grid">
-          <div class="cover-feature-card">
+          <div class="cover-feature-card" data-target="#bai-1" onclick="selectCoverTarget('#bai-1', this, '50 Bài Học Minna')" role="button" tabindex="0" title="Chọn mục tiêu: 50 Bài Minna N5 - N4">
+            <div class="feature-stat-box accent-sakura">
+              <span class="stat-num">50</span>
+              <span class="stat-unit">BÀI</span>
+            </div>
             <div class="feature-info">
-              <h3 class="feature-title">50 Bài Học Chuẩn</h3>
-              <p class="feature-desc">Từ vựng & cấu trúc ngữ pháp chuẩn Minna no Nihongo từ Bài 1 đến Bài 50.</p>
+              <h3 class="feature-title">50 Bài Học Minna</h3>
+              <p class="feature-desc">2.000+ từ vựng & 150+ ngữ pháp</p>
             </div>
           </div>
 
-          <div class="cover-feature-card">
+          <div class="cover-feature-card" data-target="#quiz-1" onclick="selectCoverTarget('#quiz-1', this, 'Trắc Nghiệm JLPT')" role="button" tabindex="0" title="Chọn mục tiêu: 2.500 câu trắc nghiệm JLPT">
+            <div class="feature-stat-box accent-sky">
+              <span class="stat-num">2.500</span>
+              <span class="stat-unit">CÂU</span>
+            </div>
             <div class="feature-info">
-              <h3 class="feature-title">Furigana & Phát Âm</h3>
-              <p class="feature-desc">100% chữ Hán có phiên âm Ruby, hỗ trợ nghe phát âm giọng chuẩn Tokyo từng câu.</p>
+              <h3 class="feature-title">Trắc Nghiệm JLPT</h3>
+              <p class="feature-desc">50 bộ đề chấm điểm & giải thích</p>
             </div>
           </div>
 
-          <div class="cover-feature-card">
+          <div class="cover-feature-card" data-target="#dokkai-1" onclick="selectCoverTarget('#dokkai-1', this, 'Đọc Hiểu Dokkai')" role="button" tabindex="0" title="Chọn mục tiêu: 50 bài đọc hiểu Dokkai">
+            <div class="feature-stat-box accent-emerald">
+              <span class="stat-num">50</span>
+              <span class="stat-unit">BÀI</span>
+            </div>
             <div class="feature-info">
-              <h3 class="feature-title">2.500 Câu Trắc Nghiệm</h3>
-              <p class="feature-desc">50 bộ đề trắc nghiệm JLPT với 50 câu mỗi bài, chấm điểm và xem giải thích tức thì.</p>
+              <h3 class="feature-title">Đọc Hiểu Dokkai</h3>
+              <p class="feature-desc">100% phiên âm & dịch nghĩa chi tiết</p>
             </div>
           </div>
 
-          <div class="cover-feature-card">
+          <div class="cover-feature-card" data-target="#radicals-1" onclick="selectCoverTarget('#radicals-1', this, '191 Bộ Thủ Kanji')" role="button" tabindex="0" title="Chọn mục tiêu: Tra cứu 191 Bộ thủ Kanji">
+            <div class="feature-stat-box accent-purple">
+              <span class="stat-num">191</span>
+              <span class="stat-unit">BỘ</span>
+            </div>
             <div class="feature-info">
-              <h3 class="feature-title">50 Bài Đọc Hiểu Dokkai</h3>
-              <p class="feature-desc">Rèn luyện kỹ năng đọc hiểu văn bản tiếng Nhật theo từng cấp độ bài học thực tế.</p>
+              <h3 class="feature-title">191 Bộ Thủ Kanji</h3>
+              <p class="feature-desc">Hoạt họa thứ tự từng nét bút</p>
             </div>
           </div>
+        </div>
+
+        <!-- Thanh điều hướng nhanh theo mục tiêu -->
+        <div class="cover-target-nav">
+          <span class="target-nav-label">Khám phá nhanh:</span>
+          <button class="target-chip" data-target="#bai-1" onclick="selectCoverTarget('#bai-1', this, 'N5 Cơ Bản (1-25)')">N5 Cơ Bản (1-25)</button>
+          <button class="target-chip" data-target="#bai-26" onclick="selectCoverTarget('#bai-26', this, 'N4 Nâng Cao (26-50)')">N4 Nâng Cao (26-50)</button>
+          <button class="target-chip" data-target="#quiz-1" onclick="selectCoverTarget('#quiz-1', this, 'Luyện Đề JLPT')">Luyện Đề JLPT</button>
+          <button class="target-chip" data-target="#dokkai-1" onclick="selectCoverTarget('#dokkai-1', this, 'Luyện Đọc Hiểu')">Luyện Đọc Hiểu</button>
+          <button class="target-chip" data-target="#radicals-1" onclick="selectCoverTarget('#radicals-1', this, '191 Bộ Thủ')">191 Bộ Thủ</button>
         </div>
 
         <!-- Nút hành động chính -->
@@ -136,12 +267,23 @@
           <button id="btn-enter-app" class="btn-enter-app" title="Bắt đầu vào giao diện học tập">
             <span class="btn-enter-vi">Bắt Đầu Học Ngay</span>
           </button>
+          <span class="cover-sub-hint">Miễn phí 100% • Tự động lưu tiến độ học tập trên thiết bị</span>
         </div>
       </div>
 
-      <!-- Cột thư pháp tiếng Nhật bên phải (Tatechugoki) -->
-      <div class="cover-vertical-kanji cover-kanji-right" aria-hidden="true">
-        <span>初心忘るべからず</span>
+      <!-- Cột thư pháp tiếng Nhật bên phải kèm triện đỏ và phát âm -->
+      <div class="cover-vertical-kanji cover-kanji-right">
+        <div class="cover-kanji-card" onclick="speakCoverQuote('初心忘るべからず', this, event)" role="button" tabindex="0" title="Chạm để nghe phát âm: Chớ quên tâm niệm thuở ban đầu">
+          <span class="kanji-vertical-text">初心忘るべからず</span>
+          <span class="cover-kanji-audio-btn" aria-label="Nghe câu châm ngôn">
+            <svg class="voice-icon-svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+              <path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+              <path d="M19.07 4.93a10 10 0 0 1 0 14.14"></path>
+            </svg>
+          </span>
+          <div class="cover-hanko-seal">邁進</div>
+        </div>
       </div>
     </div>
   </section>
