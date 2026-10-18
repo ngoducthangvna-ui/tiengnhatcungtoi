@@ -146,6 +146,12 @@ function speakJapanese(text, btnElement, ev) {
   // Dừng mọi âm thanh đang phát trước đó
   stopAllSpeechAudio();
 
+  const cleanText = cleanSpeechText(text);
+  if (!cleanText) {
+    if (btn && btn.classList) btn.classList.remove('is-speaking');
+    return;
+  }
+
   if (btn && btn.classList) {
     btn.classList.add('is-speaking');
   }
@@ -156,16 +162,51 @@ function speakJapanese(text, btnElement, ev) {
     }
   };
 
-  const cleanText = cleanSpeechText(text);
-  if (!cleanText) {
-    stopRelay();
-    return;
-  }
-
   // Timeout an toàn 5s tự tắt đèn rơ-le nếu có lỗi
   const safetyTimer = setTimeout(stopRelay, 5000);
 
-  // 1. Thử phát qua audio online giọng chuẩn Tokyo (chạy mượt 100% trên điện thoại không cần cài gói giọng offline)
+  // Trên smartphone/tablet (iOS Safari & Android Chrome), ưu tiên phát trực tiếp qua Web Speech API
+  // đồng bộ ngay trong chuỗi thao tác người dùng (user gesture) để tránh bị cơ chế bảo mật của WebKit chặn phát âm.
+  const isTouchDevice = typeof window !== 'undefined' && ('ontouchstart' in window || (navigator && navigator.maxTouchPoints > 0));
+  const hasSpeechSynth = typeof window !== 'undefined' && 'speechSynthesis' in window && typeof SpeechSynthesisUtterance !== 'undefined';
+
+  if (hasSpeechSynth && isTouchDevice) {
+    try {
+      if (window.speechSynthesis.paused) {
+        window.speechSynthesis.resume();
+      }
+      const utterance = new SpeechSynthesisUtterance(cleanText);
+      utterance.lang = 'ja-JP';
+      utterance.rate = 0.88;
+
+      let synthStarted = false;
+      utterance.onstart = () => {
+        synthStarted = true;
+      };
+      utterance.onend = () => {
+        clearTimeout(safetyTimer);
+        stopRelay();
+      };
+      utterance.onerror = () => {
+        clearTimeout(safetyTimer);
+        stopRelay();
+        if (!synthStarted) {
+          playAudioOnlineStream(cleanText, stopRelay, safetyTimer);
+        }
+      };
+
+      window.speechSynthesis.speak(utterance);
+      return;
+    } catch (e) {
+      // Fallback xuống audio online nếu synth gặp lỗi khởi động
+    }
+  }
+
+  // Thử phát qua audio online giọng chuẩn Tokyo
+  playAudioOnlineStream(cleanText, stopRelay, safetyTimer);
+}
+
+function playAudioOnlineStream(cleanText, stopRelay, safetyTimer) {
   let audioWorked = false;
   try {
     const audioUrl = `https://translate.google.com/translate_tts?ie=UTF-8&tl=ja&client=tw-ob&q=${encodeURIComponent(cleanText)}`;
@@ -1764,6 +1805,7 @@ function initMenuToggle() {
     if (currentIsMobile) {
       const isOpen = sidebar.classList.toggle('mobile-open');
       if (overlay) overlay.classList.toggle('active', isOpen);
+      document.body.classList.toggle('sidebar-open-lock', isOpen);
     } else {
       const isCollapsed = sidebar.classList.toggle('collapsed');
       localStorage.setItem('minna_sidebar_collapsed', isCollapsed ? 'true' : 'false');
@@ -1776,10 +1818,18 @@ function initMenuToggle() {
   const closeSidebarBtn = document.getElementById('close-sidebar-btn');
   if (closeSidebarBtn) {
     closeSidebarBtn.addEventListener('click', closeMobileSidebar);
+    closeSidebarBtn.addEventListener('touchstart', (e) => {
+      e.preventDefault();
+      closeMobileSidebar();
+    }, { passive: false });
   }
 
   if (overlay) {
     overlay.addEventListener('click', closeMobileSidebar);
+    overlay.addEventListener('touchstart', (e) => {
+      e.preventDefault();
+      closeMobileSidebar();
+    }, { passive: false });
   }
 
   // Phím tắt thông minh: Ctrl + B để đóng/mở menu, ESC để đóng mobile drawer
@@ -1800,6 +1850,7 @@ function initMenuToggle() {
     if (window.innerWidth > 768) {
       if (overlay) overlay.classList.remove('active');
       sidebar.classList.remove('mobile-open');
+      document.body.classList.remove('sidebar-open-lock');
     }
   });
 }
@@ -1809,6 +1860,7 @@ function closeMobileSidebar() {
   const overlay = document.getElementById('sidebar-overlay');
   if (sidebar) sidebar.classList.remove('mobile-open');
   if (overlay) overlay.classList.remove('active');
+  document.body.classList.remove('sidebar-open-lock');
   updateMenuButtonState();
 }
 
@@ -1826,9 +1878,11 @@ function initCoverPage() {
 
   // Khi bấm Bắt đầu học: ẩn trang bìa với hiệu ứng lướt mượt mà
   if (btnEnter) {
-    btnEnter.addEventListener('click', () => {
+    const handleEnter = (e) => {
+      if (e && e.stopPropagation) e.stopPropagation();
       cover.classList.add('hide-cover');
-    });
+    };
+    btnEnter.addEventListener('click', handleEnter);
   }
 
   // Khi bấm xem lại trang bìa ở Header hoặc Logo
@@ -1874,19 +1928,34 @@ window.enterAppWithLesson = function(targetId) {
 function initBackToTop() {
   const btn = document.getElementById('back-to-top-btn');
   const mainContent = document.getElementById('main-content');
-  if (!btn || !mainContent) return;
+  if (!btn) return;
 
-  mainContent.addEventListener('scroll', () => {
-    if (mainContent.scrollTop > 350) {
+  const handleScroll = (top) => {
+    if (top > 350) {
       btn.classList.add('visible');
     } else {
       btn.classList.remove('visible');
     }
+  };
+
+  if (mainContent) {
+    mainContent.addEventListener('scroll', () => {
+      handleScroll(mainContent.scrollTop);
+    }, { passive: true });
+  }
+
+  window.addEventListener('scroll', () => {
+    handleScroll(window.scrollY || document.documentElement.scrollTop);
   }, { passive: true });
 
-  btn.addEventListener('click', () => {
-    mainContent.scrollTo({ top: 0, behavior: 'smooth' });
-  });
+  const scrollToTop = (e) => {
+    if (e && e.preventDefault) e.preventDefault();
+    if (mainContent) mainContent.scrollTo({ top: 0, behavior: 'smooth' });
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  btn.addEventListener('click', scrollToTop);
+  btn.addEventListener('touchend', scrollToTop, { passive: false });
 }
 
 document.addEventListener('DOMContentLoaded', () => {
