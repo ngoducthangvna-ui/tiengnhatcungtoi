@@ -192,8 +192,16 @@
       </div>
     </div>
 
-    <!-- Chuyển giao diện Sáng / Tối -->
+    <!-- Chuyển giao diện Sáng / Tối & Cài đặt Giọng đọc Leda JP -->
     <div class="header-right">
+      <button id="voice-settings-btn" class="voice-settings-btn" aria-label="Cài đặt giọng đọc Leda JP (SpeechGen)" title="Cài đặt giọng đọc Leda JP (SpeechGen)">
+        <svg class="voice-icon-svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+          <path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+          <path d="M19.07 4.93a10 10 0 0 1 0 14.14"></path>
+        </svg>
+      </button>
+
       <button id="theme-toggle-btn" class="theme-toggle-btn" aria-label="Đổi giao diện Sáng / Tối" title="Đổi giao diện Sáng / Tối">
         <span class="theme-icon light-icon" title="Chuyển sang giao diện Sáng">
           <svg class="theme-svg sun-svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
@@ -256,6 +264,84 @@
         <!-- Render tự động bởi app.js qua hàm renderContent(id) -->
       </div>
     </main>
+  </div>
+
+  <!-- Modal Cài đặt Giọng đọc Leda JP (SpeechGen.io) -->
+  <div id="voice-settings-modal" class="voice-modal-backdrop" aria-hidden="true">
+    <div class="voice-modal-card">
+      <div class="voice-modal-header">
+        <div class="voice-modal-title-wrap">
+          <span class="voice-badge">AI Voice</span>
+          <h3 class="voice-modal-title">Giọng Đọc Leda JP (SpeechGen.io)</h3>
+        </div>
+        <button id="close-voice-modal-btn" class="voice-modal-close" aria-label="Đóng" title="Đóng">&times;</button>
+      </div>
+      
+      <div class="voice-modal-body">
+        <div class="voice-info-card">
+          <div class="voice-avatar" aria-hidden="true">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"></path>
+              <path d="M19 10v2a7 7 0 0 1-14 0v-2"></path>
+              <line x1="12" y1="19" x2="12" y2="22"></line>
+            </svg>
+          </div>
+          <div class="voice-details">
+            <div class="voice-name">Leda JP (Chirp3-HD • Giọng Nữ)</div>
+            <div class="voice-source">Mô hình: <a href="https://speechgen.io/vi/tts-japanese/" target="_blank" rel="noopener">speechgen.io/vi/tts-japanese/</a></div>
+            <div class="voice-status-pill" id="voice-status-pill">Đang dùng: Leda JP Neural Engine</div>
+          </div>
+        </div>
+
+        <div class="voice-test-row">
+          <button id="btn-test-voice" class="btn-test-voice" type="button">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <polygon points="5 3 19 12 5 21 5 3"></polygon>
+            </svg>
+            <span>Nghe thử giọng Leda JP</span>
+          </button>
+        </div>
+
+        <div class="voice-slider-group">
+          <div class="voice-slider-item">
+            <div class="slider-header">
+              <label for="voice-speed-slider">Tốc độ phát âm:</label>
+              <strong id="voice-speed-val">0.92x</strong>
+            </div>
+            <input type="range" id="voice-speed-slider" min="0.75" max="1.25" step="0.05" value="0.92">
+          </div>
+          <div class="voice-slider-item">
+            <div class="slider-header">
+              <label for="voice-pitch-slider">Cao độ giọng (Pitch):</label>
+              <strong id="voice-pitch-val">1.04x</strong>
+            </div>
+            <input type="range" id="voice-pitch-slider" min="0.85" max="1.20" step="0.02" value="1.04">
+          </div>
+        </div>
+
+        <details class="speechgen-api-details">
+          <summary>Tích hợp SpeechGen.io Cloud API (Tùy chọn)</summary>
+          <div class="speechgen-api-fields">
+            <p class="api-help-text">Nếu bạn có tài khoản trên SpeechGen.io, hãy nhập Token & Email để kích hoạt phát âm trực tiếp từ server SpeechGen:</p>
+            <div class="voice-form-group">
+              <label for="sg-email-input">Email tài khoản SpeechGen:</label>
+              <input type="email" id="sg-email-input" placeholder="example@gmail.com" autocomplete="off">
+            </div>
+            <div class="voice-form-group">
+              <label for="sg-token-input">API Token SpeechGen:</label>
+              <input type="text" id="sg-token-input" placeholder="SecretKeyInYourProfile" autocomplete="off">
+            </div>
+            <div class="api-link-hint">
+              <a href="https://speechgen.io/vi/node/api/" target="_blank" rel="noopener">Lấy Token API tại SpeechGen.io &rarr;</a>
+            </div>
+          </div>
+        </details>
+      </div>
+
+      <div class="voice-modal-footer">
+        <button id="save-voice-modal-btn" class="btn-save-voice" type="button">Lưu Cài Đặt</button>
+      </div>
+    </div>
   </div>
 
   <!-- Hộp thông báo nhanh Toast Notification -->

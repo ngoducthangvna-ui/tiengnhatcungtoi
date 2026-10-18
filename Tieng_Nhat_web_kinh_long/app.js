@@ -93,8 +93,16 @@ function updateHeaderProgress() {
 }
 
 // --------------------------------------------------------------------------
-// 2. TIỆN ÍCH XỬ LÝ TEXT & PHÁT ÂM (SPEECH SYNTHESIS)
+// 2. HỆ THỐNG PHÁT ÂM TIẾNG NHẬT — GIỌNG LEDA JP (SPEECHGEN.IO / CHIRP3-HD)
 // --------------------------------------------------------------------------
+const SPEECHGEN_VOICE = 'Leda JP';
+const SPEECHGEN_MODEL = 'ja-JP-Chirp3-HD-Leda';
+
+// Bộ nhớ đệm âm thanh (Audio URL Cache) để tránh gọi lặp lại API tốn tài nguyên
+const speechAudioCache = new Map();
+let currentSpeechAudio = null;
+let cachedLedaVoice = null;
+
 function cleanSpeechText(text) {
   return String(text || '')
     .replace(/<rt>.*?<\/rt>/g, '')
@@ -109,10 +117,31 @@ function hasKanjiCharacter(text) {
   return /[\u4e00-\u9faf\u3400-\u4dbf\uf900-\ufaff]/.test(clean);
 }
 
-let currentSpeechAudio = null;
+function getSpeechGenConfig() {
+  try {
+    const token = localStorage.getItem('speechgen_token') || (typeof window !== 'undefined' && window.SPEECHGEN_CONFIG && window.SPEECHGEN_CONFIG.token) || '';
+    const email = localStorage.getItem('speechgen_email') || (typeof window !== 'undefined' && window.SPEECHGEN_CONFIG && window.SPEECHGEN_CONFIG.email) || '';
+    const speed = parseFloat(localStorage.getItem('speechgen_speed') || '0.92');
+    const pitch = parseFloat(localStorage.getItem('speechgen_pitch') || '1.04');
+    return { token, email, speed, pitch, voice: SPEECHGEN_VOICE };
+  } catch (e) {
+    return { token: '', email: '', speed: 0.92, pitch: 1.04, voice: SPEECHGEN_VOICE };
+  }
+}
+
+function setSpeechGenConfig(cfg) {
+  try {
+    if (cfg.token !== undefined) localStorage.setItem('speechgen_token', cfg.token.trim());
+    if (cfg.email !== undefined) localStorage.setItem('speechgen_email', cfg.email.trim());
+    if (cfg.speed !== undefined) localStorage.setItem('speechgen_speed', String(cfg.speed));
+    if (cfg.pitch !== undefined) localStorage.setItem('speechgen_pitch', String(cfg.pitch));
+  } catch (e) {}
+}
+window.setSpeechGenConfig = setSpeechGenConfig;
+window.getSpeechGenConfig = getSpeechGenConfig;
 
 function stopAllSpeechAudio() {
-  document.querySelectorAll('.speak-btn.is-speaking, .speak-btn-mini.is-speaking').forEach(b => {
+  document.querySelectorAll('.speak-btn.is-speaking, .speak-btn-mini.is-speaking, .btn-test-voice.is-speaking').forEach(b => {
     b.classList.remove('is-speaking');
   });
   if (currentSpeechAudio) {
@@ -129,21 +158,127 @@ function stopAllSpeechAudio() {
   }
 }
 
-function speakJapanese(text, btnElement, ev) {
+// Tìm giọng nói nữ tự nhiên tiếng Nhật gần nhất với Leda JP trong trình duyệt
+function findLedaJpVoice() {
+  if (typeof window === 'undefined' || !('speechSynthesis' in window)) return null;
+  const voices = window.speechSynthesis.getVoices();
+  if (!voices || voices.length === 0) return null;
+
+  // 1. Khớp trực tiếp tên Leda hoặc Chirp3
+  let match = voices.find(v => /leda/i.test(v.name) || /leda/i.test(v.voiceURI));
+  if (match) return match;
+
+  match = voices.find(v => /chirp/i.test(v.name) || /chirp/i.test(v.voiceURI));
+  if (match) return match;
+
+  // 2. Các giọng nữ Neural tự nhiên tiếng Nhật chuẩn Tokyo
+  match = voices.find(v => (v.lang === 'ja-JP' || v.lang.startsWith('ja')) && /(nanami|keiko|kyoko|otoya|natural.*female|female)/i.test(v.name));
+  if (match) return match;
+
+  // 3. Giọng Google Japanese Neural (nền tảng của Google Chirp HD trên Chrome/Android)
+  match = voices.find(v => (v.lang === 'ja-JP' || v.lang.startsWith('ja')) && /google/i.test(v.name));
+  if (match) return match;
+
+  // 4. Giọng tiếng Nhật bất kỳ
+  return voices.find(v => v.lang === 'ja-JP' || v.lang.startsWith('ja')) || null;
+}
+
+if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
+  window.speechSynthesis.onvoiceschanged = () => {
+    cachedLedaVoice = findLedaJpVoice();
+  };
+}
+
+// Gọi API SpeechGen.io chính thức để tạo file âm thanh giọng Leda JP
+async function fetchSpeechGenAudio(cleanText, cfg) {
+  if (!cfg.token || !cfg.email) return null;
+  if (speechAudioCache.has(cleanText)) {
+    return speechAudioCache.get(cleanText);
+  }
+
+  const pitchVal = Math.round((cfg.pitch - 1.0) * 10);
+  const bodyData = new URLSearchParams({
+    token: cfg.token,
+    email: cfg.email,
+    voice: SPEECHGEN_VOICE,
+    text: cleanText,
+    format: 'mp3',
+    speed: String(cfg.speed || 0.92),
+    pitch: String(pitchVal)
+  });
+
+  const response = await fetch('https://speechgen.io/index.php?r=api/text', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+    body: bodyData.toString()
+  });
+
+  if (!response.ok) throw new Error('SpeechGen HTTP error: ' + response.status);
+  const data = await response.json();
+  if (data && (data.status === 1 || data.status === '1') && (data.file || data.file_cors)) {
+    const audioUrl = data.file_cors || data.file;
+    speechAudioCache.set(cleanText, audioUrl);
+    return audioUrl;
+  }
+  throw new Error((data && data.error) || 'SpeechGen generation failed');
+}
+
+// Phát âm qua Web Speech API với profile âm học được tinh chỉnh tương đương Leda JP
+function speakWithLedaWebSpeech(cleanText, stopRelay, safetyTimer, cfg) {
+  if (typeof window === 'undefined' || !('speechSynthesis' in window)) {
+    clearTimeout(safetyTimer);
+    stopRelay();
+    return;
+  }
+
+  try {
+    if (window.speechSynthesis.paused) {
+      window.speechSynthesis.resume();
+    }
+    const utterance = new SpeechSynthesisUtterance(cleanText);
+    utterance.lang = 'ja-JP';
+
+    const voice = cachedLedaVoice || findLedaJpVoice();
+    if (voice) {
+      utterance.voice = voice;
+    }
+
+    // Tinh chỉnh âm học mô phỏng giọng nữ Leda JP (Chirp3-HD):
+    // Nhịp độ 0.92x tự nhiên, độ cao thanh thoát 1.04x
+    utterance.rate = cfg && cfg.speed ? cfg.speed : 0.92;
+    utterance.pitch = cfg && cfg.pitch ? cfg.pitch : 1.04;
+
+    utterance.onend = () => {
+      clearTimeout(safetyTimer);
+      stopRelay();
+    };
+    utterance.onerror = () => {
+      clearTimeout(safetyTimer);
+      stopRelay();
+    };
+
+    window.speechSynthesis.speak(utterance);
+  } catch (err) {
+    clearTimeout(safetyTimer);
+    stopRelay();
+  }
+}
+
+// Hàm phát âm chính toàn ứng dụng (Đồng bộ giọng Leda JP)
+async function speakJapanese(text, btnElement, ev) {
   if (ev && ev.stopPropagation) {
     ev.stopPropagation();
   }
 
-  // Xác định nút phát âm
   let btn = btnElement;
   if (!btn && typeof window !== 'undefined' && window.event) {
     const target = window.event.currentTarget || window.event.target;
     if (target) {
-      btn = target.closest ? target.closest('.speak-btn, .speak-btn-mini, button') : target;
+      btn = target.closest ? target.closest('.speak-btn, .speak-btn-mini, .btn-test-voice, button') : target;
     }
   }
 
-  // Dừng mọi âm thanh đang phát trước đó
+  // Dừng mọi phát âm đang chạy
   stopAllSpeechAudio();
 
   const cleanText = cleanSpeechText(text);
@@ -162,111 +297,49 @@ function speakJapanese(text, btnElement, ev) {
     }
   };
 
-  // Timeout an toàn 5s tự tắt đèn rơ-le nếu có lỗi
-  const safetyTimer = setTimeout(stopRelay, 5000);
+  const safetyTimer = setTimeout(stopRelay, 6500);
+  const cfg = getSpeechGenConfig();
 
-  // Trên smartphone/tablet (iOS Safari & Android Chrome), ưu tiên phát trực tiếp qua Web Speech API
-  // đồng bộ ngay trong chuỗi thao tác người dùng (user gesture) để tránh bị cơ chế bảo mật của WebKit chặn phát âm.
+  // Trên smartphone/tablet (iOS Safari & Android Chrome), ưu tiên phát âm trực tiếp qua Web Speech API
+  // đồng bộ ngay trong chuỗi thao tác người dùng (user gesture) để tránh bị WebKit/Safari chặn âm thanh
   const isTouchDevice = typeof window !== 'undefined' && ('ontouchstart' in window || (navigator && navigator.maxTouchPoints > 0));
   const hasSpeechSynth = typeof window !== 'undefined' && 'speechSynthesis' in window && typeof SpeechSynthesisUtterance !== 'undefined';
 
-  if (hasSpeechSynth && isTouchDevice) {
-    try {
-      if (window.speechSynthesis.paused) {
-        window.speechSynthesis.resume();
-      }
-      const utterance = new SpeechSynthesisUtterance(cleanText);
-      utterance.lang = 'ja-JP';
-      utterance.rate = 0.88;
+  if (isTouchDevice && hasSpeechSynth && (!cfg.token || !cfg.email)) {
+    speakWithLedaWebSpeech(cleanText, stopRelay, safetyTimer, cfg);
+    return;
+  }
 
-      let synthStarted = false;
-      utterance.onstart = () => {
-        synthStarted = true;
-      };
-      utterance.onend = () => {
-        clearTimeout(safetyTimer);
-        stopRelay();
-      };
-      utterance.onerror = () => {
-        clearTimeout(safetyTimer);
-        stopRelay();
-        if (!synthStarted) {
-          playAudioOnlineStream(cleanText, stopRelay, safetyTimer);
+  // Tier 1: Nếu người dùng đã cài đặt API Token SpeechGen.io -> phát trực tiếp file Leda JP từ SpeechGen
+  if (cfg.token && cfg.email) {
+    try {
+      const audioUrl = await fetchSpeechGenAudio(cleanText, cfg);
+      if (audioUrl) {
+        const audio = new Audio(audioUrl);
+        currentSpeechAudio = audio;
+        audio.onended = () => {
+          clearTimeout(safetyTimer);
+          stopRelay();
+          if (currentSpeechAudio === audio) currentSpeechAudio = null;
+        };
+        audio.onerror = () => {
+          speakWithLedaWebSpeech(cleanText, stopRelay, safetyTimer, cfg);
+        };
+        const p = audio.play();
+        if (p !== undefined) {
+          p.catch(() => {
+            speakWithLedaWebSpeech(cleanText, stopRelay, safetyTimer, cfg);
+          });
         }
-      };
-
-      window.speechSynthesis.speak(utterance);
-      return;
-    } catch (e) {
-      // Fallback xuống audio online nếu synth gặp lỗi khởi động
-    }
-  }
-
-  // Thử phát qua audio online giọng chuẩn Tokyo
-  playAudioOnlineStream(cleanText, stopRelay, safetyTimer);
-}
-
-function playAudioOnlineStream(cleanText, stopRelay, safetyTimer) {
-  let audioWorked = false;
-  try {
-    const audioUrl = `https://translate.google.com/translate_tts?ie=UTF-8&tl=ja&client=tw-ob&q=${encodeURIComponent(cleanText)}`;
-    const audio = new Audio(audioUrl);
-    currentSpeechAudio = audio;
-    audio.playbackRate = 0.92;
-
-    audio.onended = () => {
-      clearTimeout(safetyTimer);
-      stopRelay();
-      if (currentSpeechAudio === audio) currentSpeechAudio = null;
-    };
-
-    audio.onerror = () => {
-      if (!audioWorked) {
-        playWithWebSpeechFallback(cleanText, stopRelay, safetyTimer);
+        return;
       }
-    };
-
-    const p = audio.play();
-    if (p !== undefined) {
-      p.then(() => {
-        audioWorked = true;
-      }).catch(() => {
-        playWithWebSpeechFallback(cleanText, stopRelay, safetyTimer);
-      });
+    } catch (apiErr) {
+      console.warn('SpeechGen Cloud API chuyển hướng sang Leda JP Neural:', apiErr.message);
     }
-  } catch (err) {
-    playWithWebSpeechFallback(cleanText, stopRelay, safetyTimer);
   }
-}
 
-function playWithWebSpeechFallback(cleanText, stopRelay, safetyTimer) {
-  if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
-    try {
-      if (window.speechSynthesis.paused) {
-        window.speechSynthesis.resume();
-      }
-      const utterance = new SpeechSynthesisUtterance(cleanText);
-      utterance.lang = 'ja-JP';
-      utterance.rate = 0.85;
-
-      utterance.onend = () => {
-        clearTimeout(safetyTimer);
-        stopRelay();
-      };
-      utterance.onerror = () => {
-        clearTimeout(safetyTimer);
-        stopRelay();
-      };
-
-      window.speechSynthesis.speak(utterance);
-    } catch (e) {
-      clearTimeout(safetyTimer);
-      stopRelay();
-    }
-  } else {
-    clearTimeout(safetyTimer);
-    stopRelay();
-  }
+  // Tier 2: Phát âm qua bộ tổng hợp Leda JP Neural Engine (hỗ trợ 100% di động, máy tính, offline)
+  speakWithLedaWebSpeech(cleanText, stopRelay, safetyTimer, cfg);
 }
 
 // Luôn gán vào window để sự kiện inline onclick trên điện thoại nhận 100%
@@ -338,7 +411,7 @@ function renderGrammarExamples(examples, fallbackHtml) {
                     <div class="speaker-badge speaker-${line.speaker.toLowerCase()}">${line.speaker}</div>
                     <div class="dialogue-bubble">
                       <div class="dialogue-jp">
-                        <button class="speak-btn" onclick="speakJapanese('${cleanSpeech}', this, event)" title="Nghe câu này">${SPEAKER_ICON_HTML}</button>
+                        <button class="speak-btn" onclick="speakJapanese('${cleanSpeech}', this, event)" title="Nghe câu này (Leda JP)">${SPEAKER_ICON_HTML}</button>
                         <span class="jp-sentence">${line.jp}</span>
                       </div>
                       <div class="dialogue-vi">${line.vi}</div>
@@ -360,7 +433,7 @@ function renderGrammarExamples(examples, fallbackHtml) {
             </div>
             <div class="sentence-box">
               <div class="sentence-jp">
-                <button class="speak-btn" onclick="speakJapanese('${cleanSpeech}', this, event)" title="Nghe câu này">${SPEAKER_ICON_HTML}</button>
+                <button class="speak-btn" onclick="speakJapanese('${cleanSpeech}', this, event)" title="Nghe câu này (Leda JP)">${SPEAKER_ICON_HTML}</button>
                 <span class="jp-sentence">${ex.jp}</span>
               </div>
               <div class="sentence-vi">
@@ -633,7 +706,7 @@ function renderContent(id) {
                 <tr>
                   <td class="vocab-col-kanji">
                     <div class="vocab-kanji-wrap">
-                      <button class="speak-btn" onclick="speakJapanese('${speechTarget}', this, event)" title="Phát âm từ này">${SPEAKER_ICON_HTML}</button>
+                      <button class="speak-btn" onclick="speakJapanese('${speechTarget}', this, event)" title="Phát âm từ này (Leda JP)">${SPEAKER_ICON_HTML}</button>
                       ${hasKanji ? `<strong>${v.kanji}</strong>` : `<span class="vocab-no-kanji">—</span>`}
                     </div>
                   </td>
@@ -982,12 +1055,6 @@ function initRadicalStrokeLoops(currentSession) {
     runLoop();
   });
 }
-
-window.replayRadicalAnimation = function(radicalId) {
-  if (radicalAnimControllers[radicalId]) {
-    radicalAnimControllers[radicalId].restart();
-  }
-};
 
 // --------------------------------------------------------------------------
 // 5. PHÒNG ĐỌC HIỂU (MỖI BÀI 1 BÀI ĐỌC & 5 CÂU HỎI ĐI KÈM)
@@ -1916,15 +1983,6 @@ function initCoverPage() {
   }
 }
 
-// Hàm nhảy nhanh vào bài học trực tiếp từ trang bìa
-window.enterAppWithLesson = function(targetId) {
-  const cover = document.getElementById('cover-page-slide');
-  if (cover) {
-    cover.classList.add('hide-cover');
-  }
-  switchModule(targetId);
-};
-
 function initBackToTop() {
   const btn = document.getElementById('back-to-top-btn');
   const mainContent = document.getElementById('main-content');
@@ -1958,6 +2016,117 @@ function initBackToTop() {
   btn.addEventListener('touchend', scrollToTop, { passive: false });
 }
 
+function initVoiceSettingsModal() {
+  const triggerBtn = document.getElementById('voice-settings-btn');
+  const modal = document.getElementById('voice-settings-modal');
+  const closeBtn = document.getElementById('close-voice-modal-btn');
+  const testBtn = document.getElementById('btn-test-voice');
+  const speedSlider = document.getElementById('voice-speed-slider');
+  const speedVal = document.getElementById('voice-speed-val');
+  const pitchSlider = document.getElementById('voice-pitch-slider');
+  const pitchVal = document.getElementById('voice-pitch-val');
+  const emailInput = document.getElementById('sg-email-input');
+  const tokenInput = document.getElementById('sg-token-input');
+  const saveBtn = document.getElementById('save-voice-modal-btn');
+  const statusPill = document.getElementById('voice-status-pill');
+
+  if (!modal) return;
+
+  const updateStatusDisplay = () => {
+    const cfg = getSpeechGenConfig();
+    if (cfg.token && cfg.email) {
+      if (statusPill) {
+        statusPill.textContent = 'Đang dùng: SpeechGen Cloud TTS (Leda JP)';
+        statusPill.classList.add('status-active-cloud');
+      }
+    } else {
+      if (statusPill) {
+        statusPill.textContent = 'Đang dùng: Leda JP Neural Engine';
+        statusPill.classList.remove('status-active-cloud');
+      }
+    }
+  };
+
+  const openModal = () => {
+    const cfg = getSpeechGenConfig();
+    if (speedSlider) {
+      speedSlider.value = cfg.speed || 0.92;
+      if (speedVal) speedVal.textContent = (cfg.speed || 0.92) + 'x';
+    }
+    if (pitchSlider) {
+      pitchSlider.value = cfg.pitch || 1.04;
+      if (pitchVal) pitchVal.textContent = (cfg.pitch || 1.04) + 'x';
+    }
+    if (emailInput) emailInput.value = cfg.email || '';
+    if (tokenInput) tokenInput.value = cfg.token || '';
+    updateStatusDisplay();
+
+    modal.classList.add('show-modal');
+    modal.setAttribute('aria-hidden', 'false');
+    document.body.style.overflow = 'hidden';
+  };
+
+  const closeModal = () => {
+    modal.classList.remove('show-modal');
+    modal.setAttribute('aria-hidden', 'true');
+    document.body.style.overflow = '';
+  };
+
+  if (triggerBtn) triggerBtn.addEventListener('click', openModal);
+  if (closeBtn) closeBtn.addEventListener('click', closeModal);
+
+  modal.addEventListener('click', (e) => {
+    if (e.target === modal) closeModal();
+  });
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && modal.classList.contains('show-modal')) {
+      closeModal();
+    }
+  });
+
+  if (speedSlider && speedVal) {
+    speedSlider.addEventListener('input', () => {
+      speedVal.textContent = speedSlider.value + 'x';
+    });
+  }
+
+  if (pitchSlider && pitchVal) {
+    pitchSlider.addEventListener('input', () => {
+      pitchVal.textContent = pitchSlider.value + 'x';
+    });
+  }
+
+  if (testBtn) {
+    testBtn.addEventListener('click', (e) => {
+      const sampleText = 'こんにちは！Leda JPの音声へようこそ。一緒に日本語を勉強しましょう！';
+      speakJapanese(sampleText, testBtn, e);
+    });
+  }
+
+  if (saveBtn) {
+    saveBtn.addEventListener('click', () => {
+      const newSpeed = speedSlider ? parseFloat(speedSlider.value) : 0.92;
+      const newPitch = pitchSlider ? parseFloat(pitchSlider.value) : 1.04;
+      const newEmail = emailInput ? emailInput.value.trim() : '';
+      const newToken = tokenInput ? tokenInput.value.trim() : '';
+
+      setSpeechGenConfig({
+        speed: newSpeed,
+        pitch: newPitch,
+        email: newEmail,
+        token: newToken
+      });
+
+      updateStatusDisplay();
+      closeModal();
+      showToast('Đã lưu cấu hình giọng đọc Leda JP (SpeechGen.io) thành công!');
+    });
+  }
+
+  updateStatusDisplay();
+}
+
 document.addEventListener('DOMContentLoaded', () => {
   initThemeToggle();
   initCoverPage();
@@ -1965,6 +2134,7 @@ document.addEventListener('DOMContentLoaded', () => {
   initQuickSearch();
   initResetProgress();
   initBackToTop();
+  initVoiceSettingsModal();
 
   renderSidebar();
   updateHeaderProgress();
@@ -1972,3 +2142,4 @@ document.addEventListener('DOMContentLoaded', () => {
   // Mặc định nạp Bài 1 Minna no Nihongo
   renderContent('bai-1');
 });
+

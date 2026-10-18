@@ -125,7 +125,6 @@ textarea {
   -webkit-tap-highlight-color: transparent;
 }
 
-.japanese-text,
 .jp-sentence,
 .quiz-question-title,
 .dokkai-passage,
@@ -174,12 +173,6 @@ rt,
   line-height: 1;
 }
 
-.japanese-text {
-  font-family: var(--font-japanese);
-  letter-spacing: 0.03em;
-  line-height: 1.9;
-}
-
 /* ==========================================================================
    3B. TRANG BÌA GIỚI THIỆU PHONG CÁCH NHẬT BẢN (COVER SLIDE SCREEN)
    Gam màu dịu nhẹ, Zen aesthetic, Mặt trời Hinomaru, Núi Phú Sĩ & Hoa anh đào
@@ -202,6 +195,23 @@ rt,
   will-change: opacity, transform;
   scroll-behavior: smooth;
   user-select: none;
+}
+
+[data-theme="dark"] .cover-page-slide {
+  background: radial-gradient(circle at 50% 16%, rgba(251, 113, 133, 0.12) 0%, transparent 50%),
+              radial-gradient(circle at 10% 85%, rgba(56, 189, 248, 0.08) 0%, transparent 45%),
+              radial-gradient(circle at 90% 85%, rgba(52, 211, 153, 0.07) 0%, transparent 45%),
+              rgba(11, 17, 32, 0.9);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+[data-theme="light"] .cover-page-slide {
+  background: radial-gradient(circle at 50% 16%, rgba(251, 113, 133, 0.12) 0%, transparent 50%),
+              radial-gradient(circle at 10% 85%, rgba(2, 132, 199, 0.06) 0%, transparent 45%),
+              rgba(253, 251, 247, 0.9);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
 }
 
 
@@ -319,12 +329,21 @@ rt,
   height: 34px;
   padding: 0;
   border-radius: var(--radius-sm);
-  background: var(--bg-secondary);
-  border: 1px solid var(--border-color);
+  background: rgba(51, 65, 85, 0.45);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
   color: var(--text-primary);
   cursor: pointer;
   transition: all 0.3s cubic-bezier(0.22, 1, 0.36, 1);
-  box-shadow: var(--shadow-sm);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.06);
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+
+[data-theme="light"] .cover-theme-toggle {
+  background: rgba(241, 245, 249, 0.6);
+  border: 1px solid rgba(0, 0, 0, 0.07);
 }
 
 .cover-theme-toggle:hover {
@@ -482,21 +501,43 @@ rt,
   align-items: center;
   justify-content: center;
   gap: 14px;
-  background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
+  background: linear-gradient(135deg, rgba(2, 132, 199, 0.85) 0%, rgba(3, 105, 161, 0.9) 100%);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
   color: #ffffff;
   padding: 15px 44px;
   border-radius: 999px;
-  border: 1px solid rgba(255, 255, 255, 0.25);
+  border: 1px solid rgba(255, 255, 255, 0.35);
   cursor: pointer;
-  box-shadow: 0 10px 30px rgba(2, 132, 199, 0.4);
+  box-shadow: 0 10px 30px rgba(2, 132, 199, 0.4),
+              inset 0 1px 0 rgba(255, 255, 255, 0.3);
   transition: all 0.32s cubic-bezier(0.22, 1, 0.36, 1);
   position: relative;
   overflow: hidden;
 }
 
+.btn-enter-app::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 50%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.25), transparent);
+  transform: skewX(-20deg);
+  animation: liquidShine 6s infinite;
+}
+
+@keyframes liquidShine {
+  0% { left: -100%; }
+  20% { left: 200%; }
+  100% { left: 200%; }
+}
+
 .btn-enter-app:hover {
   transform: translateY(-2px) scale(1.02);
-  box-shadow: 0 14px 36px rgba(2, 132, 199, 0.55), 0 0 20px rgba(56, 189, 248, 0.35);
+  box-shadow: 0 14px 40px rgba(2, 132, 199, 0.6),
+              inset 0 1px 0 rgba(255, 255, 255, 0.4);
   background: linear-gradient(135deg, #0369a1 0%, #0284c7 100%);
 }
 
@@ -541,8 +582,10 @@ rt,
 .app-header {
   height: var(--header-height);
   min-height: 42px;
-  background-color: var(--bg-secondary);
-  border-bottom: 1px solid var(--border-color);
+  background-color: rgba(30, 41, 59, 0.65);
+  backdrop-filter: blur(24px) saturate(180%);
+  -webkit-backdrop-filter: blur(24px) saturate(180%);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -550,9 +593,15 @@ rt,
   position: sticky;
   top: 0;
   z-index: 100;
-  box-shadow: var(--shadow-sm);
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.08);
   gap: 12px;
   transition: background-color var(--transition), border-color var(--transition);
+}
+
+[data-theme="light"] .app-header {
+  background-color: rgba(255, 255, 255, 0.65);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.07);
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.05), inset 0 1px 0 rgba(255, 255, 255, 0.8);
 }
 
 .header-left {
@@ -562,36 +611,42 @@ rt,
   flex-shrink: 0;
 }
 
-.menu-toggle-btn,
-.mobile-menu-btn {
+.menu-toggle-btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   width: 36px;
   height: 36px;
   border-radius: var(--radius-sm);
-  background-color: var(--bg-tertiary);
-  border: 1px solid var(--border-color);
+  background: rgba(51, 65, 85, 0.45);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
   color: var(--text-primary);
   cursor: pointer;
   transition: background-color 0.25s ease, border-color 0.25s ease, color 0.25s ease, transform 0.2s ease, box-shadow 0.25s ease;
   flex-shrink: 0;
   position: relative;
   overflow: hidden;
-  will-change: transform, box-shadow, background-color;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.06);
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
 }
 
-.menu-toggle-btn:hover,
-.mobile-menu-btn:hover {
+[data-theme="light"] .menu-toggle-btn {
+  background: rgba(241, 245, 249, 0.6);
+  border: 1px solid rgba(0, 0, 0, 0.07);
+}
+
+.menu-toggle-btn:hover {
   background-color: var(--border-color);
   border-color: var(--accent-primary);
   color: var(--accent-primary);
+  box-shadow: 0 0 12px rgba(56, 189, 248, 0.25);
   transform: translateY(-1px);
-  box-shadow: 0 4px 14px rgba(56, 189, 248, 0.25);
 }
 
-.menu-toggle-btn:active,
-.mobile-menu-btn:active {
+.menu-toggle-btn:active {
   transform: scale(0.92);
 }
 
@@ -666,24 +721,30 @@ rt,
 .search-box-wrapper {
   display: flex;
   align-items: center;
-  background-color: var(--bg-secondary);
-  border: 1px solid var(--border-card);
+  background-color: rgba(30, 41, 59, 0.5);
+  backdrop-filter: blur(12px) saturate(140%);
+  -webkit-backdrop-filter: blur(12px) saturate(140%);
+  border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: var(--radius-md);
   padding: 5px 12px;
   gap: 8px;
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.25);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.12), inset 0 1px 0 rgba(255, 255, 255, 0.06);
   transition: all 0.2s ease;
 }
 
+[data-theme="light"] .search-box-wrapper {
+  background-color: rgba(255, 255, 255, 0.6);
+  border: 1px solid rgba(0, 0, 0, 0.07);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.04), inset 0 1px 0 rgba(255, 255, 255, 0.8);
+}
+
 .search-box-wrapper:hover {
-  background-color: var(--bg-tertiary);
   border-color: rgba(56, 189, 248, 0.45);
 }
 
 .search-box-wrapper:focus-within {
   border-color: var(--accent-primary);
-  box-shadow: 0 0 16px rgba(56, 189, 248, 0.35);
-  background-color: var(--bg-secondary);
+  box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.25), 0 4px 16px rgba(56, 189, 248, 0.15);
   transform: translateY(-1px);
 }
 
@@ -752,14 +813,22 @@ rt,
   top: calc(100% + 8px);
   left: 0;
   right: 0;
-  background-color: var(--bg-secondary);
-  border: 1px solid var(--border-color);
+  background-color: rgba(15, 23, 42, 0.88);
+  backdrop-filter: blur(20px) saturate(160%);
+  -webkit-backdrop-filter: blur(20px) saturate(160%);
+  border: 1px solid rgba(255, 255, 255, 0.12);
   border-radius: var(--radius-md);
-  box-shadow: var(--shadow-lg);
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.08);
   max-height: 420px;
   overflow-y: auto;
   z-index: 200;
   animation: slideDown 0.18s ease-out;
+}
+
+[data-theme="light"] .search-dropdown {
+  background-color: rgba(255, 255, 255, 0.88);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.9);
 }
 
 .search-dropdown.active {
@@ -852,6 +921,7 @@ rt,
   flex-shrink: 0;
 }
 
+.voice-settings-btn,
 .theme-toggle-btn {
   display: inline-flex;
   align-items: center;
@@ -860,20 +930,39 @@ rt,
   height: 28px;
   padding: 0;
   border-radius: var(--radius-sm);
-  background-color: var(--bg-tertiary);
-  border: 1px solid var(--border-color);
+  background: rgba(51, 65, 85, 0.45);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
   color: var(--text-primary);
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   cursor: pointer;
   flex-shrink: 0;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.06);
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
 }
 
+[data-theme="light"] .voice-settings-btn,
+[data-theme="light"] .theme-toggle-btn {
+  background: rgba(241, 245, 249, 0.6);
+  border: 1px solid rgba(0, 0, 0, 0.07);
+}
+
+.voice-settings-btn:hover,
 .theme-toggle-btn:hover {
   background-color: var(--border-color);
   border-color: var(--accent-primary);
   color: var(--accent-primary);
-  transform: rotate(45deg) scale(1.1);
   box-shadow: 0 0 12px rgba(56, 189, 248, 0.3);
+}
+
+.voice-settings-btn:hover {
+  transform: scale(1.08);
+}
+
+.theme-toggle-btn:hover {
+  transform: rotate(45deg) scale(1.1);
 }
 
 .theme-icon {
@@ -906,22 +995,30 @@ rt,
   max-width: var(--sidebar-width);
   flex: 0 0 var(--sidebar-width);
   margin-left: 0;
-  background-color: var(--bg-sidebar);
-  border-right: 1px solid var(--border-color);
-  box-shadow: 4px 0 24px rgba(0, 0, 0, 0.15);
+  background-color: rgba(15, 23, 42, 0.65);
+  backdrop-filter: blur(20px) saturate(160%);
+  -webkit-backdrop-filter: blur(20px) saturate(160%);
+  border-right: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 4px 0 24px rgba(0, 0, 0, 0.18), inset -1px 0 0 rgba(255, 255, 255, 0.05);
   display: flex;
   flex-direction: column;
   height: 100%;
   max-height: 100%;
-  overflow: hidden; /* Cố định khung cha, để sidebar-menu cuộn */
+  overflow: hidden;
   user-select: none;
   box-sizing: border-box;
   will-change: margin-left;
-  transform: translateZ(0); /* Kích hoạt GPU Compositing loại bỏ hoàn toàn hiện tượng giật khung hình */
+  transform: translateZ(0);
   transition: margin-left 0.22s cubic-bezier(0.2, 0.9, 0.3, 1), 
               box-shadow 0.22s cubic-bezier(0.2, 0.9, 0.3, 1),
               border-color 0.2s ease,
               background-color var(--transition);
+}
+
+[data-theme="light"] .sidebar {
+  background-color: rgba(255, 255, 255, 0.65);
+  border-right: 1px solid rgba(0, 0, 0, 0.06);
+  box-shadow: 4px 0 24px rgba(0, 0, 0, 0.06), inset -1px 0 0 rgba(255, 255, 255, 0.8);
 }
 
 /* Khung menu và footer bên trong thanh sidebar - đồng bộ và cố định độ rộng, loại bỏ hoàn toàn hiện tượng co giật chữ */
@@ -975,15 +1072,22 @@ rt,
 }
 
 .accordion-group {
-  border: 1px solid var(--border-color);
-  background-color: var(--bg-secondary);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background-color: rgba(30, 41, 59, 0.4);
   border-radius: var(--radius-sm);
   overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
   transition: border-color var(--transition);
 }
 
+[data-theme="light"] .accordion-group {
+  background-color: rgba(255, 255, 255, 0.5);
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
+}
+
 .accordion-group:hover {
-  border-color: var(--accent-primary);
+  border-color: rgba(56, 189, 248, 0.4);
 }
 
 .accordion-header {
@@ -1035,13 +1139,17 @@ rt,
   display: none;
   padding: 4px 6px 8px;
   border-top: 1px solid var(--border-color);
-  background-color: rgba(0, 0, 0, 0.08);
+  background-color: rgba(15, 23, 42, 0.3);
   max-height: 290px;
   overflow-y: auto;
   overflow-x: hidden;
   scroll-behavior: smooth;
   scrollbar-width: thin;
   scrollbar-color: var(--border-color) transparent;
+}
+
+[data-theme="light"] .accordion-body {
+  background-color: rgba(241, 245, 249, 0.4);
 }
 
 .accordion-body::-webkit-scrollbar {
@@ -1155,9 +1263,9 @@ rt,
 /* Sidebar Footer & Reset Button */
 .sidebar-footer {
   flex-shrink: 0;
-  background-color: var(--bg-sidebar);
+  background-color: rgba(15, 23, 42, 0.4);
   padding: 8px 8px;
-  border-top: 1px solid var(--border-color);
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
   display: flex;
   flex-direction: column;
   gap: 6px;
@@ -1165,6 +1273,10 @@ rt,
   z-index: 10;
 }
 
+[data-theme="light"] .sidebar-footer {
+  background-color: rgba(255, 255, 255, 0.4);
+  border-top: 1px solid rgba(0, 0, 0, 0.06);
+}
 
 .btn-redo {
   display: inline-flex;
@@ -1172,14 +1284,24 @@ rt,
   gap: 6px;
   padding: 5px 14px;
   border-radius: 999px;
-  background-color: var(--bg-tertiary);
-  border: 1px solid var(--border-color);
+  background-color: rgba(51, 65, 85, 0.45);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
   font-size: 12px;
   color: var(--text-secondary);
   font-weight: 500;
   cursor: pointer;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
   transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
   margin-left: auto;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+
+[data-theme="light"] .btn-redo {
+  background-color: rgba(241, 245, 249, 0.6);
+  border: 1px solid rgba(0, 0, 0, 0.07);
 }
 
 .btn-redo svg {
@@ -1187,11 +1309,11 @@ rt,
 }
 
 .btn-redo:hover {
-  background-color: rgba(248, 113, 113, 0.15);
+  background-color: rgba(248, 113, 113, 0.2);
   border-color: var(--accent-red);
   color: var(--accent-red);
   transform: translateY(-1px);
-  box-shadow: 0 3px 10px rgba(248, 113, 113, 0.2);
+  box-shadow: 0 0 12px rgba(248, 113, 113, 0.3);
 }
 
 .btn-redo:hover svg,
@@ -1562,11 +1684,14 @@ rt,
 
 .speak-btn {
   position: relative;
-  background: var(--bg-tertiary);
+  background: rgba(51, 65, 85, 0.55);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12), inset 0 1px 0 rgba(255, 255, 255, 0.06);
   color: var(--text-secondary);
-  border: 1px solid var(--border-card);
-  width: 32px;
-  height: 32px;
+  width: 34px;
+  height: 34px;
+  min-width: 34px;
+  min-height: 34px;
   border-radius: var(--radius-sm);
   display: inline-flex;
   align-items: center;
@@ -1578,14 +1703,20 @@ rt,
   padding: 0;
   flex-shrink: 0;
   overflow: visible;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+
+[data-theme="light"] .speak-btn {
+  background: rgba(241, 245, 249, 0.6);
+  border: 1px solid rgba(0, 0, 0, 0.08);
 }
 
 .speak-btn:hover {
-  background: rgba(56, 189, 248, 0.25);
+  background: rgba(56, 189, 248, 0.3);
   color: #ffffff;
   border-color: var(--accent-primary);
-  transform: translateY(-1px) scale(1.08);
-  box-shadow: 0 0 12px rgba(56, 189, 248, 0.4);
+  box-shadow: 0 4px 16px rgba(56, 189, 248, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.15);
 }
 
 .speak-btn:active {
@@ -1915,18 +2046,6 @@ rt,
   margin-top: 6px;
 }
 
-.speaker-a {
-  background: rgba(56, 189, 248, 0.18);
-  color: var(--accent-primary);
-  border: 1.5px solid var(--accent-primary);
-}
-
-.speaker-b {
-  background: rgba(52, 211, 153, 0.18);
-  color: var(--accent-green);
-  border: 1.5px solid var(--accent-green);
-}
-
 .dialogue-bubble {
   flex: 1;
   background: var(--bg-tertiary);
@@ -2042,8 +2161,9 @@ rt,
 }
 
 .option-btn {
-  background: var(--bg-secondary);
-  border: 1px solid var(--border-card);
+  background: rgba(30, 41, 59, 0.5);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.06);
   border-radius: var(--radius-sm);
   padding: 10px 14px;
   min-height: 50px;
@@ -2058,14 +2178,22 @@ rt,
   gap: 10px;
   cursor: pointer;
   position: relative;
+  user-select: none;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+
+[data-theme="light"] .option-btn {
+  background: rgba(255, 255, 255, 0.6);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04), inset 0 1px 0 rgba(255, 255, 255, 0.85);
 }
 
 .option-btn:hover:not(:disabled) {
-  filter: brightness(1.15);
+  background: rgba(56, 189, 248, 0.14);
+  border-color: rgba(56, 189, 248, 0.4);
+  box-shadow: 0 6px 20px rgba(56, 189, 248, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.1);
   transform: translateY(-2px);
-  border-color: var(--accent-primary);
-  background-color: var(--bg-tertiary);
-  box-shadow: 0 4px 14px rgba(56, 189, 248, 0.18);
 }
 
 .option-btn:active:not(:disabled) {
@@ -2165,13 +2293,6 @@ rt,
               inset 0 1px 0 rgba(255, 255, 255, 0.05);
 }
 
-.feedback-correct {
-  background: rgba(52, 211, 153, 0.12);
-  border: 1px solid rgba(52, 211, 153, 0.35);
-  color: var(--accent-green);
-  box-shadow: 0 2px 12px rgba(52, 211, 153, 0.12);
-}
-
 .feedback-wrong {
   background: rgba(248, 113, 113, 0.12);
   border: 1px solid rgba(248, 113, 113, 0.35);
@@ -2217,8 +2338,10 @@ rt,
 
 /* --- THANH ĐIỀU KHIỂN NỘP BÀI Ở CUỐI BÀI THI (THU GỌN TINH TẾ) --- */
 .quiz-submit-section {
-  background: var(--bg-primary);
-  border: 1px solid var(--border-color);
+  background: rgba(30, 41, 59, 0.65);
+  backdrop-filter: blur(16px) saturate(160%);
+  -webkit-backdrop-filter: blur(16px) saturate(160%);
+  border: 1px solid rgba(255, 255, 255, 0.12);
   border-radius: var(--radius-sm);
   padding: 10px 16px;
   margin-top: 16px;
@@ -2227,8 +2350,14 @@ rt,
   align-items: center;
   justify-content: space-between;
   gap: 14px;
-  box-shadow: var(--shadow-sm);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.08);
   flex-wrap: wrap;
+}
+
+[data-theme="light"] .quiz-submit-section {
+  background: rgba(255, 255, 255, 0.75);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05), inset 0 1px 0 rgba(255, 255, 255, 0.9);
 }
 
 .submit-progress-info {
@@ -2284,7 +2413,7 @@ rt,
   font-size: 16px;
   font-weight: 700;
   cursor: pointer;
-  box-shadow: var(--shadow-sm);
+  box-shadow: 0 4px 20px rgba(2, 132, 199, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.25);
   transition: var(--transition);
   white-space: nowrap;
 }
@@ -2446,16 +2575,24 @@ rt,
   border-radius: var(--radius-md);
   font-size: 15.5px;
   font-weight: 600;
-  background-color: var(--bg-tertiary);
-  border: 1px solid var(--border-card);
+  background-color: rgba(51, 65, 85, 0.45);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.06);
   color: var(--text-primary);
   cursor: pointer;
   transition: var(--transition);
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+
+[data-theme="light"] .btn-complete-lesson {
+  background-color: rgba(241, 245, 249, 0.55);
+  border: 1px solid rgba(0, 0, 0, 0.07);
 }
 
 .btn-complete-lesson:hover {
   filter: brightness(1.18);
-  background-color: rgba(52, 211, 153, 0.15);
+  background-color: rgba(52, 211, 153, 0.18);
   border-color: var(--accent-green);
   color: var(--accent-green);
   transform: translateY(-1px);
@@ -2476,7 +2613,7 @@ rt,
 }
 
 .btn-complete-lesson.is-completed {
-  background-color: rgba(52, 211, 153, 0.2);
+  background-color: rgba(52, 211, 153, 0.22);
   border-color: var(--accent-green);
   color: var(--accent-green);
 }
@@ -2485,10 +2622,12 @@ rt,
   position: fixed;
   bottom: 24px;
   right: 24px;
-  background-color: var(--bg-secondary);
+  background-color: rgba(30, 41, 59, 0.75);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  border: 1px solid rgba(56, 189, 248, 0.35);
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.1);
   color: var(--text-primary);
-  border: 1px solid var(--accent-primary);
-  box-shadow: var(--shadow-lg);
   padding: 12px 20px;
   border-radius: var(--radius-md);
   font-size: 13.5px;
@@ -2503,9 +2642,365 @@ rt,
   pointer-events: none;
 }
 
+[data-theme="light"] .toast-notification {
+  background-color: rgba(255, 255, 255, 0.75);
+  border: 1px solid rgba(2, 132, 199, 0.35);
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.95);
+}
+
 .toast-notification.show {
   transform: translateY(0);
   opacity: 1;
+}
+
+/* ==========================================================================
+   MODAL CÀI ĐẶT GIỌNG ĐỌC LEDA JP (SPEECHGEN.IO) - KÍNH LỎNG QUANG HỌC
+   ========================================================================== */
+.voice-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(11, 17, 32, 0.65);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.25s ease, visibility 0.25s ease;
+}
+
+[data-theme="light"] .voice-modal-backdrop {
+  background: rgba(15, 23, 42, 0.45);
+}
+
+.voice-modal-backdrop.show-modal {
+  opacity: 1;
+  visibility: visible;
+}
+
+.voice-modal-card {
+  width: 100%;
+  max-width: 480px;
+  background: rgba(30, 41, 59, 0.88);
+  backdrop-filter: blur(24px) saturate(160%);
+  -webkit-backdrop-filter: blur(24px) saturate(160%);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: var(--radius-lg);
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.45),
+              inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  overflow: hidden;
+  transform: translateY(20px) scale(0.97);
+  transition: transform 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+  display: flex;
+  flex-direction: column;
+}
+
+[data-theme="light"] .voice-modal-card {
+  background: rgba(255, 255, 255, 0.92);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.12),
+              inset 0 1px 0 rgba(255, 255, 255, 0.95);
+}
+
+.voice-modal-backdrop.show-modal .voice-modal-card {
+  transform: translateY(0) scale(1);
+}
+
+.voice-modal-header {
+  padding: 16px 20px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+[data-theme="light"] .voice-modal-header {
+  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+}
+
+.voice-modal-title-wrap {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.voice-badge {
+  background: linear-gradient(135deg, var(--accent-primary), #0284c7);
+  color: #ffffff;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 999px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.voice-modal-title {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.voice-modal-close {
+  background: transparent;
+  border: none;
+  font-size: 24px;
+  line-height: 1;
+  color: var(--text-muted);
+  cursor: pointer;
+  padding: 0 4px;
+  transition: color 0.2s ease, transform 0.2s ease;
+}
+
+.voice-modal-close:hover {
+  color: var(--accent-red);
+  transform: scale(1.15);
+}
+
+.voice-modal-body {
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  max-height: 75vh;
+  overflow-y: auto;
+}
+
+.voice-info-card {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 12px 14px;
+  border-radius: var(--radius-md);
+  background: rgba(15, 23, 42, 0.45);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+}
+
+[data-theme="light"] .voice-info-card {
+  background: rgba(241, 245, 249, 0.7);
+  border: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.voice-avatar {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, rgba(56, 189, 248, 0.2), rgba(251, 113, 133, 0.2));
+  border: 1px solid rgba(56, 189, 248, 0.35);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--accent-primary);
+  flex-shrink: 0;
+}
+
+.voice-details {
+  flex: 1;
+  min-width: 0;
+}
+
+.voice-name {
+  font-weight: 700;
+  font-size: 14px;
+  color: var(--text-primary);
+}
+
+.voice-source {
+  font-size: 11.5px;
+  color: var(--text-secondary);
+  margin-top: 2px;
+}
+
+.voice-source a {
+  color: var(--accent-primary);
+  text-decoration: underline;
+}
+
+.voice-status-pill {
+  display: inline-block;
+  margin-top: 6px;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: rgba(56, 189, 248, 0.15);
+  color: var(--accent-primary);
+  border: 1px solid rgba(56, 189, 248, 0.25);
+}
+
+.voice-status-pill.status-active-cloud {
+  background: rgba(52, 211, 153, 0.18);
+  color: var(--accent-green);
+  border-color: rgba(52, 211, 153, 0.35);
+}
+
+.voice-test-row {
+  display: flex;
+  justify-content: center;
+}
+
+.btn-test-voice {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 20px;
+  border-radius: 999px;
+  background: rgba(56, 189, 248, 0.14);
+  border: 1px solid rgba(56, 189, 248, 0.35);
+  color: var(--accent-primary);
+  font-weight: 600;
+  font-size: 13.5px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  touch-action: manipulation;
+}
+
+.btn-test-voice:hover {
+  background: rgba(56, 189, 248, 0.25);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 14px rgba(56, 189, 248, 0.25);
+}
+
+.btn-test-voice.is-speaking {
+  background: var(--accent-primary);
+  color: #ffffff;
+  animation: pulse 1s infinite;
+}
+
+.voice-slider-group {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  background: rgba(15, 23, 42, 0.3);
+  padding: 12px 14px;
+  border-radius: var(--radius-md);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+[data-theme="light"] .voice-slider-group {
+  background: rgba(248, 250, 252, 0.7);
+  border: 1px solid rgba(0, 0, 0, 0.04);
+}
+
+.slider-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 12.5px;
+  color: var(--text-primary);
+  margin-bottom: 6px;
+}
+
+.voice-slider-item input[type="range"] {
+  width: 100%;
+  accent-color: var(--accent-primary);
+  cursor: pointer;
+}
+
+.speechgen-api-details {
+  border: 1px dashed rgba(255, 255, 255, 0.12);
+  border-radius: var(--radius-md);
+  padding: 10px 14px;
+}
+
+[data-theme="light"] .speechgen-api-details {
+  border-color: rgba(0, 0, 0, 0.12);
+}
+
+.speechgen-api-details summary {
+  cursor: pointer;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  user-select: none;
+}
+
+.speechgen-api-fields {
+  margin-top: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.api-help-text {
+  font-size: 11.5px;
+  color: var(--text-muted);
+  line-height: 1.5;
+  margin: 0;
+}
+
+.voice-form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.voice-form-group label {
+  font-size: 11.5px;
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+
+.voice-form-group input {
+  padding: 7px 10px;
+  border-radius: var(--radius-sm);
+  background: rgba(15, 23, 42, 0.5);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: var(--text-primary);
+  font-size: 12.5px;
+  outline: none;
+  transition: border-color 0.2s ease;
+}
+
+[data-theme="light"] .voice-form-group input {
+  background: rgba(255, 255, 255, 0.9);
+  border: 1px solid rgba(0, 0, 0, 0.12);
+}
+
+.voice-form-group input:focus {
+  border-color: var(--accent-primary);
+}
+
+.api-link-hint {
+  font-size: 11.5px;
+}
+
+.api-link-hint a {
+  color: var(--accent-primary);
+  text-decoration: none;
+}
+
+.voice-modal-footer {
+  padding: 14px 20px;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  display: flex;
+  justify-content: flex-end;
+}
+
+[data-theme="light"] .voice-modal-footer {
+  border-top: 1px solid rgba(0, 0, 0, 0.06);
+}
+
+.btn-save-voice {
+  padding: 8px 22px;
+  border-radius: var(--radius-sm);
+  background: linear-gradient(135deg, #0284c7, #2563eb);
+  color: #ffffff;
+  border: none;
+  font-weight: 600;
+  font-size: 13.5px;
+  cursor: pointer;
+  box-shadow: 0 4px 14px rgba(2, 132, 199, 0.35);
+  transition: all 0.2s ease;
+}
+
+.btn-save-voice:hover {
+  filter: brightness(1.12);
+  transform: translateY(-1px);
 }
 
 /* --- NÚT CUỘN LÊN ĐẦU TRANG (BACK TO TOP) NỔI TRÊN DI ĐỘNG & DESKTOP --- */
@@ -2637,8 +3132,7 @@ rt,
     transition: none !important;
   }
 
-  .menu-toggle-btn,
-  .mobile-menu-btn {
+  .menu-toggle-btn {
     transition: none !important;
     transform: none !important;
   }
@@ -2713,17 +3207,22 @@ rt,
 .radical-stroke-box {
   width: 160px;
   height: 160px;
-  border: 2px solid var(--border-color);
+  border: 2px solid rgba(255, 255, 255, 0.1);
   border-radius: var(--radius-lg);
-  background: var(--bg-card-inner);
+  background: rgba(34, 48, 71, 0.6);
   position: relative;
   overflow: hidden;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.12);
+  box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.15), 0 4px 16px rgba(0, 0, 0, 0.1);
   transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+[data-theme="light"] .radical-stroke-box {
+  background: rgba(248, 250, 252, 0.8);
+  border: 2px solid rgba(0, 0, 0, 0.07);
 }
 
 .radical-stroke-box:hover {
@@ -2879,15 +3378,23 @@ rt,
   align-items: center;
   gap: 8px;
   padding: 6px 12px;
-  background: var(--bg-secondary);
-  border: 1px solid var(--border-card);
+  background: rgba(30, 41, 59, 0.5);
+  border: 1px solid rgba(255, 255, 255, 0.09);
   border-radius: var(--radius-sm);
   font-size: 0.9rem;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
   transition: var(--transition);
 }
 
+[data-theme="light"] .kanji-chip {
+  background: rgba(255, 255, 255, 0.6);
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.03);
+}
+
 .kanji-chip:hover {
-  border-color: var(--accent-primary);
+  border-color: rgba(56, 189, 248, 0.5);
+  box-shadow: 0 0 10px rgba(56, 189, 248, 0.2);
   transform: translateY(-1px);
 }
 
@@ -2908,508 +3415,6 @@ rt,
   font-size: 0.85rem;
   color: var(--text-muted);
 }
-
-
-/* ==========================================================================
-   12. HIỆU ỨNG KÍNH LỎNG (LIQUID GLASS EFFECT) - HOÀN THIỆN TOÀN BỘ TRANG WEB
-   Glassmorphism: backdrop-filter blur, nền bán trong suốt, ánh sáng phản chiếu,
-   gradient lỏng chuyển động mềm mại, giữ nguyên 100% logic tương tác của ứng dụng
-   ========================================================================== */
-
-/* --- 12A. NỀN GRADIENT LỎNG ĐỘNG (ANIMATED LIQUID GRADIENT BLOBS) --- */
-.liquid-glass-bg {
-  position: fixed;
-  inset: 0;
-  z-index: 0;
-  pointer-events: none;
-  overflow: hidden;
-  contain: strict;
-  transform: translateZ(0);
-}
-
-.liquid-glass-bg .glass-blob {
-  position: absolute;
-  border-radius: 50%;
-  filter: blur(55px);
-  opacity: 0.42;
-  pointer-events: none;
-  user-select: none;
-  transform: translate3d(0, 0, 0);
-  backface-visibility: hidden;
-  will-change: transform;
-  animation: liquidBlobFloat 24s ease-in-out infinite alternate;
-}
-
-[data-theme="dark"] .liquid-glass-bg .glass-blob.blob-1 {
-  width: 520px;
-  height: 520px;
-  top: -8%;
-  left: -5%;
-  background: radial-gradient(circle, rgba(56, 189, 248, 0.28) 0%, rgba(2, 132, 199, 0.08) 65%, transparent 100%);
-  animation-duration: 22s;
-}
-
-[data-theme="dark"] .liquid-glass-bg .glass-blob.blob-2 {
-  width: 480px;
-  height: 480px;
-  top: 38%;
-  right: -6%;
-  background: radial-gradient(circle, rgba(251, 113, 133, 0.24) 0%, rgba(244, 63, 94, 0.07) 65%, transparent 100%);
-  animation-duration: 26s;
-  animation-delay: -5s;
-}
-
-[data-theme="dark"] .liquid-glass-bg .glass-blob.blob-3 {
-  width: 420px;
-  height: 420px;
-  bottom: -4%;
-  left: 28%;
-  background: radial-gradient(circle, rgba(52, 211, 153, 0.2) 0%, rgba(16, 185, 129, 0.06) 65%, transparent 100%);
-  animation-duration: 28s;
-  animation-delay: -10s;
-}
-
-[data-theme="dark"] .liquid-glass-bg .glass-blob.blob-4 {
-  width: 380px;
-  height: 380px;
-  top: 18%;
-  left: 48%;
-  background: radial-gradient(circle, rgba(168, 85, 247, 0.18) 0%, rgba(139, 92, 246, 0.05) 65%, transparent 100%);
-  animation-duration: 24s;
-  animation-delay: -8s;
-}
-
-/* Light Mode Blobs */
-[data-theme="light"] .liquid-glass-bg .glass-blob.blob-1 {
-  width: 520px;
-  height: 520px;
-  top: -8%;
-  left: -5%;
-  background: radial-gradient(circle, rgba(56, 189, 248, 0.2) 0%, rgba(2, 132, 199, 0.06) 65%, transparent 100%);
-  animation-duration: 22s;
-}
-
-[data-theme="light"] .liquid-glass-bg .glass-blob.blob-2 {
-  width: 480px;
-  height: 480px;
-  top: 38%;
-  right: -6%;
-  background: radial-gradient(circle, rgba(251, 113, 133, 0.18) 0%, rgba(244, 63, 94, 0.05) 65%, transparent 100%);
-  animation-duration: 26s;
-  animation-delay: -5s;
-}
-
-[data-theme="light"] .liquid-glass-bg .glass-blob.blob-3 {
-  width: 420px;
-  height: 420px;
-  bottom: -4%;
-  left: 28%;
-  background: radial-gradient(circle, rgba(52, 211, 153, 0.15) 0%, rgba(16, 185, 129, 0.04) 65%, transparent 100%);
-  animation-duration: 28s;
-  animation-delay: -10s;
-}
-
-[data-theme="light"] .liquid-glass-bg .glass-blob.blob-4 {
-  width: 380px;
-  height: 380px;
-  top: 18%;
-  left: 48%;
-  background: radial-gradient(circle, rgba(168, 85, 247, 0.12) 0%, rgba(139, 92, 246, 0.03) 65%, transparent 100%);
-  animation-duration: 24s;
-  animation-delay: -8s;
-}
-
-@keyframes liquidBlobFloat {
-  0% {
-    transform: translate3d(0, 0, 0) scale(1) rotate(0deg);
-  }
-  33% {
-    transform: translate3d(50px, -35px, 0) scale(1.08) rotate(50deg);
-  }
-  66% {
-    transform: translate3d(-35px, 45px, 0) scale(0.92) rotate(110deg);
-  }
-  100% {
-    transform: translate3d(35px, -15px, 0) scale(1.04) rotate(180deg);
-  }
-}
-
-/* --- 12B. NỀN TRANG BÌA KÍNH LỎNG (COVER SLIDE) --- */
-[data-theme="dark"] .cover-page-slide {
-  background: radial-gradient(circle at 50% 16%, rgba(251, 113, 133, 0.12) 0%, transparent 50%),
-              radial-gradient(circle at 10% 85%, rgba(56, 189, 248, 0.08) 0%, transparent 45%),
-              radial-gradient(circle at 90% 85%, rgba(52, 211, 153, 0.07) 0%, transparent 45%),
-              rgba(11, 17, 32, 0.9);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-}
-
-[data-theme="light"] .cover-page-slide {
-  background: radial-gradient(circle at 50% 16%, rgba(251, 113, 133, 0.12) 0%, transparent 50%),
-              radial-gradient(circle at 10% 85%, rgba(2, 132, 199, 0.06) 0%, transparent 45%),
-              rgba(253, 251, 247, 0.9);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-}
-/* Nút Bắt Đầu Học Ngay kính lỏng */
-.btn-enter-app {
-  background: linear-gradient(135deg, rgba(2, 132, 199, 0.85) 0%, rgba(3, 105, 161, 0.9) 100%);
-  backdrop-filter: blur(12px) saturate(180%);
-  -webkit-backdrop-filter: blur(12px) saturate(180%);
-  border: 1px solid rgba(255, 255, 255, 0.25);
-  box-shadow: 0 10px 36px rgba(2, 132, 199, 0.4),
-              inset 0 1px 0 rgba(255, 255, 255, 0.25);
-  position: relative;
-  overflow: hidden;
-}
-
-.btn-enter-app::after {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: -100%;
-  width: 50%;
-  height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
-  animation: btnGlassSlide 3.5s ease-in-out infinite;
-  pointer-events: none;
-}
-
-@keyframes btnGlassSlide {
-  0% { left: -100%; }
-  100% { left: 200%; }
-}
-
-.btn-enter-app:hover {
-  box-shadow: 0 14px 45px rgba(2, 132, 199, 0.55),
-              0 0 25px rgba(56, 189, 248, 0.3),
-              inset 0 1px 0 rgba(255, 255, 255, 0.35);
-}
-
-/* --- 12C. THANH HEADER KÍNH LỎNG --- */
-.app-header {
-  background-color: rgba(30, 41, 59, 0.65);
-  backdrop-filter: blur(24px) saturate(180%);
-  -webkit-backdrop-filter: blur(24px) saturate(180%);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.15),
-              inset 0 1px 0 rgba(255, 255, 255, 0.08);
-}
-
-[data-theme="light"] .app-header {
-  background-color: rgba(255, 255, 255, 0.65);
-  border-bottom: 1px solid rgba(0, 0, 0, 0.07);
-  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.05),
-              inset 0 1px 0 rgba(255, 255, 255, 0.8);
-}
-
-/* Search box */
-.search-box-wrapper {
-  background-color: rgba(30, 41, 59, 0.5);
-  backdrop-filter: blur(12px) saturate(140%);
-  -webkit-backdrop-filter: blur(12px) saturate(140%);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.12),
-              inset 0 1px 0 rgba(255, 255, 255, 0.06);
-}
-
-[data-theme="light"] .search-box-wrapper {
-  background-color: rgba(255, 255, 255, 0.6);
-  border: 1px solid rgba(0, 0, 0, 0.08);
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.04),
-              inset 0 1px 0 rgba(255, 255, 255, 0.85);
-}
-
-.search-box-wrapper:focus-within {
-  background-color: rgba(30, 41, 59, 0.7);
-  border-color: var(--accent-primary);
-  box-shadow: 0 0 18px rgba(56, 189, 248, 0.3),
-              inset 0 1px 0 rgba(255, 255, 255, 0.1);
-}
-
-.search-dropdown {
-  background-color: rgba(30, 41, 59, 0.85);
-  backdrop-filter: blur(24px) saturate(180%);
-  -webkit-backdrop-filter: blur(24px) saturate(180%);
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.35),
-              inset 0 1px 0 rgba(255, 255, 255, 0.08);
-}
-
-[data-theme="light"] .search-dropdown {
-  background-color: rgba(255, 255, 255, 0.9);
-  border: 1px solid rgba(0, 0, 0, 0.08);
-  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.08),
-              inset 0 1px 0 rgba(255, 255, 255, 0.9);
-}
-
-/* Nút chuyển giao diện & toggle menu */
-.menu-toggle-btn,
-.theme-toggle-btn,
-.cover-theme-toggle {
-  background: rgba(51, 65, 85, 0.45);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1),
-              inset 0 1px 0 rgba(255, 255, 255, 0.06);
-}
-
-[data-theme="light"] .menu-toggle-btn,
-[data-theme="light"] .theme-toggle-btn,
-[data-theme="light"] .cover-theme-toggle {
-  background: rgba(241, 245, 249, 0.6);
-  border: 1px solid rgba(0, 0, 0, 0.07);
-}
-
-.menu-toggle-btn:hover,
-.theme-toggle-btn:hover,
-.cover-theme-toggle:hover {
-  background-color: var(--border-color);
-  border-color: var(--accent-primary);
-  color: var(--accent-primary);
-  box-shadow: 0 0 12px rgba(56, 189, 248, 0.25);
-}
-
-/* --- 12D. SIDEBAR KÍNH LỎNG --- */
-.sidebar {
-  background-color: rgba(15, 23, 42, 0.65);
-  backdrop-filter: blur(20px) saturate(160%);
-  -webkit-backdrop-filter: blur(20px) saturate(160%);
-  border-right: 1px solid rgba(255, 255, 255, 0.08);
-}
-
-[data-theme="light"] .sidebar {
-  background-color: rgba(255, 255, 255, 0.65);
-  border-right: 1px solid rgba(0, 0, 0, 0.06);
-}
-
-.sidebar:not(.collapsed) {
-  box-shadow: 4px 0 24px rgba(0, 0, 0, 0.18),
-              inset -1px 0 0 rgba(255, 255, 255, 0.05);
-}
-
-[data-theme="light"] .sidebar:not(.collapsed) {
-  box-shadow: 4px 0 24px rgba(0, 0, 0, 0.06),
-              inset -1px 0 0 rgba(255, 255, 255, 0.8);
-}
-
-.sidebar-footer {
-  background-color: rgba(15, 23, 42, 0.45);
-}
-
-[data-theme="light"] .sidebar-footer {
-  background-color: rgba(255, 255, 255, 0.5);
-}
-
-.accordion-group {
-  background-color: rgba(30, 41, 59, 0.45);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-}
-
-[data-theme="light"] .accordion-group {
-  background-color: rgba(255, 255, 255, 0.55);
-  border: 1px solid rgba(0, 0, 0, 0.06);
-}
-
-.accordion-group:hover {
-  border-color: var(--accent-primary);
-}
-
-.accordion-body {
-  background-color: rgba(0, 0, 0, 0.15);
-}
-
-[data-theme="light"] .accordion-body {
-  background-color: rgba(0, 0, 0, 0.03);
-}
-
-/* --- 12E. CÁC PHẦN TỬ TƯƠNG TÁC (BỘ THỦ) KÍNH LỎNG --- */
-.radical-stroke-box {
-  background: rgba(34, 48, 71, 0.6);
-  border: 2px solid rgba(255, 255, 255, 0.1);
-  box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.15),
-              0 4px 16px rgba(0, 0, 0, 0.1);
-}
-
-[data-theme="light"] .radical-stroke-box {
-  background: rgba(248, 250, 252, 0.8);
-  border: 2px solid rgba(0, 0, 0, 0.07);
-}
-
-.radical-stroke-box:hover {
-  border-color: var(--accent-primary) !important;
-}
-
-.kanji-chip {
-  background: rgba(30, 41, 59, 0.5);
-  border: 1px solid rgba(255, 255, 255, 0.09);
-}
-
-[data-theme="light"] .kanji-chip {
-  background: rgba(255, 255, 255, 0.6);
-  border: 1px solid rgba(0, 0, 0, 0.06);
-}
-
-.kanji-chip:hover {
-  border-color: var(--accent-primary);
-}
-
-/* --- 12F. CÁC LỰA CHỌN ĐÁP ÁN TRẮC NGHIỆM (OPTION BUTTONS) KÍNH LỎNG --- */
-/* Option Buttons - Tuyệt đối không dùng !important trên base class để trạng thái tương tác hoạt động chuẩn */
-.option-btn {
-  background: rgba(30, 41, 59, 0.5);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1),
-              inset 0 1px 0 rgba(255, 255, 255, 0.06);
-}
-
-[data-theme="light"] .option-btn {
-  background: rgba(255, 255, 255, 0.6);
-  border: 1px solid rgba(0, 0, 0, 0.08);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04),
-              inset 0 1px 0 rgba(255, 255, 255, 0.85);
-}
-
-.option-btn:hover:not(:disabled) {
-  background: rgba(56, 189, 248, 0.14);
-  border-color: rgba(56, 189, 248, 0.4);
-  box-shadow: 0 6px 20px rgba(56, 189, 248, 0.2),
-              inset 0 1px 0 rgba(255, 255, 255, 0.1);
-}
-
-/* Trạng thái được chọn trước khi nộp bài */
-.option-btn.selected {
-  background: rgba(56, 189, 248, 0.22) !important;
-  border-color: var(--accent-primary) !important;
-  box-shadow: 0 0 18px rgba(56, 189, 248, 0.35),
-              inset 0 1px 0 rgba(255, 255, 255, 0.15) !important;
-  color: var(--text-primary) !important;
-}
-
-/* Trạng thái đáp án Đúng sau khi nộp bài */
-.option-btn.correct {
-  background: rgba(52, 211, 153, 0.24) !important;
-  border-color: var(--accent-green) !important;
-  color: var(--accent-green) !important;
-  box-shadow: 0 0 20px rgba(52, 211, 153, 0.4),
-              inset 0 1px 0 rgba(255, 255, 255, 0.2) !important;
-}
-
-/* Trạng thái đáp án Sai sau khi nộp bài */
-.option-btn.incorrect,
-.option-btn.wrong {
-  background: rgba(248, 113, 113, 0.24) !important;
-  border-color: var(--accent-red) !important;
-  color: var(--accent-red) !important;
-  box-shadow: 0 0 20px rgba(248, 113, 113, 0.4),
-              inset 0 1px 0 rgba(255, 255, 255, 0.2) !important;
-}
-
-/* --- 12G. NÚT PHÁT ÂM (SPEECH BUTTONS) KÍNH LỎNG --- */
-.speak-btn {
-  background: rgba(51, 65, 85, 0.55);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12),
-              inset 0 1px 0 rgba(255, 255, 255, 0.06);
-}
-
-[data-theme="light"] .speak-btn {
-  background: rgba(241, 245, 249, 0.6);
-  border: 1px solid rgba(0, 0, 0, 0.08);
-}
-
-.speak-btn:hover {
-  background: rgba(56, 189, 248, 0.3);
-  border-color: var(--accent-primary);
-  box-shadow: 0 4px 16px rgba(56, 189, 248, 0.35),
-              inset 0 1px 0 rgba(255, 255, 255, 0.15);
-}
-
-/* --- 12H. NÚT HOÀN THÀNH BÀI HỌC & LÀM LẠI --- */
-.btn-complete-lesson {
-  background-color: rgba(51, 65, 85, 0.45);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1),
-              inset 0 1px 0 rgba(255, 255, 255, 0.06);
-}
-
-[data-theme="light"] .btn-complete-lesson {
-  background-color: rgba(241, 245, 249, 0.55);
-  border: 1px solid rgba(0, 0, 0, 0.07);
-}
-
-.btn-complete-lesson:hover {
-  background-color: rgba(52, 211, 153, 0.18) !important;
-  border-color: var(--accent-green) !important;
-  color: var(--accent-green) !important;
-}
-
-.btn-complete-lesson.is-completed {
-  background-color: rgba(52, 211, 153, 0.22) !important;
-  border-color: var(--accent-green) !important;
-  color: var(--accent-green) !important;
-}
-
-.btn-redo {
-  background-color: rgba(51, 65, 85, 0.4);
-  border: 1px solid rgba(255, 255, 255, 0.09);
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
-}
-
-[data-theme="light"] .btn-redo {
-  background-color: rgba(241, 245, 249, 0.5);
-  border: 1px solid rgba(0, 0, 0, 0.07);
-}
-
-.btn-redo:hover {
-  background-color: rgba(248, 113, 113, 0.18) !important;
-  border-color: var(--accent-red) !important;
-  color: var(--accent-red) !important;
-}
-
-/* --- 12I. THANH NỘP BÀI (SUBMIT DOCK) KÍNH LỎNG --- */
-.quiz-submit-section {
-  background: rgba(11, 17, 32, 0.55);
-  backdrop-filter: blur(16px) saturate(160%);
-  -webkit-backdrop-filter: blur(16px) saturate(160%);
-  border: 1px solid rgba(255, 255, 255, 0.09);
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.16),
-              inset 0 1px 0 rgba(255, 255, 255, 0.06);
-}
-
-[data-theme="light"] .quiz-submit-section {
-  background: rgba(248, 250, 252, 0.55);
-  border: 1px solid rgba(0, 0, 0, 0.07);
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04),
-              inset 0 1px 0 rgba(255, 255, 255, 0.85);
-}
-
-.btn-submit-exam {
-  background: linear-gradient(135deg, rgba(2, 132, 199, 0.85), rgba(37, 99, 235, 0.85));
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  box-shadow: 0 4px 16px rgba(2, 132, 199, 0.35),
-              inset 0 1px 0 rgba(255, 255, 255, 0.2);
-}
-
-/* --- 12J. THÔNG BÁO NỔI (TOAST NOTIFICATION) KÍNH LỎNG --- */
-.toast-notification {
-  background-color: rgba(30, 41, 59, 0.75);
-  backdrop-filter: blur(20px) saturate(180%);
-  -webkit-backdrop-filter: blur(20px) saturate(180%);
-  border: 1px solid rgba(56, 189, 248, 0.35);
-  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3),
-              inset 0 1px 0 rgba(255, 255, 255, 0.1);
-}
-
-[data-theme="light"] .toast-notification {
-  background-color: rgba(255, 255, 255, 0.75);
-  border: 1px solid rgba(2, 132, 199, 0.35);
-  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08),
-              inset 0 1px 0 rgba(255, 255, 255, 0.95);
-}
-
-
 
 
 /* ==========================================================================
@@ -3488,9 +3493,9 @@ rt,
     gap: 6px;
   }
 
-  /* Nút Menu Hamburger & Nút Theme: Vùng chạm chuẩn 44x44px, không delay */
+  /* Nút Menu Hamburger, Nút Theme & Nút Giọng nói: Vùng chạm chuẩn 44x44px, không delay */
   .menu-toggle-btn,
-  .mobile-menu-btn,
+  .voice-settings-btn,
   .theme-toggle-btn {
     width: 44px;
     height: 44px;
@@ -4085,8 +4090,7 @@ rt,
 
   /* Khắc phục lỗi hủy sự kiện click do ngón tay rung/dịch chuyển vi mô khi ấn */
   .btn-enter-app:active,
-  .menu-toggle-btn:active,
-  .mobile-menu-btn:active,
+  .menu-toggle-btn:active:active,
   .close-sidebar-btn:active,
   .speak-btn:active,
   .speak-btn-mini:active,
