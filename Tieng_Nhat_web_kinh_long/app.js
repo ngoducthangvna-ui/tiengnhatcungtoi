@@ -109,8 +109,32 @@ function hasKanjiCharacter(text) {
   return /[\u4e00-\u9faf\u3400-\u4dbf\uf900-\ufaff]/.test(clean);
 }
 
-function speakJapanese(text, btnElement) {
-  // Xác định nút phát âm và kích hoạt đèn báo rơ-le tức thời ngay mili-giây đầu tiên
+let currentSpeechAudio = null;
+
+function stopAllSpeechAudio() {
+  document.querySelectorAll('.speak-btn.is-speaking, .speak-btn-mini.is-speaking').forEach(b => {
+    b.classList.remove('is-speaking');
+  });
+  if (currentSpeechAudio) {
+    try {
+      currentSpeechAudio.pause();
+      currentSpeechAudio.currentTime = 0;
+    } catch (e) {}
+    currentSpeechAudio = null;
+  }
+  if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
+    try {
+      window.speechSynthesis.cancel();
+    } catch (e) {}
+  }
+}
+
+function speakJapanese(text, btnElement, ev) {
+  if (ev && ev.stopPropagation) {
+    ev.stopPropagation();
+  }
+
+  // Xác định nút phát âm
   let btn = btnElement;
   if (!btn && typeof window !== 'undefined' && window.event) {
     const target = window.event.currentTarget || window.event.target;
@@ -119,10 +143,8 @@ function speakJapanese(text, btnElement) {
     }
   }
 
-  // Gỡ bỏ trạng thái phát âm trên các nút khác (nếu có)
-  document.querySelectorAll('.speak-btn.is-speaking, .speak-btn-mini.is-speaking').forEach(b => {
-    b.classList.remove('is-speaking');
-  });
+  // Dừng mọi âm thanh đang phát trước đó
+  stopAllSpeechAudio();
 
   if (btn && btn.classList) {
     btn.classList.add('is-speaking');
@@ -134,28 +156,80 @@ function speakJapanese(text, btnElement) {
     }
   };
 
-  if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
-    window.speechSynthesis.cancel();
-    const cleanText = cleanSpeechText(text);
-    if (!cleanText) {
+  const cleanText = cleanSpeechText(text);
+  if (!cleanText) {
+    stopRelay();
+    return;
+  }
+
+  // Timeout an toàn 5s tự tắt đèn rơ-le nếu có lỗi
+  const safetyTimer = setTimeout(stopRelay, 5000);
+
+  // 1. Thử phát qua audio online giọng chuẩn Tokyo (chạy mượt 100% trên điện thoại không cần cài gói giọng offline)
+  let audioWorked = false;
+  try {
+    const audioUrl = `https://translate.google.com/translate_tts?ie=UTF-8&tl=ja&client=tw-ob&q=${encodeURIComponent(cleanText)}`;
+    const audio = new Audio(audioUrl);
+    currentSpeechAudio = audio;
+    audio.playbackRate = 0.92;
+
+    audio.onended = () => {
+      clearTimeout(safetyTimer);
       stopRelay();
-      return;
+      if (currentSpeechAudio === audio) currentSpeechAudio = null;
+    };
+
+    audio.onerror = () => {
+      if (!audioWorked) {
+        playWithWebSpeechFallback(cleanText, stopRelay, safetyTimer);
+      }
+    };
+
+    const p = audio.play();
+    if (p !== undefined) {
+      p.then(() => {
+        audioWorked = true;
+      }).catch(() => {
+        playWithWebSpeechFallback(cleanText, stopRelay, safetyTimer);
+      });
     }
-    const utterance = new SpeechSynthesisUtterance(cleanText);
-    utterance.lang = 'ja-JP';
-    utterance.rate = 0.85;
-
-    utterance.onend = stopRelay;
-    utterance.onerror = stopRelay;
-
-    // Timeout an toàn tự ngắt sau 3.5s nếu trình duyệt bị treo sự kiện audio
-    setTimeout(stopRelay, 3500);
-
-    window.speechSynthesis.speak(utterance);
-  } else {
-    setTimeout(stopRelay, 600);
+  } catch (err) {
+    playWithWebSpeechFallback(cleanText, stopRelay, safetyTimer);
   }
 }
+
+function playWithWebSpeechFallback(cleanText, stopRelay, safetyTimer) {
+  if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
+    try {
+      if (window.speechSynthesis.paused) {
+        window.speechSynthesis.resume();
+      }
+      const utterance = new SpeechSynthesisUtterance(cleanText);
+      utterance.lang = 'ja-JP';
+      utterance.rate = 0.85;
+
+      utterance.onend = () => {
+        clearTimeout(safetyTimer);
+        stopRelay();
+      };
+      utterance.onerror = () => {
+        clearTimeout(safetyTimer);
+        stopRelay();
+      };
+
+      window.speechSynthesis.speak(utterance);
+    } catch (e) {
+      clearTimeout(safetyTimer);
+      stopRelay();
+    }
+  } else {
+    clearTimeout(safetyTimer);
+    stopRelay();
+  }
+}
+
+// Luôn gán vào window để sự kiện inline onclick trên điện thoại nhận 100%
+window.speakJapanese = speakJapanese;
 
 const SPEAKER_ICON_HTML = `<svg class="speaker-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path><path d="M19.07 4.93a10 10 0 0 1 0 14.14"></path></svg>`;
 
@@ -223,7 +297,7 @@ function renderGrammarExamples(examples, fallbackHtml) {
                     <div class="speaker-badge speaker-${line.speaker.toLowerCase()}">${line.speaker}</div>
                     <div class="dialogue-bubble">
                       <div class="dialogue-jp">
-                        <button class="speak-btn" onclick="speakJapanese('${cleanSpeech}', this)" title="Nghe câu này">${SPEAKER_ICON_HTML}</button>
+                        <button class="speak-btn" onclick="speakJapanese('${cleanSpeech}', this, event)" title="Nghe câu này">${SPEAKER_ICON_HTML}</button>
                         <span class="jp-sentence">${line.jp}</span>
                       </div>
                       <div class="dialogue-vi">${line.vi}</div>
@@ -245,7 +319,7 @@ function renderGrammarExamples(examples, fallbackHtml) {
             </div>
             <div class="sentence-box">
               <div class="sentence-jp">
-                <button class="speak-btn" onclick="speakJapanese('${cleanSpeech}', this)" title="Nghe câu này">${SPEAKER_ICON_HTML}</button>
+                <button class="speak-btn" onclick="speakJapanese('${cleanSpeech}', this, event)" title="Nghe câu này">${SPEAKER_ICON_HTML}</button>
                 <span class="jp-sentence">${ex.jp}</span>
               </div>
               <div class="sentence-vi">
@@ -518,7 +592,7 @@ function renderContent(id) {
                 <tr>
                   <td class="vocab-col-kanji">
                     <div class="vocab-kanji-wrap">
-                      <button class="speak-btn" onclick="speakJapanese('${speechTarget}', this)" title="Phát âm từ này">${SPEAKER_ICON_HTML}</button>
+                      <button class="speak-btn" onclick="speakJapanese('${speechTarget}', this, event)" title="Phát âm từ này">${SPEAKER_ICON_HTML}</button>
                       ${hasKanji ? `<strong>${v.kanji}</strong>` : `<span class="vocab-no-kanji">—</span>`}
                     </div>
                   </td>
@@ -1584,17 +1658,31 @@ window.switchModule = function(targetId) {
 // --------------------------------------------------------------------------
 // 8. KHỞI CHẠY GIAO DIỆN & SỰ KIỆN
 // --------------------------------------------------------------------------
+function applyTheme(themeName) {
+  // Thêm class theme-switching để vô hiệu hóa mọi transition nặng nề gây lag trên điện thoại
+  document.documentElement.classList.add('theme-switching');
+  document.documentElement.setAttribute('data-theme', themeName);
+  localStorage.setItem('minna_theme', themeName);
+
+  // Sau khi DOM repaint màu mới xong thì gỡ bỏ class
+  requestAnimationFrame(() => {
+    requestAnimationFrame(() => {
+      document.documentElement.classList.remove('theme-switching');
+    });
+  });
+}
+
 function initThemeToggle() {
   const saved = localStorage.getItem('minna_theme') || 'dark';
   document.documentElement.setAttribute('data-theme', saved);
 
   const btn = document.getElementById('theme-toggle-btn');
   if (btn) {
-    btn.addEventListener('click', () => {
+    btn.addEventListener('click', (e) => {
+      if (e && e.stopPropagation) e.stopPropagation();
       const cur = document.documentElement.getAttribute('data-theme') || 'dark';
       const nxt = cur === 'dark' ? 'light' : 'dark';
-      document.documentElement.setAttribute('data-theme', nxt);
-      localStorage.setItem('minna_theme', nxt);
+      applyTheme(nxt);
       showToast(nxt === 'dark' ? 'Đã đổi sang giao diện Tối' : 'Đã đổi sang giao diện Sáng');
     });
   }
