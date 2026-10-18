@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="vi" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tự Học Tiếng Nhật N5 - N4 | Minna no Nihongo & Luyện Thi JLPT</title>
+  
+  <!-- Font chữ tiếng Nhật & tiếng Việt chuyên dụng -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
+  
+  <!-- Giao diện CSS thuần -->
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <!-- NỀN GRADIENT LỎNG ĐỘNG: Các blob màu chuyển động tạo nền cho hiệu ứng kính lỏng -->
+  <div class="liquid-glass-bg" aria-hidden="true">
+    <div class="glass-blob blob-1"></div>
+    <div class="glass-blob blob-2"></div>
+    <div class="glass-blob blob-3"></div>
+    <div class="glass-blob blob-4"></div>
+  </div>
+
+  <!-- 0. TRANG BÌA GIỚI THIỆU PHONG CÁCH NHẬT BẢN (COVER SLIDE SCREEN) -->
+  <section id="cover-page-slide" class="cover-page-slide" aria-label="Trang bìa giới thiệu khóa học Tiếng Nhật">
+    <!-- Nền trang trí phong cách Nhật Bản: Mặt trời đỏ Hinomaru, Núi Phú Sĩ & Cánh hoa anh đào -->
+    <div class="cover-bg-art" aria-hidden="true">
+      <div class="japan-sun"></div>
+      <svg class="japan-fuji-svg" viewBox="0 0 1200 360" preserveAspectRatio="none">
+        <path class="fuji-base" d="M 0,360 L 0,260 Q 350,220 540,110 Q 580,85 600,85 Q 620,85 660,110 Q 850,220 1200,260 L 1200,360 Z"></path>
+        <path class="fuji-snow" d="M 540,110 Q 580,85 600,85 Q 620,85 660,110 Q 635,145 615,135 Q 595,150 575,135 Q 555,145 540,110 Z"></path>
+      </svg>
+      <!-- Cánh hoa anh đào rơi bồng bềnh nhẹ nhàng -->
+      <div class="sakura-petals-layer">
+        <span class="petal p1"></span>
+        <span class="petal p2"></span>
+        <span class="petal p3"></span>
+        <span class="petal p4"></span>
+        <span class="petal p5"></span>
+        <span class="petal p6"></span>
+        <span class="petal p7"></span>
+        <span class="petal p8"></span>
+        <span class="petal p9"></span>
+        <span class="petal p10"></span>
+      </div>
+    </div>
+
+    <!-- Thanh công cụ trên cùng của trang bìa -->
+    <div class="cover-top-bar">
+      <button id="cover-theme-toggle" class="cover-theme-toggle" aria-label="Đổi giao diện Sáng / Tối" title="Đổi giao diện Sáng / Tối">
+        <span class="theme-icon light-icon" title="Chuyển sang giao diện Sáng">
+          <svg class="theme-svg sun-svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="5"></circle>
+            <line x1="12" y1="1" x2="12" y2="3"></line>
+            <line x1="12" y1="21" x2="12" y2="23"></line>
+            <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+            <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+            <line x1="1" y1="12" x2="3" y2="12"></line>
+            <line x1="21" y1="12" x2="23" y2="12"></line>
+            <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+            <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+          </svg>
+        </span>
+        <span class="theme-icon dark-icon" title="Chuyển sang giao diện Tối">
+          <svg class="theme-svg moon-svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+          </svg>
+        </span>
+      </button>
+    </div>
+
+    <!-- Khối nội dung trung tâm của trang bìa -->
+    <div class="cover-container">
+      <!-- Cột thư pháp tiếng Nhật bên trái (Tatechugoki) -->
+      <div class="cover-vertical-kanji cover-kanji-left" aria-hidden="true">
+        <span>千里の道も一歩から</span>
+      </div>
+
+      <!-- Khối chính trung tâm -->
+      <div class="cover-hero-content">
+        <!-- Huy hiệu phong cách Zen -->
+        <div class="cover-zen-badge">
+          <span class="zen-icon">🌸</span>
+          <span class="zen-text">TỰ HỌC TIẾNG NHẬT • MINNA NO NIHONGO N5 & N4</span>
+        </div>
+
+        <h1 class="cover-main-title">
+          <span class="cover-title-hero">日本語の道</span>
+          <span class="cover-title-desc">Hành Trình Chinh Phục Tiếng Nhật Toàn Diện</span>
+        </h1>
+
+        <!-- Thẻ tóm tắt 4 trụ cột học tập -->
+        <div class="cover-features-grid">
+          <div class="cover-feature-card">
+            <div class="feature-icon-box">⛩️</div>
+            <div class="feature-info">
+              <h3 class="feature-title">50 Bài Học Chuẩn</h3>
+              <p class="feature-desc">Từ vựng & cấu trúc ngữ pháp chuẩn Minna no Nihongo từ Bài 1 đến Bài 50.</p>
+            </div>
+          </div>
+
+          <div class="cover-feature-card">
+            <div class="feature-icon-box">🔊</div>
+            <div class="feature-info">
+              <h3 class="feature-title">Furigana & Phát Âm</h3>
+              <p class="feature-desc">100% chữ Hán có phiên âm Ruby, hỗ trợ nghe phát âm giọng chuẩn Tokyo từng câu.</p>
+            </div>
+          </div>
+
+          <div class="cover-feature-card">
+            <div class="feature-icon-box">🎯</div>
+            <div class="feature-info">
+              <h3 class="feature-title">2.500 Câu Trắc Nghiệm</h3>
+              <p class="feature-desc">50 bộ đề trắc nghiệm JLPT với 50 câu mỗi bài, chấm điểm và xem giải thích tức thì.</p>
+            </div>
+          </div>
+
+          <div class="cover-feature-card">
+            <div class="feature-icon-box">📜</div>
+            <div class="feature-info">
+              <h3 class="feature-title">50 Bài Đọc Hiểu Dokkai</h3>
+              <p class="feature-desc">Rèn luyện kỹ năng đọc hiểu văn bản tiếng Nhật theo từng cấp độ bài học thực tế.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Nút hành động chính -->
+        <div class="cover-actions-group">
+          <button id="btn-enter-app" class="btn-enter-app" title="Bắt đầu vào giao diện học tập">
+            <span class="btn-enter-vi">Bắt Đầu Học Ngay</span>
+            <div class="btn-enter-arrow">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="5" y1="12" x2="19" y2="12"></line>
+                <polyline points="12 5 19 12 12 19"></polyline>
+              </svg>
+            </div>
+          </button>
+        </div>
+      </div>
+
+      <!-- Cột thư pháp tiếng Nhật bên phải (Tatechugoki) -->
+      <div class="cover-vertical-kanji cover-kanji-right" aria-hidden="true">
+        <span>初心忘るべからず</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- 1. THANH HEADER CỐ ĐỊNH TRÊN CÙNG -->
+  <header class="app-header">
+    <div class="header-left">
+      <button id="menu-toggle-btn" class="menu-toggle-btn is-collapsed" aria-label="Đóng mở menu" aria-expanded="false" title="Mở menu bài học (Ctrl + B)">
+        <svg class="hamburger-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <line class="line line-top" x1="3" y1="6" x2="21" y2="6"></line>
+          <line class="line line-mid" x1="3" y1="12" x2="21" y2="12"></line>
+          <line class="line line-bot" x1="3" y1="18" x2="21" y2="18"></line>
+        </svg>
+      </button>
+
+      <div class="brand" id="brand-home-btn" title="Về trang bìa giới thiệu" style="cursor: pointer;">
+        <span class="brand-badge">日本語</span>
+      </div>
+    </div>
+
+    <!-- Thanh tìm kiếm nhanh Ctrl + K -->
+    <div class="header-search-container">
+      <div class="search-box-wrapper">
+        <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="11" cy="11" r="8"></circle>
+          <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+        </svg>
+        <input 
+          type="text" 
+          id="quick-search-input" 
+          class="quick-search-input" 
+          placeholder="Tìm từ vựng, ngữ pháp, kanji... (Ctrl + K)" 
+          autocomplete="off" 
+          spellcheck="false"
+        >
+        <div class="search-shortcut">
+          <kbd>Ctrl</kbd> + <kbd>K</kbd>
+        </div>
+      </div>
+
+      <!-- Dropdown hiển thị kết quả tìm kiếm tức thì -->
+      <div id="search-dropdown" class="search-dropdown">
+        <div class="search-dropdown-header">
+          <span id="search-count-label">Nhập từ khóa để tra cứu</span>
+          <span class="search-hint-esc">ESC để đóng</span>
+        </div>
+        <div id="search-results-list" class="search-results-list"></div>
+      </div>
+    </div>
+
+    <!-- Chuyển giao diện Sáng / Tối -->
+    <div class="header-right">
+      <button id="theme-toggle-btn" class="theme-toggle-btn" aria-label="Đổi giao diện Sáng / Tối" title="Đổi giao diện Sáng / Tối">
+        <span class="theme-icon light-icon" title="Chuyển sang giao diện Sáng">
+          <svg class="theme-svg sun-svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="5"></circle>
+            <line x1="12" y1="1" x2="12" y2="3"></line>
+            <line x1="12" y1="21" x2="12" y2="23"></line>
+            <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+            <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+            <line x1="1" y1="12" x2="3" y2="12"></line>
+            <line x1="21" y1="12" x2="23" y2="12"></line>
+            <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+            <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+          </svg>
+        </span>
+        <span class="theme-icon dark-icon" title="Chuyển sang giao diện Tối">
+          <svg class="theme-svg moon-svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+          </svg>
+        </span>
+      </button>
+    </div>
+  </header>
+
+  <!-- Lớp phủ cho màn hình nhỏ khi mở sidebar mobile -->
+  <div id="sidebar-overlay" class="sidebar-overlay"></div>
+
+  <!-- 2. BỐ CỤC CHÍNH (LAYOUT 2 CỘT) -->
+  <div class="app-layout">
+    <!-- Cột bên trái: Sidebar (chiếm 15% chiều rộng) chứa toàn bộ danh mục bài học -->
+    <aside id="sidebar" class="sidebar collapsed">
+      <!-- Vùng chứa các nhóm mục lục được render tự động qua JS từ Database -->
+      <nav id="sidebar-menu" class="sidebar-menu" aria-label="Mục lục khóa học">
+        <!-- Render tự động bởi app.js - TUYỆT ĐỐI KHÔNG HARDCODE Ở ĐÂY -->
+      </nav>
+
+      <!-- Sidebar Footer: Gợi ý phím tắt -->
+      <div class="sidebar-footer">
+        <span class="shortcut-tip">Phím tắt: Ctrl + K để tìm kiếm nhanh</span>
+      </div>
+    </aside>
+
+    <!-- Cột bên phải: Main Content (chiếm 85% chiều rộng) cuộn được chứa chi tiết bài học / Đề thi -->
+    <main id="main-content" class="main-content">
+      <!-- Vùng chứa nội dung chi tiết được JS tự động nạp vào -->
+      <div id="lesson-content" class="lesson-content">
+        <!-- Render tự động bởi app.js qua hàm renderContent(id) -->
+      </div>
+    </main>
+  </div>
+
+  <!-- Hộp thông báo nhanh Toast Notification -->
+  <div id="toast-notification" class="toast-notification"></div>
+
+  <!-- Dữ liệu bài học, bài đọc hiểu và bài tập (Bài 1 - 50 N5 & N4) -->
+  <script src="data/lessons_1_5.js"></script>
+  <script src="data/lessons_6_10.js"></script>
+  <script src="data/lessons_11_15.js"></script>
+  <script src="data/lessons_16_20.js"></script>
+  <script src="data/lessons_21_25.js"></script>
+  <script src="data/lessons_26_30.js"></script>
+  <script src="data/lessons_31_35.js"></script>
+  <script src="data/lessons_36_40.js"></script>
+  <script src="data/lessons_41_45.js"></script>
+  <script src="data/lessons_46_50.js"></script>
+  <script src="data/lessons.js"></script>
+  <script src="data/dokkai.js"></script>
+  <script src="data/quizzes_1_5.js"></script>
+  <script src="data/quizzes_6_10.js"></script>
+  <script src="data/quizzes_11_15.js"></script>
+  <script src="data/quizzes_16_20.js"></script>
+  <script src="data/quizzes_21_25.js"></script>
+  <script src="data/quizzes_26_30.js"></script>
+  <script src="data/quizzes_31_35.js"></script>
+  <script src="data/quizzes_36_40.js"></script>
+  <script src="data/quizzes_41_45.js"></script>
+  <script src="data/quizzes_46_50.js"></script>
+  <script src="data/quiz-master.js"></script>
+  <!-- Dữ liệu 176 Bộ thủ tiếng Nhật (Ngọc Tiệp Minato) -->
+  <script src="data/radicals_data.js"></script>
+  <!-- File logic JavaScript thuần -->
+  <script src="app.js"></script>
+</body>
+</html>
