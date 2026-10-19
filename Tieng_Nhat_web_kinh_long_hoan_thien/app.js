@@ -2771,3 +2771,182 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 })();
+function renderLessonPractice(vocabList, containerSelector = 'main') {
+  if (!Array.isArray(vocabList) || vocabList.length === 0) return;
+
+  const container = document.querySelector(containerSelector);
+  if (!container) return;
+
+  // Xóa khối cũ nếu chuyển bài
+  const oldHub = document.getElementById('lesson-practice-hub');
+  if (oldHub) oldHub.remove();
+
+  // 1. Chuẩn hóa dữ liệu từ vựng (Chỉ lấy Hiragana cho Flashcard, lọc Kanji cho Quiz)
+  const cleanVocab = vocabList.map(item => ({
+    kanji: (item.kanji || item.word || '').trim(),
+    hiragana: (item.hiragana || item.kana || item.reading || '').trim(),
+    meaning: (item.meaning || item.vi || '').trim()
+  })).filter(v => v.hiragana && v.meaning);
+
+  const kanjiRegex = /[\u4e00-\u9faf]/;
+  const kanjiList = cleanVocab.filter(v => kanjiRegex.test(v.kanji));
+
+  const hub = document.createElement('section');
+  hub.id = 'lesson-practice-hub';
+  hub.className = 'practice-hub';
+
+  hub.innerHTML = `
+    <!-- KHỐI 1: FLASHCARD CHỈ HIRAGANA -->
+    <div class="practice-box">
+      <h3>
+        <span>🗂️ Flashcard Từ Mới (Chỉ Hiragana)</span>
+        <span id="fc-counter">1 / ${cleanVocab.length}</span>
+      </h3>
+      <div class="fc-card" id="fc-card">
+        <div class="fc-hiragana" id="fc-kana"></div>
+        <div class="fc-meaning" id="fc-vi"></div>
+        <div class="fc-hint">Bấm vào thẻ để lật xem nghĩa tiếng Việt</div>
+      </div>
+      <div class="fc-controls">
+        <button class="btn-tool" id="fc-prev">⬅ Trước</button>
+        <button class="btn-tool" id="fc-speak">🔊 Nghe</button>
+        <button class="btn-tool" id="fc-shuffle">🔀 Trộn</button>
+        <button class="btn-tool" id="fc-next">Tiếp ➡</button>
+      </div>
+    </div>
+
+    <!-- KHỐI 2: KIỂM TRA CHỮ HÁN TỪNG BÀI -->
+    <div class="practice-box">
+      <h3>
+        <span>✍️ Kiểm Tra Chữ Hán Trong Bài</span>
+        <span id="kq-score">Đúng: 0/${kanjiList.length}</span>
+      </h3>
+      <div id="kq-body"></div>
+      <div class="kq-controls">
+        <button class="btn-tool" id="kq-mode-btn">Chế độ: Kanji ➔ Hiragana</button>
+        <button class="btn-tool" id="kq-reset-btn">🔄 Làm mới đề</button>
+      </div>
+    </div>
+  `;
+
+  container.prepend(hub);
+
+  // --- LOGIC FLASHCARD (CHỈ HIRAGANA) ---
+  let fcDeck = [...cleanVocab];
+  let fcIndex = 0;
+  const fcCard = hub.querySelector('#fc-card');
+  const fcKana = hub.querySelector('#fc-kana');
+  const fcVi = hub.querySelector('#fc-vi');
+  const fcCounter = hub.querySelector('#fc-counter');
+
+  function updateFlashcard() {
+    const item = fcDeck[fcIndex];
+    fcCard.classList.remove('flipped');
+    fcKana.textContent = item.hiragana; // Chỉ hiển thị Hiragana
+    fcVi.textContent = item.meaning;
+    fcCounter.textContent = `${fcIndex + 1} / ${fcDeck.length}`;
+  }
+
+  fcCard.onclick = () => fcCard.classList.toggle('flipped');
+  hub.querySelector('#fc-prev').onclick = () => {
+    fcIndex = (fcIndex - 1 + fcDeck.length) % fcDeck.length;
+    updateFlashcard();
+  };
+  hub.querySelector('#fc-next').onclick = () => {
+    fcIndex = (fcIndex + 1) % fcDeck.length;
+    updateFlashcard();
+  };
+  hub.querySelector('#fc-shuffle').onclick = () => {
+    fcDeck.sort(() => Math.random() - 0.5);
+    fcIndex = 0;
+    updateFlashcard();
+  };
+  hub.querySelector('#fc-speak').onclick = (e) => {
+    e.stopPropagation();
+    const utter = new SpeechSynthesisUtterance(fcDeck[fcIndex].hiragana);
+    utter.lang = 'ja-JP';
+    speechSynthesis.speak(utter);
+  };
+  updateFlashcard();
+
+  // --- LOGIC KIỂM TRA CHỮ HÁN (KANJI QUIZ) ---
+  const kqBody = hub.querySelector('#kq-body');
+  const kqScoreEl = hub.querySelector('#kq-score');
+  const kqModeBtn = hub.querySelector('#kq-mode-btn');
+  let quizMode = 'hiragana'; // 'hiragana' hoặc 'meaning'
+  let kqDeck = [];
+  let kqIndex = 0;
+  let kqCorrect = 0;
+
+  function startKanjiQuiz() {
+    if (kanjiList.length < 2) {
+      kqBody.innerHTML = `<p style="text-align:center;color:#94a3b8;">Bài này không có đủ chữ Hán để tạo trắc nghiệm.</p>`;
+      return;
+    }
+    kqDeck = [...kanjiList].sort(() => Math.random() - 0.5);
+    kqIndex = 0;
+    kqCorrect = 0;
+    renderKanjiQuestion();
+  }
+
+  function renderKanjiQuestion() {
+    kqScoreEl.textContent = `Đúng: ${kqCorrect}/${kqDeck.length}`;
+    if (kqIndex >= kqDeck.length) {
+      kqBody.innerHTML = `
+        <div class="kq-question" style="font-size:20px;color:#4ade80;">
+          🎉 Hoàn thành! Kết quả: ${kqCorrect} / ${kqDeck.length} câu đúng
+        </div>`;
+      return;
+    }
+
+    const current = kqDeck[kqIndex];
+    const answerKey = quizMode === 'hiragana' ? 'hiragana' : 'meaning';
+    const wrongPool = cleanVocab
+      .filter(v => v[answerKey] !== current[answerKey])
+      .sort(() => Math.random() - 0.5)
+      .slice(0, 3);
+
+    const options = [current, ...wrongPool].sort(() => Math.random() - 0.5);
+
+    kqBody.innerHTML = `
+      <div class="kq-question">${current.kanji}</div>
+      <div class="kq-options">
+        ${options.map(opt => `
+          <button class="kq-opt" data-ans="${opt[answerKey]}">${opt[answerKey]}</button>
+        `).join('')}
+      </div>
+    `;
+
+    const optBtns = kqBody.querySelectorAll('.kq-opt');
+    optBtns.forEach(btn => {
+      btn.onclick = () => {
+        optBtns.forEach(b => b.disabled = true);
+        if (btn.dataset.ans === current[answerKey]) {
+          btn.classList.add('correct');
+          kqCorrect++;
+        } else {
+          btn.classList.add('wrong');
+          optBtns.forEach(b => {
+            if (b.dataset.ans === current[answerKey]) b.classList.add('correct');
+          });
+        }
+        kqScoreEl.textContent = `Đúng: ${kqCorrect}/${kqDeck.length}`;
+        setTimeout(() => {
+          kqIndex++;
+          renderKanjiQuestion();
+        }, 900);
+      };
+    });
+  }
+
+  kqModeBtn.onclick = () => {
+    quizMode = quizMode === 'hiragana' ? 'meaning' : 'hiragana';
+    kqModeBtn.textContent = quizMode === 'hiragana' 
+      ? 'Chế độ: Kanji ➔ Hiragana' 
+      : 'Chế độ: Kanji ➔ Nghĩa Việt';
+    startKanjiQuiz();
+  };
+  hub.querySelector('#kq-reset-btn').onclick = startKanjiQuiz;
+
+  startKanjiQuiz();
+}
