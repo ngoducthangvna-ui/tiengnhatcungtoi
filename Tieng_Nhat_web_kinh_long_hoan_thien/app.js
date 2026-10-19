@@ -2706,4 +2706,68 @@ document.addEventListener('DOMContentLoaded', () => {
 
   switchModule(initialId, false);
 });
+/* ==========================================================================
+   MODULE TỐI ƯU HIỆU NĂNG & NÂNG CẤP TRẢI NGHIỆM HỌC TẬP (UX BOOSTER)
+   ========================================================================== */
 
+(function () {
+  // 1. Bộ nạp dữ liệu thông minh (Lazy Script Loader có bộ nhớ đệm)
+  const loadedScripts = new Set();
+
+  window.loadDataChunk = function (scriptPath) {
+    if (loadedScripts.has(scriptPath)) {
+      return Promise.resolve();
+    }
+    return new Promise((resolve, reject) => {
+      const existing = document.querySelector(`script[src="${scriptPath}"]`);
+      if (existing) {
+        loadedScripts.add(scriptPath);
+        return resolve();
+      }
+      const script = document.createElement('script');
+      script.src = scriptPath;
+      script.async = true;
+      script.onload = () => {
+        loadedScripts.add(scriptPath);
+        resolve();
+      };
+      script.onerror = () => reject(new Error(`Không thể tải dữ liệu: ${scriptPath}`));
+      document.body.appendChild(script);
+    });
+  };
+
+  // 2. Tự động lưu và khôi phục bài học gần nhất (Hash Persistence)
+  window.addEventListener('hashchange', () => {
+    if (window.location.hash) {
+      localStorage.setItem('nihongo_last_hash', window.location.hash);
+    }
+  });
+
+  window.addEventListener('DOMContentLoaded', () => {
+    const savedHash = localStorage.getItem('nihongo_last_hash');
+    if (!window.location.hash && savedHash) {
+      window.location.hash = savedHash;
+    }
+
+    // Đảm bảo thẻ meta viewport chuẩn trên mọi trình duyệt di động (kể cả Zalo WebView)
+    let viewport = document.querySelector('meta[name="viewport"]');
+    if (!viewport) {
+      viewport = document.createElement('meta');
+      viewport.name = 'viewport';
+      document.head.appendChild(viewport);
+    }
+    viewport.content = 'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no';
+  });
+
+  // 3. Phím tắt Ctrl + K / Cmd + K để nhảy nhanh vào ô Tìm kiếm
+  document.addEventListener('keydown', (e) => {
+    if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') {
+      e.preventDefault();
+      const searchInput = document.querySelector('input[type="search"], input[type="text"]');
+      if (searchInput) {
+        searchInput.focus();
+        searchInput.select();
+      }
+    }
+  });
+})();

@@ -4973,4 +4973,101 @@ body.hide-furigana #btn-toggle-furigana {
     filter: brightness(0.92);
   }
 }
+/* ==========================================================================
+   BẢN VÁ LỖI TRÀN MÀN HÌNH MOBILE & TỐI ƯU GIAO DIỆN (RESPONSIVE FIX)
+   ========================================================================== */
 
+/* 1. Khóa tràn ngang toàn cục và chuẩn hóa kích thước khung */
+*, *::before, *::after {
+  box-sizing: border-box !important;
+}
+
+html, body {
+  width: 100% !important;
+  max-width: 100vw !important;
+  overflow-x: hidden !important;
+  margin: 0;
+  padding: 0;
+  -webkit-text-size-adjust: 100%;
+}
+
+/* 2. Đảm bảo tất cả các khung chứa chính và thẻ bài học không vượt quá màn hình */
+main, 
+.main-content, 
+.container, 
+.content-wrapper, 
+.lesson-card, 
+.vocab-section,
+[class*="card"], 
+[class*="container"],
+[class*="wrapper"] {
+  max-width: 100% !important;
+  min-width: 0 !important;
+}
+
+/* 3. Xử lý riêng cho màn hình Điện thoại (Dưới 768px) */
+@media screen and (max-width: 768px) {
+  /* Cho phép thanh Header tự động xuống dòng thay vì ép tràn ngang */
+  header, 
+  .header, 
+  .topbar, 
+  .navbar {
+    display: flex !important;
+    flex-wrap: wrap !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    gap: 6px !important;
+    padding: 8px 10px !important;
+    width: 100% !important;
+    height: auto !important;
+  }
+
+  /* Đưa ô Tìm kiếm xuống hàng thứ 2, rộng 100% để dễ gõ và không đẩy các nút khác */
+  header input[type="text"],
+  header input[type="search"],
+  .search-box,
+  .search-container,
+  .search-input {
+    order: 10 !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    flex: 1 1 100% !important;
+    margin: 4px 0 0 0 !important;
+  }
+
+  /* Giữ các nút chức năng (Menu, あ/漢, Loa, Dark mode) gọn trên hàng 1 */
+  header button,
+  .header button,
+  .topbar button {
+    flex-shrink: 0 !important;
+    padding: 6px 10px !important;
+    font-size: 13px !important;
+  }
+
+  /* Căn chỉnh lại lề vùng nội dung chính để cân đối 2 bên mép màn hình */
+  main, 
+  .main-content, 
+  #main-content, 
+  #app {
+    width: 100% !important;
+    padding: 10px !important;
+    margin: 0 !important;
+  }
+
+  /* Chống tràn cho từng thẻ từ vựng (Loa - Kanji/Hiragana - Từ loại) */
+  .vocab-list,
+  .vocab-grid {
+    display: grid !important;
+    grid-template-columns: 1fr !important;
+    gap: 10px !important;
+    width: 100% !important;
+  }
+
+  .vocab-item,
+  .vocab-card {
+    width: 100% !important;
+    padding: 12px !important;
+    overflow: hidden !important;
+    word-wrap: break-word !important;
+  }
+}
