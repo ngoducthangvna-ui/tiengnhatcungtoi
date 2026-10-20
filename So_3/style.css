@@ -3777,6 +3777,10 @@ body.hide-furigana #btn-toggle-furigana {
   }
 
   /* 2. SIDEBAR DRAWER TRÊN ĐIỆN THOẠI */
+  .app-layout {
+    z-index: auto;
+  }
+
   .sidebar {
     position: fixed;
     top: 0;
@@ -3793,6 +3797,13 @@ body.hide-furigana #btn-toggle-furigana {
     background-color: var(--bg-glass-heavy);
     backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);
+    pointer-events: auto;
+    touch-action: pan-y;
+  }
+
+  .sidebar-menu {
+    touch-action: pan-y;
+    -webkit-overflow-scrolling: touch;
   }
 
   .sidebar.mobile-open {
