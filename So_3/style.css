@@ -4025,6 +4025,55 @@ body.hide-furigana #btn-toggle-furigana {
     margin-top: 4px;
   }
 
+  /* Tối ưu Studio Luyện tập & Flashcard 3D trên di động */
+  .practice-box {
+    padding: 14px;
+    gap: 12px;
+  }
+
+  .fc-card {
+    min-height: 175px;
+    padding: 16px 12px;
+    border-radius: var(--radius-md);
+  }
+
+  .fc-hiragana {
+    font-size: 26px;
+  }
+
+  .fc-meaning {
+    font-size: 19px;
+  }
+
+  .fc-controls,
+  .kq-controls {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 6px;
+    width: 100%;
+  }
+
+  .btn-tool {
+    min-height: 42px;
+    padding: 8px 4px;
+    font-size: 11.5px;
+    justify-content: center;
+    text-align: center;
+    white-space: nowrap;
+  }
+
+  .kq-options {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+  }
+
+  .kq-opt-btn {
+    min-height: 46px;
+    padding: 8px 10px;
+    font-size: 14px;
+  }
+
+  /* Tối ưu Đề thi JLPT 50 bộ đề & Ma trận câu hỏi trên di động */
   .quiz-wrapper,
   .options-grid,
   .footer-next-steps {
@@ -4032,15 +4081,80 @@ body.hide-furigana #btn-toggle-furigana {
     gap: 12px;
   }
 
+  .quiz-top-bar {
+    padding: 8px 10px;
+    gap: 8px;
+    border-radius: 12px;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .quiz-timer-wrap {
+    gap: 6px;
+    font-size: 12px;
+  }
+
+  .quiz-timer-display {
+    padding: 4px 8px;
+    font-size: 14.5px;
+  }
+
+  .quiz-palette-toggle-btn {
+    font-size: 11.5px;
+    padding: 6px 10px;
+    min-height: 38px;
+  }
+
+  .quiz-palette-container {
+    padding: 12px 10px;
+    border-radius: 12px;
+  }
+
+  .quiz-palette-grid {
+    grid-template-columns: repeat(auto-fill, minmax(32px, 1fr));
+    gap: 5px;
+  }
+
+  .q-palette-btn {
+    height: 32px;
+    font-size: 11.5px;
+    border-radius: 7px;
+  }
+
+  .quiz-card {
+    padding: 16px 14px;
+    border-radius: var(--radius-md);
+  }
+
+  .quiz-question-title {
+    font-size: 16px;
+    line-height: 2;
+    margin-bottom: 12px;
+  }
+
   .option-btn {
     min-height: 48px;
     padding: 10px 14px;
     font-size: 15px;
+    border-radius: 10px;
+  }
+
+  .option-letter {
+    width: 26px;
+    height: 26px;
+    font-size: 12px;
+  }
+
+  .quiz-feedback {
+    padding: 12px 14px;
+    font-size: 14px;
+    border-radius: 10px;
   }
 
   .quiz-submit-section {
     flex-direction: column;
     align-items: stretch;
+    gap: 10px;
   }
 
   .btn-submit-exam,
@@ -4050,6 +4164,40 @@ body.hide-furigana #btn-toggle-furigana {
     justify-content: center;
   }
 
+  /* Tối ưu 50 bài Đọc hiểu Dokkai trên di động */
+  .dokkai-passage {
+    padding: 16px 14px;
+    font-size: 16.5px;
+    line-height: 2.1;
+    border-radius: var(--radius-md);
+  }
+
+  .dokkai-actions-bar {
+    gap: 8px;
+    margin-top: 12px;
+  }
+
+  .btn-dokkai-tool {
+    flex: 1 1 auto;
+    justify-content: center;
+    min-height: 44px;
+    padding: 8px 12px;
+    font-size: 12.5px;
+    border-radius: 10px;
+  }
+
+  .dokkai-translation-box {
+    margin-top: 12px;
+    padding: 14px;
+    border-radius: var(--radius-md);
+  }
+
+  .dokkai-trans-body {
+    font-size: 14.5px;
+    line-height: 1.75;
+  }
+
+  /* Tối ưu 191 Bộ thủ Kanji trên di động */
   .radical-card {
     flex-direction: column;
     align-items: center;
@@ -4057,8 +4205,72 @@ body.hide-furigana #btn-toggle-furigana {
     gap: 14px;
   }
 
+  .radical-stroke-box {
+    width: 136px;
+    height: 136px;
+  }
+
+  .radical-stroke-svg {
+    width: 110px;
+    height: 110px;
+  }
+
   .radical-info-body {
     width: 100%;
+    gap: 12px;
+  }
+
+  .radical-name-value {
+    gap: 8px;
+  }
+
+  .radical-main-char {
+    font-size: 28px;
+  }
+
+  .radical-full-name {
+    font-size: 18px;
+  }
+
+  .kanji-example-chips {
+    gap: 6px;
+  }
+
+  .kanji-chip {
+    padding: 6px 10px;
+    font-size: 12.5px;
+  }
+
+  /* Tối ưu Modal Giọng nói trên di động */
+  .voice-modal-backdrop {
+    padding: 12px;
+  }
+
+  .voice-modal-card {
+    max-width: 100%;
+    border-radius: var(--radius-md);
+  }
+
+  .voice-modal-header {
+    padding: 14px 16px;
+  }
+
+  .voice-modal-body {
+    padding: 16px 14px;
+    gap: 12px;
+  }
+
+  .voice-modal-footer {
+    padding: 12px 14px;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .btn-save-voice,
+  .btn-confirm-cancel {
+    width: 100%;
+    justify-content: center;
+    min-height: 44px;
   }
 
   /* 5. TRANG BÌA TRÊN ĐIỆN THOẠI */
@@ -4347,6 +4559,18 @@ body.hide-furigana #btn-toggle-furigana {
   }
   .kq-options {
     grid-template-columns: 1fr;
+  }
+  .fc-controls,
+  .kq-controls {
+    gap: 4px;
+  }
+  .btn-tool {
+    font-size: 11px;
+    padding: 7px 2px;
+  }
+  .sync-tab-btn {
+    font-size: 11px;
+    padding: 7px 4px;
   }
 }
 
