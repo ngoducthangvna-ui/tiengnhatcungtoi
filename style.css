@@ -1635,6 +1635,11 @@ body.hide-furigana #btn-toggle-furigana {
   box-shadow: 0 0 8px currentColor;
 }
 
+.sync-tab-icon {
+  font-size: 14px;
+  line-height: 1;
+}
+
 .module-step-nav {
   display: flex;
   align-items: center;
@@ -3869,9 +3874,10 @@ body.hide-furigana #btn-toggle-furigana {
     touch-action: none;
   }
 
-  /* Thanh cuộn độc lập cho cả 4 phần trên điện thoại */
+  /* Thanh cuộn độc lập cho cả 5 phần trên điện thoại */
   .accordion-body,
   #group-lessons .accordion-body,
+  #group-kanji .accordion-body,
   #group-quiz .accordion-body,
   #group-dokkai .accordion-body,
   #group-radicals .accordion-body {
@@ -3963,19 +3969,39 @@ body.hide-furigana #btn-toggle-furigana {
   .module-sync-tabs {
     width: 100%;
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(2, 1fr);
     gap: 6px;
   }
 
   .sync-tab-btn {
+    display: flex;
+    align-items: center;
     justify-content: center;
+    gap: 6px;
     padding: 8px 6px;
-    font-size: 11.5px;
+    font-size: 12px;
+    font-weight: 600;
     text-align: center;
+    min-height: 42px;
+    border-radius: 10px;
+    background: var(--bg-card-inner);
+    border: 1px solid var(--border-subtle);
+  }
+
+  .sync-tab-btn.active {
+    background: var(--bg-active);
+    color: var(--accent-primary);
+    border-color: rgba(56, 189, 248, 0.4);
+    box-shadow: 0 2px 8px rgba(56, 189, 248, 0.18);
+    font-weight: 700;
   }
 
   .sync-tab-dot {
     display: none;
+  }
+
+  .sync-tab-icon {
+    font-size: 13.5px;
   }
 
   .module-step-nav {
@@ -5025,31 +5051,209 @@ body.hide-furigana #btn-toggle-furigana {
 }
 
 @media (max-width: 768px) {
+  /* Toolbar tìm kiếm nhanh chữ Hán trong bài */
+  .kanji-search-toolbar {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+    margin-bottom: 16px;
+  }
+
+  .kanji-search-toolbar .vocab-filter-search {
+    max-width: 100% !important;
+    width: 100%;
+  }
+
+  .kanji-view-stats {
+    display: flex;
+    justify-content: flex-end;
+  }
+
+  /* Danh sách thẻ Chữ Hán */
   .kanji-cards-container {
     grid-template-columns: 1fr;
-  }
-  
-  .kcard-top-section {
-    padding: 16px;
     gap: 14px;
+    margin-bottom: 24px;
+  }
+
+  .kanji-study-card {
+    border-radius: var(--radius-md);
+  }
+
+  /* DÒNG TRÊN: Chữ Hán bên trên */
+  .kcard-top-section {
+    padding: 14px 14px 12px;
+    gap: 12px;
+    align-items: flex-start;
+  }
+
+  .kcard-char-display {
+    gap: 6px;
   }
 
   .kcard-char-box {
-    width: 72px;
-    height: 72px;
+    width: auto;
+    min-width: 78px;
+    height: auto;
+    min-height: 72px;
+    padding: 8px 10px;
+    border-radius: 12px;
   }
 
   .kcard-kanji {
-    font-size: 38px;
+    font-size: clamp(20px, 5.5vw, 28px);
+    line-height: 1.15;
+  }
+
+  .kcard-reading-sub {
+    font-size: 11.5px;
+    margin-top: 3px;
+  }
+
+  .kcard-audio-pill {
+    font-size: 9.5px;
+    padding: 2px 6px;
+    margin-top: 3px;
+  }
+
+  .kcard-stroke-badge {
+    font-size: 10px;
+    padding: 2px 6px;
+  }
+
+  .kcard-main-meta {
+    gap: 8px;
+  }
+
+  .kcard-header-row {
+    gap: 6px;
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .kcard-hv-badge-wrap {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .kcard-hanviet {
+    font-size: 17px;
+  }
+
+  .kcard-meaning-wrap {
+    font-size: 13.5px;
+    gap: 6px;
+  }
+
+  .kcard-components-row {
+    gap: 4px;
+    margin-top: 4px;
+  }
+
+  .components-label {
+    font-size: 11px;
+    color: var(--text-muted);
+  }
+
+  .components-pills-list {
+    gap: 5px;
+  }
+
+  .comp-item-pill {
+    padding: 3px 7px;
+    font-size: 11.5px;
+    border-radius: 6px;
+  }
+
+  .comp-kanji {
+    font-size: 13px;
   }
 
   .kcard-readings-row {
     grid-template-columns: 1fr;
-    gap: 6px;
+    gap: 4px;
+    padding: 6px 8px;
+  }
+
+  .kcard-reading-col {
+    font-size: 12px;
+  }
+
+  .kcard-radicals-row {
+    font-size: 11.5px;
+  }
+
+  /* DÒNG BÊN DƯỚI: Mẹo nhớ bên dưới */
+  .kcard-bottom-section {
+    padding: 12px 14px 14px;
+    gap: 10px;
+  }
+
+  .kcard-mnemonic-box {
+    padding: 10px 12px;
+    border-radius: 0 10px 10px 0;
+  }
+
+  .mnemonic-badge-header {
+    gap: 5px;
+    margin-bottom: 4px;
+  }
+
+  .mnemonic-title {
+    font-size: 11.5px;
+  }
+
+  .mnemonic-story {
+    font-size: 13.5px;
+    line-height: 1.6;
+  }
+
+  .kcard-example-pill {
+    padding: 8px 10px;
+    font-size: 12.5px;
+    border-radius: 8px;
+  }
+
+  .kcard-example-pill .ex-label {
+    font-size: 10.5px;
+  }
+
+  .kcard-example-pill .ex-word {
+    font-size: 12.5px;
+  }
+}
+
+@media (max-width: 480px) {
+  .kcard-top-section {
+    padding: 12px 10px 10px;
+    gap: 10px;
+  }
+
+  .kcard-char-box {
+    min-width: 72px;
+    padding: 6px 8px;
+  }
+
+  .kcard-kanji {
+    font-size: clamp(18px, 5.2vw, 24px);
+  }
+
+  .kcard-hanviet {
+    font-size: 16px;
   }
 
   .kcard-bottom-section {
-    padding: 14px 16px 16px;
+    padding: 10px 12px 12px;
+    gap: 8px;
+  }
+
+  .kcard-mnemonic-box {
+    padding: 8px 10px;
+  }
+
+  .mnemonic-story {
+    font-size: 13px;
   }
 }
 

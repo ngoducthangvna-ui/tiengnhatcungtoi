@@ -873,20 +873,20 @@ function renderModuleSyncBar(lessonNum, activeMode) {
     <div class="module-sync-bar" aria-label="Chuyển nhanh chế độ học Bài ${num}">
       <div class="module-sync-tabs">
         <button type="button" class="sync-tab-btn ${activeMode === 'lesson' ? 'active' : ''}" onclick="switchModule('bai-${num}')">
-          <span class="sync-tab-dot"></span>
+          <span class="sync-tab-icon">📖</span>
           <span>Lý thuyết Bài ${num}</span>
         </button>
+        <button type="button" class="sync-tab-btn ${activeMode === 'kanji' ? 'active' : ''}" onclick="switchModule('kanji-${num}')">
+          <span class="sync-tab-icon">💡</span>
+          <span>Mẹo nhớ Kanji</span>
+        </button>
         <button type="button" class="sync-tab-btn ${activeMode === 'quiz' ? 'active' : ''}" onclick="switchModule('quiz-${num}')">
-          <span class="sync-tab-dot"></span>
+          <span class="sync-tab-icon">✍️</span>
           <span>Trắc nghiệm (50 câu)</span>
         </button>
         <button type="button" class="sync-tab-btn ${activeMode === 'dokkai' ? 'active' : ''}" onclick="switchModule('dokkai-${num}')">
-          <span class="sync-tab-dot"></span>
+          <span class="sync-tab-icon">📜</span>
           <span>Đọc hiểu Bài ${num}</span>
-        </button>
-        <button type="button" class="sync-tab-btn ${activeMode === 'kanji' ? 'active' : ''}" onclick="switchModule('kanji-${num}')">
-          <span class="sync-tab-dot"></span>
-          <span>Mẹo nhớ Kanji</span>
         </button>
       </div>
       <div class="module-step-nav">
@@ -2716,17 +2716,19 @@ function syncMobileBottomNav(activeId) {
   const num = extractLessonNumber(id) || lastLessonNumber || 1;
 
   const lessonLabel = document.getElementById('mnav-label-lesson');
+  const kanjiLabel = document.getElementById('mnav-label-kanji');
   const quizLabel = document.getElementById('mnav-label-quiz');
   const dokkaiLabel = document.getElementById('mnav-label-dokkai');
   if (lessonLabel) lessonLabel.textContent = `Bài ${num}`;
+  if (kanjiLabel) kanjiLabel.textContent = `Kanji ${num}`;
   if (quizLabel) quizLabel.textContent = `Đề ${num}`;
   if (dokkaiLabel) dokkaiLabel.textContent = `Đọc ${num}`;
 
   let activeNav = 'lesson';
-  if (id.startsWith('quiz-')) activeNav = 'quiz';
+  if (id.startsWith('kanji-')) activeNav = 'kanji';
+  else if (id.startsWith('quiz-')) activeNav = 'quiz';
   else if (id.startsWith('dokkai-')) activeNav = 'dokkai';
   else if (id.startsWith('radicals-')) activeNav = 'radicals';
-  else if (id.startsWith('kanji-')) activeNav = 'kanji';
 
   if (document && document.querySelectorAll) {
     document.querySelectorAll('.mobile-nav-item').forEach(btn => {
@@ -2748,6 +2750,8 @@ window.handleMobileBottomNav = function(targetType) {
   closeMobileSidebar();
   if (targetType === 'lesson') {
     switchModule(`bai-${num}`);
+  } else if (targetType === 'kanji') {
+    switchModule(`kanji-${num}`);
   } else if (targetType === 'quiz') {
     switchModule(`quiz-${num}`);
   } else if (targetType === 'dokkai') {
