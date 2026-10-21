@@ -2237,10 +2237,42 @@ body.hide-furigana #btn-toggle-furigana {
 }
 
 /* Tỷ lệ phân bố cột bảng từ vựng trên Laptop / Desktop (Tổng 100%): 30% - 25% - 9% - 36% */
+/* Tỷ lệ phân bố cột bảng từ vựng trên Laptop / Desktop (Tổng 100%): 30% (Hiragana) - 25% (Chữ Hán) - 9% (Từ loại) - 36% (Ý nghĩa) */
 .vocab-table th:nth-child(1),
-.vocab-col-kanji {
+.vocab-col-hira {
   width: 30%;
   min-width: 200px;
+}
+
+.vocab-col-hira {
+  color: var(--text-primary);
+  font-family: var(--font-japanese);
+  font-weight: 500;
+  font-size: 17.5px;
+  line-height: 1.45;
+  word-break: break-word;
+  overflow-wrap: break-word;
+  vertical-align: middle;
+}
+
+.vocab-col-hira .speak-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  vertical-align: middle;
+  margin-right: 12px;
+  flex-shrink: 0;
+}
+
+.vocab-hira-text {
+  display: inline-block;
+  vertical-align: middle;
+}
+
+.vocab-table th:nth-child(2),
+.vocab-col-kanji {
+  width: 25%;
+  min-width: 170px;
 }
 
 .vocab-col-kanji {
@@ -2278,34 +2310,24 @@ body.hide-furigana #btn-toggle-furigana {
   display: inline-flex;
   align-items: center;
   vertical-align: middle;
-  max-width: calc(100% - 50px);
+  max-width: 100%;
   word-break: break-word;
   overflow-wrap: break-word;
 }
 
 .vocab-mobile-hira,
-.vocab-mobile-type {
+.vocab-mobile-type,
+.vocab-mobile-no-kanji,
+.speak-btn-mobile {
   display: none !important;
 }
 
-.vocab-table th:nth-child(2),
-.vocab-col-hira {
-  width: 25%;
-  min-width: 170px;
+.speak-btn-desktop {
+  display: inline-flex !important;
 }
 
-.vocab-col-hira {
-  color: var(--text-primary);
-  font-family: var(--font-japanese);
-  font-weight: 500;
-  font-size: 17.5px;
-  line-height: 1.45;
-  word-break: break-word;
-  overflow-wrap: break-word;
-  vertical-align: middle;
-}
-
-.vocab-no-kanji {
+.vocab-no-kanji,
+.vocab-desktop-no-kanji {
   color: var(--text-muted);
   font-size: 18px;
   font-weight: 600;
@@ -4523,8 +4545,18 @@ body.hide-furigana #btn-toggle-furigana {
   }
 
   .vocab-col-hira,
-  .vocab-col-type {
+  .vocab-col-type,
+  .vocab-desktop-no-kanji,
+  .speak-btn-desktop {
     display: none !important;
+  }
+
+  .vocab-mobile-no-kanji {
+    display: inline-block !important;
+  }
+
+  .speak-btn-mobile {
+    display: inline-flex !important;
   }
 
   .vocab-col-kanji {

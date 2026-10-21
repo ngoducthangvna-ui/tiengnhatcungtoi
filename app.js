@@ -1075,8 +1075,8 @@ function renderContent(id) {
           <table class="vocab-table">
             <thead>
               <tr>
-                <th>Chữ Hán & Furigana</th>
                 <th>Hiragana</th>
+                <th>Chữ Hán & Furigana</th>
                 <th>Từ loại</th>
                 <th>Ý Nghĩa Tiếng Việt</th>
               </tr>
@@ -1085,23 +1085,25 @@ function renderContent(id) {
               ${lesson.vocabulary.map(v => {
                 const hasKanji = hasKanjiCharacter(v.kanji);
                 const speechTarget = cleanSpeechText(v.hiragana || v.kanji);
-                const displayKanji = hasKanji ? v.kanji : (v.kanji || v.hiragana);
                 const showSubReading = hasKanji && v.hiragana && cleanSpeechText(v.hiragana) !== cleanSpeechText(v.kanji);
                 const isLongWord = isVocabTermLong(v);
                 const catKey = getWordCategoryKey(v.type);
                 return `
                 <tr class="vocab-row" data-cat="${catKey}">
+                  <td class="vocab-col-hira">
+                    <button class="speak-btn speak-btn-desktop" onclick="speakJapanese('${speechTarget}', this, event)" title="Phát âm từ này (Leda JP)">${SPEAKER_ICON_HTML}</button>
+                    <span class="vocab-hira-text">${v.hiragana}</span>
+                  </td>
                   <td class="vocab-col-kanji ${isLongWord ? 'vocab-is-long' : ''}">
-                    <button class="speak-btn" onclick="speakJapanese('${speechTarget}', this, event)" title="Phát âm từ này (Leda JP)">${SPEAKER_ICON_HTML}</button>
+                    <button class="speak-btn speak-btn-mobile" onclick="speakJapanese('${speechTarget}', this, event)" title="Phát âm từ này (Leda JP)">${SPEAKER_ICON_HTML}</button>
                     <div class="vocab-term-group">
-                      <strong class="vocab-term-main">${displayKanji}</strong>
+                      <strong class="vocab-term-main">${hasKanji ? v.kanji : `<span class="vocab-desktop-no-kanji">—</span><span class="vocab-mobile-no-kanji">${v.hiragana}</span>`}</strong>
                       ${showSubReading ? `<span class="vocab-mobile-hira">${v.hiragana}</span>` : ''}
                     </div>
                     <div class="vocab-mobile-type">
                       ${formatWordTypeBadge(v.type)}
                     </div>
                   </td>
-                  <td class="vocab-col-hira">${hasKanji ? v.hiragana : `<span class="vocab-no-kanji">—</span>`}</td>
                   <td class="vocab-col-type">${formatWordTypeBadge(v.type)}</td>
                   <td class="vocab-col-meaning">${v.meaning}</td>
                 </tr>
