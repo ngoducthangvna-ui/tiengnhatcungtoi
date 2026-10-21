@@ -777,7 +777,7 @@ function renderSidebar() {
       items: (typeof kanjiLessonsData !== 'undefined' ? kanjiLessonsData : []).map(k => ({
         id: k.id,
         label: `Bài ${k.lesson} Chữ Hán`,
-        sub: `${k.items.length} Chữ • Mẹo nhớ`,
+        sub: `${k.items.length} Từ vựng • Mẹo nhớ`,
         isCurrent: k.id === currentActiveId
       }))
     },
@@ -1290,7 +1290,7 @@ function renderKanjiSection(sectionId) {
   if (!content) return;
 
   if (typeof kanjiLessonsData === 'undefined' || !kanjiLessonsData.length) {
-    content.innerHTML = `<div class="lesson-hero-card"><h2 class="lesson-title">Đang tải dữ liệu Chữ Hán...</h2></div>`;
+    content.innerHTML = `<div class="lesson-hero-card"><h2 class="lesson-title">Đang tải dữ liệu Từ vựng Chữ Hán...</h2></div>`;
     return;
   }
 
@@ -1307,8 +1307,8 @@ function renderKanjiSection(sectionId) {
     <div class="lesson-hero-card">
       <div class="hero-meta">
         <span class="badge badge-sakura">${lesson.level}</span>
-        <span class="badge badge-primary">${lesson.items.length} Chữ Hán Trọng Tâm</span>
-        <span class="badge badge-green">100% Kèm Mẹo Nhớ & Âm Hán Việt</span>
+        <span class="badge badge-primary">${lesson.items.length} Từ Vựng Chữ Hán</span>
+        <span class="badge badge-green">100% Kèm Mẹo Nhớ & Cấu Thành</span>
         <button id="btn-complete-lesson" 
                 class="btn-complete-lesson ${isCompleted ? 'is-completed' : ''}" 
                 onclick="toggleLessonComplete('${lesson.id}')">
@@ -1319,33 +1319,34 @@ function renderKanjiSection(sectionId) {
       <p class="lesson-desc">${lesson.description}</p>
     </div>
 
-    <!-- Thanh tìm kiếm lọc nhanh chữ Hán trong bài này -->
+    <!-- Thanh tìm kiếm lọc nhanh từ vựng trong bài này -->
     <div class="kanji-search-toolbar">
       <div class="vocab-filter-search" style="flex: 1; max-width: 520px;">
         <input type="text"
                id="kanji-inline-search"
                class="vocab-search-input"
-               placeholder="Tìm nhanh chữ Hán, âm Hán Việt, cách đọc, mẹo nhớ trong bài này..."
+               placeholder="Tìm nhanh từ vựng, âm Hán Việt, cách đọc, mẹo nhớ trong bài này..."
                oninput="filterLessonKanji(this.value)">
       </div>
       <div class="kanji-view-stats">
-        <span id="kanji-count-badge" class="badge badge-primary">Hiển thị: ${lesson.items.length}/${lesson.items.length} chữ Hán</span>
+        <span id="kanji-count-badge" class="badge badge-primary">Hiển thị: ${lesson.items.length}/${lesson.items.length} từ vựng</span>
       </div>
     </div>
 
-    <!-- Danh sách các thẻ chữ Hán: BỐ TRÍ CHỮ HÁN BÊN TRÊN - MẸO NHỚ Ở DÒNG BÊN DƯỚI -->
+    <!-- Danh sách các thẻ từ vựng: BỐ TRÍ CHỮ HÁN BÊN TRÊN - MẸO NHỚ Ở DÒNG BÊN DƯỚI -->
     <div class="kanji-cards-container" id="kanji-cards-list">
       ${lesson.items.map((item, idx) => `
-        <article class="kanji-study-card" id="kcard-${item.kanji}" data-kanji="${item.kanji}" data-hanviet="${item.hanViet}">
+        <article class="kanji-study-card" id="kcard-${item.id}" data-word="${item.word}" data-reading="${item.reading || ''}" data-kanji="${item.kanji || item.word}" data-hanviet="${item.hanViet}" data-meaning="${item.meaning}">
           
-          <!-- DÒNG TRÊN: CHỮ HÁN & THÔNG TIN HÁN TỰ -->
+          <!-- DÒNG TRÊN: TỪ VỰNG CHỮ HÁN & THÔNG TIN HÁN TỰ -->
           <div class="kcard-top-section">
             <div class="kcard-char-display">
-              <div class="kcard-char-box" onclick="speakJapanese('${item.kanji}', this, event)" role="button" tabindex="0" title="Chạm để nghe phát âm chữ [${item.kanji}]">
-                <span class="kcard-kanji">${item.kanji}</span>
-                <span class="kcard-audio-pill">🔊</span>
+              <div class="kcard-char-box" onclick="speakJapanese('${(item.reading || item.word).replace(/\[.*?\]/g, '').replace(/\(.*?\)/g, '').trim()}', this, event)" role="button" tabindex="0" title="Chạm để nghe phát âm: ${item.word}">
+                <span class="kcard-kanji">${item.word}</span>
+                ${item.reading ? `<span class="kcard-reading-sub">${item.reading}</span>` : ''}
+                <span class="kcard-audio-pill">🔊 Nghe</span>
               </div>
-              <span class="kcard-stroke-badge">${item.strokes} nét</span>
+              <span class="kcard-stroke-badge">${item.kanjiCount > 1 ? `${item.kanjiCount} chữ Hán • ${item.strokes} nét` : `${item.strokes} nét`}</span>
             </div>
 
             <div class="kcard-main-meta">
@@ -1355,55 +1356,68 @@ function renderKanjiSection(sectionId) {
                   <strong class="kcard-hanviet">${item.hanViet}</strong>
                 </div>
                 <div class="kcard-meaning-wrap">
-                  <span class="kcard-meaning-text">${item.meaning}</span>
+                  <span class="badge ${item.kanjiCount > 1 ? 'badge-primary' : 'badge-sakura'}">
+                    ${item.kanjiCount > 1 ? `${item.kanjiCount} Chữ Hán ghép` : 'Chữ Hán đơn'}
+                  </span>
+                  ${item.type ? `<span class="badge badge-subtle">${item.type}</span>` : ''}
+                  <div class="kcard-meaning-text">${item.meaning}</div>
                 </div>
               </div>
 
-              <div class="kcard-readings-row">
-                <div class="kcard-reading-col">
-                  <span class="reading-type on">Âm On (Onyomi):</span>
-                  <span class="reading-val on">${item.onyomi || '—'}</span>
+              <!-- Phân tích chữ Hán cấu thành (cho từ ghép) hoặc Bộ thủ & On/Kun (cho từ đơn) -->
+              ${item.kanjiCount > 1 ? `
+                <div class="kcard-components-row">
+                  <span class="components-label">Chữ Hán cấu thành từ này:</span>
+                  <div class="components-pills-list">
+                    ${item.components.map(c => `
+                      <span class="comp-item-pill" title="Bộ: ${c.radical} • ${c.strokes} nét">
+                        <strong class="comp-kanji">${c.kanji}</strong>
+                        <span class="comp-hv">[${c.hanViet}]</span>
+                        <span class="comp-mean">${c.meaning}</span>
+                      </span>
+                    `).join('')}
+                  </div>
                 </div>
-                <div class="kcard-reading-col">
-                  <span class="reading-type kun">Âm Kun (Kunyomi):</span>
-                  <span class="reading-val kun">${item.kunyomi || '—'}</span>
+              ` : `
+                <div class="kcard-readings-row">
+                  <div class="kcard-reading-col">
+                    <span class="reading-type on">Âm On:</span>
+                    <span class="reading-val on">${item.components[0].onyomi || '—'}</span>
+                  </div>
+                  <div class="kcard-reading-col">
+                    <span class="reading-type kun">Âm Kun:</span>
+                    <span class="reading-val kun">${item.components[0].kunyomi || '—'}</span>
+                  </div>
                 </div>
-              </div>
-
-              <div class="kcard-radicals-row">
-                <span class="radical-title">Bộ thủ / Chiết tự:</span>
-                <span class="radical-content">${item.radicals}</span>
-              </div>
+                <div class="kcard-radicals-row">
+                  <span class="radical-title">Bộ thủ:</span>
+                  <span class="radical-content">${item.components[0].radical || 'Cơ bản'}</span>
+                </div>
+              `}
             </div>
           </div>
 
-          <!-- DÒNG BÊN DƯỚI: MẸO GHI NHỚ & TỪ VỰNG TIÊU BIỂU -->
+          <!-- DÒNG BÊN DƯỚI: MẸO GHI NHỚ TỪ VỰNG NỔI BẬT & CÂU VÍ DỤ -->
           <div class="kcard-bottom-section">
-            <!-- Hộp mẹo ghi nhớ nổi bật -->
+            <!-- Hộp mẹo ghi nhớ cho TỪ ĐÓ trong 1 ô duy nhất -->
             <div class="kcard-mnemonic-box">
               <div class="mnemonic-badge-header">
                 <span class="mnemonic-icon">💡</span>
-                <strong class="mnemonic-title">Mẹo Ghi Nhớ:</strong>
+                <strong class="mnemonic-title">${item.kanjiCount > 1 ? 'Mẹo Nhớ Từ Vựng Ghép:' : 'Mẹo Nhớ Chiết Tự:'}</strong>
               </div>
               <div class="mnemonic-story">${(item.mnemonic || '')
+                .replace(/【Cấu thành】:/g, '<span class="mnemonic-tag mnemonic-tag-breakdown">【Cấu thành】:</span>')
                 .replace(/【Chiết tự】:/g, '<span class="mnemonic-tag mnemonic-tag-breakdown">【Chiết tự】:</span>')
+                .replace(/【Mẹo nhớ từ】:/g, '<span class="mnemonic-tag mnemonic-tag-story">【Mẹo nhớ từ】:</span>')
                 .replace(/【Mẹo nhớ】:/g, '<span class="mnemonic-tag mnemonic-tag-story">【Mẹo nhớ】:</span>')}</div>
             </div>
 
-            <!-- Từ vựng thực tế trong bài chứa chữ Hán này -->
-            ${item.examples && item.examples.length > 0 ? `
-              <div class="kcard-examples-section">
-                <span class="examples-header-label">Từ vựng Bài ${lessonNum} chứa chữ [${item.kanji}]:</span>
-                <div class="kcard-examples-grid">
-                  ${item.examples.map(ex => `
-                    <div class="kcard-example-pill" onclick="speakJapanese('${ex.reading || ex.word}', this, event)" role="button" tabindex="0" title="Chạm để nghe: ${ex.word}">
-                      <strong class="ex-word">${ex.word}</strong>
-                      ${ex.reading ? `<span class="ex-reading">(${ex.reading})</span>` : ''}
-                      <span class="ex-meaning">: ${ex.meaning}</span>
-                      <span class="ex-speaker">🔊</span>
-                    </div>
-                  `).join('')}
-                </div>
+            <!-- Câu ví dụ thực tế trong bài Minna -->
+            ${item.example ? `
+              <div class="kcard-example-pill" onclick="speakJapanese('${item.example.replace(/\(.*?\)/g, '').replace(/\[.*?\]/g, '').trim()}', this, event)" role="button" tabindex="0" title="Chạm để nghe câu ví dụ">
+                <span class="ex-label">Ví dụ Minna:</span>
+                <strong class="ex-word">${item.example}</strong>
+                <span class="ex-speaker">🔊</span>
               </div>
             ` : ''}
           </div>
@@ -1423,13 +1437,19 @@ window.filterLessonKanji = function(query) {
   let visibleCount = 0;
   cards.forEach(card => {
     const text = normalizeSearch(card.textContent || '');
-    const isMatch = !q || text.includes(q) || (card.getAttribute('data-kanji') || '').toLowerCase().includes(raw);
+    const word = (card.getAttribute('data-word') || '').toLowerCase();
+    const reading = (card.getAttribute('data-reading') || '').toLowerCase();
+    const kanji = (card.getAttribute('data-kanji') || '').toLowerCase();
+    const hanviet = normalizeSearch(card.getAttribute('data-hanviet') || '');
+    const meaning = normalizeSearch(card.getAttribute('data-meaning') || '');
+    
+    const isMatch = !q || text.includes(q) || word.includes(raw) || reading.includes(raw) || kanji.includes(raw) || hanviet.includes(q) || meaning.includes(q);
     card.style.display = isMatch ? '' : 'none';
     if (isMatch) visibleCount++;
   });
   const countBadge = document.getElementById('kanji-count-badge');
   if (countBadge) {
-    countBadge.textContent = `Hiển thị: ${visibleCount}/${cards.length} chữ Hán`;
+    countBadge.textContent = `Hiển thị: ${visibleCount}/${cards.length} từ vựng`;
   }
 };
 
@@ -2522,17 +2542,22 @@ function searchEverything(keyword) {
         });
       }
       kl.items.forEach(item => {
-        const matchChar = item.kanji.includes(raw);
+        const itemWord = item.word || item.kanji || '';
+        const matchChar = itemWord.includes(raw) || (item.kanji && item.kanji.includes(raw));
+        const matchReading = item.reading && (item.reading.toLowerCase().includes(raw) || normalizeSearch(item.reading).includes(query));
         const matchHV = normalizeSearch(item.hanViet).includes(query);
         const matchMean = normalizeSearch(item.meaning).includes(query);
         const matchMnemonic = normalizeSearch(item.mnemonic).includes(query);
         const matchOn = (item.onyomi || '').toLowerCase().includes(raw);
         const matchKun = (item.kunyomi || '').toLowerCase().includes(raw);
-        if (matchChar || matchHV || matchMean || matchMnemonic || matchOn || matchKun) {
+        if (matchChar || matchReading || matchHV || matchMean || matchMnemonic || matchOn || matchKun) {
+          const displayWord = item.word || item.kanji;
+          const displayReading = item.reading ? ` [${item.reading}]` : '';
+          const cleanMnemonic = (item.mnemonic || '').replace(/【.*?】\s*:?/g, '').replace(/\n/g, ' ').replace(/\s+/g, ' ').trim();
           results.push({
             category: "Chữ Hán & Mẹo Nhớ",
-            title: `${item.kanji} (${item.hanViet}) - ${item.meaning.slice(0, 35)}`,
-            sub: `💡 Mẹo nhớ: ${item.mnemonic.slice(0, 50)}... • Bài ${kl.lesson}`,
+            title: `${displayWord}${displayReading} (${item.hanViet}) - ${item.meaning.slice(0, 35)}`,
+            sub: `💡 Mẹo nhớ: ${cleanMnemonic.slice(0, 50)}... • Bài ${kl.lesson}`,
             targetId: kl.id,
             highlight: raw
           });

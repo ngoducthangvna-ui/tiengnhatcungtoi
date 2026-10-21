@@ -4667,8 +4667,10 @@ body.hide-furigana #btn-toggle-furigana {
 }
 
 .kcard-char-box {
-  width: 86px;
-  height: 86px;
+  min-width: 96px;
+  width: auto;
+  min-height: 86px;
+  padding: 10px 14px;
   border-radius: var(--radius-md);
   background: linear-gradient(135deg, rgba(56, 189, 248, 0.12), rgba(129, 140, 248, 0.18));
   border: 2px solid var(--accent-primary);
@@ -4691,10 +4693,21 @@ body.hide-furigana #btn-toggle-furigana {
 
 .kcard-kanji {
   font-family: var(--font-japanese);
-  font-size: 46px;
+  font-size: clamp(24px, 3.2vw, 36px);
   font-weight: 800;
-  line-height: 1;
+  line-height: 1.15;
   color: var(--text-primary);
+  text-align: center;
+  word-break: keep-all;
+}
+
+.kcard-reading-sub {
+  font-family: var(--font-japanese);
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--accent-primary);
+  margin-top: 4px;
+  text-align: center;
 }
 
 .kcard-audio-pill {
@@ -4726,7 +4739,7 @@ body.hide-furigana #btn-toggle-furigana {
 .kcard-header-row {
   display: flex;
   align-items: baseline;
-  gap: 12px;
+  gap: 10px;
   flex-wrap: wrap;
 }
 
@@ -4755,15 +4768,69 @@ body.hide-furigana #btn-toggle-furigana {
 }
 
 .kcard-meaning-wrap {
-  display: inline-flex;
-  gap: 6px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
   font-size: 14.5px;
   color: var(--text-primary);
-  font-weight: 500;
 }
 
 .kcard-meaning-text {
   font-weight: 600;
+}
+
+.kcard-components-row {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  background: var(--bg-card-inner);
+  border: 1px solid var(--border-subtle);
+  padding: 8px 12px;
+  border-radius: var(--radius-sm);
+}
+
+.components-label {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+}
+
+.components-pills-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.comp-item-pill {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 5px;
+  padding: 3px 8px;
+  border-radius: var(--radius-sm);
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border-subtle);
+  font-size: 12.5px;
+}
+
+.comp-kanji {
+  font-family: var(--font-japanese);
+  font-size: 15px;
+  font-weight: 800;
+  color: var(--accent-primary);
+}
+
+.comp-hv {
+  font-size: 11px;
+  font-weight: 800;
+  color: var(--accent-amber, #f59e0b);
+}
+
+.comp-mean {
+  font-size: 11.5px;
+  color: var(--text-secondary);
 }
 
 .kcard-readings-row {
