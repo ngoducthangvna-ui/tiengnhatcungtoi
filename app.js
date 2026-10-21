@@ -1656,63 +1656,63 @@ function initRadicalStrokeLoops(currentSession) {
       p.style.strokeDashoffset = `${len}`;
     });
 
-    let isVisible = false;
-    let cancelCurrent = false;
+    let isAnimating = false;
+    let hasPlayed = false;
 
-    async function runLoop() {
-      while (currentSession === activeRadicalSession && document.body && document.body.contains && document.body.contains(svg) && isVisible) {
-        cancelCurrent = false;
+    async function playStrokesOnce() {
+      if (isAnimating || currentSession !== activeRadicalSession || !document.body || !document.body.contains || !document.body.contains(svg)) return;
+      isAnimating = true;
 
-        strokePaths.forEach((p, i) => {
-          p.style.transition = 'none';
-          p.style.strokeDashoffset = `${lengths[i]}`;
-          p.style.opacity = '1';
-        });
+      strokePaths.forEach((p, i) => {
+        p.style.transition = 'none';
+        p.style.strokeDashoffset = `${lengths[i]}`;
+        p.style.opacity = '1';
+      });
 
-        await sleep(250);
-        if (cancelCurrent || currentSession !== activeRadicalSession || !document.body.contains(svg) || !isVisible) break;
-
-        for (let i = 0; i < strokePaths.length; i++) {
-          if (cancelCurrent || currentSession !== activeRadicalSession || !document.body.contains(svg) || !isVisible) break;
-          const p = strokePaths[i];
-          const len = lengths[i];
-          const duration = Math.max(350, Math.min(750, Math.round(len * 5.2)));
-          p.style.transition = `stroke-dashoffset ${duration}ms cubic-bezier(0.4, 0, 0.2, 1)`;
-          p.style.strokeDashoffset = '0';
-          await sleep(duration + 90);
-        }
-
-        if (cancelCurrent || currentSession !== activeRadicalSession || !document.body.contains(svg) || !isVisible) break;
-
-        await sleep(1400);
-        if (cancelCurrent || currentSession !== activeRadicalSession || !document.body.contains(svg) || !isVisible) break;
-
-        strokePaths.forEach(p => {
-          p.style.transition = 'opacity 300ms ease';
-          p.style.opacity = '0';
-        });
-        await sleep(350);
+      await sleep(150);
+      if (currentSession !== activeRadicalSession || !document.body.contains(svg)) {
+        isAnimating = false;
+        return;
       }
+
+      for (let i = 0; i < strokePaths.length; i++) {
+        if (currentSession !== activeRadicalSession || !document.body.contains(svg)) break;
+        const p = strokePaths[i];
+        const len = lengths[i];
+        const duration = Math.max(300, Math.min(650, Math.round(len * 4.8)));
+        p.style.transition = `stroke-dashoffset ${duration}ms cubic-bezier(0.4, 0, 0.2, 1)`;
+        p.style.strokeDashoffset = '0';
+        await sleep(duration + 70);
+      }
+
+      isAnimating = false;
     }
 
+    // Cho phép người dùng chạm/bấm vào chữ để xem lại thứ tự nét bất cứ lúc nào (chỉ chạy khi được yêu cầu)
+    if (svg.addEventListener) {
+      svg.style.cursor = 'pointer';
+      svg.setAttribute('title', 'Chạm để xem hoạt họa thứ tự viết nét');
+      svg.addEventListener('click', (e) => {
+        if (e && e.stopPropagation) e.stopPropagation();
+        playStrokesOnce();
+      });
+    }
+
+    // Chỉ chạy hoạt họa nét 1 lần duy nhất khi cuộn tới và tự giải phóng Observer để triệt tiêu tải CPU
     if (typeof IntersectionObserver !== 'undefined') {
       const observer = new IntersectionObserver((entries) => {
         entries.forEach(entry => {
-          if (entry.isIntersecting) {
-            if (!isVisible) {
-              isVisible = true;
-              runLoop();
-            }
-          } else {
-            isVisible = false;
-            cancelCurrent = true;
+          if (entry.isIntersecting && !hasPlayed) {
+            hasPlayed = true;
+            playStrokesOnce();
+            observer.unobserve(card);
           }
         });
-      }, { rootMargin: '120px' });
+      }, { rootMargin: '80px' });
       observer.observe(card);
     } else {
-      isVisible = true;
-      runLoop();
+      hasPlayed = true;
+      playStrokesOnce();
     }
   });
 }
@@ -2968,16 +2968,20 @@ function initMenuToggle() {
   }
 
   if (typeof window !== 'undefined' && typeof window.addEventListener === 'function') {
+    let resizeTimer = null;
     window.addEventListener('resize', () => {
-      updateMenuButtonState();
-      if (window.innerWidth > 768) {
-        if (overlay) overlay.classList.remove('active');
-        sidebar.classList.remove('mobile-open');
-        if (document.body && document.body.classList) {
-          document.body.classList.remove('sidebar-open-lock');
+      if (resizeTimer) cancelAnimationFrame(resizeTimer);
+      resizeTimer = safeRAF(() => {
+        updateMenuButtonState();
+        if (window.innerWidth > 768) {
+          if (overlay) overlay.classList.remove('active');
+          sidebar.classList.remove('mobile-open');
+          if (document.body && document.body.classList) {
+            document.body.classList.remove('sidebar-open-lock');
+          }
         }
-      }
-    });
+      });
+    }, { passive: true });
   }
 }
 
@@ -3024,6 +3028,11 @@ function initCoverPage() {
     const handleEnter = (e) => {
       if (e && e.stopPropagation) e.stopPropagation();
       cover.classList.add('hide-cover');
+      setTimeout(() => {
+        if (cover.classList.contains('hide-cover')) {
+          cover.style.display = 'none';
+        }
+      }, 380);
 
       const targetHash = selectedCoverTarget || (window.location && window.location.hash) || '#bai-1';
       const cleanId = targetHash.replace('#', '');
@@ -3041,8 +3050,11 @@ function initCoverPage() {
 
   if (brandHomeBtn && brandHomeBtn.addEventListener) {
     brandHomeBtn.addEventListener('click', () => {
-      cover.classList.remove('hide-cover');
-      if (cover.scrollTo) cover.scrollTo({ top: 0, behavior: 'smooth' });
+      cover.style.display = 'flex';
+      safeRAF(() => {
+        cover.classList.remove('hide-cover');
+        if (cover.scrollTo) cover.scrollTo({ top: 0, behavior: 'smooth' });
+      });
     });
   }
 
@@ -3122,23 +3134,34 @@ function initBackToTop() {
   const mainContent = document.getElementById('main-content');
   if (!btn) return;
 
+  let isTicking = false;
+  let isVisible = false;
+
   const handleScroll = (top) => {
-    if (top > 350) {
-      btn.classList.add('visible');
-    } else {
-      btn.classList.remove('visible');
+    const shouldBeVisible = top > 350;
+    if (shouldBeVisible !== isVisible) {
+      isVisible = shouldBeVisible;
+      btn.classList.toggle('visible', isVisible);
+    }
+    isTicking = false;
+  };
+
+  const scheduleScroll = (top) => {
+    if (!isTicking) {
+      isTicking = true;
+      safeRAF(() => handleScroll(top));
     }
   };
 
   if (mainContent && mainContent.addEventListener) {
     mainContent.addEventListener('scroll', () => {
-      handleScroll(mainContent.scrollTop);
+      scheduleScroll(mainContent.scrollTop);
     }, { passive: true });
   }
 
   if (typeof window !== 'undefined' && typeof window.addEventListener === 'function') {
     window.addEventListener('scroll', () => {
-      handleScroll(window.scrollY || (document.documentElement && document.documentElement.scrollTop) || 0);
+      scheduleScroll(window.scrollY || (document.documentElement && document.documentElement.scrollTop) || 0);
     }, { passive: true });
   }
 

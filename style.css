@@ -289,9 +289,11 @@ rt,
   pointer-events: none;
 }
 
-.cover-page-slide.hide-cover .petal,
-.cover-page-slide.hide-cover * {
+.cover-page-slide.hide-cover,
+.cover-page-slide.hide-cover *,
+.cover-page-slide.hide-cover .petal {
   animation-play-state: paused !important;
+  animation: none !important;
 }
 
 .cover-bg-art {
@@ -409,14 +411,21 @@ rt,
   inset: 0;
   pointer-events: none;
   z-index: 3;
+  overflow: hidden;
+  contain: layout paint size;
 }
 
 .petal {
   position: absolute;
+  top: -30px;
   background: linear-gradient(135deg, rgba(254, 205, 211, 0.85) 0%, rgba(251, 113, 133, 0.7) 100%);
   border-radius: 12px 1px 12px 1px;
   opacity: 0.55;
+  will-change: transform;
+  transform: translate3d(0, 0, 0);
   animation: sakuraFall3D linear infinite;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
 }
 
 .petal.p1  { width: 10px; height: 14px; left: 6%;  animation-duration: 14s; animation-delay: 0s; }
@@ -437,10 +446,20 @@ rt,
 .petal.p16 { width: 10px; height: 14px; left: 60%; animation-duration: 16s; animation-delay: 8.5s; }
 
 @keyframes sakuraFall3D {
-  0% { top: -30px; transform: rotate(0deg) translateX(0); opacity: 0; }
-  15% { opacity: 0.7; }
-  85% { opacity: 0.65; }
-  100% { top: 105vh; transform: rotate(360deg) translateX(70px); opacity: 0; }
+  0% {
+    transform: translate3d(0, 0, 0) rotate(0deg);
+    opacity: 0;
+  }
+  15% {
+    opacity: 0.7;
+  }
+  85% {
+    opacity: 0.65;
+  }
+  100% {
+    transform: translate3d(70px, 110vh, 0) rotate(360deg);
+    opacity: 0;
+  }
 }
 
 /* Top bar Trang bìa */
@@ -3698,9 +3717,42 @@ body.hide-furigana #btn-toggle-furigana {
    TỐI ƯU TOÀN DIỆN CHO THIẾT BỊ DI ĐỘNG & SMARTPHONE (<= 768px)
    ========================================================================== */
 @media (max-width: 768px) {
-  .liquid-glass-bg .glass-blob {
-    animation: none !important;
-    filter: blur(40px) !important;
+  /* ==========================================================================
+     TỐI ƯU CỰC ĐẠI CHO ĐIỆN THOẠI: TRIỆT TIÊU TẢI GPU/CPU, CHỐNG NÓNG MÁY & TIẾT KIỆM PIN
+     ========================================================================== */
+  /* 1. Tắt hoàn toàn mưa hoa anh đào và nền cực quang Gaussian blur nhiều lớp */
+  .sakura-petals-layer {
+    display: none !important;
+  }
+
+  .liquid-glass-bg {
+    display: none !important;
+  }
+
+  .celestial-glow {
+    display: none !important;
+  }
+
+  /* 2. Giảm độ nặng Gaussian blur trên Header cố định */
+  .app-header {
+    backdrop-filter: blur(8px) !important;
+    -webkit-backdrop-filter: blur(8px) !important;
+  }
+
+  /* 3. Khử hoàn toàn backdrop-filter phức tạp trên thẻ trang bìa để tránh GPU shader lag */
+  .cover-feature-card,
+  .cover-kanji-card,
+  .cover-zen-badge,
+  .cover-top-badge,
+  .cover-theme-toggle {
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+  }
+
+  /* 4. Ẩn sidebar triệt để khỏi render tree khi đóng */
+  .sidebar:not(.mobile-open) {
+    visibility: hidden;
+    pointer-events: none;
   }
 
   /* 1. HEADER 2 TẦNG GỌN GÀNG, CHỐNG ĐÈ CHỮ & ĐỦ VÙNG CHẠM 44x44px */
@@ -3800,8 +3852,8 @@ body.hide-furigana #btn-toggle-furigana {
     padding-top: env(safe-area-inset-top, 0px);
     padding-bottom: calc(16px + env(safe-area-inset-bottom, 0px));
     background-color: var(--bg-glass-heavy);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
     pointer-events: auto;
     touch-action: pan-y;
   }
@@ -3902,8 +3954,8 @@ body.hide-furigana #btn-toggle-furigana {
     height: calc(var(--mobile-nav-height) + env(safe-area-inset-bottom, 0px));
     padding: 4px 6px env(safe-area-inset-bottom, 0px);
     background: var(--bg-glass-heavy);
-    backdrop-filter: blur(20px) saturate(180%);
-    -webkit-backdrop-filter: blur(20px) saturate(180%);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
     border-top: 1px solid var(--border-card);
     box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.25);
     display: grid;
@@ -5254,6 +5306,18 @@ body.hide-furigana #btn-toggle-furigana {
 
   .mnemonic-story {
     font-size: 13px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sakura-petals-layer,
+  .petal {
+    display: none !important;
+    animation: none !important;
+  }
+  * {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
   }
 }
 
