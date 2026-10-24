@@ -1,0 +1,9 @@
+_worker.js
+wrangler.toml
+schema.sql
+scripts/
+node_modules/
+.git/
+.assetsignore
+.gitignore
+*.log
