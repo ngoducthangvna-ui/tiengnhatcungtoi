@@ -1,39 +1,47 @@
 # ==============================================================================
-# CẤU HÌNH CLOUDFLARE WORKER / PAGES CHO WEBSITE MINNA NO NIHONGO
+# CẤU HÌNH CLOUDFLARE WORKER CHO WEBSITE TIẾNG NHẬT MINNA NO NIHONGO
 # File: wrangler.toml
 # ==============================================================================
 
-name = "minna-nihongo-app"
+name = "tiengnhatcungtoi"
 main = "_worker.js"
 compatibility_date = "2024-09-23"
 compatibility_flags = ["nodejs_compat"]
 
-# Thư mục chứa tài nguyên tĩnh của website (HTML, CSS, JS, DATA)
-pages_build_output_dir = "."
+# ------------------------------------------------------------------------------
+# PHỤC VỤ TOÀN BỘ TÀI NGUYÊN TĨNH (STATIC ASSETS: HTML, CSS, JS, DATA)
+# ------------------------------------------------------------------------------
+[assets]
+directory = "."
+binding = "ASSETS"
 
 # ------------------------------------------------------------------------------
 # 1 & 2. LIÊN KẾT CƠ SỞ DỮ LIỆU CLOUDFLARE D1 (DATABASE BINDING)
 # ------------------------------------------------------------------------------
-# Sau khi chạy lệnh: npx wrangler d1 create minna-db
-# Dán database_id được tạo vào mục bên dưới:
-[[d1_databases]]
-binding = "DB"
-database_name = "minna-db"
-database_id = "00000000-0000-0000-0000-000000000000"
+# HƯỚNG DẪN KÍCH HOẠT D1 DATABASE:
+# 1. Truy cập https://dash.cloudflare.com -> Storage & Databases -> D1 SQL Database
+# 2. Bấm "Create database" -> đặt tên: minna-db -> Bấm "Create"
+# 3. Sao chép "Database ID" (dãy ký tự UUID thật của bạn)
+# 4. Mở khóa 4 dòng dưới đây bằng cách xóa dấu # và dán Database ID vào:
+#
+# [[d1_databases]]
+# binding = "DB"
+# database_name = "minna-db"
+# database_id = "DÁN_DATABASE_ID_THẬT_CỦA_BẠN_VÀO_ĐÂY"
 
 # ------------------------------------------------------------------------------
 # 3. CẤU HÌNH GẮN TÊN MIỀN RIÊNG (CUSTOM DOMAIN & ROUTING)
 # ------------------------------------------------------------------------------
 # routes = [
-#   { pattern = "tiengnhat.edu.vn/*", zone_name = "tiengnhat.edu.vn" },
-#   { pattern = "www.tiengnhat.edu.vn/*", zone_name = "tiengnhat.edu.vn" }
+#   { pattern = "tiengnhatcungtoi.com/*", zone_name = "tiengnhatcungtoi.com" },
+#   { pattern = "www.tiengnhatcungtoi.com/*", zone_name = "tiengnhatcungtoi.com" }
 # ]
 
 # ------------------------------------------------------------------------------
 # BIẾN MÔI TRƯỜNG HỆ THỐNG (ENVIRONMENT VARIABLES)
 # ------------------------------------------------------------------------------
 [vars]
-# CANONICAL_DOMAIN = "tiengnhat.edu.vn"
+# CANONICAL_DOMAIN = "tiengnhatcungtoi.com"
 ENFORCE_SSL = "true"
 SPEECHGEN_VOICE = "Akira"
 JWT_SECRET = "minna-super-secret-jwt-key-2026-production"
@@ -41,7 +49,7 @@ JWT_SECRET = "minna-super-secret-jwt-key-2026-production"
 # ------------------------------------------------------------------------------
 # BÍ MẬT HỆ THỐNG ĐƯỢC MÃ HÓA (SECRETS)
 # ------------------------------------------------------------------------------
-# Chạy các lệnh sau trong terminal để lưu trữ bí mật:
+# Chạy các lệnh sau trong terminal hoặc cài đặt tại Settings -> Variables trên Cloudflare:
 #   npx wrangler secret put SPEECHGEN_TOKEN
 #   npx wrangler secret put SPEECHGEN_EMAIL
 #   npx wrangler secret put JWT_SECRET
