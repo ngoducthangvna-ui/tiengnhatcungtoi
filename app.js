@@ -156,15 +156,18 @@ function secureGetJsonStorage(key, fallback = null, validator = null) {
   }, true);
 
   // Chặn in ấn
-  window.addEventListener('beforeprint', function() {
-    document.body.setAttribute('data-print-blocked', 'true');
-  });
-  window.addEventListener('afterprint', function() {
-    document.body.removeAttribute('data-print-blocked');
-  });
+  if (typeof window !== 'undefined' && typeof window.addEventListener === 'function') {
+    window.addEventListener('beforeprint', function() {
+      if (document && document.body) document.body.setAttribute('data-print-blocked', 'true');
+    });
+    window.addEventListener('afterprint', function() {
+      if (document && document.body) document.body.removeAttribute('data-print-blocked');
+    });
+  }
 
   // Chặn tổ hợp phím mở DevTools (bảo vệ mã nguồn bài tập)
-  document.addEventListener('keydown', function(e) {
+  if (typeof document !== 'undefined' && typeof document.addEventListener === 'function') {
+    document.addEventListener('keydown', function(e) {
     const isMac = navigator.platform && navigator.platform.includes('Mac');
     const ctrl = isMac ? e.metaKey : e.ctrlKey;
 
@@ -189,6 +192,7 @@ function secureGetJsonStorage(key, fallback = null, validator = null) {
       return false;
     }
   }, true);
+  }
 })();
 
 // Hàm mã hóa an toàn HTML chống tấn công DOM XSS
@@ -593,16 +597,29 @@ window.toggleLessonComplete = function(id) {
   }
   updateHeaderProgress();
 
-  const completeBtn = document.getElementById('btn-complete-lesson');
-  if (completeBtn) {
-    const isNow = !exists;
-    completeBtn.className = `btn-complete-lesson ${isNow ? 'is-completed' : ''} btn-pulse`;
-    completeBtn.innerHTML = isNow
-      ? '✓ Đã hoàn thành (Bấm để hủy)'
-      : '○ Đánh dấu hoàn thành bài này';
-    setTimeout(() => {
-      if (completeBtn.classList) completeBtn.classList.remove('btn-pulse');
-    }, 450);
+  const isNow = !exists;
+  const completeButtons = document.querySelectorAll ? document.querySelectorAll('.btn-complete-lesson, #btn-complete-lesson') : [document.getElementById('btn-complete-lesson')].filter(Boolean);
+  if (completeButtons && completeButtons.forEach) {
+    completeButtons.forEach(btn => {
+      if (!btn) return;
+      btn.className = `btn-complete-lesson ${isNow ? 'is-completed' : ''} btn-pulse`;
+      btn.innerHTML = isNow
+        ? '✓ Đã hoàn thành (Bấm để hủy)'
+        : '✓ Đánh dấu hoàn thành bài này';
+      setTimeout(() => {
+        if (btn.classList) btn.classList.remove('btn-pulse');
+      }, 450);
+    });
+  }
+
+  const completeIcons = document.querySelectorAll ? document.querySelectorAll('.btn-complete-icon') : [];
+  if (completeIcons && completeIcons.forEach) {
+    completeIcons.forEach(btn => {
+      if (!btn) return;
+      btn.className = `btn-complete-icon ${isNow ? 'is-completed' : ''}`;
+      btn.title = isNow ? 'Đã hoàn thành (Bấm để hủy)' : 'Đánh dấu hoàn thành';
+      btn.innerHTML = `<span class="complete-icon-mark">${isNow ? '✓' : '○'}</span>`;
+    });
   }
 };
 
@@ -1300,6 +1317,7 @@ function renderSidebar() {
         btn.addEventListener('click', () => {
           const targetId = btn.getAttribute('data-id');
           switchModule(targetId);
+          closeMobileSidebar();
         });
       }
     });
@@ -1479,14 +1497,17 @@ function renderContent(id) {
 
       <!-- Hero Header -->
       <div class="lesson-hero-card">
-        <div class="hero-meta">
-          <span class="badge badge-sakura">${lesson.badge || `Bài ${lessonNum} Minna`}</span>
-          <span class="badge badge-green">${lesson.vocabulary.length} Từ vựng chuẩn SGK</span>
-          <span class="badge badge-primary">${lesson.grammar.length} Cấu trúc ngữ pháp</span>
-          <button id="btn-complete-lesson" 
-                  class="btn-complete-lesson ${isCompleted ? 'is-completed' : ''}" 
-                  onclick="toggleLessonComplete('${lesson.id}')">
-            ${isCompleted ? '✓ Đã hoàn thành (Bấm để hủy)' : '○ Đánh dấu hoàn thành bài này'}
+        <div class="hero-top-row">
+          <div class="hero-meta">
+            <span class="badge badge-sakura">${lesson.badge || `Bài ${lessonNum} Minna`}</span>
+            <span class="badge badge-green">${lesson.vocabulary.length} Từ vựng chuẩn SGK</span>
+            <span class="badge badge-primary">${lesson.grammar.length} Cấu trúc ngữ pháp</span>
+          </div>
+          <button class="btn-complete-icon ${isCompleted ? 'is-completed' : ''}" 
+                  onclick="toggleLessonComplete('${lesson.id}')"
+                  aria-label="Đánh dấu hoàn thành bài này"
+                  title="${isCompleted ? 'Đã hoàn thành (Bấm để hủy)' : 'Đánh dấu hoàn thành bài này'}">
+            <span class="complete-icon-mark">${isCompleted ? '✓' : '○'}</span>
           </button>
         </div>
         <h2 class="lesson-title">${lesson.title}</h2>
@@ -1600,6 +1621,21 @@ function renderContent(id) {
           `).join('')}
         </div>
       </section>
+
+      <!-- Khối đánh dấu hoàn thành bài học đặt ở cuối bài sau phần ngữ pháp -->
+      <div class="lesson-completion-card">
+        <div class="completion-card-inner">
+          <div class="completion-text-wrap">
+            <h4 class="completion-heading">Hoàn thành Bài ${lessonNum}</h4>
+            <p class="completion-sub">Bạn đã nắm vững các từ vựng và cấu trúc ngữ pháp của bài học này?</p>
+          </div>
+          <button id="btn-complete-lesson" 
+                  class="btn-complete-lesson ${isCompleted ? 'is-completed' : ''}" 
+                  onclick="toggleLessonComplete('${lesson.id}')">
+            ${isCompleted ? '✓ Đã hoàn thành (Bấm để hủy)' : '✓ Đánh dấu hoàn thành bài này'}
+          </button>
+        </div>
+      </div>
 
       ${renderModuleFooterNav(lessonNum, 'lesson')}
     `;
@@ -1733,8 +1769,43 @@ function renderContent(id) {
 
 // --------------------------------------------------------------------------
 // 4C. MODULE MẸO NHỚ CHỮ HÁN 50 BÀI HỌC (KANJI MNEMONICS)
-// Bố trí chuẩn: Chữ Hán bên trên - Mẹo nhớ ở dòng bên dưới
+// Bố trí hiện đại, tối giản Wa-Modern:
+// - Phân tách riêng biệt từng chữ Hán với đầy đủ Âm On, Âm Kun, Bộ thủ, Nét bút
+// - Loại bỏ khoảng trống thừa, ôm sát nội dung
+// - Nội dung bố trí ngăn nắp, thoáng đãng, tuyệt đối không đè lẫn lên nhau
 // --------------------------------------------------------------------------
+function formatKanjiMnemonic(raw) {
+  if (!raw) return '<div class="mnemonic-row"><span class="mnemonic-text">Đang cập nhật mẹo nhớ...</span></div>';
+  const lines = String(raw).split('\n').map(l => l.trim()).filter(Boolean);
+  return lines.map(line => {
+    if (line.includes('【Chiết tự】') || line.includes('【Cấu thành】')) {
+      const tag = line.includes('【Chiết tự】') ? '【Chiết tự】:' : '【Cấu thành】:';
+      const text = line.replace(/^【.*?】:\s*/, '');
+      return `
+        <div class="mnemonic-row mnemonic-breakdown-row">
+          <span class="mnemonic-tag mnemonic-tag-breakdown">${tag}</span>
+          <span class="mnemonic-text">${text}</span>
+        </div>
+      `;
+    } else if (line.includes('【Mẹo nhớ】') || line.includes('【Mẹo nhớ từ】')) {
+      const tag = line.includes('【Mẹo nhớ từ】') ? '【Mẹo nhớ từ】:' : '【Mẹo nhớ】:';
+      const text = line.replace(/^【.*?】:\s*/, '');
+      return `
+        <div class="mnemonic-row mnemonic-story-row">
+          <span class="mnemonic-tag mnemonic-tag-story">${tag}</span>
+          <span class="mnemonic-text">${text}</span>
+        </div>
+      `;
+    } else {
+      return `
+        <div class="mnemonic-row">
+          <span class="mnemonic-text">${line}</span>
+        </div>
+      `;
+    }
+  }).join('');
+}
+
 function renderKanjiSection(sectionId) {
   const content = document.getElementById('lesson-content');
   if (!content) return;
@@ -1755,14 +1826,17 @@ function renderKanjiSection(sectionId) {
 
     <!-- Hero Header -->
     <div class="lesson-hero-card">
-      <div class="hero-meta">
-        <span class="badge badge-sakura">${lesson.level}</span>
-        <span class="badge badge-primary">${lesson.items.length} Từ Vựng Chữ Hán</span>
-        <span class="badge badge-green">100% Kèm Mẹo Nhớ & Cấu Thành</span>
-        <button id="btn-complete-lesson" 
-                class="btn-complete-lesson ${isCompleted ? 'is-completed' : ''}" 
-                onclick="toggleLessonComplete('${lesson.id}')">
-          ${isCompleted ? '✓ Đã hoàn thành (Bấm để hủy)' : '○ Đánh dấu hoàn thành bài này'}
+      <div class="hero-top-row">
+        <div class="hero-meta">
+          <span class="badge badge-sakura">${lesson.level}</span>
+          <span class="badge badge-primary">${lesson.items.length} Từ Vựng Chữ Hán</span>
+          <span class="badge badge-green">100% Kèm Mẹo Nhớ &amp; Cấu Thành</span>
+        </div>
+        <button class="btn-complete-icon ${isCompleted ? 'is-completed' : ''}" 
+                onclick="toggleLessonComplete('${lesson.id}')"
+                aria-label="Đánh dấu hoàn thành phần này"
+                title="${isCompleted ? 'Đã hoàn thành (Bấm để hủy)' : 'Đánh dấu hoàn thành phần này'}">
+          <span class="complete-icon-mark">${isCompleted ? '✓' : '○'}</span>
         </button>
       </div>
       <h2 class="lesson-title">${lesson.title}</h2>
@@ -1783,97 +1857,73 @@ function renderKanjiSection(sectionId) {
       </div>
     </div>
 
-    <!-- Danh sách các thẻ từ vựng: BỐ TRÍ CHỮ HÁN BÊN TRÊN - MẸO NHỚ Ở DÒNG BÊN DƯỚI -->
+    <!-- Danh sách các thẻ từ vựng: BỐ TRÍ TẬP TRUNG VÀO TỪ VỰNG & MẸO GHI NHỚ -->
     <div class="kanji-cards-container" id="kanji-cards-list">
       ${lesson.items.map((item, idx) => `
         <article class="kanji-study-card" id="kcard-${item.id}" data-word="${item.word}" data-reading="${item.reading || ''}" data-kanji="${item.kanji || item.word}" data-hanviet="${item.hanViet}" data-meaning="${item.meaning}">
           
-          <!-- DÒNG TRÊN: TỪ VỰNG CHỮ HÁN & THÔNG TIN HÁN TỰ -->
+          <!-- DÒNG TRÊN: TIÊU ĐỀ TỪ VỰNG CHỮ HÁN, ÂM HÁN VIỆT & NGHĨA -->
           <div class="kcard-top-section">
-            <div class="kcard-char-display">
-              <div class="kcard-char-box" onclick="speakJapanese('${(item.reading || item.word).replace(/\[.*?\]/g, '').replace(/\(.*?\)/g, '').trim()}', this, event)" role="button" tabindex="0" title="Chạm để nghe phát âm: ${item.word}">
-                <span class="kcard-kanji">${item.word}</span>
-                ${item.reading ? `<span class="kcard-reading-sub">${item.reading}</span>` : ''}
-                <span class="kcard-audio-pill">🔊 Nghe</span>
+            <div class="kcard-word-banner">
+              <div class="kcard-word-info">
+                <div class="kcard-word-title-group">
+                  <h3 class="kcard-word-kanji">${item.word}</h3>
+                  ${item.reading ? `<span class="kcard-word-reading">${item.reading}</span>` : ''}
+                  <button type="button" class="kcard-audio-btn" onclick="speakJapanese('${(item.reading || item.word).replace(/\[.*?\]/g, '').replace(/\(.*?\)/g, '').trim()}', this, event)" title="Nghe phát âm từ: ${item.word}">
+                    <span class="audio-btn-icon">🔊</span>
+                    <span>Nghe</span>
+                  </button>
+                </div>
+                <div class="kcard-word-meaning-line">
+                  <span class="kcard-word-meaning-text">${item.meaning}</span>
+                </div>
               </div>
-              <span class="kcard-stroke-badge">${item.kanjiCount > 1 ? `${item.kanjiCount} chữ Hán • ${item.strokes} nét` : `${item.strokes} nét`}</span>
-            </div>
 
-            <div class="kcard-main-meta">
-              <div class="kcard-header-row">
+              <div class="kcard-word-badges">
                 <div class="kcard-hv-badge-wrap">
                   <span class="kcard-hv-tag">Hán Việt</span>
-                  <strong class="kcard-hanviet">${item.hanViet}</strong>
+                  <strong class="kcard-word-hanviet">${item.hanViet}</strong>
                 </div>
-                <div class="kcard-meaning-wrap">
+                <div class="kcard-badge-row">
                   <span class="badge ${item.kanjiCount > 1 ? 'badge-primary' : 'badge-sakura'}">
-                    ${item.kanjiCount > 1 ? `${item.kanjiCount} Chữ Hán ghép` : 'Chữ Hán đơn'}
+                    ${item.kanjiCount > 1 ? `${item.kanjiCount} chữ ghép` : 'Chữ đơn'}
                   </span>
                   ${item.type ? `<span class="badge badge-subtle">${item.type}</span>` : ''}
-                  <div class="kcard-meaning-text">${item.meaning}</div>
                 </div>
               </div>
-
-              <!-- Phân tích chữ Hán cấu thành (cho từ ghép) hoặc Bộ thủ & On/Kun (cho từ đơn) -->
-              ${item.kanjiCount > 1 ? `
-                <div class="kcard-components-row">
-                  <span class="components-label">Chữ Hán cấu thành từ này:</span>
-                  <div class="components-pills-list">
-                    ${item.components.map(c => `
-                      <span class="comp-item-pill" title="Bộ: ${c.radical} • ${c.strokes} nét">
-                        <strong class="comp-kanji">${c.kanji}</strong>
-                        <span class="comp-hv">[${c.hanViet}]</span>
-                        <span class="comp-mean">${c.meaning}</span>
-                      </span>
-                    `).join('')}
-                  </div>
-                </div>
-              ` : `
-                <div class="kcard-readings-row">
-                  <div class="kcard-reading-col">
-                    <span class="reading-type on">Âm On:</span>
-                    <span class="reading-val on">${item.components[0].onyomi || '—'}</span>
-                  </div>
-                  <div class="kcard-reading-col">
-                    <span class="reading-type kun">Âm Kun:</span>
-                    <span class="reading-val kun">${item.components[0].kunyomi || '—'}</span>
-                  </div>
-                </div>
-                <div class="kcard-radicals-row">
-                  <span class="radical-title">Bộ thủ:</span>
-                  <span class="radical-content">${item.components[0].radical || 'Cơ bản'}</span>
-                </div>
-              `}
             </div>
           </div>
 
-          <!-- DÒNG BÊN DƯỚI: MẸO GHI NHỚ TỪ VỰNG NỔI BẬT & CÂU VÍ DỤ -->
+          <!-- DÒNG BÊN DƯỚI: TRỌNG TÂM MẸO GHI NHỚ & CẤU THÀNH -->
           <div class="kcard-bottom-section">
-            <!-- Hộp mẹo ghi nhớ cho TỪ ĐÓ trong 1 ô duy nhất -->
             <div class="kcard-mnemonic-box">
               <div class="mnemonic-badge-header">
                 <span class="mnemonic-icon">💡</span>
-                <strong class="mnemonic-title">${item.kanjiCount > 1 ? 'Mẹo Nhớ Từ Vựng Ghép:' : 'Mẹo Nhớ Chiết Tự:'}</strong>
+                <strong class="mnemonic-title">Mẹo Ghi Nhớ & Cấu Thành</strong>
               </div>
-              <div class="mnemonic-story">${(item.mnemonic || '')
-                .replace(/【Cấu thành】:/g, '<span class="mnemonic-tag mnemonic-tag-breakdown">【Cấu thành】:</span>')
-                .replace(/【Chiết tự】:/g, '<span class="mnemonic-tag mnemonic-tag-breakdown">【Chiết tự】:</span>')
-                .replace(/【Mẹo nhớ từ】:/g, '<span class="mnemonic-tag mnemonic-tag-story">【Mẹo nhớ từ】:</span>')
-                .replace(/【Mẹo nhớ】:/g, '<span class="mnemonic-tag mnemonic-tag-story">【Mẹo nhớ】:</span>')}</div>
+              <div class="mnemonic-content-flow">
+                ${formatKanjiMnemonic(item.mnemonic)}
+              </div>
             </div>
-
-            <!-- Câu ví dụ thực tế trong bài Minna -->
-            ${item.example ? `
-              <div class="kcard-example-pill" onclick="speakJapanese('${item.example.replace(/\(.*?\)/g, '').replace(/\[.*?\]/g, '').trim()}', this, event)" role="button" tabindex="0" title="Chạm để nghe câu ví dụ">
-                <span class="ex-label">Ví dụ Minna:</span>
-                <strong class="ex-word">${item.example}</strong>
-                <span class="ex-speaker">🔊</span>
-              </div>
-            ` : ''}
           </div>
 
         </article>
       `).join('')}
+    </div>
+
+    <!-- Khối đánh dấu hoàn thành cuối phần Mẹo nhớ Kanji -->
+    <div class="lesson-completion-card">
+      <div class="completion-card-inner">
+        <div class="completion-text-wrap">
+          <h4 class="completion-heading">Hoàn thành Mẹo nhớ Kanji Bài ${lessonNum}</h4>
+          <p class="completion-sub">Bạn đã ghi nhớ toàn bộ các chữ Hán và mẹo chiết tự của bài này?</p>
+        </div>
+        <button id="btn-complete-lesson" 
+                class="btn-complete-lesson ${isCompleted ? 'is-completed' : ''}" 
+                onclick="toggleLessonComplete('${lesson.id}')">
+          ${isCompleted ? '✓ Đã hoàn thành (Bấm để hủy)' : '✓ Đánh dấu hoàn thành phần này'}
+        </button>
+      </div>
     </div>
 
     ${renderModuleFooterNav(lessonNum, 'kanji')}
@@ -1967,14 +2017,17 @@ function renderRadicalSection(sectionId) {
 
     <!-- Hero Header -->
     <div class="lesson-hero-card">
-      <div class="hero-meta">
-        <span class="badge badge-sakura">Bộ Thủ Tiếng Nhật</span>
-        <span class="badge badge-primary">${group.title}</span>
-        <span class="badge badge-green">${group.items.length} Bộ thủ chuẩn</span>
-        <button id="btn-complete-lesson" 
-                class="btn-complete-lesson ${isCompleted ? 'is-completed' : ''}" 
-                onclick="toggleLessonComplete('${group.id}')">
-          ${isCompleted ? '✓ Đã hoàn thành (Bấm để hủy)' : '○ Đánh dấu hoàn thành phần này'}
+      <div class="hero-top-row">
+        <div class="hero-meta">
+          <span class="badge badge-sakura">Bộ Thủ Tiếng Nhật</span>
+          <span class="badge badge-primary">${group.title}</span>
+          <span class="badge badge-green">${group.items.length} Bộ thủ chuẩn</span>
+        </div>
+        <button class="btn-complete-icon ${isCompleted ? 'is-completed' : ''}" 
+                onclick="toggleLessonComplete('${group.id}')"
+                aria-label="Đánh dấu hoàn thành phần này"
+                title="${isCompleted ? 'Đã hoàn thành (Bấm để hủy)' : 'Đánh dấu hoàn thành phần này'}">
+          <span class="complete-icon-mark">${isCompleted ? '✓' : '○'}</span>
         </button>
       </div>
       <h2 class="lesson-title">${group.title}</h2>
@@ -2068,6 +2121,21 @@ function renderRadicalSection(sectionId) {
 
         </article>
       `).join('')}
+    </div>
+
+    <!-- Khối đánh dấu hoàn thành cuối phần Bộ thủ -->
+    <div class="lesson-completion-card">
+      <div class="completion-card-inner">
+        <div class="completion-text-wrap">
+          <h4 class="completion-heading">Hoàn thành ${group.title}</h4>
+          <p class="completion-sub">Bạn đã ghi nhớ toàn bộ các bộ thủ của nhóm này?</p>
+        </div>
+        <button id="btn-complete-lesson" 
+                class="btn-complete-lesson ${isCompleted ? 'is-completed' : ''}" 
+                onclick="toggleLessonComplete('${group.id}')">
+          ${isCompleted ? '✓ Đã hoàn thành (Bấm để hủy)' : '✓ Đánh dấu hoàn thành phần này'}
+        </button>
+      </div>
     </div>
   `;
 
@@ -3213,9 +3281,7 @@ window.switchModule = function(targetId, updateHash = true) {
   }
   safeSetStorage(STORAGE_LAST_ACTIVE_KEY, targetId);
 
-  if (typeof window !== 'undefined' && window.innerWidth <= 768) {
-    closeMobileSidebar();
-  }
+  closeMobileSidebar();
 
   let targetBtn = null;
   if (document && document.querySelectorAll) {
@@ -3429,22 +3495,47 @@ function initMenuToggle() {
 
   const closeSidebarBtn = document.getElementById('close-sidebar-btn');
   if (closeSidebarBtn && closeSidebarBtn.addEventListener) {
-    closeSidebarBtn.addEventListener('click', closeMobileSidebar);
+    closeSidebarBtn.addEventListener('click', (e) => {
+      if (e && e.preventDefault) e.preventDefault();
+      closeMobileSidebar();
+    });
     closeSidebarBtn.addEventListener('touchstart', (e) => {
       if (e && e.preventDefault) e.preventDefault();
       closeMobileSidebar();
     }, { passive: false });
   }
 
+  // Đóng sidebar khi nhấn hoặc chạm vào lớp phủ backdrop mờ
   if (overlay && overlay.addEventListener) {
-    overlay.addEventListener('click', closeMobileSidebar);
-    overlay.addEventListener('touchstart', (e) => {
+    const handleOverlayDismiss = (e) => {
       if (e && e.preventDefault) e.preventDefault();
       closeMobileSidebar();
-    }, { passive: false });
+    };
+    overlay.addEventListener('click', handleOverlayDismiss);
+    overlay.addEventListener('touchstart', handleOverlayDismiss, { passive: false });
+    overlay.addEventListener('touchend', handleOverlayDismiss, { passive: false });
   }
 
+  // Tự động đóng sidebar khi bấm/chạm ra ngoài menu bất kể vị trí nào (Capture phase)
   if (document && document.addEventListener) {
+    document.addEventListener('click', (e) => {
+      const sb = document.getElementById('sidebar');
+      const mBtn = document.getElementById('menu-toggle-btn');
+      if (!sb || !sb.classList.contains('mobile-open')) return;
+      if (!sb.contains(e.target) && (!mBtn || !mBtn.contains(e.target))) {
+        closeMobileSidebar();
+      }
+    }, true);
+
+    document.addEventListener('touchend', (e) => {
+      const sb = document.getElementById('sidebar');
+      const mBtn = document.getElementById('menu-toggle-btn');
+      if (!sb || !sb.classList.contains('mobile-open')) return;
+      if (!sb.contains(e.target) && (!mBtn || !mBtn.contains(e.target))) {
+        closeMobileSidebar();
+      }
+    }, { capture: true, passive: true });
+
     document.addEventListener('keydown', (e) => {
       if ((e.ctrlKey || e.metaKey) && (e.key === 'b' || e.key === 'B')) {
         e.preventDefault();
@@ -3456,6 +3547,18 @@ function initMenuToggle() {
       }
     });
   }
+
+  // Đóng sidebar khi bấm các nút chức năng chân menu nếu mở modal
+  ['btn-reset-progress', 'voice-settings-btn', 'btn-toggle-fullscreen', 'btn-device-settings'].forEach(actionId => {
+    const actionEl = document.getElementById(actionId);
+    if (actionEl && actionEl.addEventListener) {
+      actionEl.addEventListener('click', () => {
+        if (sidebar.classList.contains('mobile-open')) {
+          closeMobileSidebar();
+        }
+      });
+    }
+  });
 
   if (typeof window !== 'undefined' && typeof window.addEventListener === 'function') {
     let resizeTimer = null;
@@ -3725,6 +3828,76 @@ function initVoiceSettingsModal() {
   }
 }
 
+/**
+ * Khởi tạo menu bánh răng cài đặt và tiện ích thu gọn ở chân Sidebar
+ */
+function initSidebarGearMenu() {
+  if (typeof document === 'undefined') return;
+  const gearBtn = document.getElementById('btn-sidebar-gear');
+  const gearWrap = document.getElementById('sidebar-bottom-actions') || (gearBtn && gearBtn.closest ? gearBtn.closest('.sidebar-gear-wrap') : null);
+  const gearPopup = document.getElementById('sidebar-gear-popup');
+
+  if (!gearBtn || !gearBtn.addEventListener || !gearWrap || !gearWrap.classList) return;
+
+  function closeGearPopup() {
+    if (gearWrap.classList.contains('open')) {
+      gearWrap.classList.remove('open');
+      if (gearBtn.setAttribute) gearBtn.setAttribute('aria-expanded', 'false');
+      if (gearPopup && gearPopup.setAttribute) gearPopup.setAttribute('aria-hidden', 'true');
+    }
+  }
+
+  function toggleGearPopup(e) {
+    if (e && e.preventDefault) e.preventDefault();
+    if (e && e.stopPropagation) e.stopPropagation();
+    const isOpen = gearWrap.classList.toggle('open');
+    if (gearBtn.setAttribute) gearBtn.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+    if (gearPopup && gearPopup.setAttribute) gearPopup.setAttribute('aria-hidden', isOpen ? 'false' : 'true');
+  }
+
+  gearBtn.addEventListener('click', toggleGearPopup);
+
+  // Đóng khi click ra ngoài vùng menu bánh răng
+  if (document.addEventListener) {
+    document.addEventListener('click', (e) => {
+      if (gearWrap.classList.contains('open')) {
+        if (!gearWrap.contains || !e.target || !gearWrap.contains(e.target)) {
+          closeGearPopup();
+        }
+      }
+    });
+
+    document.addEventListener('touchend', (e) => {
+      if (gearWrap.classList.contains('open')) {
+        if (!gearWrap.contains || !e.target || !gearWrap.contains(e.target)) {
+          closeGearPopup();
+        }
+      }
+    }, { passive: true });
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && gearWrap.classList.contains('open')) {
+        closeGearPopup();
+        if (typeof gearBtn.focus === 'function') gearBtn.focus();
+      }
+    });
+  }
+
+  // Đóng flyout khi bấm vào bất kỳ tùy chọn nào trong menu
+  if (gearPopup && gearPopup.querySelectorAll) {
+    const items = gearPopup.querySelectorAll('.gear-menu-item');
+    if (items && items.forEach) {
+      items.forEach(item => {
+        if (item && item.addEventListener) {
+          item.addEventListener('click', () => {
+            closeGearPopup();
+          });
+        }
+      });
+    }
+  }
+}
+
 if (document && document.addEventListener) {
   document.addEventListener('DOMContentLoaded', () => {
     initDeviceSettings();
@@ -3737,6 +3910,7 @@ if (document && document.addEventListener) {
     initResetProgress();
     initBackToTop();
     initVoiceSettingsModal();
+    initSidebarGearMenu();
 
     renderSidebar();
     updateHeaderProgress();

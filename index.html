@@ -11,10 +11,10 @@
   <meta property="og:title" content="Tự Học Tiếng Nhật N5 - N4 | Minna no Nihongo & Luyện Thi JLPT">
   <meta property="og:description" content="Khóa học tiếng Nhật N5 & N4 toàn diện: 50 bài học, 2.500 câu trắc nghiệm, 50 bài đọc hiểu và 191 bộ thủ có phát âm giọng Tokyo.">
   <meta property="og:type" content="website">
-  <meta name="theme-color" content="#070b14">
+  <meta name="theme-color" content="#0d1015">
 
-  <!-- Favicon SVG -->
-  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='24' fill='%230284c7'/><text x='50' y='72' font-family='sans-serif' font-weight='bold' font-size='62' fill='white' text-anchor='middle'>日</text></svg>">
+  <!-- Favicon SVG: Triện son Nhật Bản truyền thống (Hanko Seal) -->
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='22' fill='%23c23531'/><rect x='8' y='8' width='84' height='84' rx='16' fill='none' stroke='%23ffffff' stroke-width='2.5' stroke-opacity='0.45'/><text x='50' y='72' font-family='serif' font-weight='bold' font-size='60' fill='white' text-anchor='middle'>日</text></svg>">
   
   <!-- ===================================================================
        BẢO MẬT LỚP 1: HTTP SECURITY META TAGS (BROWSER-LEVEL HARDENING)
@@ -41,10 +41,10 @@
   <meta name="referrer" content="strict-origin-when-cross-origin">
   <meta http-equiv="Permissions-Policy" content="camera=(), microphone=(), geolocation=(), payment=(), usb=(), interest-cohort=()">
 
-  <!-- Font chữ tiếng Nhật & tiếng Việt chuyên dụng -->
+  <!-- Font chữ tiếng Nhật & tiếng Việt chuyên dụng: Be Vietnam Pro (quốc dân cho tiếng Việt) & Shippori Mincho / Zen Kaku Gothic -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Sans+JP:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400;1,600&family=Noto+Sans+JP:wght@400;500;600;700;800&family=Roboto:ital,wght@0,400;0,500;0,700;1,400&family=Shippori+Mincho:wght@400;500;600;700&family=Zen+Kaku+Gothic+New:wght@400;500;700&display=swap" rel="stylesheet">
   
   <!-- Giao diện CSS thuần -->
   <link rel="stylesheet" href="style.css">
@@ -485,7 +485,7 @@
           <span class="brand-badge">日本語</span>
           <span class="sidebar-heading">Mục Lục Khóa Học</span>
         </div>
-        <button id="close-sidebar-btn" class="close-sidebar-btn" aria-label="Đóng menu bài học" title="Đóng menu">
+        <button id="close-sidebar-btn" class="close-sidebar-btn" onclick="closeMobileSidebar()" aria-label="Đóng menu bài học" title="Đóng menu">
           <span>Đóng ✕</span>
         </button>
       </div>
@@ -495,46 +495,56 @@
         <!-- Render tự động bởi app.js -->
       </nav>
 
-      <!-- Danh mục các nút chức năng đặt theo hướng dọc ở phía dưới thanh menu bên trái -->
-      <div class="sidebar-bottom-actions-vertical" id="sidebar-bottom-actions">
-        <!-- 2. Làm mới / Reset -->
-        <button id="btn-reset-progress" class="sidebar-action-item" aria-label="Làm mới / Đặt lại tiến độ" title="Tải lại bài học hoặc đặt lại tiến độ / trạng thái tương tác trên trang">
-          <span class="sidebar-action-icon">↻</span>
-          <span class="sidebar-action-label">Làm mới / Reset</span>
-        </button>
-
-        <!-- 3. Âm thanh / Đọc phát âm -->
-        <button id="voice-settings-btn" class="sidebar-action-item voice-settings-btn" aria-label="Âm thanh / Đọc phát âm" title="Bật hoặc tắt âm thanh phát âm mẫu, điều chỉnh tốc độ &amp; cao độ giọng">
-          <span class="sidebar-action-icon">
-            <svg class="voice-icon-svg" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-              <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
-              <path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path>
-              <path d="M19.07 4.93a10 10 0 0 1 0 14.14"></path>
-            </svg>
-          </span>
-          <span class="sidebar-action-label">Âm thanh / Phát âm</span>
-        </button>
-
-        <!-- 4. Toàn màn hình / Thu gọn giao diện -->
-        <button id="btn-toggle-fullscreen" class="sidebar-action-item" aria-label="Toàn màn hình / Thu gọn" title="Chuyển đổi chế độ xem tập trung (Focus mode) hoặc bật/tắt toàn màn hình">
-          <span class="sidebar-action-icon font-symbol">▯</span>
-          <span class="sidebar-action-label">Toàn màn hình / Focus</span>
-        </button>
-
-        <!-- 5. Cá nhân hóa thiết bị & Hiệu năng -->
-        <button id="btn-device-settings" class="sidebar-action-item device-settings-btn" aria-label="Cá nhân hóa thiết bị &amp; Hiệu năng" title="Cá nhân hóa thiết bị, cỡ chữ &amp; Tiết kiệm pin / Làm mát máy">
-          <span class="sidebar-action-icon">
-            <svg class="device-icon-svg" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-              <rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect>
-              <line x1="12" y1="18" x2="12.01" y2="18"></line>
-            </svg>
-          </span>
-          <span class="sidebar-action-label">Thiết bị &amp; Hiệu năng</span>
-        </button>
-      </div>
-
-      <!-- Sidebar Footer: Gợi ý phím tắt -->
+      <!-- Sidebar Footer: Bánh răng cài đặt & Gợi ý phím tắt -->
       <div class="sidebar-footer">
+        <!-- Bánh răng cài đặt & tiện ích -->
+        <div class="sidebar-gear-wrap" id="sidebar-bottom-actions">
+          <button id="btn-sidebar-gear" class="sidebar-gear-trigger" aria-label="Cài đặt &amp; Tiện ích" aria-haspopup="true" aria-expanded="false" title="Cài đặt hệ thống &amp; Tiện ích (Làm mới, Âm thanh, Toàn màn hình, Thiết bị)">
+            <svg class="gear-icon-svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="3"></circle>
+              <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+            </svg>
+          </button>
+
+          <!-- Popup menu nổi chứa 4 chức năng: Làm mới, Âm thanh, Toàn màn hình, Thiết bị & Hiệu năng -->
+          <div id="sidebar-gear-popup" class="sidebar-gear-popup" role="menu" aria-label="Menu cài đặt &amp; tiện ích" aria-hidden="true">
+            <!-- 1. Làm mới / Reset -->
+            <button id="btn-reset-progress" class="sidebar-action-item gear-menu-item" role="menuitem" aria-label="Làm mới / Đặt lại tiến độ" title="Tải lại bài học hoặc đặt lại tiến độ / trạng thái tương tác trên trang">
+              <span class="sidebar-action-icon">↻</span>
+              <span class="sidebar-action-label">Làm mới / Reset</span>
+            </button>
+
+            <!-- 2. Âm thanh / Đọc phát âm -->
+            <button id="voice-settings-btn" class="sidebar-action-item voice-settings-btn gear-menu-item" role="menuitem" aria-label="Âm thanh / Đọc phát âm" title="Bật hoặc tắt âm thanh phát âm mẫu, điều chỉnh tốc độ &amp; cao độ giọng">
+              <span class="sidebar-action-icon">
+                <svg class="voice-icon-svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                  <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+                  <path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+                  <path d="M19.07 4.93a10 10 0 0 1 0 14.14"></path>
+                </svg>
+              </span>
+              <span class="sidebar-action-label">Âm thanh / Phát âm</span>
+            </button>
+
+            <!-- 3. Toàn màn hình / Thu gọn giao diện -->
+            <button id="btn-toggle-fullscreen" class="sidebar-action-item gear-menu-item" role="menuitem" aria-label="Toàn màn hình / Thu gọn" title="Chuyển đổi chế độ xem tập trung (Focus mode) hoặc bật/tắt toàn màn hình">
+              <span class="sidebar-action-icon font-symbol">▯</span>
+              <span class="sidebar-action-label">Toàn màn hình / Focus</span>
+            </button>
+
+            <!-- 4. Cá nhân hóa thiết bị & Hiệu năng -->
+            <button id="btn-device-settings" class="sidebar-action-item device-settings-btn gear-menu-item" role="menuitem" aria-label="Cá nhân hóa thiết bị &amp; Hiệu năng" title="Cá nhân hóa thiết bị, cỡ chữ &amp; Tiết kiệm pin / Làm mát máy">
+              <span class="sidebar-action-icon">
+                <svg class="device-icon-svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                  <rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect>
+                  <line x1="12" y1="18" x2="12.01" y2="18"></line>
+                </svg>
+              </span>
+              <span class="sidebar-action-label">Thiết bị &amp; Hiệu năng</span>
+            </button>
+          </div>
+        </div>
+
         <span class="shortcut-tip">Phím tắt: <strong>Ctrl + K</strong> tìm nhanh • <strong>F</strong> ẩn/hiện Furigana</span>
       </div>
     </aside>
@@ -551,42 +561,52 @@
   <!-- THANH ĐIỀU HƯỚNG DƯỚI CÙNG CHO ĐIỆN THOẠI (MOBILE BOTTOM NAVIGATION BAR) -->
   <nav id="mobile-bottom-nav" class="mobile-bottom-nav" aria-label="Điều hướng nhanh trên điện thoại">
     <button type="button" class="mobile-nav-item active" data-nav="lesson" onclick="handleMobileBottomNav('lesson')">
-      <svg class="mobile-nav-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
-        <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
-      </svg>
+      <span class="mobile-nav-icon-wrap">
+        <svg class="mobile-nav-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+          <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+        </svg>
+      </span>
       <span class="mobile-nav-label" id="mnav-label-lesson">Bài Học</span>
     </button>
     <button type="button" class="mobile-nav-item" data-nav="kanji" onclick="handleMobileBottomNav('kanji')">
-      <svg class="mobile-nav-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M4 7h16"></path>
-        <path d="M12 2v5"></path>
-        <path d="M6 12h12"></path>
-        <path d="M12 12v9c0 .8-.5 1.5-1.5 1.5"></path>
-        <path d="M16 15l4 6"></path>
-      </svg>
+      <span class="mobile-nav-icon-wrap">
+        <svg class="mobile-nav-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M4 7h16"></path>
+          <path d="M12 2v5"></path>
+          <path d="M6 12h12"></path>
+          <path d="M12 12v9c0 .8-.5 1.5-1.5 1.5"></path>
+          <path d="M16 15l4 6"></path>
+        </svg>
+      </span>
       <span class="mobile-nav-label" id="mnav-label-kanji">Kanji</span>
     </button>
     <button type="button" class="mobile-nav-item" data-nav="quiz" onclick="handleMobileBottomNav('quiz')">
-      <svg class="mobile-nav-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M9 11l3 3L22 4"></path>
-        <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path>
-      </svg>
+      <span class="mobile-nav-icon-wrap">
+        <svg class="mobile-nav-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M9 11l3 3L22 4"></path>
+          <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path>
+        </svg>
+      </span>
       <span class="mobile-nav-label" id="mnav-label-quiz">Bài Tập</span>
     </button>
     <button type="button" class="mobile-nav-item" data-nav="dokkai" onclick="handleMobileBottomNav('dokkai')">
-      <svg class="mobile-nav-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path>
-        <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path>
-      </svg>
+      <span class="mobile-nav-icon-wrap">
+        <svg class="mobile-nav-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path>
+          <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path>
+        </svg>
+      </span>
       <span class="mobile-nav-label" id="mnav-label-dokkai">Đọc Hiểu</span>
     </button>
     <button type="button" class="mobile-nav-item" data-nav="radicals" onclick="handleMobileBottomNav('radicals')">
-      <svg class="mobile-nav-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round">
-        <polygon points="12 2 2 7 12 12 22 7 12 2"></polygon>
-        <polyline points="2 17 12 22 22 17"></polyline>
-        <polyline points="2 12 12 17 22 12"></polyline>
-      </svg>
+      <span class="mobile-nav-icon-wrap">
+        <svg class="mobile-nav-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round">
+          <polygon points="12 2 2 7 12 12 22 7 12 2"></polygon>
+          <polyline points="2 17 12 22 22 17"></polyline>
+          <polyline points="2 12 12 17 22 12"></polyline>
+        </svg>
+      </span>
       <span class="mobile-nav-label" id="mnav-label-radicals">Bộ Thủ</span>
     </button>
   </nav>

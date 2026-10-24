@@ -1,83 +1,98 @@
 /* ==========================================================================
    TỰ HỌC TIẾNG NHẬT - MINNA NO NIHONGO & LUYỆN THI JLPT N5 / N4
-   style.css: Giao diện Modern Bento & Glassmorphism 2026 (Mobile-First Responsive)
+   style.css: Giao diện Phong Cách Nhật Bản Hiện Đại (和モダン - Wa-Modern)
+   Tối giản, tinh tế, trang nhã (Kanso, Shibusa, Ma, Wabi-Sabi & Modern Zen)
    Hỗ trợ Dark/Light Mode, Flashcard 3D, Practice Quiz, Dokkai, Bộ Thủ & Audio
    ========================================================================== */
 
-/* --- 1. CSS VARIABLES: BẢNG MÀU DARK / LIGHT MODE HIỆN ĐẠI --- */
+/* --- 1. CSS VARIABLES: BẢNG MÀU SẮC NHẬT BẢN HIỆN ĐẠI (WA-MODERN PALETTE) --- */
 :root,
 [data-theme="dark"] {
-  --bg-primary: #070b14;
-  --bg-secondary: #111827;
-  --bg-tertiary: #1e293b;
-  --bg-card-inner: #162033;
-  --bg-sidebar: #0b1120;
-  --bg-active: rgba(56, 189, 248, 0.16);
-  --bg-glass: rgba(17, 24, 39, 0.78);
-  --bg-glass-heavy: rgba(11, 17, 32, 0.92);
+  /* Tông màu đêm Sumi & Sơn mài than chì (Sumi & Kurogane) */
+  --bg-primary: #0d1015;
+  --bg-secondary: #13171f;
+  --bg-tertiary: #1b212c;
+  --bg-card-inner: #161c26;
+  --bg-sidebar: #0f131a;
+  --bg-surface: #141822;
+  --bg-hover: rgba(224, 82, 68, 0.10);
+  --bg-active: rgba(224, 82, 68, 0.16);
+  --bg-glass: rgba(19, 23, 31, 0.82);
+  --bg-glass-heavy: rgba(15, 19, 26, 0.94);
 
-  --text-primary: #f8fafc;
-  --text-secondary: #cbd5e1;
-  --text-muted: #94a3b8;
-  --text-heading-muted: #e2e8f0;
+  --text-primary: #f6f7f9;
+  --text-secondary: #c2c9d6;
+  --text-muted: #828c9b;
+  --text-heading-muted: #e2e7ef;
 
-  --border-color: #263449;
-  --border-subtle: rgba(255, 255, 255, 0.07);
-  --border-card: rgba(148, 163, 184, 0.14);
+  --border-color: #242c3a;
+  --border-subtle: rgba(255, 255, 255, 0.06);
+  --border-card: rgba(255, 255, 255, 0.09);
 
-  --accent-primary: #38bdf8;
-  --accent-hover: #0284c7;
-  --accent-indigo: #818cf8;
-  --accent-sakura: #fb7185;
-  --accent-green: #34d399;
+  /* Màu truyền thống Nhật Bản: Đỏ son Shu-iro, Xanh chàm Aizome, Anh đào Sakura, Trà đạo Matcha, Dát vàng Kintsugi */
+  --primary: #e05244;
+  --accent-primary: #e05244;
+  --accent-hover: #f06658;
+  --accent-indigo: #4b85cc;
+  --accent-sakura: #e87288;
+  --accent-green: #45a67b;
   --accent-red: #f87171;
-  --accent-warning: #fbbf24;
+  --accent-warning: #d8a44c;
+  --accent-amber: #d8a44c;
 
-  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.28);
-  --shadow-md: 0 8px 24px -4px rgba(0, 0, 0, 0.42);
-  --shadow-lg: 0 16px 40px -6px rgba(0, 0, 0, 0.55);
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.35);
+  --shadow-md: 0 8px 24px -4px rgba(0, 0, 0, 0.45);
+  --shadow-lg: 0 16px 40px -6px rgba(0, 0, 0, 0.60);
 
   --sidebar-width: 288px;
   --header-height: 60px;
   --mobile-nav-height: 62px;
-  --font-japanese: 'Noto Sans JP', 'Hiragino Kaku Gothic Pro', sans-serif;
-  --font-main: 'Inter', var(--font-japanese), -apple-system, BlinkMacSystemFont, sans-serif;
-  --radius-sm: 8px;
-  --radius-md: 14px;
-  --radius-lg: 20px;
-  --transition: all 0.2s cubic-bezier(0.22, 1, 0.36, 1);
+  --font-mincho: 'Shippori Mincho', 'Noto Serif JP', 'Hiragino Mincho ProN', Georgia, serif;
+  --font-japanese: 'Zen Kaku Gothic New', 'Noto Sans JP', 'Hiragino Kaku Gothic Pro', sans-serif;
+  --font-vietnamese: 'Be Vietnam Pro', 'Roboto', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --font-main: 'Be Vietnam Pro', 'Roboto', var(--font-japanese), -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 16px;
+  --transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 [data-theme="light"] {
-  --bg-primary: #f4f7fb;
+  /* Tông màu giấy Washi tự nhiên, mực tàu Sumi và gỗ Hinoki */
+  --bg-primary: #f9f7f2;
   --bg-secondary: #ffffff;
-  --bg-tertiary: #edf2f7;
-  --bg-card-inner: #f8fafc;
-  --bg-sidebar: #ffffff;
-  --bg-active: rgba(2, 132, 199, 0.11);
+  --bg-tertiary: #f2eee6;
+  --bg-card-inner: #faf8f5;
+  --bg-sidebar: #f5f1e8;
+  --bg-surface: #ffffff;
+  --bg-hover: rgba(194, 53, 49, 0.07);
+  --bg-active: rgba(194, 53, 49, 0.12);
   --bg-glass: rgba(255, 255, 255, 0.88);
   --bg-glass-heavy: rgba(255, 255, 255, 0.96);
 
-  --text-primary: #0f172a;
-  --text-secondary: #334155;
-  --text-muted: #64748b;
-  --text-heading-muted: #1e293b;
+  --text-primary: #1a1d20;
+  --text-secondary: #4a5058;
+  --text-muted: #7e858e;
+  --text-heading-muted: #2c3239;
 
-  --border-color: #e2e8f0;
-  --border-subtle: #f1f5f9;
-  --border-card: rgba(15, 23, 42, 0.09);
+  --border-color: #e5dfd5;
+  --border-subtle: #efece6;
+  --border-card: rgba(30, 24, 16, 0.08);
 
-  --accent-primary: #0284c7;
-  --accent-hover: #0369a1;
-  --accent-indigo: #4f46e5;
-  --accent-sakura: #e11d48;
-  --accent-green: #059669;
-  --accent-red: #dc2626;
-  --accent-warning: #d97706;
+  /* Màu truyền thống: Đỏ son cổng Torii (朱色), Xanh chàm (藍染), Hoa đào (桜色), Trà xanh (抹茶), Vàng hổ phách (山吹) */
+  --primary: #c23531;
+  --accent-primary: #c23531;
+  --accent-hover: #a82623;
+  --accent-indigo: #1e3a5f;
+  --accent-sakura: #d45d79;
+  --accent-green: #3a7158;
+  --accent-red: #c23531;
+  --accent-warning: #c4923e;
+  --accent-amber: #c4923e;
 
-  --shadow-sm: 0 2px 6px rgba(15, 23, 42, 0.04);
-  --shadow-md: 0 8px 24px -4px rgba(15, 23, 42, 0.07);
-  --shadow-lg: 0 18px 36px -6px rgba(15, 23, 42, 0.11);
+  --shadow-sm: 0 2px 8px rgba(30, 24, 16, 0.04);
+  --shadow-md: 0 8px 24px -4px rgba(30, 24, 16, 0.07);
+  --shadow-lg: 0 18px 36px -6px rgba(30, 24, 16, 0.10);
 }
 
 /* --- 2. RESET & BASE STYLES --- */
@@ -106,10 +121,23 @@ body {
   color: var(--text-primary);
   line-height: 1.75;
   -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
   transition: background-color var(--transition), color var(--transition);
 }
 
-/* Nền cực quang mềm mại (Ambient Aurora) */
+/* Họa tiết hạt giấy Washi vi tế tạo chiều sâu xúc giác (Subtle Washi Texture) */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0.022;
+  background-image: radial-gradient(var(--text-primary) 0.8px, transparent 0.8px);
+  background-size: 20px 20px;
+}
+
+/* Nền cực quang mềm mại phong cách Zen (Zen Ambient Glow) */
 .liquid-glass-bg {
   position: fixed;
   inset: 0;
@@ -121,45 +149,45 @@ body {
 .liquid-glass-bg .glass-blob {
   position: absolute;
   border-radius: 50%;
-  filter: blur(80px);
-  opacity: 0.18;
+  filter: blur(90px);
+  opacity: 0.12;
 }
 
 .liquid-glass-bg .blob-1 {
-  width: 420px;
-  height: 420px;
+  width: 440px;
+  height: 440px;
   top: -120px;
   left: -100px;
   background: radial-gradient(circle, var(--accent-primary), transparent 70%);
 }
 
 .liquid-glass-bg .blob-2 {
-  width: 380px;
-  height: 380px;
-  top: 30%;
+  width: 400px;
+  height: 400px;
+  top: 35%;
   right: -120px;
   background: radial-gradient(circle, var(--accent-sakura), transparent 70%);
 }
 
 .liquid-glass-bg .blob-3 {
-  width: 340px;
-  height: 340px;
+  width: 360px;
+  height: 360px;
   bottom: -100px;
   left: 25%;
   background: radial-gradient(circle, var(--accent-indigo), transparent 70%);
 }
 
 .liquid-glass-bg .blob-4 {
-  width: 280px;
-  height: 280px;
+  width: 300px;
+  height: 300px;
   top: 15%;
   left: 45%;
-  background: radial-gradient(circle, var(--accent-green), transparent 70%);
-  opacity: 0.1;
+  background: radial-gradient(circle, var(--accent-warning), transparent 70%);
+  opacity: 0.07;
 }
 
 [data-theme="light"] .liquid-glass-bg .glass-blob {
-  opacity: 0.12;
+  opacity: 0.09;
 }
 
 /* Thanh cuộn tinh tế */
@@ -268,18 +296,18 @@ rt,
 
 [data-theme="dark"] .cover-page-slide {
   background:
-    radial-gradient(circle at 50% 0%, rgba(56, 189, 248, 0.14) 0%, transparent 48%),
-    radial-gradient(circle at 15% 25%, rgba(251, 113, 133, 0.12) 0%, transparent 45%),
-    radial-gradient(circle at 85% 75%, rgba(129, 140, 248, 0.12) 0%, transparent 45%),
-    linear-gradient(180deg, #060a12 0%, #0b1325 55%, #070b14 100%);
+    radial-gradient(circle at 50% 10%, rgba(224, 82, 68, 0.08) 0%, transparent 48%),
+    radial-gradient(circle at 15% 25%, rgba(75, 133, 204, 0.07) 0%, transparent 45%),
+    radial-gradient(circle at 85% 70%, rgba(216, 164, 76, 0.05) 0%, transparent 45%),
+    linear-gradient(180deg, #080b0f 0%, #0d1117 45%, #13171f 100%);
 }
 
 [data-theme="light"] .cover-page-slide {
   background:
-    radial-gradient(circle at 50% 0%, rgba(2, 132, 199, 0.1) 0%, transparent 50%),
-    radial-gradient(circle at 15% 25%, rgba(244, 63, 94, 0.1) 0%, transparent 45%),
-    radial-gradient(circle at 85% 75%, rgba(79, 70, 229, 0.08) 0%, transparent 45%),
-    linear-gradient(180deg, #f8fafc 0%, #f1f5f9 60%, #e2e8f0 100%);
+    radial-gradient(circle at 50% 12%, rgba(194, 53, 49, 0.07) 0%, transparent 52%),
+    radial-gradient(circle at 15% 25%, rgba(212, 93, 121, 0.06) 0%, transparent 45%),
+    radial-gradient(circle at 85% 70%, rgba(30, 58, 95, 0.04) 0%, transparent 45%),
+    linear-gradient(180deg, #faf8f5 0%, #f4efe6 55%, #eae3d6 100%);
 }
 
 .cover-page-slide.hide-cover {
@@ -304,7 +332,7 @@ rt,
   z-index: 1;
 }
 
-/* Mặt trăng / Mặt trời trang trí dịu nhẹ phía sau núi Phú Sĩ, không làm chói chữ tiêu đề */
+/* Mặt trăng thanh tao / Mặt trời Hinomaru trang nhã phía sau núi Phú Sĩ */
 .japan-celestial {
   position: absolute;
   bottom: 110px;
@@ -316,7 +344,7 @@ rt,
   align-items: center;
   justify-content: center;
   pointer-events: none;
-  opacity: 0.32;
+  opacity: 0.38;
 }
 
 .celestial-orb {
@@ -327,12 +355,13 @@ rt,
 }
 
 [data-theme="dark"] .celestial-orb {
-  background: radial-gradient(circle at 40% 40%, rgba(254, 240, 138, 0.55) 0%, rgba(251, 113, 133, 0.25) 55%, transparent 100%);
-  box-shadow: 0 0 60px rgba(251, 113, 133, 0.25);
+  background: radial-gradient(circle at 45% 45%, rgba(255, 252, 230, 0.75) 0%, rgba(240, 200, 140, 0.30) 55%, transparent 100%);
+  box-shadow: 0 0 70px rgba(240, 200, 140, 0.22);
 }
 
 [data-theme="light"] .celestial-orb {
-  background: radial-gradient(circle at 50% 50%, rgba(244, 63, 94, 0.45) 0%, rgba(251, 113, 133, 0.18) 65%, transparent 100%);
+  background: radial-gradient(circle at 50% 50%, rgba(194, 53, 49, 0.40) 0%, rgba(212, 93, 121, 0.16) 65%, transparent 100%);
+  box-shadow: 0 0 80px rgba(194, 53, 49, 0.16);
 }
 
 .celestial-glow {
@@ -349,7 +378,11 @@ rt,
   width: 230px;
   height: 230px;
   border-radius: 50%;
-  border: 1px dashed rgba(251, 113, 133, 0.22);
+  border: 1px dashed rgba(224, 82, 68, 0.22);
+}
+
+[data-theme="light"] .celestial-ring {
+  border-color: rgba(194, 53, 49, 0.18);
 }
 
 .cover-stars-layer {
@@ -365,7 +398,7 @@ rt,
   background: #ffffff;
   border-radius: 50%;
   box-shadow: 0 0 6px rgba(255, 255, 255, 0.8);
-  opacity: 0.5;
+  opacity: 0.45;
 }
 
 [data-theme="light"] .star {
@@ -389,22 +422,22 @@ rt,
   height: 210px;
   pointer-events: none;
   z-index: 2;
-  opacity: 0.36;
+  opacity: 0.38;
 }
 
-[data-theme="dark"] .landscape-far-mountains { fill: #0f172a; opacity: 0.65; }
+[data-theme="dark"] .landscape-far-mountains { fill: #101622; opacity: 0.70; }
 [data-theme="dark"] .fuji-base { fill: url(#fujiGradDark); }
-[data-theme="dark"] .fuji-snow { fill: #f8fafc; opacity: 0.9; }
-[data-theme="dark"] .landscape-pagoda { color: #1e293b; opacity: 0.75; }
-[data-theme="dark"] .landscape-torii { color: #ef4444; opacity: 0.8; }
-[data-theme="dark"] .landscape-clouds { color: #1e293b; opacity: 0.35; }
+[data-theme="dark"] .fuji-snow { fill: #f8fafc; opacity: 0.95; filter: drop-shadow(0 0 6px rgba(255, 255, 255, 0.25)); }
+[data-theme="dark"] .landscape-pagoda { color: #1c2432; opacity: 0.85; }
+[data-theme="dark"] .landscape-torii { color: var(--accent-primary); opacity: 0.92; }
+[data-theme="dark"] .landscape-clouds { color: #151c27; opacity: 0.40; }
 
-[data-theme="light"] .landscape-far-mountains { fill: #cbd5e1; opacity: 0.7; }
+[data-theme="light"] .landscape-far-mountains { fill: #d8d2c4; opacity: 0.70; }
 [data-theme="light"] .fuji-base { fill: url(#fujiGradLight); }
-[data-theme="light"] .fuji-snow { fill: #ffffff; opacity: 0.95; }
-[data-theme="light"] .landscape-pagoda { color: #64748b; opacity: 0.55; }
-[data-theme="light"] .landscape-torii { color: #dc2626; opacity: 0.75; }
-[data-theme="light"] .landscape-clouds { color: #ffffff; opacity: 0.65; }
+[data-theme="light"] .fuji-snow { fill: #ffffff; opacity: 0.98; }
+[data-theme="light"] .landscape-pagoda { color: #5a6068; opacity: 0.65; }
+[data-theme="light"] .landscape-torii { color: var(--accent-primary); opacity: 0.88; }
+[data-theme="light"] .landscape-clouds { color: #f4efe6; opacity: 0.75; }
 
 .sakura-petals-layer {
   position: absolute;
@@ -418,7 +451,7 @@ rt,
 .petal {
   position: absolute;
   top: -30px;
-  background: linear-gradient(135deg, rgba(254, 205, 211, 0.85) 0%, rgba(251, 113, 133, 0.7) 100%);
+  background: linear-gradient(135deg, rgba(254, 215, 226, 0.85) 0%, rgba(232, 114, 136, 0.75) 100%);
   border-radius: 12px 1px 12px 1px;
   opacity: 0.55;
   will-change: transform;
@@ -481,8 +514,8 @@ rt,
   align-items: center;
   gap: 8px;
   background: var(--bg-glass);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
   border: 1px solid var(--border-card);
   padding: 5px 14px 5px 6px;
   border-radius: 999px;
@@ -493,21 +526,22 @@ rt,
   width: 24px;
   height: 24px;
   border-radius: 50%;
-  background: linear-gradient(135deg, var(--accent-primary), var(--accent-sakura));
+  background: var(--accent-primary);
   color: #ffffff;
-  font-family: var(--font-japanese);
-  font-size: 12px;
-  font-weight: 800;
+  font-family: var(--font-mincho);
+  font-size: 13px;
+  font-weight: 700;
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  box-shadow: 0 2px 6px rgba(194, 53, 49, 0.35);
 }
 
 .cover-top-edition {
   font-size: 12.5px;
   font-weight: 600;
   color: var(--text-primary);
-  letter-spacing: 0.02em;
+  letter-spacing: 0.03em;
 }
 
 .cover-top-actions {
@@ -520,26 +554,26 @@ rt,
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  background: linear-gradient(135deg, #0284c7 0%, #2563eb 55%, #e11d48 100%);
+  background: linear-gradient(135deg, var(--accent-primary) 0%, #a82623 100%);
   color: #ffffff;
-  padding: 7px 16px;
+  padding: 7px 18px;
   border-radius: 999px;
   font-size: 13px;
-  font-weight: 700;
-  border: 1px solid rgba(255, 255, 255, 0.4);
+  font-weight: 600;
+  border: 1px solid rgba(255, 255, 255, 0.3);
   cursor: pointer;
-  box-shadow: 0 4px 16px rgba(2, 132, 199, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.35);
-  transition: transform 0.18s ease, box-shadow 0.18s ease;
+  box-shadow: 0 4px 14px rgba(194, 53, 49, 0.35);
+  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.2s cubic-bezier(0.16, 1, 0.3, 1);
   user-select: none;
 }
 
 .cover-quick-enter-btn:hover {
-  transform: translateY(-1px) scale(1.02);
-  box-shadow: 0 6px 20px rgba(2, 132, 199, 0.55);
+  transform: translateY(-1px);
+  box-shadow: 0 6px 18px rgba(194, 53, 49, 0.5);
 }
 
 .cover-quick-enter-btn:active {
-  transform: translateY(0) scale(0.98);
+  transform: translateY(0);
 }
 
 .cover-theme-toggle {
@@ -550,8 +584,8 @@ rt,
   height: 40px;
   border-radius: 12px;
   background: var(--bg-glass);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
   border: 1px solid var(--border-card);
   color: var(--text-primary);
   cursor: pointer;
@@ -576,7 +610,7 @@ rt,
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 24px;
+  gap: 28px;
 }
 
 .cover-vertical-kanji {
@@ -588,31 +622,31 @@ rt,
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 14px;
-  padding: 20px 14px;
+  gap: 16px;
+  padding: 24px 16px;
   border-radius: var(--radius-md);
   background: var(--bg-glass);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
   border: 1px solid var(--border-card);
-  box-shadow: var(--shadow-md);
+  box-shadow: var(--shadow-sm);
   cursor: pointer;
   transition: var(--transition);
 }
 
 .cover-kanji-card:hover {
   transform: translateY(-3px);
-  border-color: var(--accent-sakura);
-  box-shadow: 0 12px 30px rgba(251, 113, 133, 0.18);
+  border-color: var(--accent-primary);
+  box-shadow: var(--shadow-md);
 }
 
 .kanji-vertical-text {
   writing-mode: vertical-rl;
   text-orientation: upright;
-  font-family: var(--font-japanese);
-  font-size: 15px;
-  font-weight: 700;
-  letter-spacing: 0.32em;
+  font-family: var(--font-mincho);
+  font-size: 16px;
+  font-weight: 600;
+  letter-spacing: 0.38em;
   color: var(--text-primary);
   line-height: 1;
 }
@@ -624,22 +658,29 @@ rt,
   width: 28px;
   height: 28px;
   border-radius: 50%;
-  background: rgba(251, 113, 133, 0.14);
-  color: var(--accent-sakura);
-  border: 1px solid rgba(251, 113, 133, 0.35);
+  background: rgba(224, 82, 68, 0.10);
+  color: var(--accent-primary);
+  border: 1px solid rgba(224, 82, 68, 0.28);
+  transition: var(--transition);
+}
+
+.cover-kanji-card:hover .cover-kanji-audio-btn {
+  background: var(--accent-primary);
+  color: #ffffff;
 }
 
 .cover-hanko-seal {
-  font-family: var(--font-japanese), serif;
+  font-family: var(--font-mincho), serif;
   font-size: 11px;
-  font-weight: 800;
-  color: #ef4444;
-  border: 1.5px solid #ef4444;
-  background: rgba(239, 68, 68, 0.08);
-  padding: 2px 6px;
+  font-weight: 700;
+  color: var(--accent-primary);
+  border: 1.5px solid var(--accent-primary);
+  background: rgba(224, 82, 68, 0.08);
+  padding: 3px 6px;
   border-radius: 4px;
   line-height: 1.1;
-  transform: rotate(-3deg);
+  letter-spacing: 0.08em;
+  transform: rotate(-2.5deg);
 }
 
 /* Khối trung tâm Hero */
@@ -651,30 +692,30 @@ rt,
   flex-direction: column;
   align-items: center;
   text-align: center;
-  gap: 14px;
+  gap: 16px;
 }
 
 .cover-zen-badge {
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  background: rgba(251, 113, 133, 0.12);
-  border: 1px solid rgba(251, 113, 133, 0.32);
-  color: var(--accent-sakura);
-  padding: 5px 16px;
+  background: rgba(224, 82, 68, 0.09);
+  border: 1px solid rgba(224, 82, 68, 0.26);
+  color: var(--accent-primary);
+  padding: 5px 18px;
   border-radius: 999px;
   font-size: 11.5px;
   font-weight: 700;
-  letter-spacing: 0.06em;
+  letter-spacing: 0.08em;
   backdrop-filter: blur(8px);
 }
 
 .zen-pulse-dot {
-  width: 8px;
-  height: 8px;
+  width: 7px;
+  height: 7px;
   border-radius: 50%;
-  background: var(--accent-sakura);
-  box-shadow: 0 0 10px var(--accent-sakura);
+  background: var(--accent-primary);
+  box-shadow: 0 0 8px var(--accent-primary);
 }
 
 .cover-main-title {
@@ -682,42 +723,32 @@ rt,
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 4px;
+  gap: 6px;
 }
 
 .cover-title-hero {
-  font-family: var(--font-japanese);
-  font-size: clamp(36px, 4.6vw, 54px);
-  font-weight: 800;
-  letter-spacing: 0.06em;
-  line-height: 1.12;
-  background: linear-gradient(135deg, #ffffff 15%, #38bdf8 55%, #fb7185 95%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  filter: drop-shadow(0 4px 18px rgba(15, 23, 42, 0.45));
-}
-
-[data-theme="light"] .cover-title-hero {
-  background: linear-gradient(135deg, #0f172a 15%, #0284c7 55%, #e11d48 95%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  filter: none;
+  font-family: var(--font-mincho);
+  font-size: clamp(38px, 5.2vw, 58px);
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  line-height: 1.15;
+  color: var(--text-primary);
 }
 
 .cover-title-romaji {
-  font-size: 11.5px;
-  font-weight: 800;
-  letter-spacing: 0.36em;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.42em;
   color: var(--accent-primary);
   text-transform: uppercase;
 }
 
 .cover-title-desc {
-  font-size: clamp(14px, 1.6vw, 17px);
-  font-weight: 500;
+  font-size: clamp(14px, 1.5vw, 16.5px);
+  font-weight: 400;
   color: var(--text-secondary);
   max-width: 680px;
-  line-height: 1.5;
+  line-height: 1.65;
 }
 
 /* Thẻ lời chào Tokyo */
@@ -725,13 +756,13 @@ rt,
   display: inline-flex;
   align-items: center;
   gap: 12px;
-  padding: 8px 18px 8px 10px;
+  padding: 8px 20px 8px 10px;
   border-radius: 999px;
   background: var(--bg-glass);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
-  border: 1px solid rgba(56, 189, 248, 0.3);
-  box-shadow: var(--shadow-md);
+  border: 1px solid var(--border-card);
+  box-shadow: var(--shadow-sm);
   cursor: pointer;
   transition: var(--transition);
   max-width: 100%;
@@ -740,7 +771,7 @@ rt,
 .cover-greeting-card:hover {
   transform: translateY(-2px);
   border-color: var(--accent-primary);
-  box-shadow: 0 8px 24px rgba(56, 189, 248, 0.22);
+  box-shadow: var(--shadow-md);
 }
 
 .greeting-speaker-badge {
@@ -750,10 +781,10 @@ rt,
   width: 34px;
   height: 34px;
   border-radius: 50%;
-  background: linear-gradient(135deg, var(--accent-primary), #2563eb);
+  background: var(--accent-primary);
   color: #ffffff;
   flex-shrink: 0;
-  box-shadow: 0 2px 10px rgba(56, 189, 248, 0.35);
+  box-shadow: 0 2px 8px rgba(194, 53, 49, 0.35);
 }
 
 .greeting-text-wrap {
@@ -766,11 +797,12 @@ rt,
 }
 
 .greeting-jp {
-  font-family: var(--font-japanese);
-  font-size: 14px;
-  font-weight: 700;
+  font-family: var(--font-mincho);
+  font-size: 14.5px;
+  font-weight: 600;
   color: var(--text-primary);
   line-height: 1.35;
+  letter-spacing: 0.02em;
 }
 
 .greeting-vi {
@@ -781,22 +813,22 @@ rt,
 
 .greeting-listen-tag {
   font-size: 11px;
-  font-weight: 700;
+  font-weight: 600;
   color: var(--accent-primary);
-  background: rgba(56, 189, 248, 0.14);
+  background: rgba(224, 82, 68, 0.10);
   padding: 4px 10px;
   border-radius: 999px;
   white-space: nowrap;
   flex-shrink: 0;
 }
 
-/* Bảng 4 trụ cột Bento Grid hiện đại - Không bao giờ cắt chữ (...) */
+/* Bảng 5 trụ cột Bento Grid phong cách tối giản Nhật Bản */
 .cover-features-grid {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 14px;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 12px;
   width: 100%;
-  margin: 4px 0;
+  margin: 6px 0;
   text-align: left;
 }
 
@@ -806,24 +838,24 @@ rt,
   -webkit-backdrop-filter: blur(16px);
   border: 1px solid var(--border-card);
   border-radius: var(--radius-md);
-  padding: 14px 16px;
+  padding: 14px 14px;
   display: flex;
   align-items: flex-start;
-  gap: 12px;
+  gap: 10px;
   transition: var(--transition);
   box-shadow: var(--shadow-sm);
   cursor: pointer;
 }
 
 .cover-feature-card:hover {
-  transform: translateY(-3px);
+  transform: translateY(-2px);
   border-color: var(--accent-primary);
   box-shadow: var(--shadow-md);
 }
 
 .cover-feature-card.active-target {
   border-color: var(--accent-primary) !important;
-  box-shadow: 0 0 0 2px rgba(56, 189, 248, 0.35), var(--shadow-md) !important;
+  box-shadow: 0 0 0 2px rgba(224, 82, 68, 0.3), var(--shadow-md) !important;
 }
 
 .feature-stat-box {
@@ -831,51 +863,57 @@ rt,
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  min-width: 52px;
-  height: 52px;
-  padding: 4px 6px;
-  border-radius: 12px;
-  background: rgba(56, 189, 248, 0.12);
-  border: 1px solid rgba(56, 189, 248, 0.28);
+  min-width: 48px;
+  height: 48px;
+  padding: 4px;
+  border-radius: var(--radius-sm);
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border-subtle);
   flex-shrink: 0;
 }
 
 .feature-stat-box.accent-sakura {
-  background: rgba(251, 113, 133, 0.12);
-  border-color: rgba(251, 113, 133, 0.3);
+  background: rgba(232, 114, 136, 0.12);
+  border-color: rgba(232, 114, 136, 0.30);
   color: var(--accent-sakura);
 }
 
 .feature-stat-box.accent-sky {
-  background: rgba(56, 189, 248, 0.12);
-  border-color: rgba(56, 189, 248, 0.3);
+  background: rgba(224, 82, 68, 0.10);
+  border-color: rgba(224, 82, 68, 0.28);
   color: var(--accent-primary);
 }
 
 .feature-stat-box.accent-emerald {
-  background: rgba(52, 211, 153, 0.12);
-  border-color: rgba(52, 211, 153, 0.3);
+  background: rgba(69, 166, 123, 0.12);
+  border-color: rgba(69, 166, 123, 0.30);
   color: var(--accent-green);
 }
 
+.feature-stat-box.accent-amber {
+  background: rgba(216, 164, 76, 0.12);
+  border-color: rgba(216, 164, 76, 0.30);
+  color: var(--accent-warning);
+}
+
 .feature-stat-box.accent-purple {
-  background: rgba(129, 140, 248, 0.12);
-  border-color: rgba(129, 140, 248, 0.3);
+  background: rgba(75, 133, 204, 0.12);
+  border-color: rgba(75, 133, 204, 0.30);
   color: var(--accent-indigo);
 }
 
 .stat-num {
-  font-size: 16px;
-  font-weight: 800;
+  font-size: 15px;
+  font-weight: 700;
   line-height: 1.1;
   color: var(--text-primary);
 }
 
 .stat-unit {
-  font-size: 8.5px;
+  font-size: 8px;
   font-weight: 700;
   color: var(--text-muted);
-  letter-spacing: 0.04em;
+  letter-spacing: 0.05em;
   margin-top: 2px;
 }
 
@@ -885,15 +923,16 @@ rt,
 }
 
 .feature-title {
-  font-size: 14px;
+  font-family: var(--font-japanese);
+  font-size: 13.5px;
   font-weight: 700;
   color: var(--text-primary);
-  margin: 0 0 4px 0;
+  margin: 0 0 3px 0;
   line-height: 1.3;
 }
 
 .feature-desc {
-  font-size: 12px;
+  font-size: 11.5px;
   line-height: 1.45;
   color: var(--text-secondary);
   margin: 0;
@@ -933,7 +972,7 @@ rt,
   background: var(--accent-primary) !important;
   color: #ffffff !important;
   border-color: var(--accent-primary) !important;
-  box-shadow: 0 4px 14px rgba(56, 189, 248, 0.3);
+  box-shadow: 0 4px 12px rgba(194, 53, 49, 0.30);
 }
 
 .cover-actions-group {
@@ -950,13 +989,13 @@ rt,
   align-items: center;
   justify-content: center;
   gap: 10px;
-  background: linear-gradient(135deg, #0284c7 0%, #2563eb 50%, #e11d48 100%);
+  background: linear-gradient(135deg, var(--accent-primary) 0%, #a82623 100%);
   color: #ffffff;
-  padding: 14px 42px;
+  padding: 13px 40px;
   border-radius: 999px;
-  border: 1px solid rgba(255, 255, 255, 0.35);
+  border: 1px solid rgba(255, 255, 255, 0.25);
   cursor: pointer;
-  box-shadow: 0 10px 30px rgba(2, 132, 199, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.35);
+  box-shadow: 0 8px 24px rgba(194, 53, 49, 0.35);
   transition: var(--transition);
 }
 
@@ -986,19 +1025,19 @@ rt,
 }
 
 /* ==========================================================================
-   4. THANH HEADER CỐ ĐỊNH TRÊN CÙNG (MODERN TOPBAR)
+   4. THANH HEADER CỐ ĐỊNH TRÊN CÙNG (MODERN TOPBAR - FROSTED SHOJI GLASS)
    ========================================================================== */
 .app-header {
   height: var(--header-height);
   min-height: var(--header-height);
   background-color: var(--bg-glass-heavy);
-  backdrop-filter: blur(20px) saturate(180%);
-  -webkit-backdrop-filter: blur(20px) saturate(180%);
-  border-bottom: 1px solid var(--border-card);
+  backdrop-filter: blur(20px) saturate(160%);
+  -webkit-backdrop-filter: blur(20px) saturate(160%);
+  border-bottom: 1px solid var(--border-color);
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 20px;
+  padding: 0 24px;
   position: sticky;
   top: 0;
   z-index: 100;
@@ -1022,9 +1061,9 @@ rt,
   padding: 0 14px;
   font-size: 13px;
   font-weight: 600;
-  border-radius: 10px;
+  border-radius: var(--radius-md);
   background: var(--bg-tertiary);
-  border: 1px solid var(--border-card);
+  border: 1px solid var(--border-color);
   color: var(--text-primary);
   cursor: pointer;
   transition: var(--transition);
@@ -1037,9 +1076,9 @@ rt,
 }
 
 .menu-toggle-btn.is-mobile-open {
-  background-color: rgba(248, 113, 113, 0.16);
-  border-color: var(--accent-red);
-  color: var(--accent-red);
+  background-color: rgba(224, 82, 68, 0.14);
+  border-color: var(--accent-primary);
+  color: var(--accent-primary);
 }
 
 .brand {
@@ -1048,7 +1087,7 @@ rt,
   gap: 10px;
   cursor: pointer;
   padding: 4px 8px 4px 4px;
-  border-radius: 10px;
+  border-radius: var(--radius-md);
   transition: var(--transition);
 }
 
@@ -1057,15 +1096,15 @@ rt,
 }
 
 .brand-badge {
-  background: linear-gradient(135deg, #0284c7, #e11d48);
+  background: var(--accent-primary);
   color: #ffffff;
-  font-weight: 800;
-  font-size: 12px;
-  padding: 5px 8px;
-  border-radius: 8px;
-  font-family: var(--font-japanese);
+  font-weight: 700;
+  font-size: 12.5px;
+  padding: 4px 8px;
+  border-radius: 6px;
+  font-family: var(--font-mincho);
   letter-spacing: 0.5px;
-  box-shadow: 0 2px 8px rgba(2, 132, 199, 0.3);
+  box-shadow: 0 2px 8px rgba(194, 53, 49, 0.35);
 }
 
 .brand-text-group {
@@ -1075,16 +1114,18 @@ rt,
 }
 
 .brand-name {
-  font-size: 13.5px;
-  font-weight: 800;
+  font-family: var(--font-japanese);
+  font-size: 14px;
+  font-weight: 700;
   color: var(--text-primary);
   letter-spacing: -0.01em;
 }
 
 .brand-sub {
   font-size: 10.5px;
-  font-weight: 600;
+  font-weight: 500;
   color: var(--text-muted);
+  letter-spacing: 0.02em;
 }
 
 .header-progress-wrap {
@@ -1093,10 +1134,10 @@ rt,
   gap: 4px;
   min-width: 145px;
   max-width: 190px;
-  padding: 5px 12px;
+  padding: 6px 12px;
   background: var(--bg-tertiary);
-  border: 1px solid var(--border-card);
-  border-radius: 10px;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
 }
 
 .header-goal-subtitle {
@@ -1108,8 +1149,8 @@ rt,
 }
 
 .header-progress-bar {
-  height: 5px;
-  background: rgba(148, 163, 184, 0.2);
+  height: 4px;
+  background: rgba(148, 163, 184, 0.22);
   border-radius: 99px;
   overflow: hidden;
   width: 100%;
@@ -1119,7 +1160,7 @@ rt,
   height: 100%;
   background: linear-gradient(90deg, var(--accent-primary), var(--accent-green));
   border-radius: 99px;
-  transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: width 0.4s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 @media (max-width: 1100px) {
@@ -1128,7 +1169,7 @@ rt,
   }
 }
 
-/* Quick Search Ctrl + K */
+/* Quick Search Ctrl + K (Phong cách tối giản Washi) */
 .header-search-container {
   flex: 1;
   max-width: 420px;
@@ -1139,8 +1180,8 @@ rt,
   display: flex;
   align-items: center;
   background-color: var(--bg-tertiary);
-  border: 1px solid var(--border-card);
-  border-radius: 12px;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
   padding: 7px 12px;
   gap: 8px;
   transition: var(--transition);
@@ -1148,7 +1189,7 @@ rt,
 
 .search-box-wrapper:focus-within {
   border-color: var(--accent-primary);
-  box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.2);
+  box-shadow: 0 0 0 3px rgba(224, 82, 68, 0.14);
   background-color: var(--bg-secondary);
 }
 
@@ -1170,6 +1211,7 @@ rt,
 
 .quick-search-input::placeholder {
   color: var(--text-muted);
+  font-weight: 400;
 }
 
 .search-shortcut {
@@ -1186,7 +1228,7 @@ rt,
   font-size: 10px;
   font-weight: 700;
   padding: 2px 6px;
-  border-radius: 5px;
+  border-radius: 4px;
   font-family: inherit;
 }
 
@@ -1199,7 +1241,7 @@ rt,
   background-color: var(--bg-glass-heavy);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
-  border: 1px solid var(--border-card);
+  border: 1px solid var(--border-color);
   border-radius: var(--radius-md);
   box-shadow: var(--shadow-lg);
   max-height: 420px;
@@ -1280,9 +1322,9 @@ rt,
   font-weight: 600;
   padding: 3px 8px;
   border-radius: 999px;
-  background: rgba(56, 189, 248, 0.12);
+  background: rgba(224, 82, 68, 0.10);
   color: var(--accent-primary);
-  border: 1px solid rgba(56, 189, 248, 0.25);
+  border: 1px solid rgba(224, 82, 68, 0.25);
   flex-shrink: 0;
 }
 
@@ -1321,9 +1363,9 @@ body.hide-furigana ruby:hover rt {
   height: 38px;
   min-width: 38px;
   padding: 0 10px;
-  border-radius: 10px;
+  border-radius: var(--radius-md);
   background: var(--bg-tertiary);
-  border: 1px solid var(--border-card);
+  border: 1px solid var(--border-color);
   color: var(--text-primary);
   transition: var(--transition);
   cursor: pointer;
@@ -1340,17 +1382,17 @@ body.hide-furigana ruby:hover rt {
 }
 
 .btn-ruby-badge {
-  font-size: 12px;
+  font-size: 12.5px;
   font-weight: 700;
-  font-family: var(--font-japanese);
+  font-family: var(--font-mincho);
   white-space: nowrap;
   display: inline-block;
 }
 
 body.hide-furigana #btn-toggle-furigana {
-  background: rgba(251, 113, 133, 0.16);
-  border-color: var(--accent-sakura);
-  color: var(--accent-sakura);
+  background: rgba(224, 82, 68, 0.12);
+  border-color: var(--accent-primary);
+  color: var(--accent-primary);
 }
 
 #btn-reset-progress span {
@@ -1377,11 +1419,11 @@ body.hide-furigana #btn-toggle-furigana {
 [data-theme="light"] .dark-icon { display: inline-flex; }
 
 /* ==========================================================================
-   5. BỐ CỤC 2 CỘT (APP LAYOUT) & SIDEBAR HIỆN ĐẠI
+   5. BỐ CỤC 2 CỘT (APP LAYOUT) & SIDEBAR PHONG CÁCH SHOJI
    ========================================================================== */
 .app-layout {
   position: relative;
-  z-index: 1;
+  z-index: auto;
   display: flex;
   height: calc(100vh - var(--header-height));
   height: calc(100dvh - var(--header-height));
@@ -1395,14 +1437,14 @@ body.hide-furigana #btn-toggle-furigana {
   flex: 0 0 var(--sidebar-width);
   margin-left: 0;
   background-color: var(--bg-sidebar);
-  border-right: 1px solid var(--border-card);
+  border-right: 1px solid var(--border-color);
   display: flex;
   flex-direction: column;
   height: 100%;
   max-height: 100%;
   overflow: hidden;
   user-select: none;
-  transition: margin-left 0.24s cubic-bezier(0.22, 1, 0.36, 1);
+  transition: margin-left 0.24s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 @media (min-width: 769px) {
@@ -1424,15 +1466,15 @@ body.hide-furigana #btn-toggle-furigana {
 }
 
 .accordion-group {
-  border: 1px solid var(--border-card);
+  border: 1px solid var(--border-color);
   background-color: var(--bg-secondary);
-  border-radius: 12px;
+  border-radius: var(--radius-md);
   overflow: hidden;
   transition: border-color var(--transition);
 }
 
 .accordion-group:hover {
-  border-color: rgba(56, 189, 248, 0.35);
+  border-color: var(--border-card);
 }
 
 .accordion-header {
@@ -1442,6 +1484,7 @@ body.hide-furigana #btn-toggle-furigana {
   align-items: center;
   justify-content: space-between;
   text-align: left;
+  font-family: var(--font-japanese);
   font-size: 13px;
   font-weight: 700;
   color: var(--text-primary);
@@ -1462,7 +1505,7 @@ body.hide-furigana #btn-toggle-furigana {
 
 .accordion-badge {
   font-size: 11px;
-  background: rgba(56, 189, 248, 0.14);
+  background: var(--bg-tertiary);
   color: var(--accent-primary);
   padding: 2px 8px;
   border-radius: 999px;
@@ -1482,7 +1525,7 @@ body.hide-furigana #btn-toggle-furigana {
 .accordion-body {
   display: none;
   padding: 6px 8px 10px;
-  border-top: 1px solid var(--border-card);
+  border-top: 1px solid var(--border-color);
   background-color: var(--bg-primary);
   max-height: 310px;
   overflow-y: auto;
@@ -1504,10 +1547,11 @@ body.hide-furigana #btn-toggle-furigana {
   width: 100%;
   padding: 8px 10px;
   text-align: left;
+  font-family: var(--font-japanese);
   font-size: 12.5px;
   font-weight: 500;
   color: var(--text-secondary);
-  border-radius: 8px;
+  border-radius: var(--radius-sm);
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -1527,6 +1571,7 @@ body.hide-furigana #btn-toggle-furigana {
   font-weight: 700;
 }
 
+/* Nét cọ Shodo màu đỏ son ở mép trái chỉ mục đang chọn */
 .menu-item-btn.active::before {
   content: "";
   position: absolute;
@@ -1558,31 +1603,41 @@ body.hide-furigana #btn-toggle-furigana {
 }
 
 .menu-item-btn.active .item-tag {
-  background: rgba(56, 189, 248, 0.2);
+  background: rgba(224, 82, 68, 0.16);
   color: var(--accent-primary);
 }
 
 .item-tag.completed {
-  background: rgba(52, 211, 153, 0.16);
+  background: rgba(69, 166, 123, 0.14);
   color: var(--accent-green);
 }
 
 .item-tag.current {
-  background: rgba(251, 113, 133, 0.18);
-  color: var(--accent-sakura);
+  background: rgba(224, 82, 68, 0.16);
+  color: var(--accent-primary);
 }
 
 .sidebar-footer {
   flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
   background-color: var(--bg-secondary);
-  padding: 10px 12px;
-  border-top: 1px solid var(--border-card);
-  text-align: center;
+  padding: 4px 12px;
+  border-top: 1px solid var(--border-color);
+  position: relative;
+  min-height: 44px;
 }
 
 .shortcut-tip {
   font-size: 11px;
   color: var(--text-muted);
+  text-align: right;
+  flex: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .mobile-sidebar-header {
@@ -1616,6 +1671,7 @@ body.hide-furigana #btn-toggle-furigana {
   display: flex;
   flex-direction: column;
   gap: 24px;
+  font-family: var(--font-vietnamese);
 }
 
 .lesson-content.content-entering {
@@ -1635,7 +1691,7 @@ body.hide-furigana #btn-toggle-furigana {
   flex-wrap: wrap;
   gap: 12px;
   background: var(--bg-secondary);
-  border: 1px solid var(--border-card);
+  border: 1px solid var(--border-color);
   border-radius: var(--radius-md);
   padding: 8px 12px;
   box-shadow: var(--shadow-sm);
@@ -1653,7 +1709,8 @@ body.hide-furigana #btn-toggle-furigana {
   align-items: center;
   gap: 8px;
   padding: 8px 16px;
-  border-radius: 10px;
+  border-radius: var(--radius-sm);
+  font-family: var(--font-japanese);
   font-size: 13px;
   font-weight: 600;
   color: var(--text-secondary);
@@ -1669,7 +1726,7 @@ body.hide-furigana #btn-toggle-furigana {
 .sync-tab-btn.active {
   background: var(--bg-active);
   color: var(--accent-primary);
-  border: 1px solid rgba(56, 189, 248, 0.3);
+  border: 1px solid rgba(224, 82, 68, 0.25);
   font-weight: 700;
 }
 
@@ -1683,7 +1740,7 @@ body.hide-furigana #btn-toggle-furigana {
 
 .sync-tab-btn.active .sync-tab-dot {
   opacity: 1;
-  box-shadow: 0 0 8px currentColor;
+  box-shadow: 0 0 6px currentColor;
 }
 
 .sync-tab-icon {
@@ -1700,9 +1757,9 @@ body.hide-furigana #btn-toggle-furigana {
 
 .step-nav-btn {
   padding: 7px 13px;
-  border-radius: 9px;
+  border-radius: var(--radius-sm);
   background: var(--bg-tertiary);
-  border: 1px solid var(--border-card);
+  border: 1px solid var(--border-color);
   color: var(--text-primary);
   font-size: 12.5px;
   font-weight: 600;
@@ -1729,12 +1786,12 @@ body.hide-furigana #btn-toggle-furigana {
 /* Hero Header Card */
 .lesson-hero-card {
   background: var(--bg-secondary);
-  border: 1px solid var(--border-card);
+  border: 1px solid var(--border-color);
   border-radius: var(--radius-lg);
   padding: 26px 30px;
   position: relative;
   overflow: hidden;
-  box-shadow: var(--shadow-md);
+  box-shadow: var(--shadow-sm);
 }
 
 .lesson-hero-card::before {
@@ -1743,8 +1800,16 @@ body.hide-furigana #btn-toggle-furigana {
   top: 0;
   left: 0;
   right: 0;
-  height: 4px;
-  background: linear-gradient(90deg, var(--accent-primary), var(--accent-indigo), var(--accent-sakura));
+  height: 3px;
+  background: linear-gradient(90deg, var(--accent-primary) 0%, var(--accent-indigo) 50%, var(--accent-sakura) 100%);
+}
+
+.hero-top-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 12px;
 }
 
 .hero-meta {
@@ -1752,7 +1817,82 @@ body.hide-furigana #btn-toggle-furigana {
   align-items: center;
   flex-wrap: wrap;
   gap: 8px;
-  margin-bottom: 14px;
+  margin-bottom: 0;
+}
+
+.hero-meta .badge {
+  background: rgba(56, 189, 248, 0.08) !important;
+  color: var(--text-secondary) !important;
+  border: 1px solid rgba(56, 189, 248, 0.18) !important;
+  font-size: 12px;
+  font-weight: 500;
+  padding: 4px 11px;
+  border-radius: 999px;
+  user-select: none;
+}
+
+.btn-complete-icon {
+  width: 36px;
+  height: 36px;
+  min-width: 36px;
+  min-height: 36px;
+  border-radius: 50%;
+  border: 1px solid var(--border-color);
+  background: var(--bg-card-inner, rgba(255, 255, 255, 0.05));
+  color: var(--text-muted);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  font-weight: 800;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  flex-shrink: 0;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.btn-complete-icon:hover {
+  border-color: var(--primary);
+  color: var(--primary);
+  transform: scale(1.06);
+}
+
+.btn-complete-icon.is-completed {
+  background: rgba(34, 197, 94, 0.16);
+  border-color: rgba(34, 197, 94, 0.5);
+  color: #22c55e;
+}
+
+/* Khối đánh dấu hoàn thành đặt cuối bài học */
+.lesson-completion-card {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  padding: 22px 26px;
+  margin-top: 24px;
+  box-shadow: var(--shadow-sm);
+}
+
+.completion-card-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.completion-heading {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 4px;
+}
+
+.completion-sub {
+  font-size: 13px;
+  color: var(--text-secondary);
+  margin: 0;
 }
 
 .badge {
@@ -1767,28 +1907,29 @@ body.hide-furigana #btn-toggle-furigana {
 }
 
 .badge-primary {
-  background: rgba(56, 189, 248, 0.14);
+  background: rgba(224, 82, 68, 0.10);
   color: var(--accent-primary);
-  border: 1px solid rgba(56, 189, 248, 0.28);
+  border: 1px solid rgba(224, 82, 68, 0.25);
 }
 
 .badge-sakura {
-  background: rgba(251, 113, 133, 0.14);
+  background: rgba(232, 114, 136, 0.12);
   color: var(--accent-sakura);
-  border: 1px solid rgba(251, 113, 133, 0.28);
+  border: 1px solid rgba(232, 114, 136, 0.25);
 }
 
 .badge-green {
-  background: rgba(52, 211, 153, 0.14);
+  background: rgba(69, 166, 123, 0.12);
   color: var(--accent-green);
-  border: 1px solid rgba(52, 211, 153, 0.28);
+  border: 1px solid rgba(69, 166, 123, 0.25);
 }
 
 .lesson-title {
+  font-family: var(--font-vietnamese);
   font-size: clamp(22px, 2.6vw, 30px);
-  font-weight: 800;
+  font-weight: 700;
   color: var(--text-primary);
-  line-height: 1.3;
+  line-height: 1.35;
   margin-bottom: 10px;
   letter-spacing: -0.01em;
 }
@@ -1833,10 +1974,10 @@ body.hide-furigana #btn-toggle-furigana {
 
 .practice-box {
   background: var(--bg-secondary);
-  border: 1px solid var(--border-card);
+  border: 1px solid var(--border-color);
   border-radius: var(--radius-lg);
-  padding: 20px 22px;
-  box-shadow: var(--shadow-md);
+  padding: 22px 24px;
+  box-shadow: var(--shadow-sm);
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -1858,6 +1999,7 @@ body.hide-furigana #btn-toggle-furigana {
 
 .practice-Box-title h4,
 .practice-box-title h4 {
+  font-family: var(--font-japanese);
   font-size: 15.5px;
   font-weight: 700;
   color: var(--text-primary);
@@ -1873,19 +2015,21 @@ body.hide-furigana #btn-toggle-furigana {
 .practice-icon-badge {
   width: 38px;
   height: 38px;
-  border-radius: 10px;
+  border-radius: var(--radius-sm);
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  font-size: 18px;
-  background: rgba(56, 189, 248, 0.12);
-  border: 1px solid rgba(56, 189, 248, 0.25);
+  font-size: 17px;
+  background: rgba(224, 82, 68, 0.10);
+  border: 1px solid rgba(224, 82, 68, 0.25);
+  color: var(--accent-primary);
   flex-shrink: 0;
 }
 
 .practice-icon-badge.accent-sakura {
-  background: rgba(251, 113, 133, 0.12);
-  border-color: rgba(251, 113, 133, 0.25);
+  background: rgba(232, 114, 136, 0.12);
+  border-color: rgba(232, 114, 136, 0.28);
+  color: var(--accent-sakura);
 }
 
 .practice-counter-pill {
@@ -1895,7 +2039,7 @@ body.hide-furigana #btn-toggle-furigana {
   border-radius: 999px;
   background: var(--bg-tertiary);
   color: var(--accent-primary);
-  border: 1px solid var(--border-card);
+  border: 1px solid var(--border-color);
   white-space: nowrap;
 }
 
@@ -1903,12 +2047,13 @@ body.hide-furigana #btn-toggle-furigana {
   color: var(--accent-green);
 }
 
+/* Thẻ lật từ vựng Nhật Bản (単語帳 - Tango-cho) */
 .fc-card {
-  background: linear-gradient(145deg, var(--bg-card-inner), var(--bg-tertiary));
-  border: 1px solid var(--border-card);
+  background: var(--bg-card-inner);
+  border: 1px solid var(--border-color);
   border-radius: var(--radius-md);
   min-height: 168px;
-  padding: 20px;
+  padding: 22px;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -1916,13 +2061,14 @@ body.hide-furigana #btn-toggle-furigana {
   text-align: center;
   cursor: pointer;
   position: relative;
-  transition: transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
+  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.25s ease, box-shadow 0.25s ease;
   user-select: none;
+  box-shadow: var(--shadow-sm);
 }
 
 .fc-card:hover {
   border-color: var(--accent-primary);
-  box-shadow: var(--shadow-sm);
+  box-shadow: var(--shadow-md);
 }
 
 .fc-face {
@@ -1940,7 +2086,7 @@ body.hide-furigana #btn-toggle-furigana {
 
 .fc-card.flipped {
   border-color: var(--accent-green);
-  background: linear-gradient(145deg, rgba(52, 211, 153, 0.08), var(--bg-card-inner));
+  background: linear-gradient(145deg, rgba(69, 166, 123, 0.06), var(--bg-card-inner));
 }
 
 .fc-card.flipped .fc-front {
@@ -1957,35 +2103,35 @@ body.hide-furigana #btn-toggle-furigana {
   text-transform: uppercase;
   letter-spacing: 0.05em;
   color: var(--accent-primary);
-  background: rgba(56, 189, 248, 0.12);
+  background: rgba(224, 82, 68, 0.10);
   padding: 2px 10px;
   border-radius: 999px;
 }
 
 .fc-mode-tag.accent-emerald {
   color: var(--accent-green);
-  background: rgba(52, 211, 153, 0.14);
+  background: rgba(69, 166, 123, 0.12);
 }
 
 .fc-hiragana {
   font-family: var(--font-japanese);
   font-size: clamp(24px, 3vw, 30px);
-  font-weight: 800;
+  font-weight: 700;
   color: var(--text-primary);
   line-height: 1.3;
 }
 
 .fc-kanji-sub,
 .fc-kanji-back {
-  font-family: var(--font-japanese);
-  font-size: 14px;
+  font-family: var(--font-mincho);
+  font-size: 16px;
   font-weight: 600;
   color: var(--text-secondary);
 }
 
 .fc-meaning {
   font-size: clamp(18px, 2.4vw, 22px);
-  font-weight: 700;
+  font-weight: 600;
   color: var(--accent-green);
   line-height: 1.4;
 }
@@ -2009,9 +2155,9 @@ body.hide-furigana #btn-toggle-furigana {
   flex: 1 1 auto;
   min-height: 40px;
   padding: 8px 12px;
-  border-radius: 10px;
+  border-radius: var(--radius-sm);
   background: var(--bg-tertiary);
-  border: 1px solid var(--border-card);
+  border: 1px solid var(--border-color);
   color: var(--text-primary);
   font-size: 12.5px;
   font-weight: 600;
@@ -2028,16 +2174,16 @@ body.hide-furigana #btn-toggle-furigana {
 }
 
 .btn-tool.btn-tool-primary {
-  background: rgba(56, 189, 248, 0.15);
-  border-color: rgba(56, 189, 248, 0.35);
+  background: rgba(224, 82, 68, 0.12);
+  border-color: rgba(224, 82, 68, 0.28);
   color: var(--accent-primary);
 }
 
 .kq-body {
   background: var(--bg-card-inner);
-  border: 1px solid var(--border-card);
+  border: 1px solid var(--border-color);
   border-radius: var(--radius-md);
-  padding: 14px 16px;
+  padding: 16px 18px;
   min-height: 168px;
   display: flex;
   flex-direction: column;
@@ -2062,10 +2208,10 @@ body.hide-furigana #btn-toggle-furigana {
 }
 
 .kq-question {
-  font-family: var(--font-japanese);
-  font-size: clamp(22px, 2.6vw, 28px);
-  font-weight: 800;
-  color: var(--accent-sakura);
+  font-family: var(--font-mincho);
+  font-size: clamp(24px, 2.8vw, 30px);
+  font-weight: 700;
+  color: var(--accent-primary);
   text-align: right;
 }
 
@@ -2078,9 +2224,9 @@ body.hide-furigana #btn-toggle-furigana {
 .kq-opt {
   min-height: 44px;
   padding: 8px 10px;
-  border-radius: 9px;
+  border-radius: var(--radius-sm);
   background: var(--bg-secondary);
-  border: 1px solid var(--border-card);
+  border: 1px solid var(--border-color);
   color: var(--text-primary);
   font-size: 13.5px;
   font-weight: 600;
@@ -2096,15 +2242,15 @@ body.hide-furigana #btn-toggle-furigana {
 }
 
 .kq-opt.correct {
-  background: rgba(52, 211, 153, 0.2) !important;
+  background: rgba(69, 166, 123, 0.18) !important;
   border-color: var(--accent-green) !important;
   color: var(--accent-green) !important;
 }
 
 .kq-opt.wrong {
-  background: rgba(248, 113, 113, 0.2) !important;
-  border-color: var(--accent-red) !important;
-  color: var(--accent-red) !important;
+  background: rgba(224, 82, 68, 0.18) !important;
+  border-color: var(--accent-primary) !important;
+  color: var(--accent-primary) !important;
 }
 
 .kq-finish-box {
@@ -2136,10 +2282,10 @@ body.hide-furigana #btn-toggle-furigana {
    ========================================================================== */
 .section-card {
   background-color: var(--bg-secondary);
-  border: 1px solid var(--border-card);
+  border: 1px solid var(--border-color);
   border-radius: var(--radius-lg);
   padding: 26px 28px;
-  box-shadow: var(--shadow-md);
+  box-shadow: var(--shadow-sm);
 }
 
 .section-header {
@@ -2160,8 +2306,9 @@ body.hide-furigana #btn-toggle-furigana {
 }
 
 .section-title {
+  font-family: var(--font-japanese);
   font-size: 20px;
-  font-weight: 800;
+  font-weight: 700;
   color: var(--text-primary);
 }
 
@@ -2179,8 +2326,8 @@ body.hide-furigana #btn-toggle-furigana {
 
 .vocab-search-input {
   background: var(--bg-tertiary);
-  border: 1px solid var(--border-card);
-  border-radius: 10px;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-sm);
   padding: 8px 14px;
   font-size: 13px;
   color: var(--text-primary);
@@ -2191,7 +2338,7 @@ body.hide-furigana #btn-toggle-furigana {
 
 .vocab-search-input:focus {
   border-color: var(--accent-primary);
-  box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.18);
+  box-shadow: 0 0 0 3px rgba(224, 82, 68, 0.15);
 }
 
 .vocab-category-chips {
@@ -2207,7 +2354,7 @@ body.hide-furigana #btn-toggle-furigana {
   font-size: 12px;
   font-weight: 600;
   background: var(--bg-tertiary);
-  border: 1px solid var(--border-card);
+  border: 1px solid var(--border-color);
   color: var(--text-secondary);
   transition: var(--transition);
 }
@@ -2224,7 +2371,7 @@ body.hide-furigana #btn-toggle-furigana {
   overflow-x: auto;
   background-color: var(--bg-card-inner);
   border-radius: var(--radius-md);
-  border: 1px solid var(--border-card);
+  border: 1px solid var(--border-color);
   box-shadow: var(--shadow-sm);
   -webkit-overflow-scrolling: touch;
 }
@@ -2244,20 +2391,21 @@ body.hide-furigana #btn-toggle-furigana {
 }
 
 .vocab-table th {
+  font-family: var(--font-japanese);
   font-size: 12.5px;
   text-transform: uppercase;
   color: var(--text-heading-muted, #e2e8f0) !important;
   font-weight: 700;
   background-color: var(--bg-tertiary);
-  border-bottom: 2px solid var(--border-card);
-  letter-spacing: 0.05em;
+  border-bottom: 1px solid var(--border-color);
+  letter-spacing: 0.06em;
   user-select: none;
 }
 
 [data-theme="light"] .vocab-table th {
-  color: #1e293b !important;
-  background-color: #f1f5f9;
-  border-bottom: 2px solid #cbd5e1;
+  color: #2c3239 !important;
+  background-color: #f2eee6;
+  border-bottom: 1px solid #e5dfd5;
 }
 
 .vocab-table tbody tr {
@@ -2265,11 +2413,10 @@ body.hide-furigana #btn-toggle-furigana {
 }
 
 .vocab-table tbody tr:hover {
-  background-color: rgba(56, 189, 248, 0.07) !important;
+  background-color: var(--bg-hover) !important;
 }
 
 /* Tỷ lệ phân bố cột bảng từ vựng trên Laptop / Desktop (Tổng 100%): 30% - 25% - 9% - 36% */
-/* Tỷ lệ phân bố cột bảng từ vựng trên Laptop / Desktop (Tổng 100%): 30% (Hiragana) - 25% (Chữ Hán) - 9% (Từ loại) - 36% (Ý nghĩa) */
 .vocab-table th:nth-child(1),
 .vocab-col-hira {
   width: 30%;
@@ -2330,12 +2477,13 @@ body.hide-furigana #btn-toggle-furigana {
 
 .vocab-kanji-wrap strong,
 .vocab-term-main {
-  font-size: 19.5px;
-  font-family: var(--font-japanese);
+  font-size: 21px;
+  font-family: var(--font-mincho);
   font-weight: 700;
   line-height: 1.45;
   word-break: break-word;
   overflow-wrap: break-word;
+  color: var(--text-primary);
 }
 
 .vocab-term-group {
@@ -2379,6 +2527,7 @@ body.hide-furigana #btn-toggle-furigana {
 }
 
 .type-pill {
+  font-family: var(--font-japanese);
   font-size: 12px;
   font-weight: 700;
   padding: 4px 10px;
@@ -2389,40 +2538,30 @@ body.hide-furigana #btn-toggle-furigana {
   user-select: none;
 }
 
-.type-pill.type-verb1 {
-  background: rgba(56, 189, 248, 0.14);
-  color: var(--accent-primary);
-  border: 1px solid rgba(56, 189, 248, 0.3);
-}
-
-.type-pill.type-verb2 {
-  background: rgba(52, 211, 153, 0.14);
-  color: var(--accent-green);
-  border: 1px solid rgba(52, 211, 153, 0.3);
-}
-
+.type-pill.type-verb1,
+.type-pill.type-verb2,
 .type-pill.type-verb3 {
-  background: rgba(251, 113, 133, 0.14);
-  color: var(--accent-sakura);
-  border: 1px solid rgba(251, 113, 133, 0.3);
+  background: rgba(69, 166, 123, 0.12);
+  color: var(--accent-green);
+  border: 1px solid rgba(69, 166, 123, 0.28);
 }
 
 .type-pill.type-noun {
-  background: rgba(129, 140, 248, 0.14);
+  background: rgba(75, 133, 204, 0.12);
   color: var(--accent-indigo);
-  border: 1px solid rgba(129, 140, 248, 0.3);
+  border: 1px solid rgba(75, 133, 204, 0.28);
 }
 
 .type-pill.type-adverb {
-  background: rgba(251, 191, 36, 0.14);
+  background: rgba(216, 164, 76, 0.12);
   color: var(--accent-warning);
-  border: 1px solid rgba(251, 191, 36, 0.3);
+  border: 1px solid rgba(216, 164, 76, 0.28);
 }
 
 .type-pill.type-adj {
-  background: rgba(244, 63, 94, 0.14);
+  background: rgba(232, 114, 136, 0.12);
   color: var(--accent-sakura);
-  border: 1px solid rgba(244, 63, 94, 0.3);
+  border: 1px solid rgba(232, 114, 136, 0.28);
 }
 
 .type-pill.type-phrase,
@@ -2445,17 +2584,17 @@ body.hide-furigana #btn-toggle-furigana {
   vertical-align: middle;
 }
 
-/* Nút loa phát âm */
+/* Nút loa phát âm tinh tế phong cách Zen */
 .speak-btn {
   position: relative;
   background: var(--bg-tertiary);
-  border: 1px solid var(--border-card);
+  border: 1px solid var(--border-color);
   color: var(--accent-primary);
   width: 36px;
   height: 36px;
   min-width: 36px;
   min-height: 36px;
-  border-radius: 10px;
+  border-radius: 50%;
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -2468,17 +2607,17 @@ body.hide-furigana #btn-toggle-furigana {
   background: var(--accent-primary);
   color: #ffffff;
   border-color: var(--accent-primary);
-  box-shadow: 0 4px 14px rgba(56, 189, 248, 0.35);
+  box-shadow: 0 4px 12px rgba(194, 53, 49, 0.30);
 }
 
 .speak-btn-mini {
   position: relative;
   background: var(--bg-tertiary);
-  border: 1px solid var(--border-card);
+  border: 1px solid var(--border-color);
   color: var(--accent-primary);
   width: 30px;
   height: 30px;
-  border-radius: 8px;
+  border-radius: 50%;
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -2499,7 +2638,7 @@ body.hide-furigana #btn-toggle-furigana {
   background: var(--accent-primary) !important;
   color: #ffffff !important;
   border-color: var(--accent-primary) !important;
-  box-shadow: 0 0 0 4px rgba(56, 189, 248, 0.28) !important;
+  box-shadow: 0 0 0 4px rgba(224, 82, 68, 0.25) !important;
 }
 
 .speaker-icon {
@@ -2520,7 +2659,7 @@ body.hide-furigana #btn-toggle-furigana {
 
 .grammar-item-card {
   background: var(--bg-card-inner);
-  border: 1px solid var(--border-card);
+  border: 1px solid var(--border-color);
   border-radius: var(--radius-md);
   padding: 24px 26px;
   box-shadow: var(--shadow-sm);
@@ -2528,7 +2667,7 @@ body.hide-furigana #btn-toggle-furigana {
 }
 
 .grammar-item-card:hover {
-  border-color: rgba(56, 189, 248, 0.38);
+  border-color: var(--border-card);
 }
 
 .grammar-formula-bar {
@@ -2536,11 +2675,11 @@ body.hide-furigana #btn-toggle-furigana {
   align-items: center;
   flex-wrap: wrap;
   gap: 12px;
-  background: linear-gradient(90deg, rgba(56, 189, 248, 0.14), rgba(129, 140, 248, 0.06));
-  border: 1px solid rgba(56, 189, 248, 0.26);
-  border-left: 4px solid var(--accent-primary);
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-left: 3px solid var(--accent-primary);
   padding: 14px 18px;
-  border-radius: 10px;
+  border-radius: var(--radius-sm);
   margin-bottom: 16px;
 }
 
@@ -2557,10 +2696,11 @@ body.hide-furigana #btn-toggle-furigana {
 }
 
 .grammar-formula {
-  font-size: 19px;
-  font-weight: 800;
-  font-family: var(--font-japanese);
+  font-size: 20px;
+  font-weight: 700;
+  font-family: var(--font-mincho);
   color: var(--text-primary);
+  letter-spacing: 0.02em;
 }
 
 .grammar-usage {
@@ -2569,8 +2709,8 @@ body.hide-furigana #btn-toggle-furigana {
   margin-bottom: 14px;
   background: var(--bg-secondary);
   padding: 14px 18px;
-  border-radius: 10px;
-  border: 1px solid var(--border-card);
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border-color);
 }
 
 .usage-title {
@@ -2585,11 +2725,11 @@ body.hide-furigana #btn-toggle-furigana {
 }
 
 .grammar-note {
-  background: rgba(251, 191, 36, 0.08);
-  border: 1px solid rgba(251, 191, 36, 0.28);
-  border-left: 4px solid var(--accent-warning);
+  background: rgba(216, 164, 76, 0.08);
+  border: 1px solid rgba(216, 164, 76, 0.25);
+  border-left: 3px solid var(--accent-warning);
   padding: 14px 18px;
-  border-radius: 10px;
+  border-radius: var(--radius-sm);
   font-size: 15px;
   margin-bottom: 18px;
   line-height: 1.7;
@@ -2614,11 +2754,12 @@ body.hide-furigana #btn-toggle-furigana {
 }
 
 .examples-header-title {
-  font-size: 12.5px;
+  font-family: var(--font-japanese);
+  font-size: 12px;
   text-transform: uppercase;
   color: var(--accent-primary);
-  font-weight: 800;
-  letter-spacing: 0.06em;
+  font-weight: 700;
+  letter-spacing: 0.08em;
 }
 
 .example-cards-list {
@@ -2629,8 +2770,8 @@ body.hide-furigana #btn-toggle-furigana {
 
 .example-card {
   background: var(--bg-secondary);
-  border: 1px solid var(--border-card);
-  border-radius: 12px;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-sm);
   padding: 16px 18px;
 }
 
@@ -2648,7 +2789,7 @@ body.hide-furigana #btn-toggle-furigana {
   background: var(--bg-tertiary);
   color: var(--text-secondary);
   padding: 3px 9px;
-  border-radius: 6px;
+  border-radius: 4px;
 }
 
 .ex-badge-tag {
@@ -2659,12 +2800,12 @@ body.hide-furigana #btn-toggle-furigana {
 }
 
 .dialogue-tag {
-  background: rgba(129, 140, 248, 0.15);
+  background: rgba(75, 133, 204, 0.12);
   color: var(--accent-indigo);
 }
 
 .sentence-tag {
-  background: rgba(56, 189, 248, 0.14);
+  background: rgba(224, 82, 68, 0.10);
   color: var(--accent-primary);
 }
 
@@ -2687,11 +2828,11 @@ body.hide-furigana #btn-toggle-furigana {
 }
 
 .sentence-jp .jp-sentence {
-  font-size: 19px;
+  font-size: 19.5px;
   font-weight: 600;
-  font-family: var(--font-japanese);
+  font-family: var(--font-mincho);
   color: var(--text-primary);
-  line-height: 2.2;
+  line-height: 2.3;
 }
 
 .sentence-vi {
@@ -2716,14 +2857,15 @@ body.hide-furigana #btn-toggle-furigana {
   width: 32px;
   height: 32px;
   border-radius: 50%;
-  background: rgba(56, 189, 248, 0.16);
+  background: var(--bg-tertiary);
   color: var(--accent-primary);
-  border: 1px solid rgba(56, 189, 248, 0.35);
+  border: 1px solid var(--border-color);
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: 13px;
-  font-weight: 800;
+  font-weight: 700;
+  font-family: var(--font-mincho);
   flex-shrink: 0;
   margin-top: 4px;
 }
@@ -2731,12 +2873,12 @@ body.hide-furigana #btn-toggle-furigana {
 .dialogue-bubble {
   flex: 1;
   background: var(--bg-tertiary);
-  border-radius: 12px;
+  border-radius: var(--radius-sm);
   padding: 12px 16px;
   display: flex;
   flex-direction: column;
   gap: 4px;
-  border: 1px solid var(--border-card);
+  border: 1px solid var(--border-color);
 }
 
 .dialogue-jp {
@@ -2746,11 +2888,11 @@ body.hide-furigana #btn-toggle-furigana {
 }
 
 .dialogue-jp .jp-sentence {
-  font-size: 18.5px;
+  font-size: 19px;
   font-weight: 600;
-  font-family: var(--font-japanese);
+  font-family: var(--font-mincho);
   color: var(--text-primary);
-  line-height: 2.2;
+  line-height: 2.3;
 }
 
 .dialogue-vi {
@@ -2770,9 +2912,9 @@ body.hide-furigana #btn-toggle-furigana {
 
 .quiz-card {
   background: var(--bg-secondary);
-  border: 1px solid var(--border-card);
+  border: 1px solid var(--border-color);
   border-radius: var(--radius-md);
-  padding: 20px;
+  padding: 22px;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -2781,16 +2923,16 @@ body.hide-furigana #btn-toggle-furigana {
 }
 
 .quiz-card:hover {
-  border-color: rgba(56, 189, 248, 0.35);
+  border-color: var(--border-card);
 }
 
 .quiz-question-title {
-  font-size: 17px;
+  font-size: 17.5px;
   font-weight: 600;
   color: var(--text-primary);
   margin-bottom: 16px;
-  line-height: 2.15;
-  font-family: var(--font-japanese);
+  line-height: 2.2;
+  font-family: var(--font-mincho);
 }
 
 .options-grid {
@@ -2802,8 +2944,8 @@ body.hide-furigana #btn-toggle-furigana {
 
 .option-btn {
   background: var(--bg-card-inner);
-  border: 1px solid var(--border-card);
-  border-radius: 10px;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-sm);
   padding: 11px 14px;
   min-height: 50px;
   text-align: left;
@@ -2819,7 +2961,7 @@ body.hide-furigana #btn-toggle-furigana {
 }
 
 .option-btn:hover:not(:disabled) {
-  background: rgba(56, 189, 248, 0.12);
+  background: var(--bg-hover);
   border-color: var(--accent-primary);
 }
 
@@ -2829,7 +2971,7 @@ body.hide-furigana #btn-toggle-furigana {
   justify-content: center;
   width: 28px;
   height: 28px;
-  border-radius: 8px;
+  border-radius: 6px;
   background: var(--bg-tertiary);
   font-size: 13px;
   font-weight: 700;
@@ -2839,7 +2981,7 @@ body.hide-furigana #btn-toggle-furigana {
 
 .option-btn.selected {
   border-color: var(--accent-primary) !important;
-  background-color: rgba(56, 189, 248, 0.16) !important;
+  background-color: var(--bg-active) !important;
 }
 
 .option-btn.selected .option-letter {
@@ -2848,7 +2990,7 @@ body.hide-furigana #btn-toggle-furigana {
 }
 
 .option-btn.correct {
-  background: rgba(52, 211, 153, 0.18) !important;
+  background: rgba(69, 166, 123, 0.16) !important;
   border-color: var(--accent-green) !important;
   color: var(--accent-green) !important;
   font-weight: 700;
@@ -2856,26 +2998,26 @@ body.hide-furigana #btn-toggle-furigana {
 
 .option-btn.correct .option-letter {
   background-color: var(--accent-green) !important;
-  color: #0f172a !important;
+  color: #ffffff !important;
 }
 
 .option-btn.incorrect,
 .option-btn.wrong {
-  background: rgba(248, 113, 113, 0.18) !important;
-  border-color: var(--accent-red) !important;
-  color: var(--accent-red) !important;
+  background: rgba(224, 82, 68, 0.16) !important;
+  border-color: var(--accent-primary) !important;
+  color: var(--accent-primary) !important;
 }
 
 .option-btn.incorrect .option-letter,
 .option-btn.wrong .option-letter {
-  background-color: var(--accent-red) !important;
+  background-color: var(--accent-primary) !important;
   color: #ffffff !important;
 }
 
 .quiz-feedback {
   display: none;
   padding: 14px 16px;
-  border-radius: 10px;
+  border-radius: var(--radius-sm);
   font-size: 15px;
   margin-top: 14px;
 }
@@ -2885,14 +3027,14 @@ body.hide-furigana #btn-toggle-furigana {
 }
 
 .feedback-wrong {
-  background: rgba(248, 113, 113, 0.11);
-  border: 1px solid rgba(248, 113, 113, 0.35);
-  color: var(--accent-red);
+  background: rgba(224, 82, 68, 0.10);
+  border: 1px solid rgba(224, 82, 68, 0.30);
+  color: var(--accent-primary);
 }
 
 .feedback-correct {
-  background: rgba(52, 211, 153, 0.11);
-  border: 1px solid rgba(52, 211, 153, 0.35);
+  background: rgba(69, 166, 123, 0.10);
+  border: 1px solid rgba(69, 166, 123, 0.30);
   color: var(--accent-green);
 }
 
@@ -2914,7 +3056,7 @@ body.hide-furigana #btn-toggle-furigana {
   background: var(--bg-glass-heavy);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
-  border: 1px solid var(--border-card);
+  border: 1px solid var(--border-color);
   border-radius: var(--radius-md);
   padding: 12px 18px;
   box-shadow: var(--shadow-sm);
@@ -2931,21 +3073,21 @@ body.hide-furigana #btn-toggle-furigana {
 
 .quiz-timer-display {
   background: var(--bg-tertiary);
-  border: 1px solid var(--border-card);
+  border: 1px solid var(--border-color);
   padding: 5px 12px;
-  border-radius: 8px;
+  border-radius: var(--radius-sm);
   font-family: monospace;
   font-size: 16px;
   color: var(--accent-primary);
-  font-weight: 800;
+  font-weight: 700;
 }
 
 .quiz-palette-toggle-btn {
   font-size: 12.5px;
   padding: 7px 14px;
-  border-radius: 8px;
+  border-radius: var(--radius-sm);
   background: var(--bg-tertiary);
-  border: 1px solid var(--border-card);
+  border: 1px solid var(--border-color);
   color: var(--text-primary);
   font-weight: 600;
   transition: var(--transition);
@@ -2958,7 +3100,7 @@ body.hide-furigana #btn-toggle-furigana {
 
 .quiz-palette-container {
   background: var(--bg-secondary);
-  border: 1px solid var(--border-card);
+  border: 1px solid var(--border-color);
   border-radius: var(--radius-md);
   padding: 16px;
 }
@@ -2975,7 +3117,7 @@ body.hide-furigana #btn-toggle-furigana {
 
 .q-palette-btn {
   height: 36px;
-  border-radius: 8px;
+  border-radius: var(--radius-sm);
   background: var(--bg-tertiary);
   border: 1px solid var(--border-subtle);
   color: var(--text-secondary);
@@ -2988,27 +3130,27 @@ body.hide-furigana #btn-toggle-furigana {
 }
 
 .q-palette-btn.answered {
-  background: rgba(56, 189, 248, 0.2);
+  background: rgba(224, 82, 68, 0.14);
   border-color: var(--accent-primary);
   color: var(--accent-primary);
 }
 
 .q-palette-btn.correct {
-  background: rgba(52, 211, 153, 0.25) !important;
+  background: rgba(69, 166, 123, 0.20) !important;
   border-color: var(--accent-green) !important;
   color: var(--accent-green) !important;
 }
 
 .q-palette-btn.wrong {
-  background: rgba(248, 113, 113, 0.25) !important;
-  border-color: var(--accent-red) !important;
-  color: var(--accent-red) !important;
+  background: rgba(224, 82, 68, 0.20) !important;
+  border-color: var(--accent-primary) !important;
+  color: var(--accent-primary) !important;
 }
 
 /* Khung nộp bài & kết quả */
 .quiz-submit-section {
   background: var(--bg-secondary);
-  border: 1px solid var(--border-card);
+  border: 1px solid var(--border-color);
   border-radius: var(--radius-md);
   padding: 16px 20px;
   margin-top: 8px;
@@ -3016,7 +3158,7 @@ body.hide-furigana #btn-toggle-furigana {
   align-items: center;
   justify-content: space-between;
   gap: 16px;
-  box-shadow: var(--shadow-md);
+  box-shadow: var(--shadow-sm);
   flex-wrap: wrap;
 }
 
@@ -3037,7 +3179,7 @@ body.hide-furigana #btn-toggle-furigana {
 
 .submit-progress-bar {
   flex: 1;
-  height: 8px;
+  height: 6px;
   background: var(--bg-tertiary);
   border-radius: 999px;
   overflow: hidden;
@@ -3052,18 +3194,18 @@ body.hide-furigana #btn-toggle-furigana {
 
 .btn-submit-exam {
   padding: 12px 28px;
-  border-radius: 12px;
-  background: linear-gradient(135deg, #0284c7, #2563eb);
+  border-radius: var(--radius-md);
+  background: linear-gradient(135deg, var(--accent-primary) 0%, #a82623 100%);
   color: #ffffff;
   font-size: 15px;
   font-weight: 700;
-  box-shadow: 0 4px 16px rgba(2, 132, 199, 0.35);
+  box-shadow: 0 4px 14px rgba(194, 53, 49, 0.35);
   transition: var(--transition);
 }
 
 .btn-submit-exam:hover {
   transform: translateY(-1px);
-  filter: brightness(1.1);
+  filter: brightness(1.08);
 }
 
 .quiz-result-banner {
@@ -3075,16 +3217,16 @@ body.hide-furigana #btn-toggle-furigana {
   align-items: center;
   justify-content: space-between;
   gap: 16px;
-  box-shadow: var(--shadow-md);
+  box-shadow: var(--shadow-sm);
   flex-wrap: wrap;
 }
 
 .quiz-result-banner.pass {
-  border: 1px solid rgba(52, 211, 153, 0.45);
+  border: 1px solid rgba(69, 166, 123, 0.45);
 }
 
 .quiz-result-banner.fail {
-  border: 1px solid rgba(248, 113, 113, 0.45);
+  border: 1px solid rgba(224, 82, 68, 0.45);
 }
 
 .result-left {
@@ -3118,9 +3260,9 @@ body.hide-furigana #btn-toggle-furigana {
 
 .btn-redo-result {
   padding: 10px 18px;
-  border-radius: 10px;
+  border-radius: var(--radius-sm);
   background: var(--bg-tertiary);
-  border: 1px solid var(--border-card);
+  border: 1px solid var(--border-color);
   color: var(--text-primary);
   font-size: 13.5px;
   font-weight: 700;
@@ -3146,12 +3288,13 @@ body.hide-furigana #btn-toggle-furigana {
 
 .dokkai-passage {
   background: var(--bg-card-inner);
-  border: 1px solid var(--border-card);
+  border: 1px solid var(--border-color);
   border-radius: var(--radius-md);
   padding: 24px 26px;
-  font-size: 18.5px;
-  line-height: 2.3;
-  font-family: var(--font-japanese);
+  font-size: 19px;
+  line-height: 2.35;
+  font-family: var(--font-mincho);
+  letter-spacing: 0.02em;
   white-space: pre-line;
   color: var(--text-primary);
 }
@@ -3169,9 +3312,9 @@ body.hide-furigana #btn-toggle-furigana {
   align-items: center;
   gap: 8px;
   padding: 9px 16px;
-  border-radius: 10px;
+  border-radius: var(--radius-sm);
   background: var(--bg-tertiary);
-  border: 1px solid var(--border-card);
+  border: 1px solid var(--border-color);
   color: var(--text-primary);
   font-size: 13.5px;
   font-weight: 600;
@@ -3189,8 +3332,8 @@ body.hide-furigana #btn-toggle-furigana {
   padding: 18px 20px;
   border-radius: var(--radius-md);
   background: var(--bg-card-inner);
-  border: 1px solid var(--border-card);
-  border-left: 4px solid var(--accent-primary);
+  border: 1px solid var(--border-color);
+  border-left: 3px solid var(--accent-indigo);
 }
 
 .dokkai-trans-header {
@@ -3198,10 +3341,12 @@ body.hide-furigana #btn-toggle-furigana {
 }
 
 .dokkai-trans-title {
-  font-size: 12.5px;
-  font-weight: 800;
-  color: var(--accent-primary);
+  font-family: var(--font-vietnamese);
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--accent-indigo);
   text-transform: uppercase;
+  letter-spacing: 0.06em;
 }
 
 .dokkai-trans-body {
@@ -3219,7 +3364,7 @@ body.hide-furigana #btn-toggle-furigana {
   overflow-x: auto;
   padding: 10px 12px;
   background: var(--bg-secondary);
-  border: 1px solid var(--border-card);
+  border: 1px solid var(--border-color);
   border-radius: var(--radius-md);
   -webkit-overflow-scrolling: touch;
 }
@@ -3231,7 +3376,7 @@ body.hide-furigana #btn-toggle-furigana {
   padding: 7px 14px;
   border-radius: 999px;
   background: var(--bg-tertiary);
-  border: 1px solid var(--border-card);
+  border: 1px solid var(--border-color);
   color: var(--text-secondary);
   font-size: 12.5px;
   font-weight: 600;
@@ -3267,7 +3412,7 @@ body.hide-furigana #btn-toggle-furigana {
 
 .radical-card {
   background: var(--bg-secondary);
-  border: 1px solid var(--border-card);
+  border: 1px solid var(--border-color);
   border-radius: var(--radius-lg);
   padding: 24px;
   display: flex;
@@ -3278,7 +3423,7 @@ body.hide-furigana #btn-toggle-furigana {
 }
 
 .radical-card:hover {
-  border-color: var(--accent-primary);
+  border-color: var(--border-card);
   box-shadow: var(--shadow-md);
 }
 
@@ -3292,15 +3437,16 @@ body.hide-furigana #btn-toggle-furigana {
 
 .writing-label .label-title {
   font-size: 12px;
-  font-weight: 800;
+  font-weight: 700;
   text-transform: uppercase;
-  color: var(--accent-sakura);
+  color: var(--accent-primary);
+  letter-spacing: 0.05em;
 }
 
 .radical-stroke-box {
   width: 156px;
   height: 156px;
-  border: 2px solid var(--border-card);
+  border: 1.5px solid var(--border-color);
   border-radius: var(--radius-md);
   background: var(--bg-card-inner);
   position: relative;
@@ -3350,14 +3496,14 @@ body.hide-furigana #btn-toggle-furigana {
 
 .animated-strokes path {
   fill: none;
-  stroke: #fb7185;
+  stroke: var(--accent-primary);
   stroke-width: 4.8;
   stroke-linecap: round;
   stroke-linejoin: round;
 }
 
 [data-theme="light"] .animated-strokes path {
-  stroke: #e11d48;
+  stroke: var(--accent-primary);
 }
 
 .radical-info-body {
@@ -3389,16 +3535,17 @@ body.hide-furigana #btn-toggle-furigana {
 }
 
 .radical-main-char {
-  font-family: var(--font-japanese);
-  font-size: 32px;
-  font-weight: 800;
-  color: var(--accent-sakura);
+  font-family: var(--font-mincho);
+  font-size: 34px;
+  font-weight: 700;
+  color: var(--accent-primary);
   line-height: 1;
 }
 
 .radical-full-name {
+  font-family: var(--font-japanese);
   font-size: 20px;
-  font-weight: 800;
+  font-weight: 700;
   color: var(--text-primary);
 }
 
@@ -3682,11 +3829,13 @@ body.hide-furigana #btn-toggle-furigana {
 
 .btn-save-voice {
   padding: 9px 22px;
-  border-radius: 10px;
-  background: linear-gradient(135deg, #0284c7, #2563eb);
+  border-radius: var(--radius-sm);
+  background: linear-gradient(135deg, var(--accent-primary) 0%, #a82623 100%);
   color: #ffffff;
   font-weight: 700;
   font-size: 13.5px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 0 4px 12px rgba(194, 53, 49, 0.3);
 }
 
 .btn-confirm-cancel {
@@ -3933,17 +4082,16 @@ body.hide-furigana #btn-toggle-furigana {
     top: 0;
     left: 0;
     bottom: 0;
-    width: min(310px, 86vw);
+    width: min(320px, 86vw);
     min-width: 280px;
-    z-index: 120;
+    z-index: 1200 !important;
     margin-left: 0 !important;
     transform: translate3d(-100%, 0, 0);
-    transition: transform 0.25s cubic-bezier(0.2, 0.9, 0.3, 1);
+    transition: transform 0.28s cubic-bezier(0.16, 1, 0.3, 1);
     padding-top: env(safe-area-inset-top, 0px);
     padding-bottom: calc(16px + env(safe-area-inset-bottom, 0px));
-    background-color: var(--bg-glass-heavy);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
+    background-color: var(--bg-secondary);
+    box-shadow: none;
     pointer-events: auto;
     touch-action: pan-y;
   }
@@ -3954,8 +4102,10 @@ body.hide-furigana #btn-toggle-furigana {
   }
 
   .sidebar.mobile-open {
-    transform: translate3d(0, 0, 0);
-    box-shadow: 16px 0 40px rgba(0, 0, 0, 0.55);
+    transform: translate3d(0, 0, 0) !important;
+    box-shadow: 16px 0 45px rgba(0, 0, 0, 0.65) !important;
+    visibility: visible !important;
+    pointer-events: auto !important;
   }
 
   .mobile-sidebar-header {
@@ -3981,39 +4131,64 @@ body.hide-furigana #btn-toggle-furigana {
     display: inline-flex;
     align-items: center;
     justify-content: center;
+    gap: 6px;
     min-width: 44px;
     min-height: 44px;
     padding: 0 12px;
     border-radius: 10px;
     background: var(--bg-tertiary);
     border: 1px solid var(--border-card);
-    font-size: 12.5px;
+    font-size: 13px;
     font-weight: 700;
     color: var(--text-secondary);
+    cursor: pointer;
+    transition: var(--transition);
+  }
+
+  .close-sidebar-btn:hover {
+    background: var(--bg-hover);
+    color: var(--accent-primary);
+    border-color: var(--accent-primary);
   }
 
   .sidebar-overlay {
     position: fixed;
-    inset: 0;
-    background: rgba(7, 11, 20, 0.65);
-    backdrop-filter: blur(4px);
-    -webkit-backdrop-filter: blur(4px);
-    z-index: 110;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    width: 100vw;
+    height: 100vh;
+    height: 100dvh;
+    background: rgba(10, 14, 20, 0.72) !important;
+    backdrop-filter: blur(6px) !important;
+    -webkit-backdrop-filter: blur(6px) !important;
+    z-index: 1100 !important;
     opacity: 0;
     visibility: hidden;
     pointer-events: none;
+    cursor: pointer;
     transition: opacity 0.25s ease, visibility 0.25s ease;
   }
 
   .sidebar-overlay.active {
-    opacity: 1;
-    visibility: visible;
-    pointer-events: auto;
+    opacity: 1 !important;
+    visibility: visible !important;
+    pointer-events: auto !important;
   }
 
   body.sidebar-open-lock {
     overflow: hidden;
-    touch-action: none;
+  }
+
+  /* Khi Sidebar mở, ẩn hoàn toàn thanh điều hướng nổi xuống dưới để không bị đè lên chân menu */
+  body.sidebar-open-lock .mobile-bottom-nav {
+    transform: translate(-50%, calc(100% + 32px)) !important;
+    opacity: 0 !important;
+    visibility: hidden !important;
+    pointer-events: none !important;
+    z-index: 50 !important;
+    transition: transform 0.22s ease, opacity 0.22s ease, visibility 0.22s;
   }
 
   /* Thanh cuộn độc lập cho cả 5 phần trên điện thoại */
@@ -4035,23 +4210,39 @@ body.hide-furigana #btn-toggle-furigana {
     font-size: 13px;
   }
 
-  /* 3. THANH ĐIỀU HƯỚNG DƯỚI CÙNG CHO ĐIỆN THOẠI (MOBILE BOTTOM NAV) */
+  /* 3. THANH ĐIỀU HƯỚNG DƯỚI CÙNG CHO ĐIỆN THOẠI - DẠNG VIÊN THUỐC NỔI (FLOATING PILL BAR) */
   .mobile-bottom-nav {
     position: fixed;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    height: calc(var(--mobile-nav-height) + env(safe-area-inset-bottom, 0px));
-    padding: 4px 6px env(safe-area-inset-bottom, 0px);
-    background: var(--bg-glass-heavy);
-    backdrop-filter: blur(8px);
-    -webkit-backdrop-filter: blur(8px);
-    border-top: 1px solid var(--border-card);
-    box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.25);
+    bottom: calc(18px + env(safe-area-inset-bottom, 0px));
+    left: 50%;
+    transform: translateX(-50%);
+    width: calc(100% - 32px);
+    max-width: 420px;
+    height: 58px;
+    padding: 4px 8px;
+    background: var(--bg-surface, var(--bg-secondary));
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    border: 1px solid var(--border-color);
+    border-radius: 9999px;
+    box-shadow: 0 10px 28px -4px rgba(0, 0, 0, 0.35), 0 4px 10px -2px rgba(0, 0, 0, 0.18);
     display: grid;
     grid-template-columns: repeat(5, 1fr);
     align-items: center;
-    z-index: 95;
+    z-index: 1000;
+    transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.22s ease, visibility 0.22s;
+  }
+
+  [data-theme="light"] .mobile-bottom-nav {
+    background: #ffffff !important;
+    border-color: #e5dfd5;
+    box-shadow: 0 8px 24px -4px rgba(0, 0, 0, 0.12), 0 2px 8px rgba(0, 0, 0, 0.06);
+  }
+
+  [data-theme="dark"] .mobile-bottom-nav {
+    background: #141822 !important;
+    border-color: #242c3a;
+    box-shadow: 0 10px 30px -4px rgba(0, 0, 0, 0.45), 0 4px 12px rgba(0, 0, 0, 0.25);
   }
 
   .mobile-nav-item {
@@ -4059,34 +4250,72 @@ body.hide-furigana #btn-toggle-furigana {
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    gap: 3px;
-    min-height: 48px;
-    border-radius: 10px;
+    gap: 2px;
+    height: 100%;
+    padding: 2px 0;
+    border-radius: 9999px;
     color: var(--text-muted);
-    font-size: 10.5px;
+    font-size: 10px;
     font-weight: 600;
     position: relative;
-    transition: var(--transition);
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    transition: color 0.2s ease, transform 0.15s ease;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
   }
 
-  .mobile-nav-item.active {
-    color: var(--accent-primary);
-    font-weight: 700;
-  }
-
-  .mobile-nav-item.active::before {
-    content: "";
-    position: absolute;
-    top: 0;
-    width: 24px;
-    height: 3px;
-    border-radius: 999px;
-    background: var(--accent-primary);
+  .mobile-nav-icon-wrap {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 46px;
+    height: 28px;
+    border-radius: 9999px;
+    background: transparent;
+    color: inherit;
+    transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
   }
 
   .mobile-nav-icon {
-    width: 19px;
-    height: 19px;
+    width: 18px;
+    height: 18px;
+    display: block;
+    transition: transform 0.2s ease;
+  }
+
+  .mobile-nav-label {
+    font-size: 9.5px;
+    font-weight: 600;
+    line-height: 1;
+    color: inherit;
+    transition: color 0.2s ease, font-weight 0.2s ease;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100%;
+  }
+
+  /* Tab đang chọn (Active): Khối màu bo tròn dạng viên thuốc bao quanh icon */
+  .mobile-nav-item.active {
+    color: var(--primary);
+  }
+
+  .mobile-nav-item.active .mobile-nav-icon-wrap {
+    background: var(--primary);
+    color: #ffffff !important;
+    box-shadow: 0 3px 10px rgba(224, 82, 68, 0.38);
+    transform: scale(1.04);
+  }
+
+  .mobile-nav-item.active .mobile-nav-icon {
+    transform: scale(1.05);
+  }
+
+  .mobile-nav-item.active .mobile-nav-label {
+    color: var(--primary);
+    font-weight: 750;
   }
 
   /* 4. MAIN CONTENT & CARDS TRÊN DI ĐỘNG */
@@ -4096,64 +4325,91 @@ body.hide-furigana #btn-toggle-furigana {
 
   .main-content {
     width: 100%;
-    padding: 14px 12px calc(var(--mobile-nav-height) + 28px + env(safe-area-inset-bottom, 0px));
+    padding: 12px 12px calc(var(--mobile-nav-height) + 38px + env(safe-area-inset-bottom, 0px)) !important;
   }
 
   .lesson-content {
-    gap: 16px;
+    gap: 14px;
+    padding-bottom: calc(var(--mobile-nav-height) + 24px) !important;
   }
 
-  .module-sync-bar {
-    padding: 8px 10px;
-    gap: 8px;
-  }
-
+  /* 1. Ẩn cụm 4 ô điều hướng trên cùng bị trùng lặp với Bottom Nav */
   .module-sync-tabs {
-    width: 100%;
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 6px;
+    display: none !important;
   }
 
-  .sync-tab-btn {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 6px;
-    padding: 8px 6px;
-    font-size: 12px;
-    font-weight: 600;
-    text-align: center;
-    min-height: 42px;
-    border-radius: 10px;
-    background: var(--bg-card-inner);
-    border: 1px solid var(--border-subtle);
-  }
-
-  .sync-tab-btn.active {
-    background: var(--bg-active);
-    color: var(--accent-primary);
-    border-color: rgba(56, 189, 248, 0.4);
-    box-shadow: 0 2px 8px rgba(56, 189, 248, 0.18);
-    font-weight: 700;
-  }
-
-  .sync-tab-dot {
-    display: none;
-  }
-
-  .sync-tab-icon {
-    font-size: 13.5px;
+  /* 2. Gom cụm chuyển bài thành 1 hàng phẳng liền sát ngay trên tiêu đề */
+  .module-sync-bar {
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+    padding: 0 !important;
+    margin: 0 0 6px 0 !important;
   }
 
   .module-step-nav {
-    width: 100%;
-    justify-content: space-between;
-    padding-top: 6px;
-    border-top: 1px solid var(--border-subtle);
+    width: 100% !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    border: none !important;
   }
 
-  .lesson-hero-card,
+  /* 3. Tăng kích thước vùng bấm (Tap Target) tối thiểu 44px */
+  .module-step-nav .step-nav-btn {
+    min-height: 44px !important;
+    height: 44px !important;
+    min-width: 44px !important;
+    padding: 0 16px !important;
+    font-size: 13px !important;
+    font-weight: 600 !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    border-radius: 10px !important;
+    background: var(--bg-secondary) !important;
+    border: 1px solid var(--border-color) !important;
+    color: var(--text-primary) !important;
+    box-shadow: var(--shadow-sm) !important;
+  }
+
+  .module-step-nav .step-nav-btn:hover:not(:disabled),
+  .module-step-nav .step-nav-btn:active:not(:disabled) {
+    background: var(--bg-hover) !important;
+    color: var(--primary) !important;
+    border-color: var(--primary) !important;
+  }
+
+  .module-step-nav .step-nav-indicator {
+    font-size: 12.5px !important;
+    font-weight: 700 !important;
+    color: var(--text-secondary) !important;
+  }
+
+  /* 6. Thu gọn khối Hero Header, giảm chồng tầng trên di động */
+  .lesson-hero-card {
+    padding: 12px 14px 14px !important;
+    border-radius: var(--radius-md) !important;
+  }
+
+  .lesson-hero-card .hero-top-row {
+    margin-bottom: 6px !important;
+  }
+
+  .lesson-hero-card .lesson-title {
+    font-size: 18px !important;
+    line-height: 1.35 !important;
+    margin: 4px 0 4px !important;
+  }
+
+  .lesson-hero-card .lesson-desc {
+    font-size: 12.5px !important;
+    line-height: 1.45 !important;
+    margin-bottom: 0 !important;
+  }
+
   .section-card,
   .practice-box,
   .grammar-item-card {
@@ -4161,11 +4417,23 @@ body.hide-furigana #btn-toggle-furigana {
     border-radius: var(--radius-md);
   }
 
-  .btn-complete-lesson {
-    width: 100%;
-    justify-content: center;
-    min-height: 46px;
-    margin-left: 0;
+  /* 4. Khối đánh dấu hoàn thành chuyển xuống cuối bài */
+  .lesson-completion-card {
+    padding: 16px 14px !important;
+    margin-top: 18px !important;
+  }
+
+  .completion-card-inner {
+    flex-direction: column !important;
+    align-items: stretch !important;
+    gap: 12px !important;
+    text-align: center !important;
+  }
+
+  .completion-card-inner .btn-complete-lesson {
+    width: 100% !important;
+    justify-content: center !important;
+    min-height: 48px !important;
   }
 
   .vocab-toolbar {
@@ -4773,7 +5041,11 @@ body.hide-furigana #btn-toggle-furigana {
     display: none;
   }
   .main-content {
-    padding: 12px 10px calc(var(--mobile-nav-height) + 24px + env(safe-area-inset-bottom, 0px));
+    padding: 10px 8px calc(var(--mobile-nav-height) + 38px + env(safe-area-inset-bottom, 0px)) !important;
+  }
+  .module-step-nav .step-nav-btn {
+    padding: 0 12px !important;
+    font-size: 12.5px !important;
   }
   .cover-features-grid {
     grid-template-columns: repeat(2, 1fr);
@@ -4835,133 +5107,143 @@ body.hide-furigana #btn-toggle-furigana {
 
 /* ==========================================================================
    MODULE MẸO NHỚ CHỮ HÁN 50 BÀI (KANJI MNEMONICS)
-   Bố trí chuẩn: Chữ Hán bên trên - Mẹo nhớ ở dòng bên dưới
+   Bố trí Wa-Modern tối giản, tinh tế:
+   - Trọng tâm tuyệt đối vào Từ vựng Chữ Hán & Mẹo ghi nhớ chiết tự
+   - Lược bỏ chi tiết bảng âm đọc/bộ thủ và câu ví dụ để giao diện thanh thoát
+   - Không để thừa khoảng trống rỗng, chống đè lấn nội dung
    ========================================================================== */
 .kanji-search-toolbar {
   display: flex;
   justify-content: space-between;
   align-items: center;
   gap: 16px;
-  margin-bottom: 22px;
+  margin-bottom: 20px;
   flex-wrap: wrap;
 }
 
 .kanji-cards-container {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(440px, 1fr));
-  gap: 20px;
-  margin-bottom: 30px;
+  grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+  gap: 16px;
+  align-items: start; /* Ngăn chặn thẻ bị kéo giãn rỗng theo chiều dọc */
+  margin-bottom: 28px;
 }
 
 .kanji-study-card {
   background: var(--bg-secondary);
-  border: 1px solid var(--border-card);
-  border-radius: var(--radius-lg);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
   overflow: hidden;
   box-shadow: var(--shadow-sm);
   display: flex;
   flex-direction: column;
   transition: var(--transition);
+  height: fit-content; /* Ôm sát nội dung tự nhiên, loại bỏ hoàn toàn khoảng trắng thừa */
 }
 
 .kanji-study-card:hover {
-  border-color: var(--accent-primary);
+  border-color: var(--border-card);
   box-shadow: var(--shadow-md);
   transform: translateY(-2px);
 }
 
-/* DÒNG TRÊN: CHỮ HÁN & THÔNG TIN HÁN TỰ */
+/* DÒNG TRÊN: TIÊU ĐỀ TỪ VỰNG CHỮ HÁN & NGHĨA */
 .kcard-top-section {
   display: flex;
-  gap: 20px;
-  padding: 22px 22px 18px;
-  border-bottom: 1px dashed var(--border-color);
+  flex-direction: column;
+  gap: 12px;
+  padding: 16px 18px 14px;
+}
+
+/* Header từ vựng chính */
+.kcard-word-banner {
+  display: flex;
+  justify-content: space-between;
   align-items: flex-start;
+  gap: 14px;
+  flex-wrap: wrap;
 }
 
-.kcard-char-display {
+.kcard-word-info {
   display: flex;
   flex-direction: column;
-  align-items: center;
-  gap: 8px;
-  flex-shrink: 0;
-}
-
-.kcard-char-box {
-  min-width: 96px;
-  width: auto;
-  min-height: 86px;
-  padding: 10px 14px;
-  border-radius: var(--radius-md);
-  background: linear-gradient(135deg, rgba(56, 189, 248, 0.12), rgba(129, 140, 248, 0.18));
-  border: 2px solid var(--accent-primary);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  position: relative;
-  transition: var(--transition);
-  box-shadow: 0 4px 12px rgba(56, 189, 248, 0.15);
-}
-
-.kcard-char-box:hover {
-  transform: scale(1.05);
-  border-color: var(--accent-hover);
-  background: linear-gradient(135deg, rgba(56, 189, 248, 0.22), rgba(129, 140, 248, 0.28));
-  box-shadow: 0 6px 18px rgba(56, 189, 248, 0.28);
-}
-
-.kcard-kanji {
-  font-family: var(--font-japanese);
-  font-size: clamp(24px, 3.2vw, 36px);
-  font-weight: 800;
-  line-height: 1.15;
-  color: var(--text-primary);
-  text-align: center;
-  word-break: keep-all;
-}
-
-.kcard-reading-sub {
-  font-family: var(--font-japanese);
-  font-size: 13px;
-  font-weight: 700;
-  color: var(--accent-primary);
-  margin-top: 4px;
-  text-align: center;
-}
-
-.kcard-audio-pill {
-  position: absolute;
-  bottom: 4px;
-  right: 5px;
-  font-size: 11px;
-  opacity: 0.75;
-}
-
-.kcard-stroke-badge {
-  font-size: 11px;
-  font-weight: 700;
-  color: var(--text-muted);
-  background: var(--bg-card-inner);
-  border: 1px solid var(--border-subtle);
-  padding: 2px 8px;
-  border-radius: 12px;
-}
-
-.kcard-main-meta {
-  flex: 1;
+  gap: 6px;
   min-width: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
+  flex: 1;
 }
 
-.kcard-header-row {
+.kcard-word-title-group {
   display: flex;
   align-items: baseline;
   gap: 10px;
   flex-wrap: wrap;
+}
+
+.kcard-word-kanji {
+  font-family: var(--font-mincho);
+  font-size: clamp(26px, 2.8vw, 32px);
+  font-weight: 700;
+  line-height: 1.15;
+  color: var(--text-primary);
+  margin: 0;
+  letter-spacing: 0.5px;
+  word-break: keep-all;
+}
+
+.kcard-word-reading {
+  font-family: var(--font-japanese);
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--accent-primary);
+}
+
+.kcard-audio-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 10px;
+  border-radius: 14px;
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border-subtle);
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: var(--transition);
+  line-height: 1.2;
+}
+
+.kcard-audio-btn:hover {
+  background: var(--bg-hover);
+  border-color: var(--accent-primary);
+  color: var(--accent-primary);
+  transform: scale(1.03);
+}
+
+.audio-btn-icon {
+  font-size: 11px;
+}
+
+.kcard-word-meaning-line {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.kcard-word-meaning-text {
+  font-size: 14.5px;
+  font-weight: 600;
+  color: var(--text-primary);
+  line-height: 1.4;
+  word-break: break-word;
+}
+
+.kcard-word-badges {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 6px;
+  flex-shrink: 0;
 }
 
 .kcard-hv-badge-wrap {
@@ -4972,277 +5254,126 @@ body.hide-furigana #btn-toggle-furigana {
 
 .kcard-hv-tag {
   font-size: 10px;
-  font-weight: 800;
+  font-weight: 700;
   text-transform: uppercase;
-  color: var(--accent-sakura);
-  background: rgba(251, 113, 133, 0.12);
+  color: var(--accent-primary);
+  background: rgba(194, 53, 49, 0.10);
   padding: 2px 6px;
   border-radius: 4px;
   letter-spacing: 0.5px;
 }
 
-.kcard-hanviet {
-  font-size: 20px;
-  font-weight: 800;
-  color: var(--accent-sakura);
+.kcard-word-hanviet {
+  font-family: var(--font-mincho);
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--accent-primary);
   letter-spacing: 0.5px;
 }
 
-.kcard-meaning-wrap {
+.kcard-badge-row {
   display: flex;
-  flex-wrap: wrap;
   align-items: center;
-  gap: 8px;
-  font-size: 14.5px;
-  color: var(--text-primary);
+  gap: 5px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
 }
 
-.kcard-meaning-text {
-  font-weight: 600;
-}
-
-.kcard-components-row {
+/* DÒNG BÊN DƯỚI: TRỌNG TÂM MẸO GHI NHỚ & CẤU THÀNH */
+.kcard-bottom-section {
+  padding: 14px 18px 16px;
   display: flex;
   flex-direction: column;
-  gap: 6px;
-  background: var(--bg-card-inner);
-  border: 1px solid var(--border-subtle);
-  padding: 8px 12px;
-  border-radius: var(--radius-sm);
-}
-
-.components-label {
-  font-size: 11px;
-  font-weight: 700;
-  color: var(--text-muted);
-  text-transform: uppercase;
-  letter-spacing: 0.4px;
-}
-
-.components-pills-list {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
-}
-
-.comp-item-pill {
-  display: inline-flex;
-  align-items: baseline;
-  gap: 5px;
-  padding: 3px 8px;
-  border-radius: var(--radius-sm);
-  background: var(--bg-tertiary);
-  border: 1px solid var(--border-subtle);
-  font-size: 12.5px;
-}
-
-.comp-kanji {
-  font-family: var(--font-japanese);
-  font-size: 15px;
-  font-weight: 800;
-  color: var(--accent-primary);
-}
-
-.comp-hv {
-  font-size: 11px;
-  font-weight: 800;
-  color: var(--accent-amber, #f59e0b);
-}
-
-.comp-mean {
-  font-size: 11.5px;
-  color: var(--text-secondary);
-}
-
-.kcard-readings-row {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
   gap: 10px;
   background: var(--bg-card-inner);
-  border: 1px solid var(--border-subtle);
-  padding: 8px 12px;
-  border-radius: var(--radius-sm);
-  font-size: 13px;
-}
-
-.kcard-reading-col {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-}
-
-.reading-type {
-  font-size: 11px;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.4px;
-}
-
-.reading-type.on {
-  color: var(--accent-primary);
-}
-
-.reading-type.kun {
-  color: var(--accent-green);
-}
-
-.reading-val {
-  font-family: var(--font-japanese);
-  font-weight: 600;
-  color: var(--text-secondary);
-  word-break: break-word;
-}
-
-.kcard-radicals-row {
-  font-size: 12px;
-  color: var(--text-muted);
-}
-
-.radical-title {
-  font-weight: 700;
-  margin-right: 4px;
-}
-
-/* DÒNG BÊN DƯỚI: MẸO GHI NHỚ & TỪ VỰNG TIÊU BIỂU */
-.kcard-bottom-section {
-  padding: 16px 22px 20px;
-  display: flex;
-  flex-direction: column;
-  gap: 14px;
-  background: rgba(0, 0, 0, 0.06);
-  flex: 1;
+  border-top: 1px dashed var(--border-color);
+  /* Loại bỏ flex: 1 để không bị kéo giãn rỗng */
 }
 
 .kcard-mnemonic-box {
-  background: rgba(251, 191, 36, 0.08);
+  background: rgba(196, 146, 62, 0.08);
   border-left: 3.5px solid var(--accent-warning);
   border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
   padding: 12px 14px;
-  border-top: 1px solid rgba(251, 191, 36, 0.12);
-  border-right: 1px solid rgba(251, 191, 36, 0.12);
-  border-bottom: 1px solid rgba(251, 191, 36, 0.12);
+  border-top: 1px solid rgba(196, 146, 62, 0.12);
+  border-right: 1px solid rgba(196, 146, 62, 0.12);
+  border-bottom: 1px solid rgba(196, 146, 62, 0.12);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
 }
 
 .mnemonic-badge-header {
   display: flex;
   align-items: center;
   gap: 6px;
-  margin-bottom: 6px;
 }
 
 .mnemonic-icon {
-  font-size: 15px;
+  font-size: 14px;
 }
 
 .mnemonic-title {
-  font-size: 12.5px;
-  font-weight: 800;
+  font-size: 12px;
+  font-weight: 700;
   text-transform: uppercase;
   color: var(--accent-warning);
   letter-spacing: 0.5px;
 }
 
-.mnemonic-story {
-  font-size: 14px;
-  line-height: 1.65;
-  color: var(--text-secondary);
-  margin: 0;
-  white-space: pre-line;
+.mnemonic-content-flow {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.mnemonic-row {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  font-size: 13.5px;
+  line-height: 1.55;
 }
 
 .mnemonic-tag {
   font-weight: 700;
+  font-size: 11.5px;
   letter-spacing: 0.3px;
+  width: fit-content;
 }
 
 .mnemonic-tag-breakdown {
-  color: var(--primary-color, #2563eb);
+  color: var(--accent-indigo);
 }
 
 .mnemonic-tag-story {
-  color: var(--accent-warning, #d97706);
+  color: var(--accent-warning);
 }
 
-.kcard-examples-section {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.examples-header-label {
-  font-size: 11.5px;
-  font-weight: 700;
-  color: var(--text-muted);
-  text-transform: uppercase;
-  letter-spacing: 0.4px;
-}
-
-.kcard-examples-grid {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-}
-
-.kcard-example-pill {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  padding: 6px 12px;
-  background: var(--bg-tertiary);
-  border: 1px solid var(--border-subtle);
-  border-radius: 20px;
-  font-size: 12.5px;
-  cursor: pointer;
-  transition: var(--transition);
+.mnemonic-text {
   color: var(--text-secondary);
-}
-
-.kcard-example-pill:hover {
-  background: rgba(56, 189, 248, 0.14);
-  border-color: var(--accent-primary);
-  color: var(--text-primary);
-  transform: translateY(-1px);
-}
-
-.kcard-example-pill .ex-word {
-  font-family: var(--font-japanese);
-  color: var(--accent-primary);
-  font-size: 13.5px;
-}
-
-.kcard-example-pill .ex-reading {
-  color: var(--text-muted);
-  font-family: var(--font-japanese);
-  font-size: 12px;
-}
-
-.kcard-example-pill .ex-meaning {
-  color: var(--text-secondary);
-}
-
-.kcard-example-pill .ex-speaker {
-  font-size: 11px;
-  opacity: 0.7;
+  line-height: 1.55;
+  word-break: break-word;
 }
 
 /* Accent Amber cho Bento Grid trang bìa */
 .accent-amber {
-  background: linear-gradient(135deg, rgba(245, 158, 11, 0.22), rgba(217, 119, 6, 0.12));
-  color: #f59e0b;
-  border: 1px solid rgba(245, 158, 11, 0.35);
+  background: rgba(196, 146, 62, 0.12);
+  color: var(--accent-warning);
+  border: 1px solid rgba(196, 146, 62, 0.30);
 }
 
 [data-theme="light"] .kcard-bottom-section {
-  background: rgba(241, 245, 249, 0.7);
+  background: rgba(0, 0, 0, 0.02);
 }
 
 [data-theme="light"] .kcard-mnemonic-box {
-  background: rgba(254, 243, 199, 0.7);
-  border-left-color: #d97706;
+  background: rgba(196, 146, 62, 0.08);
+  border-left-color: var(--accent-warning);
 }
 
 [data-theme="light"] .mnemonic-title {
-  color: #b45309;
+  color: #9e6d1b;
 }
 
 @media (max-width: 768px) {
@@ -5275,171 +5406,56 @@ body.hide-furigana #btn-toggle-furigana {
     border-radius: var(--radius-md);
   }
 
-  /* DÒNG TRÊN: Chữ Hán bên trên */
+  /* DÒNG TRÊN: Tiêu đề từ vựng */
   .kcard-top-section {
-    padding: 14px 14px 12px;
-    gap: 12px;
-    align-items: flex-start;
+    padding: 14px 16px 12px;
+    gap: 10px;
   }
 
-  .kcard-char-display {
-    gap: 6px;
+  .kcard-word-kanji {
+    font-size: clamp(24px, 5.5vw, 28px);
   }
 
-  .kcard-char-box {
-    width: auto;
-    min-width: 78px;
-    height: auto;
-    min-height: 72px;
-    padding: 8px 10px;
-    border-radius: 12px;
-  }
-
-  .kcard-kanji {
-    font-size: clamp(20px, 5.5vw, 28px);
-    line-height: 1.15;
-  }
-
-  .kcard-reading-sub {
-    font-size: 11.5px;
-    margin-top: 3px;
-  }
-
-  .kcard-audio-pill {
-    font-size: 9.5px;
-    padding: 2px 6px;
-    margin-top: 3px;
-  }
-
-  .kcard-stroke-badge {
-    font-size: 10px;
-    padding: 2px 6px;
-  }
-
-  .kcard-main-meta {
-    gap: 8px;
-  }
-
-  .kcard-header-row {
-    gap: 6px;
-    flex-direction: column;
-    align-items: flex-start;
-  }
-
-  .kcard-hv-badge-wrap {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-  }
-
-  .kcard-hanviet {
-    font-size: 17px;
-  }
-
-  .kcard-meaning-wrap {
-    font-size: 13.5px;
-    gap: 6px;
-  }
-
-  .kcard-components-row {
-    gap: 4px;
-    margin-top: 4px;
-  }
-
-  .components-label {
-    font-size: 11px;
-    color: var(--text-muted);
-  }
-
-  .components-pills-list {
-    gap: 5px;
-  }
-
-  .comp-item-pill {
-    padding: 3px 7px;
-    font-size: 11.5px;
-    border-radius: 6px;
-  }
-
-  .comp-kanji {
+  .kcard-word-reading {
     font-size: 13px;
   }
 
-  .kcard-readings-row {
-    grid-template-columns: 1fr;
-    gap: 4px;
-    padding: 6px 8px;
+  .kcard-word-badges {
+    align-items: flex-start;
   }
 
-  .kcard-reading-col {
-    font-size: 12px;
-  }
-
-  .kcard-radicals-row {
-    font-size: 11.5px;
+  .kcard-badge-row {
+    justify-content: flex-start;
   }
 
   /* DÒNG BÊN DƯỚI: Mẹo nhớ bên dưới */
   .kcard-bottom-section {
-    padding: 12px 14px 14px;
+    padding: 12px 16px 14px;
     gap: 10px;
   }
 
   .kcard-mnemonic-box {
     padding: 10px 12px;
-    border-radius: 0 10px 10px 0;
-  }
-
-  .mnemonic-badge-header {
-    gap: 5px;
-    margin-bottom: 4px;
-  }
-
-  .mnemonic-title {
-    font-size: 11.5px;
   }
 
   .mnemonic-story {
     font-size: 13.5px;
     line-height: 1.6;
   }
-
-  .kcard-example-pill {
-    padding: 8px 10px;
-    font-size: 12.5px;
-    border-radius: 8px;
-  }
-
-  .kcard-example-pill .ex-label {
-    font-size: 10.5px;
-  }
-
-  .kcard-example-pill .ex-word {
-    font-size: 12.5px;
-  }
 }
 
 @media (max-width: 480px) {
   .kcard-top-section {
-    padding: 12px 10px 10px;
-    gap: 10px;
+    padding: 12px 14px 10px;
+    gap: 8px;
   }
 
-  .kcard-char-box {
-    min-width: 72px;
-    padding: 6px 8px;
-  }
-
-  .kcard-kanji {
-    font-size: clamp(18px, 5.2vw, 24px);
-  }
-
-  .kcard-hanviet {
-    font-size: 16px;
+  .kcard-word-kanji {
+    font-size: 22px;
   }
 
   .kcard-bottom-section {
-    padding: 10px 12px 12px;
+    padding: 10px 14px 12px;
     gap: 8px;
   }
 
@@ -5447,7 +5463,7 @@ body.hide-furigana #btn-toggle-furigana {
     padding: 8px 10px;
   }
 
-  .mnemonic-story {
+  .mnemonic-row {
     font-size: 13px;
   }
 }
@@ -5734,16 +5750,87 @@ html[data-thermal-mode="true"] .header-action-btn {
 }
 
 /* ==========================================================================
-   NHÓM NÚT CHỨC NĂNG DỌC Ở PHÍA DƯỚI THANH MENU BÊN TRÁI (SIDEBAR ACTIONS)
+   NÚT BÁNH RĂNG CÀI ĐẶT & TIỆN ÍCH CHÂN SIDEBAR (SIDEBAR GEAR & FLYOUT MENU)
    ========================================================================== */
-.sidebar-bottom-actions-vertical {
+.sidebar-gear-wrap {
+  position: relative;
   flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  padding: 0;
+  margin: 0;
+  z-index: 25;
+}
+
+.sidebar-gear-trigger {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  min-width: 44px;
+  min-height: 44px;
+  background: transparent !important;
+  color: var(--text-secondary);
+  border: none !important;
+  box-shadow: none !important;
+  outline: none;
+  border-radius: var(--radius-sm, 6px);
+  cursor: pointer;
+  padding: 0;
+  transition: color 0.2s ease, transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.sidebar-gear-trigger:hover,
+.sidebar-gear-wrap.open .sidebar-gear-trigger {
+  color: var(--primary);
+  background: transparent !important;
+  transform: rotate(45deg);
+}
+
+.gear-icon-svg {
+  width: 20px;
+  height: 20px;
+  display: block;
+}
+
+/* Floating Flyout Menu Popup */
+.sidebar-gear-popup {
+  position: absolute;
+  bottom: calc(100% + 10px);
+  left: 0;
+  width: 220px;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md, 8px);
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.25), 0 8px 10px -6px rgba(0, 0, 0, 0.15);
+  padding: 6px;
   display: flex;
   flex-direction: column;
-  gap: 5px;
-  padding: 10px 10px 6px;
-  background-color: var(--bg-secondary);
-  border-top: 1px solid var(--border-card);
+  gap: 4px;
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transform: translateY(10px) scale(0.97);
+  transition: opacity 0.2s cubic-bezier(0.16, 1, 0.3, 1),
+              transform 0.2s cubic-bezier(0.16, 1, 0.3, 1),
+              visibility 0.2s;
+  z-index: 100;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+.sidebar-gear-wrap.open .sidebar-gear-popup {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+  transform: translateY(0) scale(1);
 }
 
 .sidebar-action-item {
@@ -5755,10 +5842,11 @@ html[data-thermal-mode="true"] .header-action-btn {
   background: var(--bg-tertiary);
   color: var(--text-secondary);
   border: 1px solid var(--border-color);
-  border-radius: var(--radius-md);
+  border-radius: var(--radius-sm);
   cursor: pointer;
+  font-family: inherit;
   font-size: 13px;
-  font-weight: 600;
+  font-weight: 550;
   text-align: left;
   transition: all 0.18s ease;
   user-select: none;
@@ -5777,8 +5865,8 @@ html[data-thermal-mode="true"] .header-action-btn {
 }
 
 .sidebar-action-icon {
-  width: 22px;
-  height: 22px;
+  width: 20px;
+  height: 20px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -5794,7 +5882,7 @@ html[data-thermal-mode="true"] .header-action-btn {
 }
 
 .sidebar-action-icon.font-symbol {
-  font-size: 18px;
+  font-size: 17px;
   font-weight: 800;
 }
 
