@@ -484,18 +484,6 @@
           <span class="sidebar-action-label">Toàn màn hình / Focus</span>
         </button>
 
-        <!-- 5. Tài khoản người dùng & Đồng bộ đám mây -->
-        <button id="btn-user-auth" class="sidebar-action-item user-auth-btn" aria-label="Tài khoản người dùng" title="Quản lý hồ sơ cá nhân, tiến độ học tập hoặc thông tin tài khoản">
-          <span class="sidebar-action-icon">
-            <span class="auth-sync-dot" id="auth-sync-dot"></span>
-            <svg class="auth-icon-svg" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-              <circle cx="12" cy="7" r="4"></circle>
-            </svg>
-          </span>
-          <span class="sidebar-action-label">Tài khoản &amp; Đồng bộ</span>
-        </button>
-
         <!-- 5. Cá nhân hóa thiết bị & Hiệu năng -->
         <button id="btn-device-settings" class="sidebar-action-item device-settings-btn" aria-label="Cá nhân hóa thiết bị &amp; Hiệu năng" title="Cá nhân hóa thiết bị, cỡ chữ &amp; Tiết kiệm pin / Làm mát máy">
           <span class="sidebar-action-icon">
@@ -699,99 +687,6 @@
       <div class="voice-modal-footer">
         <button id="reset-device-modal-btn" class="btn-confirm-cancel" type="button">Mặc định</button>
         <button id="save-device-modal-btn" class="btn-save-voice" type="button">Lưu Cài Đặt</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- Modal Tài Khoản & Tự Động Đồng Bộ Đám Mây Đa Thiết Bị -->
-  <div id="auth-modal" class="voice-modal-backdrop" aria-hidden="true">
-    <div class="voice-modal-card auth-modal-card">
-      <div class="voice-modal-header">
-        <div class="voice-modal-title-wrap">
-          <h3 class="voice-modal-title" id="auth-modal-title">Tài Khoản &amp; Đồng Bộ Đám Mây</h3>
-          <span class="auth-sync-status-badge" id="auth-sync-badge">
-            <span class="sync-dot-indicator" id="modal-sync-dot"></span>
-            <span id="modal-sync-text">Chưa đăng nhập</span>
-          </span>
-        </div>
-        <button id="close-auth-modal-btn" class="voice-modal-close" aria-label="Đóng" title="Đóng">&times;</button>
-      </div>
-
-      <div class="voice-modal-body">
-        <!-- Chế độ 1: Chưa đăng nhập (Form Đăng nhập / Đăng ký) -->
-        <div id="auth-form-view">
-          <div class="auth-tabs" role="tablist">
-            <button type="button" class="auth-tab active" id="tab-login" data-tab="login">Đăng Nhập</button>
-            <button type="button" class="auth-tab" id="tab-register" data-tab="register">Tạo Tài Khoản Mới</button>
-          </div>
-
-          <form id="auth-main-form" class="auth-form" onsubmit="return false;">
-            <!-- Trường Họ Tên (chỉ hiện khi Đăng ký) -->
-            <div class="auth-field-group" id="group-display-name" style="display: none;">
-              <label for="auth-display-name" class="auth-label">Họ và Tên</label>
-              <input type="text" id="auth-display-name" class="auth-input" placeholder="Ví dụ: Nguyễn Văn A" autocomplete="name">
-            </div>
-
-            <!-- Email -->
-            <div class="auth-field-group">
-              <label for="auth-email" class="auth-label">Email tài khoản</label>
-              <input type="email" id="auth-email" class="auth-input" placeholder="tenban@gmail.com" required autocomplete="email">
-            </div>
-
-            <!-- Mật khẩu -->
-            <div class="auth-field-group">
-              <label for="auth-password" class="auth-label">Mật khẩu (tối thiểu 6 ký tự)</label>
-              <input type="password" id="auth-password" class="auth-input" placeholder="••••••••" required autocomplete="current-password">
-            </div>
-
-            <!-- Thông báo trạng thái / lỗi (chống XSS) -->
-            <div id="auth-message-box" class="auth-message-box" style="display: none;"></div>
-
-            <div class="auth-submit-row">
-              <button type="submit" id="btn-auth-submit" class="btn-save-voice btn-auth-submit">
-                <span class="auth-btn-text" id="auth-submit-btn-text">Đăng Nhập</span>
-              </button>
-            </div>
-          </form>
-          <div class="auth-hint-text">
-            <span>💡 Đăng nhập giúp tự động lưu tiến trình bài học, điểm số trắc nghiệm và đọc hiểu để tiếp tục học liền mạch trên máy tính, điện thoại hoặc iPad.</span>
-          </div>
-        </div>
-
-        <!-- Chế độ 2: Đã đăng nhập (Profile & Cloud Sync Status) -->
-        <div id="auth-profile-view" style="display: none;">
-          <div class="auth-user-card">
-            <div class="auth-avatar-circle" id="auth-user-avatar">U</div>
-            <div class="auth-user-meta">
-              <h4 class="auth-user-name" id="auth-user-name">Người Dùng</h4>
-              <span class="auth-user-email" id="auth-user-email">email@example.com</span>
-            </div>
-          </div>
-
-          <div class="auth-sync-details">
-            <div class="sync-detail-row">
-              <span class="sync-detail-label">Cơ sở dữ liệu:</span>
-              <span class="sync-detail-val text-success">🟢 Đã liên kết Cloudflare D1</span>
-            </div>
-            <div class="sync-detail-row">
-              <span class="sync-detail-label">Bài đang học gần nhất:</span>
-              <span class="sync-detail-val" id="auth-sync-last-lesson">Đang tải...</span>
-            </div>
-            <div class="sync-detail-row">
-              <span class="sync-detail-label">Đồng bộ gần nhất:</span>
-              <span class="sync-detail-val" id="auth-sync-last-time">Vừa xong</span>
-            </div>
-          </div>
-
-          <div class="auth-profile-actions">
-            <button type="button" id="btn-sync-now" class="btn-save-voice btn-sync-now">
-              <span>☁️ Đồng Bộ Ngay</span>
-            </button>
-            <button type="button" id="btn-auth-logout" class="btn-confirm-cancel btn-logout">
-              <span>Đăng Xuất</span>
-            </button>
-          </div>
-        </div>
       </div>
     </div>
   </div>
