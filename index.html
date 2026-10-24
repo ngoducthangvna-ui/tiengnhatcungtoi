@@ -16,6 +16,31 @@
   <!-- Favicon SVG -->
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='24' fill='%230284c7'/><text x='50' y='72' font-family='sans-serif' font-weight='bold' font-size='62' fill='white' text-anchor='middle'>日</text></svg>">
   
+  <!-- ===================================================================
+       BẢO MẬT LỚP 1: HTTP SECURITY META TAGS (BROWSER-LEVEL HARDENING)
+       - CSP: Chỉ cho phép tải script/style/font từ các nguồn tin cậy đã khai báo
+       - X-Content-Type-Options: Ngăn trình duyệt tự suy đoán loại file (MIME Sniffing)
+       - Referrer-Policy: Giới hạn thông tin gửi ra ngoài khi điều hướng
+       - Permissions-Policy: Khoá toàn bộ thiết bị nhạy cảm không dùng đến
+  =================================================================== -->
+  <meta http-equiv="Content-Security-Policy" content="
+    default-src 'self';
+    script-src 'self' 'unsafe-inline';
+    style-src 'self' 'unsafe-inline' https://fonts.googleapis.com;
+    font-src 'self' https://fonts.gstatic.com data:;
+    img-src 'self' data: https: blob:;
+    media-src 'self' data: blob: https:;
+    connect-src 'self' https://speechgen.io https://api.speechgen.io;
+    frame-ancestors 'none';
+    object-src 'none';
+    base-uri 'self';
+    form-action 'self';
+  ">
+  <meta http-equiv="X-Content-Type-Options" content="nosniff">
+  <meta http-equiv="X-XSS-Protection" content="1; mode=block">
+  <meta name="referrer" content="strict-origin-when-cross-origin">
+  <meta http-equiv="Permissions-Policy" content="camera=(), microphone=(), geolocation=(), payment=(), usb=(), interest-cohort=()">
+
   <!-- Font chữ tiếng Nhật & tiếng Việt chuyên dụng -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -63,6 +88,26 @@
     window.handleEnterApp = enterApp;
     window.selectCoverTarget = function(hash) { enterApp(hash); };
     window.enterAppAt = function(hash) { enterApp(hash); };
+  </script>
+
+  <!-- BẢO MẬT LỚP 2: CHỐNG NHÚNG TRỘM IFRAME (ANTI-CLICKJACKING FRAME-BUSTING)
+       Phát hiện nếu website đang bị nhúng trong một iframe ẩn trên trang lạ.
+       Hacker thường dùng kỹ thuật Clickjacking để lừa học viên bấm nhầm vào
+       các phần tử ẩn đặt đè lên giao diện thật. Đoạn mã này thoát ngay lập tức.
+  -->
+  <script>
+    (function() {
+      'use strict';
+      try {
+        if (window.self !== window.top) {
+          // Đang bị nhúng trong iframe của trang khác → thoát tức thì
+          window.top.location.replace(window.self.location.href);
+        }
+      } catch (e) {
+        // Nếu bị chặn truy cập window.top (cross-origin iframe) → ẩn toàn bộ trang
+        document.documentElement.style.display = 'none';
+      }
+    })();
   </script>
 
   <!-- 0. TRANG BÌA GIỚI THIỆU PHONG CÁCH NHẬT BẢN HIỆN ĐẠI (COVER SLIDE SCREEN) -->

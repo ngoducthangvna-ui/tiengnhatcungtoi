@@ -21,6 +21,176 @@ const STORAGE_LAST_ACTIVE_KEY = 'minna_last_active_id';
 const STORAGE_FURIGANA_KEY = 'minna_show_furigana';
 const STORAGE_DEVICE_SETTINGS_KEY = 'minna_device_settings';
 
+// --------------------------------------------------------------------------
+// 1A-SEC. BẢO MẬT LỚP 4: KÝ SỐ CHỐNG GAN LẬN TIẾN ĐỘ (TAMPER-PROOF CHECKSUM)
+// Mỗi khi lưu điểm số / tiến độ, hệ thống tạo thêm mã xác thực (Checksum).
+// Nếu học viên mở F12 Console tay sửa điểm trong localStorage, checksum sẽ
+// không khớp và hệ thống sẽ phục hồi an toàn về giá trị gốc hợp lệ.
+// --------------------------------------------------------------------------
+
+/**
+ * Tạo checksum đơn giản từ chuỗi dữ liệu (FNV-1a hash 32-bit)
+ * Nhanh, không cần crypto API, chạy được cả trên trình duyệt cũ.
+ */
+function _fnv1aHash(str) {
+  let h = 0x811c9dc5;
+  for (let i = 0; i < str.length; i++) {
+    h ^= str.charCodeAt(i);
+    h = (h * 0x01000193) >>> 0;
+  }
+  return h.toString(36);
+}
+
+/** Tên khóa lưu checksum đi kèm mỗi key dữ liệu */
+function _csKey(storageKey) {
+  return storageKey + '_cs';
+}
+
+/**
+ * Ghi dữ liệu vào localStorage kèm checksum xác thực.
+ * Thay thế trực tiếp safeSetStorage cho các key quan trọng.
+ */
+function secureSetStorage(key, value) {
+  try {
+    if (typeof localStorage === 'undefined' || !localStorage.setItem) return;
+    const cs = _fnv1aHash(String(value) + key);
+    localStorage.setItem(key, value);
+    localStorage.setItem(_csKey(key), cs);
+  } catch (e) {
+    console.warn('[SecureStorage] Ghi thất bại:', key, e && e.name);
+  }
+}
+
+/**
+ * Đọc dữ liệu từ localStorage và xác minh checksum.
+ * Nếu checksum không khớp (dữ liệu bị can thiệp thủ công),
+ * hệ thống trả về giá trị dự phòng (fallback) an toàn thay vì dữ liệu bị hack.
+ */
+function secureGetStorage(key, fallback = null) {
+  try {
+    if (typeof localStorage === 'undefined' || !localStorage.getItem) return fallback;
+    const value = localStorage.getItem(key);
+    if (value === null) return fallback;
+    const storedCs = localStorage.getItem(_csKey(key));
+    if (storedCs !== null) {
+      const expectedCs = _fnv1aHash(String(value) + key);
+      if (storedCs !== expectedCs) {
+        // Checksum không khớp → xóa dữ liệu bị can thiệp và trả về fallback
+        console.warn('[SecureStorage] ⚠️ Phát hiện dữ liệu bị can thiệp tại khóa:', key, '→ Đặt lại an toàn.');
+        localStorage.removeItem(key);
+        localStorage.removeItem(_csKey(key));
+        return fallback;
+      }
+    }
+    return value;
+  } catch (e) {
+    return fallback;
+  }
+}
+
+/**
+ * Đọc JSON an toàn từ secureStorage với xác minh checksum + kiểm tra kiểu.
+ */
+function secureGetJsonStorage(key, fallback = null, validator = null) {
+  try {
+    const raw = secureGetStorage(key, null);
+    if (!raw) return fallback;
+    const parsed = JSON.parse(raw);
+    const clean = sanitizeDeepObject(parsed);
+    if (typeof validator === 'function') {
+      return validator(clean) ? clean : fallback;
+    }
+    return (clean !== null && clean !== undefined) ? clean : fallback;
+  } catch (e) {
+    return fallback;
+  }
+}
+
+// --------------------------------------------------------------------------
+// 1B-SEC. BẢO MẬT LỚP 5: BẢO VỆ NỘI DUNG BÀI TẬP & PHÁT HIỆN CAN THIỆP
+// - Chặn chuột phải (contextmenu) trên câu hỏi bài tập
+// - Chặn in ấn trái phép bằng phím Ctrl+P / Cmd+P
+// - Chặn tổ hợp phím tắt devtools nguy hiểm (F12, Ctrl+Shift+I, Ctrl+Shift+J)
+// --------------------------------------------------------------------------
+(function initContentProtection() {
+  'use strict';
+  if (typeof document === 'undefined') return;
+
+  const PROTECTED_SELECTORS = [
+    '.kq-question-text',
+    '.kq-options',
+    '.practice-quiz-wrap',
+    '.dokkai-passage-box',
+    '.quiz-options-grid',
+    '#lesson-content'
+  ];
+
+  function isProtectedTarget(el) {
+    if (!el) return false;
+    return PROTECTED_SELECTORS.some(sel => {
+      try { return el.closest && el.closest(sel) !== null; } catch (e) { return false; }
+    });
+  }
+
+  // Chặn chuột phải trên vùng nội dung bài tập
+  document.addEventListener('contextmenu', function(e) {
+    if (isProtectedTarget(e.target)) {
+      e.preventDefault();
+      return false;
+    }
+  }, true);
+
+  // Chặn copy bằng phím tắt Ctrl+C / Cmd+C trên vùng nội dung bài tập
+  document.addEventListener('copy', function(e) {
+    if (isProtectedTarget(document.activeElement) || isProtectedTarget(
+      window.getSelection && window.getSelection().anchorNode &&
+      window.getSelection().anchorNode.parentElement
+    )) {
+      const sel = window.getSelection ? window.getSelection().toString() : '';
+      // Chỉ chặn khi đang chọn văn bản trong vùng bảo vệ
+      if (sel.length > 30) {
+        e.preventDefault();
+        return false;
+      }
+    }
+  }, true);
+
+  // Chặn in ấn
+  window.addEventListener('beforeprint', function() {
+    document.body.setAttribute('data-print-blocked', 'true');
+  });
+  window.addEventListener('afterprint', function() {
+    document.body.removeAttribute('data-print-blocked');
+  });
+
+  // Chặn tổ hợp phím mở DevTools (bảo vệ mã nguồn bài tập)
+  document.addEventListener('keydown', function(e) {
+    const isMac = navigator.platform && navigator.platform.includes('Mac');
+    const ctrl = isMac ? e.metaKey : e.ctrlKey;
+
+    // F12 → mở DevTools
+    if (e.key === 'F12') {
+      e.preventDefault();
+      return false;
+    }
+    // Ctrl+Shift+I hoặc Ctrl+Shift+J → mở DevTools Console/Inspector
+    if (ctrl && e.shiftKey && (e.key === 'I' || e.key === 'i' || e.key === 'J' || e.key === 'j')) {
+      e.preventDefault();
+      return false;
+    }
+    // Ctrl+U → xem nguồn trang
+    if (ctrl && (e.key === 'U' || e.key === 'u')) {
+      e.preventDefault();
+      return false;
+    }
+    // Ctrl+P → in trang
+    if (ctrl && (e.key === 'P' || e.key === 'p')) {
+      e.preventDefault();
+      return false;
+    }
+  }, true);
+})();
+
 // Hàm mã hóa an toàn HTML chống tấn công DOM XSS
 function escapeHtml(str) {
   if (str === null || str === undefined) return '';
@@ -74,6 +244,7 @@ function safeRemoveStorage(key) {
   try {
     if (typeof localStorage !== 'undefined' && localStorage.removeItem) {
       localStorage.removeItem(key);
+      localStorage.removeItem(key + '_cs');
     }
   } catch (e) {}
 }
@@ -342,7 +513,7 @@ function extractLessonNumber(id) {
 }
 
 function getCompletedModules() {
-  return safeGetJsonStorage(STORAGE_COMPLETED_KEY, [], Array.isArray);
+  return secureGetJsonStorage(STORAGE_COMPLETED_KEY, [], Array.isArray);
 }
 
 function isModuleCompleted(id) {
@@ -401,7 +572,7 @@ window.toggleLessonComplete = function(id) {
     showToast("🎉 Đã ghi nhận hoàn thành bài học!");
   }
 
-  safeSetStorage(STORAGE_COMPLETED_KEY, JSON.stringify(list));
+  secureSetStorage(STORAGE_COMPLETED_KEY, JSON.stringify(list));
 
   const sidebarBtn = document.querySelector ? document.querySelector(`.menu-item-btn[data-id="${id}"]`) : null;
   if (sidebarBtn && sidebarBtn.querySelector) {
@@ -2138,28 +2309,28 @@ window.speakDokkaiQuestion = function(dokkaiId, qId, btn, ev) {
 // --------------------------------------------------------------------------
 function getPracticeQuizState(quizId) {
   if (!isSafeObjectKey(quizId)) return { submitted: false, selections: {}, score: null };
-  const all = safeGetJsonStorage(STORAGE_PRACTICE_KEY, {}, (d) => typeof d === 'object' && !Array.isArray(d));
+  const all = secureGetJsonStorage(STORAGE_PRACTICE_KEY, {}, (d) => typeof d === 'object' && !Array.isArray(d));
   return (all && all[quizId]) || { submitted: false, selections: {}, score: null };
 }
 
 function savePracticeQuizState(quizId, state) {
   if (!isSafeObjectKey(quizId)) return;
-  const all = safeGetJsonStorage(STORAGE_PRACTICE_KEY, {}, (d) => typeof d === 'object' && !Array.isArray(d));
+  const all = secureGetJsonStorage(STORAGE_PRACTICE_KEY, {}, (d) => typeof d === 'object' && !Array.isArray(d));
   all[quizId] = state;
-  safeSetStorage(STORAGE_PRACTICE_KEY, JSON.stringify(all));
+  secureSetStorage(STORAGE_PRACTICE_KEY, JSON.stringify(all));
 }
 
 function getDokkaiState(dokkaiId) {
   if (!isSafeObjectKey(dokkaiId)) return { submitted: false, selections: {}, score: null };
-  const all = safeGetJsonStorage(STORAGE_DOKKAI_KEY, {}, (d) => typeof d === 'object' && !Array.isArray(d));
+  const all = secureGetJsonStorage(STORAGE_DOKKAI_KEY, {}, (d) => typeof d === 'object' && !Array.isArray(d));
   return (all && all[dokkaiId]) || { submitted: false, selections: {}, score: null };
 }
 
 function saveDokkaiState(dokkaiId, state) {
   if (!isSafeObjectKey(dokkaiId)) return;
-  const all = safeGetJsonStorage(STORAGE_DOKKAI_KEY, {}, (d) => typeof d === 'object' && !Array.isArray(d));
+  const all = secureGetJsonStorage(STORAGE_DOKKAI_KEY, {}, (d) => typeof d === 'object' && !Array.isArray(d));
   all[dokkaiId] = state;
-  safeSetStorage(STORAGE_DOKKAI_KEY, JSON.stringify(all));
+  secureSetStorage(STORAGE_DOKKAI_KEY, JSON.stringify(all));
 }
 
 let quizTimerInterval = null;
@@ -2403,7 +2574,7 @@ function finalizePracticeQuizSubmission(quizId) {
     const list = getCompletedModules();
     if (!list.includes(quizId)) {
       list.push(quizId);
-      safeSetStorage(STORAGE_COMPLETED_KEY, JSON.stringify(list));
+      secureSetStorage(STORAGE_COMPLETED_KEY, JSON.stringify(list));
       renderSidebar();
       updateHeaderProgress();
     }
@@ -2492,7 +2663,7 @@ function finalizeDokkaiSubmission(dokkaiId) {
     const list = getCompletedModules();
     if (!list.includes(dokkaiId)) {
       list.push(dokkaiId);
-      safeSetStorage(STORAGE_COMPLETED_KEY, JSON.stringify(list));
+      secureSetStorage(STORAGE_COMPLETED_KEY, JSON.stringify(list));
       renderSidebar();
       updateHeaderProgress();
     }
@@ -2659,10 +2830,10 @@ window.resetPracticeProgress = function(quizId = currentActiveId) {
       if (wrapper && wrapper.classList) wrapper.classList.add('quiz-fade-reset');
 
       try {
-        const raw = safeGetStorage(STORAGE_PRACTICE_KEY);
+        const raw = secureGetStorage(STORAGE_PRACTICE_KEY);
         const all = raw ? JSON.parse(raw) : {};
         delete all[targetId];
-        safeSetStorage(STORAGE_PRACTICE_KEY, JSON.stringify(all));
+        secureSetStorage(STORAGE_PRACTICE_KEY, JSON.stringify(all));
       } catch (e) {}
 
       setTimeout(() => {
@@ -2682,10 +2853,10 @@ window.resetDokkaiProgress = function(dokkaiId) {
       if (wrapper && wrapper.classList) wrapper.classList.add('quiz-fade-reset');
 
       try {
-        const raw = safeGetStorage(STORAGE_DOKKAI_KEY);
+        const raw = secureGetStorage(STORAGE_DOKKAI_KEY);
         const all = raw ? JSON.parse(raw) : {};
         delete all[dokkaiId];
-        safeSetStorage(STORAGE_DOKKAI_KEY, JSON.stringify(all));
+        secureSetStorage(STORAGE_DOKKAI_KEY, JSON.stringify(all));
       } catch (e) {}
 
       setTimeout(() => {

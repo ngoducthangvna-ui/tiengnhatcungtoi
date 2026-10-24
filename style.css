@@ -5824,6 +5824,65 @@ body.focus-mode .app-layout {
   max-height: 100vh;
 }
 
+/* ==========================================================================
+   BẢO MẬT LỚP 3: CHỐNG SAO CHÉP BẢN QUYỀN NỘI DUNG HỌC TẬP
+   - Khóa bôi đen và chuột phải trên nội dung bài tập, đề thi, bài đọc hiểu
+   - Ngăn tool tự động cào copy toàn bộ 2.500 câu trắc nghiệm & 50 bài Dokkai
+   - Người học vẫn tương tác bình thường: bấm, chọn đáp án, nghe phát âm
+   ========================================================================== */
+
+/* Khoá copy câu hỏi trắc nghiệm và bài đọc hiểu */
+.kq-question-text,
+.kq-options,
+.quiz-question-card .quiz-q-text,
+.dokkai-passage-box .passage-content,
+.quiz-options-grid,
+.practice-quiz-wrap .kq-question,
+.dokkai-question-group .dq-question-text,
+.practice-options .kq-option-btn span {
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+/* Ngăn in ấn trái phép: ẩn toàn bộ nội dung khi học viên bấm Ctrl+P */
+@media print {
+  body * {
+    display: none !important;
+    visibility: hidden !important;
+  }
+  body::before {
+    content: "⛔ Nội dung được bảo vệ bản quyền. Không được phép in ấn.";
+    display: block !important;
+    visibility: visible !important;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 22px;
+    font-weight: 700;
+    text-align: center;
+    padding: 40px;
+    color: #e11d48;
+    border: 3px solid #e11d48;
+    border-radius: 12px;
+    background: #fff;
+    max-width: 480px;
+    z-index: 999999;
+  }
+}
+
+/* Ngăn kéo thả nội dung ra ngoài */
+.lesson-hero-card,
+.vocab-table-wrap,
+.quiz-options-grid,
+.dokkai-passage-box,
+.kq-card-inner {
+  -webkit-user-drag: none;
+  user-drag: none;
+}
+
 
 
 
