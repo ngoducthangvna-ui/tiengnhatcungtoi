@@ -33,6 +33,38 @@
     <div class="glass-blob blob-4"></div>
   </div>
 
+  <!-- SCRIPT KHỞI TẠO TỨC THÌ CHO NÚT VÀO HỌC (FAILSAFE INSTANT DISMISS) -->
+  <script>
+    function enterApp(targetHash) {
+      try {
+        var cover = document.getElementById('cover-page-slide');
+        if (cover) {
+          cover.classList.add('hide-cover');
+          cover.style.pointerEvents = 'none';
+          cover.style.opacity = '0';
+          setTimeout(function() {
+            cover.style.display = 'none';
+          }, 200);
+        }
+        try { sessionStorage.setItem('minna_cover_closed', 'true'); } catch(e) {}
+        var target = targetHash || (window.selectedCoverTarget || (window.location && window.location.hash) || '#bai-1');
+        var cleanId = target.replace('#', '');
+        if (typeof window.switchModule === 'function') {
+          window.switchModule(cleanId, true);
+        } else if (window.location) {
+          window.location.hash = target;
+        }
+      } catch (err) {
+        var c = document.getElementById('cover-page-slide');
+        if (c) c.style.display = 'none';
+      }
+    }
+    window.enterApp = enterApp;
+    window.handleEnterApp = enterApp;
+    window.selectCoverTarget = function(hash) { enterApp(hash); };
+    window.enterAppAt = function(hash) { enterApp(hash); };
+  </script>
+
   <!-- 0. TRANG BÌA GIỚI THIỆU PHONG CÁCH NHẬT BẢN HIỆN ĐẠI (COVER SLIDE SCREEN) -->
   <section id="cover-page-slide" class="cover-page-slide" aria-label="Trang bìa giới thiệu khóa học Tiếng Nhật">
     <!-- Nền nghệ thuật Nhật Bản: Mặt trời/Mặt trăng, Núi Phú Sĩ, Chùa Gojūnotō, Cổng Torii & Cánh hoa anh đào -->
@@ -135,28 +167,36 @@
     <div class="cover-top-bar">
       <div class="cover-top-badge">
         <span class="cover-brand-dot">日</span>
-        <span class="cover-top-edition">Minna no Nihongo • JLPT N5 & N4</span>
+        <span class="cover-top-edition">Minna no Nihongo • JLPT N5 &amp; N4</span>
       </div>
-      <button id="cover-theme-toggle" class="cover-theme-toggle" aria-label="Đổi giao diện Sáng / Tối" title="Đổi giao diện Sáng / Tối">
-        <span class="theme-icon light-icon" title="Chuyển sang giao diện Sáng">
-          <svg class="theme-svg sun-svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-            <circle cx="12" cy="12" r="5"></circle>
-            <line x1="12" y1="1" x2="12" y2="3"></line>
-            <line x1="12" y1="21" x2="12" y2="23"></line>
-            <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
-            <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
-            <line x1="1" y1="12" x2="3" y2="12"></line>
-            <line x1="21" y1="12" x2="23" y2="12"></line>
-            <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
-            <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+      <div class="cover-top-actions">
+        <button class="cover-quick-enter-btn" onclick="enterApp('#bai-1')" title="Bắt đầu vào học ngay">
+          <span>Vào Học Ngay</span>
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="9 18 15 12 9 6"></polyline>
           </svg>
-        </span>
-        <span class="theme-icon dark-icon" title="Chuyển sang giao diện Tối">
-          <svg class="theme-svg moon-svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
-          </svg>
-        </span>
-      </button>
+        </button>
+        <button id="cover-theme-toggle" class="cover-theme-toggle" aria-label="Đổi giao diện Sáng / Tối" title="Đổi giao diện Sáng / Tối">
+          <span class="theme-icon light-icon" title="Chuyển sang giao diện Sáng">
+            <svg class="theme-svg sun-svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="5"></circle>
+              <line x1="12" y1="1" x2="12" y2="3"></line>
+              <line x1="12" y1="21" x2="12" y2="23"></line>
+              <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+              <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+              <line x1="1" y1="12" x2="3" y2="12"></line>
+              <line x1="21" y1="12" x2="23" y2="12"></line>
+              <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+              <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+            </svg>
+          </span>
+          <span class="theme-icon dark-icon" title="Chuyển sang giao diện Tối">
+            <svg class="theme-svg moon-svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+            </svg>
+          </span>
+        </button>
+      </div>
     </div>
 
     <!-- Khối nội dung trung tâm của trang bìa -->
@@ -206,42 +246,42 @@
           <span class="greeting-listen-tag">🔊 Nghe thử</span>
         </div>
 
-        <!-- Bảng 5 trụ cột tri thức Bento Grid hiện đại -->
+        <!-- Bảng 5 trụ cột tri thức Bento Grid hiện đại (Chạm vào bất kỳ thẻ nào để vào học ngay lập tức) -->
         <div class="cover-features-grid">
-          <div class="cover-feature-card" data-target="#bai-1" onclick="selectCoverTarget('#bai-1', this, '50 Bài Học Minna')" role="button" tabindex="0" title="Chọn mục tiêu: 50 Bài Minna N5 - N4">
+          <div class="cover-feature-card" data-target="#bai-1" onclick="enterApp('#bai-1')" role="button" tabindex="0" title="Vào học ngay: 50 Bài Minna N5 - N4">
             <div class="feature-stat-box accent-sakura">
               <span class="stat-num">50</span>
               <span class="stat-unit">BÀI HỌC</span>
             </div>
             <div class="feature-info">
               <h3 class="feature-title">50 Bài Học Minna</h3>
-              <p class="feature-desc">2.000+ từ vựng, 150+ ngữ pháp & Flashcard</p>
+              <p class="feature-desc">2.000+ từ vựng, 150+ ngữ pháp &amp; Flashcard</p>
             </div>
           </div>
 
-          <div class="cover-feature-card" data-target="#quiz-1" onclick="selectCoverTarget('#quiz-1', this, 'Trắc Nghiệm JLPT')" role="button" tabindex="0" title="Chọn mục tiêu: 2.500 câu trắc nghiệm JLPT">
+          <div class="cover-feature-card" data-target="#quiz-1" onclick="enterApp('#quiz-1')" role="button" tabindex="0" title="Làm bài ngay: 2.500 câu trắc nghiệm JLPT">
             <div class="feature-stat-box accent-sky">
               <span class="stat-num">2.500</span>
               <span class="stat-unit">CÂU HỎI</span>
             </div>
             <div class="feature-info">
               <h3 class="feature-title">Trắc Nghiệm JLPT</h3>
-              <p class="feature-desc">50 bộ đề chấm điểm & giải thích chi tiết</p>
+              <p class="feature-desc">50 bộ đề chấm điểm &amp; giải thích chi tiết</p>
             </div>
           </div>
 
-          <div class="cover-feature-card" data-target="#dokkai-1" onclick="selectCoverTarget('#dokkai-1', this, 'Đọc Hiểu Dokkai')" role="button" tabindex="0" title="Chọn mục tiêu: 50 bài đọc hiểu Dokkai">
+          <div class="cover-feature-card" data-target="#dokkai-1" onclick="enterApp('#dokkai-1')" role="button" tabindex="0" title="Vào luyện ngay: 50 bài đọc hiểu Dokkai">
             <div class="feature-stat-box accent-emerald">
               <span class="stat-num">50</span>
               <span class="stat-unit">BÀI ĐỌC</span>
             </div>
             <div class="feature-info">
               <h3 class="feature-title">Đọc Hiểu Dokkai</h3>
-              <p class="feature-desc">100% Furigana, âm thanh & dịch nghĩa</p>
+              <p class="feature-desc">100% Furigana, âm thanh &amp; dịch nghĩa</p>
             </div>
           </div>
 
-          <div class="cover-feature-card" data-target="#kanji-1" onclick="selectCoverTarget('#kanji-1', this, 'Mẹo Nhớ Kanji 50 Bài')" role="button" tabindex="0" title="Chọn mục tiêu: Mẹo nhớ Kanji 50 bài học">
+          <div class="cover-feature-card" data-target="#kanji-1" onclick="enterApp('#kanji-1')" role="button" tabindex="0" title="Vào xem ngay: Mẹo nhớ Kanji 50 bài học">
             <div class="feature-stat-box accent-amber">
               <span class="stat-num">50</span>
               <span class="stat-unit">BÀI KANJI</span>
@@ -252,14 +292,14 @@
             </div>
           </div>
 
-          <div class="cover-feature-card" data-target="#radicals-1" onclick="selectCoverTarget('#radicals-1', this, '191 Bộ Thủ Kanji')" role="button" tabindex="0" title="Chọn mục tiêu: Tra cứu 191 Bộ thủ Kanji">
+          <div class="cover-feature-card" data-target="#radicals-1" onclick="enterApp('#radicals-1')" role="button" tabindex="0" title="Vào tra cứu ngay: 191 Bộ thủ Kanji">
             <div class="feature-stat-box accent-purple">
               <span class="stat-num">191</span>
               <span class="stat-unit">BỘ THỦ</span>
             </div>
             <div class="feature-info">
               <h3 class="feature-title">191 Bộ Thủ Kanji</h3>
-              <p class="feature-desc">Hoạt họa thứ tự nét bút & chữ Hán mẫu</p>
+              <p class="feature-desc">Hoạt họa thứ tự nét bút &amp; chữ Hán mẫu</p>
             </div>
           </div>
         </div>
@@ -267,17 +307,17 @@
         <!-- Thanh điều hướng nhanh theo mục tiêu -->
         <div class="cover-target-nav">
           <span class="target-nav-label">Lộ trình nhanh:</span>
-          <button class="target-chip" data-target="#bai-1" onclick="selectCoverTarget('#bai-1', this)">N5 Cơ Bản (1-25)</button>
-          <button class="target-chip" data-target="#bai-26" onclick="selectCoverTarget('#bai-26', this)">N4 Nâng Cao (26-50)</button>
-          <button class="target-chip" data-target="#quiz-1" onclick="selectCoverTarget('#quiz-1', this, 'Luyện Đề JLPT')">Luyện Đề JLPT</button>
-          <button class="target-chip" data-target="#dokkai-1" onclick="selectCoverTarget('#dokkai-1', this, 'Luyện Đọc Hiểu')">Luyện Đọc Hiểu</button>
-          <button class="target-chip" data-target="#kanji-1" onclick="selectCoverTarget('#kanji-1', this, 'Mẹo Nhớ Kanji')">Mẹo Nhớ Kanji</button>
-          <button class="target-chip" data-target="#radicals-1" onclick="selectCoverTarget('#radicals-1', this, '191 Bộ Thủ')">191 Bộ Thủ</button>
+          <button class="target-chip" data-target="#bai-1" onclick="enterApp('#bai-1')">N5 Cơ Bản (1-25)</button>
+          <button class="target-chip" data-target="#bai-26" onclick="enterApp('#bai-26')">N4 Nâng Cao (26-50)</button>
+          <button class="target-chip" data-target="#quiz-1" onclick="enterApp('#quiz-1')">Luyện Đề JLPT</button>
+          <button class="target-chip" data-target="#dokkai-1" onclick="enterApp('#dokkai-1')">Luyện Đọc Hiểu</button>
+          <button class="target-chip" data-target="#kanji-1" onclick="enterApp('#kanji-1')">Mẹo Nhớ Kanji</button>
+          <button class="target-chip" data-target="#radicals-1" onclick="enterApp('#radicals-1')">191 Bộ Thủ</button>
         </div>
 
         <!-- Nút hành động chính -->
         <div class="cover-actions-group">
-          <button id="btn-enter-app" class="btn-enter-app" title="Bắt đầu vào giao diện học tập">
+          <button id="btn-enter-app" class="btn-enter-app" onclick="enterApp()" title="Bắt đầu vào giao diện học tập">
             <span class="btn-enter-vi">Bắt Đầu Học Ngay</span>
             <svg class="btn-enter-arrow" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
               <line x1="5" y1="12" x2="19" y2="12"></line>

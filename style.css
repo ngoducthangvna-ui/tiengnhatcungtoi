@@ -510,6 +510,38 @@ rt,
   letter-spacing: 0.02em;
 }
 
+.cover-top-actions {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.cover-quick-enter-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: linear-gradient(135deg, #0284c7 0%, #2563eb 55%, #e11d48 100%);
+  color: #ffffff;
+  padding: 7px 16px;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 700;
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  cursor: pointer;
+  box-shadow: 0 4px 16px rgba(2, 132, 199, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.35);
+  transition: transform 0.18s ease, box-shadow 0.18s ease;
+  user-select: none;
+}
+
+.cover-quick-enter-btn:hover {
+  transform: translateY(-1px) scale(1.02);
+  box-shadow: 0 6px 20px rgba(2, 132, 199, 0.55);
+}
+
+.cover-quick-enter-btn:active {
+  transform: translateY(0) scale(0.98);
+}
+
 .cover-theme-toggle {
   display: inline-flex;
   align-items: center;
