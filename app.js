@@ -1187,9 +1187,9 @@ function renderSidebar() {
     if (sidebarMenu.querySelectorAll) {
       const openEls = sidebarMenu.querySelectorAll('.accordion-group.open');
       if (openEls && openEls.length) {
-        openEls.forEach(el => {
-          if (el && el.id) openGroupIds.add(el.id);
-        });
+        // Chỉ lưu tối đa 1 nhóm mở gần nhất để luôn đảm bảo nguyên lý Single-Accordion
+        const lastOpen = openEls[openEls.length - 1];
+        if (lastOpen && lastOpen.id) openGroupIds.add(lastOpen.id);
       }
     }
   } catch (e) {}
@@ -1260,8 +1260,8 @@ function renderSidebar() {
   ];
 
   groups.forEach(group => {
-    const containsActive = group.items.some(it => it.id === currentActiveId);
-    const isOpen = isInitialLoad ? (containsActive || Boolean(group.isOpenDefault)) : (containsActive || openGroupIds.has(group.id));
+    // Mặc định khi mới vào trang: toàn bộ 5 nhóm đều đóng gọn gàng (collapsed) theo yêu cầu người dùng
+    const isOpen = openGroupIds.has(group.id);
 
     const groupEl = document.createElement('div');
     groupEl.className = `accordion-group ${isOpen ? 'open' : ''}`;
@@ -1304,10 +1304,27 @@ function renderSidebar() {
 
     const headerBtn = groupEl.querySelector('.accordion-header');
     if (headerBtn && headerBtn.addEventListener) {
-      headerBtn.addEventListener('click', () => {
-        const willBeOpen = !groupEl.classList.contains('open');
-        groupEl.classList.toggle('open', willBeOpen);
-        headerBtn.setAttribute('aria-expanded', willBeOpen);
+      headerBtn.addEventListener('click', (e) => {
+        if (e && e.preventDefault) e.preventDefault();
+        const isCurrentlyOpen = groupEl.classList.contains('open');
+
+        // Cơ chế Single Accordion nghiêm ngặt: Luôn đóng TẤT CẢ các nhóm trước
+        const allGroups = sidebarMenu.querySelectorAll ? sidebarMenu.querySelectorAll('.accordion-group') : [];
+        if (allGroups && allGroups.forEach) {
+          allGroups.forEach(g => {
+            if (g && g.classList) {
+              g.classList.remove('open');
+              const btn = g.querySelector ? g.querySelector('.accordion-header') : null;
+              if (btn && btn.setAttribute) btn.setAttribute('aria-expanded', 'false');
+            }
+          });
+        }
+
+        // Nếu nhóm này trước khi bấm chưa mở thì mở lên
+        if (!isCurrentlyOpen) {
+          groupEl.classList.add('open');
+          headerBtn.setAttribute('aria-expanded', 'true');
+        }
       });
     }
 
@@ -3294,14 +3311,13 @@ window.switchModule = function(targetId, updateHash = true) {
 
   if (targetBtn && targetBtn.closest) {
     const parentGroup = targetBtn.closest('.accordion-group');
-    if (parentGroup && !parentGroup.classList.contains('open')) {
-      parentGroup.classList.add('open');
+    if (parentGroup && parentGroup.classList.contains('open')) {
+      setTimeout(() => {
+        if (targetBtn.scrollIntoView) {
+          targetBtn.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+        }
+      }, 50);
     }
-    setTimeout(() => {
-      if (targetBtn.scrollIntoView) {
-        targetBtn.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
-      }
-    }, 50);
   }
 
   renderContent(targetId);
@@ -3481,6 +3497,10 @@ function initMenuToggle() {
       if (overlay) overlay.classList.toggle('active', isOpen);
       if (document.body && document.body.classList) {
         document.body.classList.toggle('sidebar-open-lock', isOpen);
+      }
+      if (isOpen) {
+        const sidebarMenu = document.getElementById('sidebar-menu');
+        if (sidebarMenu) sidebarMenu.scrollTop = 0;
       }
     } else {
       const isCollapsed = sidebar.classList.toggle('collapsed');

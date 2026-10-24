@@ -1463,6 +1463,8 @@ body.hide-furigana #btn-toggle-furigana {
   display: flex;
   flex-direction: column;
   gap: 10px;
+  overscroll-behavior: contain;
+  scroll-behavior: smooth;
 }
 
 .accordion-group {
@@ -1471,6 +1473,8 @@ body.hide-furigana #btn-toggle-furigana {
   border-radius: var(--radius-md);
   overflow: hidden;
   transition: border-color var(--transition);
+  flex-shrink: 0 !important;
+  min-height: 46px;
 }
 
 .accordion-group:hover {
@@ -1479,6 +1483,7 @@ body.hide-furigana #btn-toggle-furigana {
 
 .accordion-header {
   width: 100%;
+  min-height: 44px;
   padding: 11px 12px;
   display: flex;
   align-items: center;
@@ -1489,6 +1494,10 @@ body.hide-furigana #btn-toggle-furigana {
   font-weight: 700;
   color: var(--text-primary);
   background: transparent;
+  flex-shrink: 0 !important;
+  touch-action: manipulation;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
   transition: background-color var(--transition);
 }
 
@@ -4192,6 +4201,17 @@ body.hide-furigana #btn-toggle-furigana {
   }
 
   /* Thanh cuộn độc lập cho cả 5 phần trên điện thoại */
+  .accordion-group {
+    flex-shrink: 0 !important;
+    min-height: 46px !important;
+  }
+
+  .accordion-header {
+    min-height: 44px !important;
+    flex-shrink: 0 !important;
+    touch-action: manipulation;
+  }
+
   .accordion-body,
   #group-lessons .accordion-body,
   #group-kanji .accordion-body,
