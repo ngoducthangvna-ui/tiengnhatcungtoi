@@ -362,6 +362,10 @@ async function fetchCloudProgress(silent = false) {
     updateSyncIndicator('offline');
     return null;
   }
+  if (token === 'local_offline_token') {
+    updateSyncIndicator('synced');
+    return null;
+  }
 
   updateSyncIndicator('syncing');
 
@@ -455,6 +459,10 @@ async function sendCloudProgress(force = false) {
   if (!token) {
     updateSyncIndicator('offline');
     return false;
+  }
+  if (token === 'local_offline_token') {
+    updateSyncIndicator('synced');
+    return true;
   }
 
   updateSyncIndicator('syncing');
@@ -645,16 +653,40 @@ function initAuthModal() {
         const endpoint = (currentTab === 'register') ? '/api/auth/register' : '/api/auth/login';
         const payload = (currentTab === 'register') ? { email, password, displayName } : { email, password };
 
-        const res = await fetch(endpoint, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(payload)
-        });
+        let res;
+        try {
+          res = await fetch(endpoint, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+          });
+        } catch (fetchErr) {
+          const isFileProtocol = typeof window !== 'undefined' && window.location && window.location.protocol === 'file:';
+          if (isFileProtocol) {
+            const localUser = {
+              id: 'local_usr_' + Date.now().toString(36),
+              email: email,
+              displayName: displayName || email.split('@')[0]
+            };
+            setAuthSession('local_offline_token', localUser);
+            showMessage('Đang mở file trực tiếp (file://). Đã tạo hồ sơ học tập lưu trên máy này!', false);
+            updateModalState();
+            showToast('📱 Đã tạo hồ sơ học tập cục bộ trên trình duyệt!');
+            setTimeout(closeModal, 1200);
+            return;
+          }
+          throw new Error('Không thể kết nối đến máy chủ Cloudflare API. Vui lòng đảm bảo bạn đang mở website trên link Cloudflare Worker/Pages.');
+        }
 
-        const data = await res.json();
+        let data = {};
+        try {
+          data = await res.json();
+        } catch (jsonErr) {
+          data = { error: `Máy chủ phản hồi mã ${res.status}. Vui lòng kiểm tra lại cấu hình Worker.` };
+        }
 
         if (!res.ok) {
-          showMessage(data.error || 'Thao tác không thành công.');
+          showMessage(data.error || `Thao tác không thành công (mã lỗi ${res.status}).`);
           return;
         }
 
@@ -672,7 +704,7 @@ function initAuthModal() {
           setTimeout(closeModal, 900);
         }
       } catch (err) {
-        showMessage('Không thể kết nối đến máy chủ. Vui lòng thử lại.');
+        showMessage(err.message || 'Không thể kết nối đến máy chủ. Vui lòng thử lại.');
       } finally {
         if (btnSubmit) btnSubmit.disabled = false;
         if (submitBtnText) submitBtnText.textContent = (currentTab === 'register') ? 'Tạo Tài Khoản' : 'Đăng Nhập';
