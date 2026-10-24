@@ -11,7 +11,7 @@
  */
 
 // --------------------------------------------------------------------------
-// 1. CẤU HÌNH & KHỞI TẠO TIẾN ĐỘ (SAFE LOCALSTORAGE WRAPPERS)
+// 1. CẤU HÌNH, BẢO MẬT STORAGE & TIẾN ĐỘ (PROTOTYPE POLLUTION & QUOTA GUARDS)
 // --------------------------------------------------------------------------
 const STORAGE_COMPLETED_KEY = 'minna_completed_modules';
 const STORAGE_PRACTICE_KEY = 'minna_practice_answers';
@@ -19,6 +19,36 @@ const STORAGE_DOKKAI_KEY = 'minna_dokkai_answers_v1';
 const STORAGE_ENTERED_KEY = 'minna_has_entered';
 const STORAGE_LAST_ACTIVE_KEY = 'minna_last_active_id';
 const STORAGE_FURIGANA_KEY = 'minna_show_furigana';
+const STORAGE_DEVICE_SETTINGS_KEY = 'minna_device_settings';
+
+// Hàm mã hóa an toàn HTML chống tấn công DOM XSS
+function escapeHtml(str) {
+  if (str === null || str === undefined) return '';
+  return String(str)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#039;');
+}
+
+// Kiểm tra khóa đối tượng an toàn chống Prototype Pollution
+function isSafeObjectKey(key) {
+  return typeof key === 'string' && key !== '__proto__' && key !== 'constructor' && key !== 'prototype';
+}
+
+// Làm sạch đối tượng JSON loại bỏ hoàn toàn các thuộc tính độc hại
+function sanitizeDeepObject(obj) {
+  if (!obj || typeof obj !== 'object') return obj;
+  if (Array.isArray(obj)) return obj.map(sanitizeDeepObject);
+  const clean = Object.create(null);
+  for (const key of Object.keys(obj)) {
+    if (isSafeObjectKey(key)) {
+      clean[key] = sanitizeDeepObject(obj[key]);
+    }
+  }
+  return clean;
+}
 
 function safeGetStorage(key, fallback = null) {
   try {
@@ -35,7 +65,9 @@ function safeSetStorage(key, value) {
     if (typeof localStorage !== 'undefined' && localStorage.setItem) {
       localStorage.setItem(key, value);
     }
-  } catch (e) {}
+  } catch (e) {
+    console.warn('[Storage] Ghi dữ liệu thất bại (vượt quota hoặc bị chặn):', key, e && e.name);
+  }
 }
 
 function safeRemoveStorage(key) {
@@ -44,6 +76,643 @@ function safeRemoveStorage(key) {
       localStorage.removeItem(key);
     }
   } catch (e) {}
+}
+
+// Đọc JSON an toàn với bộ lọc Prototype Pollution và hàm kiểm tra kiểu (Validator)
+function safeGetJsonStorage(key, fallback = null, validator = null) {
+  try {
+    const raw = safeGetStorage(key);
+    if (!raw) return fallback;
+    const parsed = JSON.parse(raw);
+    const clean = sanitizeDeepObject(parsed);
+    if (typeof validator === 'function') {
+      return validator(clean) ? clean : fallback;
+    }
+    return clean !== null && clean !== undefined ? clean : fallback;
+  } catch (e) {
+    return fallback;
+  }
+}
+
+// --------------------------------------------------------------------------
+// 1B. CÁ NHÂN HÓA THIẾT BỊ, CỠ CHỮ, MẬT ĐỘ & CHẾ ĐỘ LÀM MÁT (THERMAL SAVER)
+// --------------------------------------------------------------------------
+const DEFAULT_DEVICE_SETTINGS = {
+  mode: 'auto',        // 'auto' | 'mobile' | 'tablet' | 'desktop'
+  fontSize: 'normal',  // 'small' | 'normal' | 'large' | 'xlarge'
+  density: 'normal',   // 'compact' | 'normal' | 'comfort'
+  thermalMode: false,  // true | false (vô hiệu hóa backdrop-filter làm mát GPU điện thoại)
+  haptic: true         // true | false (rung phản hồi trên mobile)
+};
+
+function detectCurrentDevice() {
+  if (typeof window === 'undefined') return 'desktop';
+  const width = window.innerWidth || (document.documentElement && document.documentElement.clientWidth) || 1200;
+  const hasTouch = ('ontouchstart' in window) || (typeof navigator !== 'undefined' && navigator.maxTouchPoints > 0);
+  if (width < 768) return 'mobile';
+  if (width <= 1024 && hasTouch) return 'tablet';
+  if (width <= 900) return 'tablet';
+  return 'desktop';
+}
+
+function getDeviceSettings() {
+  return safeGetJsonStorage(STORAGE_DEVICE_SETTINGS_KEY, { ...DEFAULT_DEVICE_SETTINGS }, (data) => {
+    return data && typeof data === 'object' && !Array.isArray(data);
+  });
+}
+
+function saveDeviceSettings(settings) {
+  const clean = {
+    mode: ['auto', 'mobile', 'tablet', 'desktop'].includes(settings.mode) ? settings.mode : 'auto',
+    fontSize: ['small', 'normal', 'large', 'xlarge'].includes(settings.fontSize) ? settings.fontSize : 'normal',
+    density: ['compact', 'normal', 'comfort'].includes(settings.density) ? settings.density : 'normal',
+    thermalMode: Boolean(settings.thermalMode),
+    haptic: settings.haptic !== false
+  };
+  safeSetStorage(STORAGE_DEVICE_SETTINGS_KEY, JSON.stringify(clean));
+  applyDeviceSettings(clean);
+  if (typeof triggerAutoSync === 'function') triggerAutoSync();
+  return clean;
+}
+
+function applyDeviceSettings(settings) {
+  if (typeof document === 'undefined') return;
+  const root = document.documentElement;
+  if (!root) return;
+
+  const currentMode = settings.mode || 'auto';
+  const detected = detectCurrentDevice();
+  const effectiveDevice = currentMode === 'auto' ? detected : currentMode;
+
+  root.setAttribute('data-device', effectiveDevice);
+  root.setAttribute('data-device-mode', currentMode);
+  root.setAttribute('data-font-size', settings.fontSize || 'normal');
+  root.setAttribute('data-density', settings.density || 'normal');
+  root.setAttribute('data-thermal-mode', settings.thermalMode ? 'true' : 'false');
+  root.setAttribute('data-haptic', settings.haptic ? 'true' : 'false');
+
+  const badge = document.getElementById('detected-device-badge');
+  if (badge) {
+    const labels = {
+      mobile: '📱 Điện thoại',
+      tablet: '📟 Máy tính bảng',
+      desktop: '💻 Máy tính'
+    };
+    badge.textContent = (currentMode === 'auto' ? 'Tự động nhận diện: ' : 'Chế độ cố định: ') + (labels[effectiveDevice] || effectiveDevice);
+  }
+}
+
+function triggerHaptic(duration = 12) {
+  try {
+    const settings = getDeviceSettings();
+    if (!settings.haptic) return;
+    if (typeof navigator !== 'undefined' && typeof navigator.vibrate === 'function') {
+      navigator.vibrate(duration);
+    }
+  } catch (e) {}
+}
+
+// Kích hoạt ngay lập tức cấu hình thiết bị khi file app.js được nạp
+try {
+  applyDeviceSettings(getDeviceSettings());
+} catch (e) {}
+
+function initDeviceSettings() {
+  const settings = getDeviceSettings();
+  applyDeviceSettings(settings);
+
+  // Lắng nghe thay đổi kích thước cửa sổ để cập nhật khi xoay ngang/dọc điện thoại
+  if (typeof window !== 'undefined') {
+    let resizeTimer = null;
+    window.addEventListener('resize', () => {
+      clearTimeout(resizeTimer);
+      resizeTimer = setTimeout(() => {
+        const cur = getDeviceSettings();
+        if (cur.mode === 'auto') {
+          applyDeviceSettings(cur);
+        }
+      }, 200);
+    }, { passive: true });
+  }
+
+  const btnOpen = document.getElementById('btn-device-settings');
+  const modal = document.getElementById('device-settings-modal');
+  const btnClose = document.getElementById('close-device-modal-btn');
+  const btnSave = document.getElementById('save-device-modal-btn');
+  const btnReset = document.getElementById('reset-device-modal-btn');
+
+  if (!btnOpen || !modal) return;
+
+  const syncModalUI = (cfg) => {
+    // Mode pills
+    document.querySelectorAll('#device-mode-selector .device-pill').forEach(btn => {
+      btn.classList.toggle('active', btn.getAttribute('data-mode') === (cfg.mode || 'auto'));
+    });
+    // Font pills
+    document.querySelectorAll('#device-font-selector .device-pill').forEach(btn => {
+      btn.classList.toggle('active', btn.getAttribute('data-font') === (cfg.fontSize || 'normal'));
+    });
+    // Density pills
+    document.querySelectorAll('#device-density-selector .device-pill').forEach(btn => {
+      btn.classList.toggle('active', btn.getAttribute('data-density') === (cfg.density || 'normal'));
+    });
+    // Switches
+    const thermalToggle = document.getElementById('thermal-saver-toggle');
+    if (thermalToggle) thermalToggle.checked = Boolean(cfg.thermalMode);
+    const hapticToggle = document.getElementById('haptic-toggle');
+    if (hapticToggle) hapticToggle.checked = cfg.haptic !== false;
+  };
+
+  const openModal = () => {
+    const cur = getDeviceSettings();
+    syncModalUI(cur);
+    modal.classList.add('show-modal');
+    modal.setAttribute('aria-hidden', 'false');
+  };
+
+  const closeModal = () => {
+    modal.classList.remove('show-modal');
+    modal.setAttribute('aria-hidden', 'true');
+  };
+
+  btnOpen.addEventListener('click', (e) => {
+    if (e && e.stopPropagation) e.stopPropagation();
+    openModal();
+  });
+
+  if (btnClose) btnClose.addEventListener('click', closeModal);
+
+  modal.addEventListener('click', (e) => {
+    if (e.target === modal) closeModal();
+  });
+
+  // Pill selectors
+  const setupPills = (containerId, attrName) => {
+    const container = document.getElementById(containerId);
+    if (!container) return;
+    container.addEventListener('click', (e) => {
+      const pill = e.target.closest('.device-pill');
+      if (!pill) return;
+      container.querySelectorAll('.device-pill').forEach(p => p.classList.remove('active'));
+      pill.classList.add('active');
+    });
+  };
+
+  setupPills('device-mode-selector', 'data-mode');
+  setupPills('device-font-selector', 'data-font');
+  setupPills('device-density-selector', 'data-density');
+
+  // Nút Lưu
+  if (btnSave) {
+    btnSave.addEventListener('click', () => {
+      const activeModePill = document.querySelector('#device-mode-selector .device-pill.active');
+      const activeFontPill = document.querySelector('#device-font-selector .device-pill.active');
+      const activeDensityPill = document.querySelector('#device-density-selector .device-pill.active');
+      const thermalToggle = document.getElementById('thermal-saver-toggle');
+      const hapticToggle = document.getElementById('haptic-toggle');
+
+      const newSettings = {
+        mode: activeModePill ? activeModePill.getAttribute('data-mode') : 'auto',
+        fontSize: activeFontPill ? activeFontPill.getAttribute('data-font') : 'normal',
+        density: activeDensityPill ? activeDensityPill.getAttribute('data-density') : 'normal',
+        thermalMode: thermalToggle ? thermalToggle.checked : false,
+        haptic: hapticToggle ? hapticToggle.checked : true
+      };
+
+      saveDeviceSettings(newSettings);
+      closeModal();
+      triggerHaptic(20);
+      showToast('⚙️ Đã lưu cấu hình cá nhân hóa thiết bị thành công!');
+    });
+  }
+
+  // Nút Mặc định
+  if (btnReset) {
+    btnReset.addEventListener('click', () => {
+      saveDeviceSettings({ ...DEFAULT_DEVICE_SETTINGS });
+      syncModalUI(DEFAULT_DEVICE_SETTINGS);
+      triggerHaptic(15);
+      showToast('Đã khôi phục cài đặt thiết bị về mặc định');
+    });
+  }
+}
+
+// --------------------------------------------------------------------------
+// 1C. TÀI KHOẢN, XÁC THỰC & TỰ ĐỘNG ĐỒNG BỘ ĐÁM MÂY ĐA THIẾT BỊ (CLOUDFLARE D1)
+// --------------------------------------------------------------------------
+const STORAGE_AUTH_TOKEN_KEY = 'minna_auth_token';
+const STORAGE_AUTH_USER_KEY = 'minna_auth_user';
+const STORAGE_LAST_SYNC_TIME_KEY = 'minna_last_sync_time';
+
+let isRestoringFromCloud = false;
+let cloudSyncTimer = null;
+
+function getAuthToken() {
+  return safeGetStorage(STORAGE_AUTH_TOKEN_KEY, null);
+}
+
+function getAuthUser() {
+  return safeGetJsonStorage(STORAGE_AUTH_USER_KEY, null, (u) => u && typeof u === 'object');
+}
+
+function setAuthSession(token, user) {
+  safeSetStorage(STORAGE_AUTH_TOKEN_KEY, token);
+  safeSetStorage(STORAGE_AUTH_USER_KEY, JSON.stringify(user));
+  updateSyncIndicator('synced');
+}
+
+function clearAuthSession() {
+  safeRemoveStorage(STORAGE_AUTH_TOKEN_KEY);
+  safeRemoveStorage(STORAGE_AUTH_USER_KEY);
+  safeRemoveStorage(STORAGE_LAST_SYNC_TIME_KEY);
+  updateSyncIndicator('offline');
+}
+
+function updateSyncIndicator(status) {
+  if (typeof document === 'undefined') return;
+  const dot = document.getElementById('auth-sync-dot');
+  const modalDot = document.getElementById('modal-sync-dot');
+  const modalText = document.getElementById('modal-sync-text');
+
+  if (dot) {
+    dot.classList.toggle('synced', status === 'synced');
+    dot.classList.toggle('syncing', status === 'syncing');
+  }
+  if (modalDot) {
+    modalDot.classList.toggle('synced', status === 'synced');
+    modalDot.classList.toggle('syncing', status === 'syncing');
+  }
+  if (modalText) {
+    const user = getAuthUser();
+    if (!user) {
+      modalText.textContent = 'Chưa đăng nhập';
+    } else if (status === 'syncing') {
+      modalText.textContent = 'Đang đồng bộ...';
+    } else if (status === 'synced') {
+      modalText.textContent = 'Đã đồng bộ đám mây';
+    } else {
+      modalText.textContent = 'Lưu cục bộ (Offline)';
+    }
+  }
+}
+
+async function fetchCloudProgress(silent = false) {
+  const token = getAuthToken();
+  if (!token) {
+    updateSyncIndicator('offline');
+    return null;
+  }
+
+  updateSyncIndicator('syncing');
+
+  try {
+    const res = await fetch('/api/progress', {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'X-Requested-With': 'MinnaApp'
+      }
+    });
+
+    if (res.status === 401) {
+      clearAuthSession();
+      updateSyncIndicator('offline');
+      if (!silent) showToast('Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.');
+      return null;
+    }
+
+    if (!res.ok) throw new Error('Không thể tải tiến trình: ' + res.status);
+    const data = await res.json();
+
+    if (data && data.success && data.progress) {
+      const p = data.progress;
+      isRestoringFromCloud = true;
+
+      try {
+        // 1. Gộp mảng các bài học đã hoàn thành
+        if (Array.isArray(p.completedModules)) {
+          const localModules = getCompletedModules();
+          const mergedModules = Array.from(new Set([...localModules, ...p.completedModules]));
+          safeSetStorage(STORAGE_COMPLETED_KEY, JSON.stringify(mergedModules));
+        }
+
+        // 2. Gộp điểm và đáp án bài tập trắc nghiệm
+        if (p.practiceAnswers && typeof p.practiceAnswers === 'object') {
+          const localPractice = safeGetJsonStorage(STORAGE_PRACTICE_KEY, {});
+          const mergedPractice = { ...localPractice, ...p.practiceAnswers };
+          safeSetStorage(STORAGE_PRACTICE_KEY, JSON.stringify(mergedPractice));
+        }
+
+        // 3. Gộp điểm và đáp án bài tập đọc hiểu
+        if (p.dokkaiAnswers && typeof p.dokkaiAnswers === 'object') {
+          const localDokkai = safeGetJsonStorage(STORAGE_DOKKAI_KEY, {});
+          const mergedDokkai = { ...localDokkai, ...p.dokkaiAnswers };
+          safeSetStorage(STORAGE_DOKKAI_KEY, JSON.stringify(mergedDokkai));
+        }
+
+        // 4. Đồng bộ cấu hình thiết bị nếu có
+        if (p.deviceSettings && typeof p.deviceSettings === 'object' && Object.keys(p.deviceSettings).length > 0) {
+          const localDev = getDeviceSettings();
+          const mergedDev = { ...localDev, ...p.deviceSettings };
+          safeSetStorage(STORAGE_DEVICE_SETTINGS_KEY, JSON.stringify(mergedDev));
+          applyDeviceSettings(mergedDev);
+        }
+
+        // 5. Cập nhật bài học đang học gần nhất (Cross-Device Auto-Resume)
+        const cloudLastActive = p.lastActiveId;
+        if (cloudLastActive && cloudLastActive !== currentActiveId) {
+          safeSetStorage(STORAGE_LAST_ACTIVE_KEY, cloudLastActive);
+          if (typeof window !== 'undefined' && typeof window.switchModule === 'function') {
+            window.switchModule(cloudLastActive, true);
+          }
+        }
+
+        // Cập nhật giao diện Header & Sidebar
+        if (typeof updateHeaderProgress === 'function') updateHeaderProgress();
+        if (typeof renderSidebar === 'function') renderSidebar();
+
+        safeSetStorage(STORAGE_LAST_SYNC_TIME_KEY, String(Date.now()));
+        updateSyncIndicator('synced');
+
+        if (!silent) {
+          showToast('☁️ Đã đồng bộ tiến trình học từ đám mây!');
+        }
+        return p;
+      } finally {
+        setTimeout(() => { isRestoringFromCloud = false; }, 300);
+      }
+    }
+  } catch (err) {
+    updateSyncIndicator('offline');
+    console.warn('[Sync] Không thể kết nối API đồng bộ:', err.message);
+  }
+  return null;
+}
+
+async function sendCloudProgress(force = false) {
+  if (isRestoringFromCloud) return false;
+  const token = getAuthToken();
+  if (!token) {
+    updateSyncIndicator('offline');
+    return false;
+  }
+
+  updateSyncIndicator('syncing');
+
+  try {
+    const payload = {
+      lastActiveId: currentActiveId || safeGetStorage(STORAGE_LAST_ACTIVE_KEY) || 'bai-1',
+      completedModules: getCompletedModules(),
+      practiceAnswers: safeGetJsonStorage(STORAGE_PRACTICE_KEY, {}),
+      dokkaiAnswers: safeGetJsonStorage(STORAGE_DOKKAI_KEY, {}),
+      deviceSettings: getDeviceSettings()
+    };
+
+    const res = await fetch('/api/progress', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`,
+        'X-Requested-With': 'MinnaApp'
+      },
+      body: JSON.stringify(payload)
+    });
+
+    if (res.status === 401) {
+      clearAuthSession();
+      updateSyncIndicator('offline');
+      return false;
+    }
+
+    if (res.ok) {
+      safeSetStorage(STORAGE_LAST_SYNC_TIME_KEY, String(Date.now()));
+      updateSyncIndicator('synced');
+      return true;
+    }
+  } catch (err) {
+    console.warn('[Sync] Gửi tiến độ thất bại:', err.message);
+  }
+  updateSyncIndicator('offline');
+  return false;
+}
+
+function triggerAutoSync() {
+  if (isRestoringFromCloud) return;
+  const token = getAuthToken();
+  if (!token) return;
+
+  const dot = document.getElementById('auth-sync-dot');
+  if (dot) dot.classList.add('syncing');
+
+  clearTimeout(cloudSyncTimer);
+  cloudSyncTimer = setTimeout(() => {
+    sendCloudProgress();
+  }, 1200);
+}
+
+function initAuthModal() {
+  const btnOpen = document.getElementById('btn-user-auth');
+  const modal = document.getElementById('auth-modal');
+  const btnClose = document.getElementById('close-auth-modal-btn');
+  const tabLogin = document.getElementById('tab-login');
+  const tabRegister = document.getElementById('tab-register');
+  const groupDisplayName = document.getElementById('group-display-name');
+  const btnSubmit = document.getElementById('btn-auth-submit');
+  const submitBtnText = document.getElementById('auth-submit-btn-text');
+  const messageBox = document.getElementById('auth-message-box');
+  const formView = document.getElementById('auth-form-view');
+  const profileView = document.getElementById('auth-profile-view');
+  const btnLogout = document.getElementById('btn-auth-logout');
+  const btnSyncNow = document.getElementById('btn-sync-now');
+
+  if (!btnOpen || !modal) return;
+
+  let currentTab = 'login';
+
+  const showMessage = (msg, isError = true) => {
+    if (!messageBox) return;
+    messageBox.textContent = msg;
+    messageBox.className = 'auth-message-box ' + (isError ? 'error' : 'success');
+    messageBox.style.display = 'block';
+  };
+
+  const clearMessage = () => {
+    if (messageBox) {
+      messageBox.textContent = '';
+      messageBox.style.display = 'none';
+    }
+  };
+
+  const switchTab = (tab) => {
+    currentTab = tab;
+    clearMessage();
+    if (tabLogin) tabLogin.classList.toggle('active', tab === 'login');
+    if (tabRegister) tabRegister.classList.toggle('active', tab === 'register');
+    if (groupDisplayName) groupDisplayName.style.display = (tab === 'register') ? 'flex' : 'none';
+    if (submitBtnText) submitBtnText.textContent = (tab === 'register') ? 'Tạo Tài Khoản' : 'Đăng Nhập';
+  };
+
+  const updateModalState = () => {
+    const user = getAuthUser();
+    const token = getAuthToken();
+
+    if (user && token) {
+      if (formView) formView.style.display = 'none';
+      if (profileView) profileView.style.display = 'block';
+
+      const avatarEl = document.getElementById('auth-user-avatar');
+      const nameEl = document.getElementById('auth-user-name');
+      const emailEl = document.getElementById('auth-user-email');
+      const lastLessonEl = document.getElementById('auth-sync-last-lesson');
+      const lastTimeEl = document.getElementById('auth-sync-last-time');
+
+      const name = user.displayName || user.email || 'Học Viên';
+      if (avatarEl) avatarEl.textContent = name.charAt(0).toUpperCase();
+      if (nameEl) nameEl.textContent = name;
+      if (emailEl) emailEl.textContent = user.email || '';
+
+      const lastActive = currentActiveId || safeGetStorage(STORAGE_LAST_ACTIVE_KEY) || 'bai-1';
+      const lessonNum = extractLessonNumber(lastActive);
+      if (lastLessonEl) {
+        lastLessonEl.textContent = lessonNum ? `Bài ${lessonNum} (${lastActive})` : lastActive;
+      }
+
+      const lastSync = safeGetStorage(STORAGE_LAST_SYNC_TIME_KEY);
+      if (lastTimeEl) {
+        if (lastSync) {
+          const d = new Date(parseInt(lastSync, 10));
+          lastTimeEl.textContent = d.toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' }) + ' ' + d.toLocaleDateString('vi-VN');
+        } else {
+          lastTimeEl.textContent = 'Chưa đồng bộ';
+        }
+      }
+      updateSyncIndicator('synced');
+    } else {
+      if (formView) formView.style.display = 'block';
+      if (profileView) profileView.style.display = 'none';
+      updateSyncIndicator('offline');
+    }
+  };
+
+  const openModal = () => {
+    updateModalState();
+    clearMessage();
+    modal.classList.add('show-modal');
+    modal.setAttribute('aria-hidden', 'false');
+  };
+
+  const closeModal = () => {
+    modal.classList.remove('show-modal');
+    modal.setAttribute('aria-hidden', 'true');
+  };
+
+  btnOpen.addEventListener('click', (e) => {
+    if (e && e.stopPropagation) e.stopPropagation();
+    openModal();
+  });
+
+  if (btnClose) btnClose.addEventListener('click', closeModal);
+  modal.addEventListener('click', (e) => {
+    if (e.target === modal) closeModal();
+  });
+
+  if (tabLogin) tabLogin.addEventListener('click', () => switchTab('login'));
+  if (tabRegister) tabRegister.addEventListener('click', () => switchTab('register'));
+
+  const authForm = document.getElementById('auth-main-form');
+  if (authForm) {
+    authForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      clearMessage();
+
+      const emailInput = document.getElementById('auth-email');
+      const passInput = document.getElementById('auth-password');
+      const nameInput = document.getElementById('auth-display-name');
+
+      const email = emailInput ? emailInput.value.trim() : '';
+      const password = passInput ? passInput.value : '';
+      const displayName = nameInput ? nameInput.value.trim() : '';
+
+      if (!email || !password) {
+        showMessage('Vui lòng điền đầy đủ Email và Mật khẩu.');
+        return;
+      }
+
+      if (btnSubmit) btnSubmit.disabled = true;
+      if (submitBtnText) submitBtnText.textContent = 'Đang xử lý...';
+
+      try {
+        const endpoint = (currentTab === 'register') ? '/api/auth/register' : '/api/auth/login';
+        const payload = (currentTab === 'register') ? { email, password, displayName } : { email, password };
+
+        const res = await fetch(endpoint, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+
+        const data = await res.json();
+
+        if (!res.ok) {
+          showMessage(data.error || 'Thao tác không thành công.');
+          return;
+        }
+
+        if (data.token && data.user) {
+          setAuthSession(data.token, data.user);
+          showMessage(currentTab === 'register' ? 'Đăng ký thành công! Đang đồng bộ tiến trình...' : 'Đăng nhập thành công! Đang tải tiến trình...', false);
+
+          await fetchCloudProgress(true);
+          if (currentTab === 'register') {
+            await sendCloudProgress(true);
+          }
+
+          updateModalState();
+          showToast(currentTab === 'register' ? '🎉 Chào mừng bạn! Tiến trình học đã được lưu trên đám mây.' : '👋 Chào mừng trở lại! Đã đồng bộ tiến trình học.');
+          setTimeout(closeModal, 900);
+        }
+      } catch (err) {
+        showMessage('Không thể kết nối đến máy chủ. Vui lòng thử lại.');
+      } finally {
+        if (btnSubmit) btnSubmit.disabled = false;
+        if (submitBtnText) submitBtnText.textContent = (currentTab === 'register') ? 'Tạo Tài Khoản' : 'Đăng Nhập';
+      }
+    });
+  }
+
+  if (btnSyncNow) {
+    btnSyncNow.addEventListener('click', async () => {
+      btnSyncNow.disabled = true;
+      btnSyncNow.textContent = '⏳ Đang đồng bộ...';
+      try {
+        await sendCloudProgress(true);
+        await fetchCloudProgress(false);
+        updateModalState();
+      } finally {
+        btnSyncNow.disabled = false;
+        btnSyncNow.textContent = '☁️ Đồng Bộ Ngay';
+      }
+    });
+  }
+
+  if (btnLogout) {
+    btnLogout.addEventListener('click', () => {
+      clearAuthSession();
+      updateModalState();
+      showToast('Đã đăng xuất tài khoản. Tiến trình mới sẽ lưu cục bộ trên máy.');
+      closeModal();
+    });
+  }
+
+  const initialToken = getAuthToken();
+  if (initialToken) {
+    updateSyncIndicator('synced');
+    setTimeout(() => {
+      fetchCloudProgress(true);
+    }, 600);
+  } else {
+    updateSyncIndicator('offline');
+  }
 }
 
 function initFuriganaToggle() {
@@ -92,12 +761,7 @@ function extractLessonNumber(id) {
 }
 
 function getCompletedModules() {
-  try {
-    const raw = safeGetStorage(STORAGE_COMPLETED_KEY);
-    return raw ? JSON.parse(raw) : [];
-  } catch (e) {
-    return [];
-  }
+  return safeGetJsonStorage(STORAGE_COMPLETED_KEY, [], Array.isArray);
 }
 
 function isModuleCompleted(id) {
@@ -119,7 +783,8 @@ function showAppConfirm(title, message, onConfirm) {
   }
 
   titleEl.textContent = title || 'Xác nhận thao tác';
-  msgEl.innerHTML = String(message || '').replace(/\n/g, '<br>');
+  // Ngăn chặn DOM XSS bằng cách escape toàn bộ thẻ HTML trong thông điệp trước khi chuyển dấu xuống dòng
+  msgEl.innerHTML = escapeHtml(String(message || '')).replace(/\n/g, '<br>');
   modal.classList.add('show-modal');
   modal.setAttribute('aria-hidden', 'false');
 
@@ -156,6 +821,7 @@ window.toggleLessonComplete = function(id) {
   }
 
   safeSetStorage(STORAGE_COMPLETED_KEY, JSON.stringify(list));
+  if (typeof triggerAutoSync === 'function') triggerAutoSync();
 
   const sidebarBtn = document.querySelector ? document.querySelector(`.menu-item-btn[data-id="${id}"]`) : null;
   if (sidebarBtn && sidebarBtn.querySelector) {
@@ -394,12 +1060,43 @@ if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
 }
 
 async function fetchSpeechGenAudio(speechText, cfg) {
-  if (!cfg.token || !cfg.email) return null;
   if (speechAudioCache.has(speechText)) {
     return speechAudioCache.get(speechText);
   }
 
   const pitchVal = Math.round((cfg.pitch - 1.0) * 10);
+
+  // 1. Ưu tiên gọi qua Secure Edge Proxy (/api/speech) của Cloudflare Worker để chống lộ Token & chống cướp API
+  if (typeof window !== 'undefined' && window.location && window.location.protocol.startsWith('http')) {
+    try {
+      const proxyRes = await fetch('/api/speech', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-Requested-With': 'MinnaApp'
+        },
+        body: JSON.stringify({
+          text: speechText,
+          speed: cfg.speed || 0.92,
+          pitch: pitchVal
+        })
+      });
+      if (proxyRes.ok) {
+        const data = await proxyRes.json();
+        if (data && (data.audioUrl || data.file || data.file_cors)) {
+          const audioUrl = data.audioUrl || data.file_cors || data.file;
+          speechAudioCache.set(speechText, audioUrl);
+          return audioUrl;
+        }
+      }
+    } catch (proxyErr) {
+      // Bỏ qua lỗi proxy khi chạy môi trường dev local không có Worker
+    }
+  }
+
+  // 2. Dự phòng: Gọi trực tiếp nếu người dùng có cấu hình token riêng trong trình duyệt
+  if (!cfg.token || !cfg.email) return null;
+
   const bodyData = new URLSearchParams({
     token: cfg.token,
     email: cfg.email,
@@ -666,7 +1363,7 @@ function renderGrammarExamples(examples, fallbackHtml) {
 function showToast(message) {
   const toast = document.getElementById('toast-notification');
   if (!toast) return;
-  toast.innerHTML = message;
+  toast.innerHTML = escapeHtml(String(message || ''));
   toast.classList.add('show');
   clearTimeout(toast._timer);
   toast._timer = setTimeout(() => {
@@ -1860,41 +2557,31 @@ window.speakDokkaiQuestion = function(dokkaiId, qId, btn, ev) {
 // 6. QUẢN LÝ LÀM BÀI, NỘP BÀI & GIẢI THÍCH (PRACTICE QUIZ & DOKKAI)
 // --------------------------------------------------------------------------
 function getPracticeQuizState(quizId) {
-  try {
-    const raw = safeGetStorage(STORAGE_PRACTICE_KEY);
-    const all = raw ? JSON.parse(raw) : {};
-    return all[quizId] || { submitted: false, selections: {}, score: null };
-  } catch (e) {
-    return { submitted: false, selections: {}, score: null };
-  }
+  if (!isSafeObjectKey(quizId)) return { submitted: false, selections: {}, score: null };
+  const all = safeGetJsonStorage(STORAGE_PRACTICE_KEY, {}, (d) => typeof d === 'object' && !Array.isArray(d));
+  return (all && all[quizId]) || { submitted: false, selections: {}, score: null };
 }
 
 function savePracticeQuizState(quizId, state) {
-  try {
-    const raw = safeGetStorage(STORAGE_PRACTICE_KEY);
-    const all = raw ? JSON.parse(raw) : {};
-    all[quizId] = state;
-    safeSetStorage(STORAGE_PRACTICE_KEY, JSON.stringify(all));
-  } catch (e) {}
+  if (!isSafeObjectKey(quizId)) return;
+  const all = safeGetJsonStorage(STORAGE_PRACTICE_KEY, {}, (d) => typeof d === 'object' && !Array.isArray(d));
+  all[quizId] = state;
+  safeSetStorage(STORAGE_PRACTICE_KEY, JSON.stringify(all));
+  if (typeof triggerAutoSync === 'function') triggerAutoSync();
 }
 
 function getDokkaiState(dokkaiId) {
-  try {
-    const raw = safeGetStorage(STORAGE_DOKKAI_KEY);
-    const all = raw ? JSON.parse(raw) : {};
-    return all[dokkaiId] || { submitted: false, selections: {}, score: null };
-  } catch (e) {
-    return { submitted: false, selections: {}, score: null };
-  }
+  if (!isSafeObjectKey(dokkaiId)) return { submitted: false, selections: {}, score: null };
+  const all = safeGetJsonStorage(STORAGE_DOKKAI_KEY, {}, (d) => typeof d === 'object' && !Array.isArray(d));
+  return (all && all[dokkaiId]) || { submitted: false, selections: {}, score: null };
 }
 
 function saveDokkaiState(dokkaiId, state) {
-  try {
-    const raw = safeGetStorage(STORAGE_DOKKAI_KEY);
-    const all = raw ? JSON.parse(raw) : {};
-    all[dokkaiId] = state;
-    safeSetStorage(STORAGE_DOKKAI_KEY, JSON.stringify(all));
-  } catch (e) {}
+  if (!isSafeObjectKey(dokkaiId)) return;
+  const all = safeGetJsonStorage(STORAGE_DOKKAI_KEY, {}, (d) => typeof d === 'object' && !Array.isArray(d));
+  all[dokkaiId] = state;
+  safeSetStorage(STORAGE_DOKKAI_KEY, JSON.stringify(all));
+  if (typeof triggerAutoSync === 'function') triggerAutoSync();
 }
 
 let quizTimerInterval = null;
@@ -1983,6 +2670,7 @@ window.speakQuizQuestion = function(quizId, qId, btn, ev) {
 };
 
 window.handleSelectOption = function(moduleId, questionId, optIdx, isDokkai = false) {
+  triggerHaptic(12);
   const state = isDokkai ? getDokkaiState(moduleId) : getPracticeQuizState(moduleId);
   if (state.submitted) {
     return;
@@ -2617,18 +3305,18 @@ function initQuickSearch() {
 
         if (res.length === 0) {
           label.textContent = "Không có kết quả phù hợp";
-          list.innerHTML = `<div class="search-empty">Không tìm thấy cho "<strong>${val}</strong>". Thử tìm: "tabemasu", "an", "xin phep", "bai 1"...</div>`;
+          list.innerHTML = `<div class="search-empty">Không tìm thấy cho "<strong>${escapeHtml(val)}</strong>". Thử tìm: "tabemasu", "an", "xin phep", "bai 1"...</div>`;
           return;
         }
 
         label.textContent = `Tìm thấy ${res.length} kết quả:`;
         list.innerHTML = res.slice(0, 30).map((r, idx) => `
-          <div class="search-result-item" data-index="${idx}" data-target="${r.targetId}" data-highlight="${encodeURIComponent(r.highlight || '')}">
+          <div class="search-result-item" data-index="${idx}" data-target="${escapeHtml(r.targetId)}" data-highlight="${encodeURIComponent(r.highlight || '')}">
             <div class="search-item-left">
-              <div class="search-item-main">${r.title}</div>
-              <div class="search-item-sub">${r.sub}</div>
+              <div class="search-item-main">${escapeHtml(r.title)}</div>
+              <div class="search-item-sub">${escapeHtml(r.sub)}</div>
             </div>
-            <span class="search-badge">${r.category}</span>
+            <span class="search-badge">${escapeHtml(r.category)}</span>
           </div>
         `).join('');
       }, 120);
@@ -2775,6 +3463,7 @@ window.switchModule = function(targetId, updateHash = true) {
     window.location.hash = targetId;
   }
   safeSetStorage(STORAGE_LAST_ACTIVE_KEY, targetId);
+  if (typeof triggerAutoSync === 'function') triggerAutoSync();
 
   if (typeof window !== 'undefined' && window.innerWidth <= 768) {
     closeMobileSidebar();
@@ -2823,6 +3512,11 @@ function applyTheme(themeName) {
   }
   safeSetStorage('minna_theme', themeName);
 
+  const label = document.getElementById('theme-label-text');
+  if (label) {
+    label.textContent = themeName === 'dark' ? 'Giao diện: Tối (Đêm)' : 'Giao diện: Sáng (Ngày)';
+  }
+
   safeRAF(() => {
     safeRAF(() => {
       if (document.documentElement && document.documentElement.classList) {
@@ -2834,9 +3528,7 @@ function applyTheme(themeName) {
 
 function initThemeToggle() {
   const saved = safeGetStorage('minna_theme', 'dark') || 'dark';
-  if (document.documentElement && document.documentElement.setAttribute) {
-    document.documentElement.setAttribute('data-theme', saved);
-  }
+  applyTheme(saved);
 
   const btn = document.getElementById('theme-toggle-btn');
   if (btn && btn.addEventListener) {
@@ -2846,6 +3538,54 @@ function initThemeToggle() {
       const nxt = cur === 'dark' ? 'light' : 'dark';
       applyTheme(nxt);
       showToast(nxt === 'dark' ? '🌙 Đã đổi sang giao diện Tối' : '☀️ Đã đổi sang giao diện Sáng');
+    });
+  }
+}
+
+// Chế độ Toàn màn hình & Xem tập trung (Focus Mode / Zen Mode)
+function initFullscreenToggle() {
+  const btn = document.getElementById('btn-toggle-fullscreen');
+  if (!btn || !btn.addEventListener) return;
+
+  const toggleFocusAndFullscreen = () => {
+    triggerHaptic(15);
+    const isFocus = document.body.classList.toggle('focus-mode');
+
+    if (isFocus) {
+      if (document.documentElement.requestFullscreen && !document.fullscreenElement) {
+        document.documentElement.requestFullscreen().catch(() => {});
+      }
+      showToast('▯ Đã bật chế độ Toàn màn hình / Tập trung (Bấm Esc hoặc nút ▯ để thoát)');
+    } else {
+      if (document.exitFullscreen && document.fullscreenElement) {
+        document.exitFullscreen().catch(() => {});
+      }
+      showToast('❐ Đã thoát chế độ Toàn màn hình');
+    }
+
+    const label = btn.querySelector('.sidebar-action-label');
+    if (label) {
+      label.textContent = isFocus ? 'Thoát toàn màn hình' : 'Toàn màn hình / Focus';
+    }
+  };
+
+  btn.addEventListener('click', toggleFocusAndFullscreen);
+
+  if (document && document.addEventListener) {
+    document.addEventListener('fullscreenchange', () => {
+      if (!document.fullscreenElement && document.body.classList.contains('focus-mode')) {
+        document.body.classList.remove('focus-mode');
+        const label = btn.querySelector('.sidebar-action-label');
+        if (label) label.textContent = 'Toàn màn hình / Focus';
+      }
+    });
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && document.body.classList.contains('focus-mode')) {
+        document.body.classList.remove('focus-mode');
+        const label = btn.querySelector('.sidebar-action-label');
+        if (label) label.textContent = 'Toàn màn hình / Focus';
+      }
     });
   }
 }
@@ -3260,8 +4000,11 @@ function initVoiceSettingsModal() {
 
 if (document && document.addEventListener) {
   document.addEventListener('DOMContentLoaded', () => {
+    initDeviceSettings();
+    initAuthModal();
     initThemeToggle();
     initFuriganaToggle();
+    initFullscreenToggle();
     initCoverPage();
     initMenuToggle();
     initQuickSearch();
@@ -3386,7 +4129,10 @@ function renderLessonPractice(vocabList, containerSelector = '#lesson-practice-m
   }
 
   if (fcCard) {
-    fcCard.onclick = () => fcCard.classList.toggle('flipped');
+    fcCard.onclick = () => {
+      triggerHaptic(10);
+      fcCard.classList.toggle('flipped');
+    };
   }
   const prevBtn = hub.querySelector('#fc-prev');
   const nextBtn = hub.querySelector('#fc-next');
@@ -3479,6 +4225,7 @@ function renderLessonPractice(vocabList, containerSelector = '#lesson-practice-m
     const optBtns = kqBody.querySelectorAll('.kq-opt');
     optBtns.forEach(btn => {
       btn.onclick = () => {
+        triggerHaptic(10);
         optBtns.forEach(b => b.disabled = true);
         if (btn.dataset.ans === current[answerKey]) {
           btn.classList.add('correct');
