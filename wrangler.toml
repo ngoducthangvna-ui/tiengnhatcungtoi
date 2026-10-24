@@ -24,10 +24,10 @@ binding = "ASSETS"
 # 3. Sao chép "Database ID" (dãy ký tự UUID thật của bạn)
 # 4. Mở khóa 4 dòng dưới đây bằng cách xóa dấu # và dán Database ID vào:
 #
-# [[d1_databases]]
-# binding = "DB"
-# database_name = "minna-db"
-# database_id = "DÁN_DATABASE_ID_THẬT_CỦA_BẠN_VÀO_ĐÂY"
+[[d1_databases]]
+binding = "DB"
+database_name = "minna-db"
+database_id = "df717996-5a63-4d64-a8de-9e49db4413e7"
 
 # ------------------------------------------------------------------------------
 # 3. CẤU HÌNH GẮN TÊN MIỀN RIÊNG (CUSTOM DOMAIN & ROUTING)
