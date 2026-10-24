@@ -3360,7 +3360,6 @@ window.enterAppAt = function(targetHash, el, label) {
 function initCoverPage() {
   const cover = document.getElementById('cover-page-slide');
   const btnEnter = document.getElementById('btn-enter-app');
-  const brandHomeBtn = document.getElementById('brand-home-btn');
   const coverThemeBtn = document.getElementById('cover-theme-toggle');
 
   if (!cover) return;
@@ -3401,18 +3400,6 @@ function initCoverPage() {
     btnEnter.addEventListener('click', (e) => {
       if (e && e.stopPropagation) e.stopPropagation();
       window.enterApp();
-    });
-  }
-
-  if (brandHomeBtn && brandHomeBtn.addEventListener) {
-    brandHomeBtn.addEventListener('click', () => {
-      try { sessionStorage.removeItem('minna_cover_closed'); } catch (e) {}
-      cover.style.display = 'flex';
-      safeRAF(() => {
-        cover.classList.remove('hide-cover');
-        cover.style.pointerEvents = 'auto';
-        if (cover.scrollTo) cover.scrollTo({ top: 0, behavior: 'smooth' });
-      });
     });
   }
 
