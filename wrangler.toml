@@ -1,0 +1,47 @@
+# ==============================================================================
+# CẤU HÌNH CLOUDFLARE WORKER / PAGES CHO WEBSITE MINNA NO NIHONGO
+# File: wrangler.toml
+# ==============================================================================
+
+name = "minna-nihongo-app"
+main = "_worker.js"
+compatibility_date = "2024-09-23"
+compatibility_flags = ["nodejs_compat"]
+
+# Thư mục chứa tài nguyên tĩnh của website (HTML, CSS, JS, DATA)
+pages_build_output_dir = "."
+
+# ------------------------------------------------------------------------------
+# 1 & 2. LIÊN KẾT CƠ SỞ DỮ LIỆU CLOUDFLARE D1 (DATABASE BINDING)
+# ------------------------------------------------------------------------------
+# Sau khi chạy lệnh: npx wrangler d1 create minna-db
+# Dán database_id được tạo vào mục bên dưới:
+[[d1_databases]]
+binding = "DB"
+database_name = "minna-db"
+database_id = "00000000-0000-0000-0000-000000000000"
+
+# ------------------------------------------------------------------------------
+# 3. CẤU HÌNH GẮN TÊN MIỀN RIÊNG (CUSTOM DOMAIN & ROUTING)
+# ------------------------------------------------------------------------------
+# routes = [
+#   { pattern = "tiengnhat.edu.vn/*", zone_name = "tiengnhat.edu.vn" },
+#   { pattern = "www.tiengnhat.edu.vn/*", zone_name = "tiengnhat.edu.vn" }
+# ]
+
+# ------------------------------------------------------------------------------
+# BIẾN MÔI TRƯỜNG HỆ THỐNG (ENVIRONMENT VARIABLES)
+# ------------------------------------------------------------------------------
+[vars]
+# CANONICAL_DOMAIN = "tiengnhat.edu.vn"
+ENFORCE_SSL = "true"
+SPEECHGEN_VOICE = "Akira"
+JWT_SECRET = "minna-super-secret-jwt-key-2026-production"
+
+# ------------------------------------------------------------------------------
+# BÍ MẬT HỆ THỐNG ĐƯỢC MÃ HÓA (SECRETS)
+# ------------------------------------------------------------------------------
+# Chạy các lệnh sau trong terminal để lưu trữ bí mật:
+#   npx wrangler secret put SPEECHGEN_TOKEN
+#   npx wrangler secret put SPEECHGEN_EMAIL
+#   npx wrangler secret put JWT_SECRET
