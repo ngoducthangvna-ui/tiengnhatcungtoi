@@ -1,0 +1,12 @@
+# Cloudflare Workers Assets Ignore
+# Tự động loại trừ mã nguồn máy chủ và các tệp cấu hình nội bộ khỏi static assets công khai
+_worker.js
+wrangler.toml
+schema.sql
+scripts/
+node_modules/
+.git/
+.github/
+.assetsignore
+.gitignore
+*.log
