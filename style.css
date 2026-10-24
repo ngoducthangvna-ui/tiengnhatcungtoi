@@ -3809,13 +3809,13 @@ body.hide-furigana #btn-toggle-furigana {
     pointer-events: none;
   }
 
-  /* 1. HEADER 2 TẦNG GỌN GÀNG, CHỐNG ĐÈ CHỮ & ĐỦ VÙNG CHẠM 44x44px */
+  /* 1. HEADER 1 HÀNG HIỆN ĐẠI: TÌM KIẾM CÙNG HÀNG VỚI NÚT CHẾ ĐỘ SÁNG TỐI */
   .app-header {
     height: auto;
-    min-height: 0;
-    padding: max(8px, env(safe-area-inset-top, 0px)) 12px 10px;
+    min-height: 54px;
+    padding: max(6px, env(safe-area-inset-top, 0px)) 10px 6px;
     display: flex;
-    flex-wrap: wrap;
+    flex-wrap: nowrap;
     align-items: center;
     justify-content: space-between;
     gap: 8px;
@@ -3823,67 +3823,103 @@ body.hide-furigana #btn-toggle-furigana {
 
   .header-left {
     order: 1;
-    gap: 8px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-shrink: 0;
   }
 
   .menu-btn-label,
-  .brand-sub {
+  .brand-sub,
+  .brand-name {
     display: none;
   }
 
-  .brand-name {
-    font-size: 13px;
-  }
-
-  .header-right {
-    order: 2;
-    margin-left: auto;
-    gap: 6px;
-  }
-
-  .menu-toggle-btn,
-  .header-action-btn,
-  .voice-settings-btn,
-  .theme-toggle-btn {
-    width: 44px;
-    height: 44px;
-    min-width: 44px;
-    min-height: 44px;
-    padding: 0 8px;
+  .menu-toggle-btn {
+    width: 38px;
+    height: 38px;
+    min-width: 38px;
+    min-height: 38px;
+    padding: 0;
     border-radius: 10px;
     display: inline-flex;
     align-items: center;
     justify-content: center;
-  }
-
-  #btn-toggle-furigana {
-    width: auto;
-    min-width: 48px;
-    padding: 0 10px;
+    flex-shrink: 0;
   }
 
   .header-search-container {
-    order: 3;
-    flex: 1 1 100%;
-    width: 100%;
-    max-width: 100%;
+    order: 2;
+    flex: 1 1 auto;
+    min-width: 0;
+    width: auto;
+    max-width: none;
+    margin: 0;
+    position: relative;
   }
 
   .search-box-wrapper {
-    padding: 8px 12px;
+    padding: 6px 10px;
     border-radius: 10px;
+    height: 38px;
+    box-sizing: border-box;
+    gap: 6px;
+  }
+
+  .search-icon {
+    width: 14px;
+    height: 14px;
+    flex-shrink: 0;
+  }
+
+  .quick-search-input {
+    font-size: 13px;
+    min-width: 0;
+    text-overflow: ellipsis;
   }
 
   .search-shortcut {
     display: none;
   }
 
+  .header-right {
+    order: 3;
+    display: flex;
+    align-items: center;
+    margin-left: 0;
+    gap: 6px;
+    flex-shrink: 0;
+  }
+
+  .header-action-btn,
+  .voice-settings-btn,
+  .theme-toggle-btn {
+    width: 38px;
+    height: 38px;
+    min-width: 38px;
+    min-height: 38px;
+    padding: 0;
+    border-radius: 10px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
+  #btn-toggle-furigana {
+    width: auto;
+    min-width: 44px;
+    height: 38px;
+    padding: 0 8px;
+    font-size: 12px;
+  }
+
   .search-dropdown {
     position: fixed;
-    top: 112px;
+    top: calc(54px + env(safe-area-inset-top, 0px));
     left: 10px;
     right: 10px;
-    max-height: 68vh;
+    max-height: 70vh;
     z-index: 1000;
   }
 
@@ -4055,7 +4091,7 @@ body.hide-furigana #btn-toggle-furigana {
 
   /* 4. MAIN CONTENT & CARDS TRÊN DI ĐỘNG */
   .app-layout {
-    height: calc(100dvh - 106px);
+    height: calc(100dvh - 54px - env(safe-area-inset-top, 0px));
   }
 
   .main-content {
@@ -4687,8 +4723,51 @@ body.hide-furigana #btn-toggle-furigana {
    ========================================================================== */
 @media (max-width: 420px) {
   .app-header {
-    padding: max(6px, env(safe-area-inset-top, 0px)) 10px 8px;
-    gap: 6px;
+    padding: max(5px, env(safe-area-inset-top, 0px)) 8px 5px;
+    gap: 5px;
+    min-height: 48px;
+  }
+  .menu-toggle-btn {
+    width: 35px;
+    height: 35px;
+    min-width: 35px;
+    min-height: 35px;
+  }
+  .search-box-wrapper {
+    height: 35px;
+    padding: 5px 8px;
+    gap: 5px;
+  }
+  .quick-search-input {
+    font-size: 12px;
+  }
+  .quick-search-input::placeholder {
+    font-size: 11px;
+  }
+  .header-right {
+    gap: 4px;
+  }
+  .header-action-btn,
+  .voice-settings-btn,
+  .theme-toggle-btn {
+    width: 35px;
+    height: 35px;
+    min-width: 35px;
+    min-height: 35px;
+  }
+  #btn-toggle-furigana {
+    min-width: 38px;
+    height: 35px;
+    padding: 0 5px;
+    font-size: 11px;
+  }
+  .search-dropdown {
+    top: calc(48px + env(safe-area-inset-top, 0px));
+    left: 8px;
+    right: 8px;
+  }
+  .app-layout {
+    height: calc(100dvh - 48px - env(safe-area-inset-top, 0px));
   }
   .brand-name {
     display: none;

@@ -2987,10 +2987,12 @@ function syncMobileBottomNav(activeId) {
   const kanjiLabel = document.getElementById('mnav-label-kanji');
   const quizLabel = document.getElementById('mnav-label-quiz');
   const dokkaiLabel = document.getElementById('mnav-label-dokkai');
+  const radicalsLabel = document.getElementById('mnav-label-radicals');
   if (lessonLabel) lessonLabel.textContent = `Bài ${num}`;
   if (kanjiLabel) kanjiLabel.textContent = `Kanji ${num}`;
   if (quizLabel) quizLabel.textContent = `Đề ${num}`;
   if (dokkaiLabel) dokkaiLabel.textContent = `Đọc ${num}`;
+  if (radicalsLabel) radicalsLabel.textContent = `Bộ Thủ`;
 
   let activeNav = 'lesson';
   if (id.startsWith('kanji-')) activeNav = 'kanji';
@@ -3001,9 +3003,7 @@ function syncMobileBottomNav(activeId) {
   if (document && document.querySelectorAll) {
     document.querySelectorAll('.mobile-nav-item').forEach(btn => {
       const navType = btn.getAttribute('data-nav');
-      if (navType !== 'menu') {
-        btn.classList.toggle('active', navType === activeNav);
-      }
+      btn.classList.toggle('active', navType === activeNav);
     });
   }
 }
