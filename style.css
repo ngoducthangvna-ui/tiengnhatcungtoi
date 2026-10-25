@@ -2643,7 +2643,10 @@ body.hide-furigana #btn-toggle-furigana {
 }
 
 .speak-btn.is-speaking,
-.speak-btn-mini.is-speaking {
+.speak-btn-mini.is-speaking,
+.btn-tool.is-speaking,
+.kcard-audio-btn.is-speaking,
+.kanji-chip.is-speaking {
   background: var(--accent-primary) !important;
   color: #ffffff !important;
   border-color: var(--accent-primary) !important;

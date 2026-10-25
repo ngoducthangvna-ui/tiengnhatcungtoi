@@ -782,8 +782,8 @@ window.setSpeechGenConfig = setSpeechGenConfig;
 window.getSpeechGenConfig = getSpeechGenConfig;
 
 function stopAllSpeechAudio() {
-  if (document && document.querySelectorAll) {
-    document.querySelectorAll('.speak-btn.is-speaking, .speak-btn-mini.is-speaking, .btn-test-voice.is-speaking').forEach(b => {
+  if (typeof document !== 'undefined' && document.querySelectorAll) {
+    document.querySelectorAll('.is-speaking').forEach(b => {
       if (b && b.classList) b.classList.remove('is-speaking');
     });
   }
@@ -806,10 +806,10 @@ function findLedaJpVoice() {
   const voices = window.speechSynthesis.getVoices();
   if (!voices || voices.length === 0) return null;
 
-  let match = voices.find(v => /leda/i.test(v.name) || /leda/i.test(v.voiceURI));
+  let match = voices.find(v => (v.lang === 'ja-JP' || v.lang.startsWith('ja')) && (/leda/i.test(v.name) || /leda/i.test(v.voiceURI)));
   if (match) return match;
 
-  match = voices.find(v => /chirp/i.test(v.name) || /chirp/i.test(v.voiceURI));
+  match = voices.find(v => (v.lang === 'ja-JP' || v.lang.startsWith('ja')) && (/chirp/i.test(v.name) || /chirp/i.test(v.voiceURI)));
   if (match) return match;
 
   match = voices.find(v => (v.lang === 'ja-JP' || v.lang.startsWith('ja')) && /(nanami|keiko|kyoko|otoya|natural.*female|female)/i.test(v.name));
@@ -893,10 +893,115 @@ async function fetchSpeechGenAudio(speechText, cfg) {
   throw new Error((data && data.error) || 'SpeechGen generation failed');
 }
 
-function speakWithLedaWebSpeech(speechText, stopRelay, safetyTimer, cfg) {
+function playOnlineJapaneseAudio(text, stopRelay, safetyTimer) {
+  const clean = cleanSpeechText(text);
+  if (!clean) {
+    if (safetyTimer) clearTimeout(safetyTimer);
+    if (stopRelay) stopRelay();
+    return;
+  }
+
+  // Cắt ngắn nếu câu quá dài (> 180 ký tự) để đảm bảo độ trễ tối ưu
+  const shortText = clean.length > 180 ? clean.substring(0, 180) : clean;
+  const encoded = encodeURIComponent(shortText);
+
+  // Danh sách các nguồn âm thanh tiếng Nhật online chất lượng cao:
+  // 1. Google Translate TTS CDN: Giọng đọc chuẩn quốc tế, hỗ trợ mọi câu ngắn & dài
+  // 2. Youdao Japanese Audio CDN (NetEase): Tương thích 100% điện thoại nội địa Trung Quốc (Xiaomi, Vivo, Oppo, Realme, Huawei), không bị chặn bởi tường lửa GFW
+  const sources = [
+    {
+      name: 'Google TTS',
+      url: `https://translate.google.com/translate_tts?ie=UTF-8&tl=ja&client=tw-ob&q=${encoded}`,
+      noReferrer: true
+    },
+    {
+      name: 'Youdao JP',
+      url: `https://dict.youdao.com/dictvoice?audio=${encoded}&le=jap`,
+      noReferrer: false
+    }
+  ];
+
+  let srcIdx = 0;
+  let finished = false;
+
+  function endPlayback() {
+    if (finished) return;
+    finished = true;
+    if (safetyTimer) clearTimeout(safetyTimer);
+    if (stopRelay) stopRelay();
+    if (currentSpeechAudio) currentSpeechAudio = null;
+  }
+
+  function tryNextSource() {
+    if (finished) return;
+    if (srcIdx >= sources.length) {
+      endPlayback();
+      return;
+    }
+
+    const src = sources[srcIdx++];
+    const audio = new Audio();
+    if (src.noReferrer) {
+      try {
+        audio.referrerPolicy = 'no-referrer';
+        audio.setAttribute('referrerpolicy', 'no-referrer');
+      } catch (e) {}
+    }
+    audio.preload = 'auto';
+    audio.src = src.url;
+    currentSpeechAudio = audio;
+
+    let sourceTimer = setTimeout(() => {
+      // Nếu sau 4.5s nguồn này chưa phát hoặc bị đơ (thường gặp khi Google bị chặn ở Trung Quốc)
+      if (!finished && (audio.paused || audio.readyState < 2)) {
+        try { audio.pause(); } catch (e) {}
+        tryNextSource();
+      }
+    }, 4500);
+
+    audio.onended = () => {
+      clearTimeout(sourceTimer);
+      endPlayback();
+    };
+
+    audio.onerror = () => {
+      clearTimeout(sourceTimer);
+      tryNextSource();
+    };
+
+    const p = audio.play();
+    if (p !== undefined) {
+      p.then(() => {
+        clearTimeout(sourceTimer);
+      }).catch(() => {
+        clearTimeout(sourceTimer);
+        tryNextSource();
+      });
+    }
+  }
+
+  tryNextSource();
+}
+
+function speakWithLedaWebSpeech(speechText, stopRelay, safetyTimer, cfg, onFallback) {
   if (typeof window === 'undefined' || !('speechSynthesis' in window)) {
-    clearTimeout(safetyTimer);
-    stopRelay();
+    if (onFallback) {
+      onFallback();
+    } else {
+      clearTimeout(safetyTimer);
+      stopRelay();
+    }
+    return;
+  }
+
+  const voice = cachedLedaVoice || findLedaJpVoice();
+  if (!voice) {
+    if (onFallback) {
+      onFallback();
+    } else {
+      clearTimeout(safetyTimer);
+      stopRelay();
+    }
     return;
   }
 
@@ -906,15 +1011,7 @@ function speakWithLedaWebSpeech(speechText, stopRelay, safetyTimer, cfg) {
     }
     const utterance = new SpeechSynthesisUtterance(speechText);
     utterance.lang = 'ja-JP';
-
-    const voice = cachedLedaVoice || findLedaJpVoice();
-    if (voice) {
-      utterance.voice = voice;
-    } else if (!window._warnedNoJpVoice) {
-      window._warnedNoJpVoice = true;
-      showToast("Gợi ý: Cài đặt gói ngôn ngữ tiếng Nhật (ja-JP) trên máy để có giọng đọc tự nhiên nhất.");
-    }
-
+    utterance.voice = voice;
     utterance.rate = cfg && cfg.speed ? cfg.speed : 0.92;
     utterance.pitch = cfg && cfg.pitch ? cfg.pitch : 1.04;
 
@@ -922,15 +1019,24 @@ function speakWithLedaWebSpeech(speechText, stopRelay, safetyTimer, cfg) {
       clearTimeout(safetyTimer);
       stopRelay();
     };
-    utterance.onerror = () => {
-      clearTimeout(safetyTimer);
-      stopRelay();
+    utterance.onerror = (err) => {
+      console.warn('Web Speech API phát âm lỗi, chuyển sang online audio:', err);
+      if (onFallback) {
+        onFallback();
+      } else {
+        clearTimeout(safetyTimer);
+        stopRelay();
+      }
     };
 
     window.speechSynthesis.speak(utterance);
   } catch (err) {
-    clearTimeout(safetyTimer);
-    stopRelay();
+    if (onFallback) {
+      onFallback();
+    } else {
+      clearTimeout(safetyTimer);
+      stopRelay();
+    }
   }
 }
 
@@ -943,7 +1049,7 @@ async function speakJapanese(text, btnElement, ev) {
   if (!btn && typeof window !== 'undefined' && window.event) {
     const target = window.event.currentTarget || window.event.target;
     if (target) {
-      btn = target.closest ? target.closest('.speak-btn, .speak-btn-mini, .btn-test-voice, button') : target;
+      btn = target.closest ? target.closest('.speak-btn, .speak-btn-mini, .btn-test-voice, .kcard-audio-btn, .btn-tool, button') : target;
     }
   }
 
@@ -971,15 +1077,10 @@ async function speakJapanese(text, btnElement, ev) {
   const safetyTimer = setTimeout(stopRelay, dynamicDuration);
   const cfg = getSpeechGenConfig();
 
-  // Trên smartphone/tablet (iOS Safari & Android Chrome), ưu tiên phát âm trực tiếp qua Web Speech API
-  const isTouchDevice = typeof window !== 'undefined' && ('ontouchstart' in window || (typeof navigator !== 'undefined' && navigator.maxTouchPoints > 0));
-  const hasSpeechSynth = typeof window !== 'undefined' && 'speechSynthesis' in window && typeof SpeechSynthesisUtterance !== 'undefined';
+  // 1. Kiểm tra xem thiết bị có sẵn gói giọng đọc tiếng Nhật (ja-JP) hay không
+  const jpVoice = cachedLedaVoice || findLedaJpVoice();
 
-  if (isTouchDevice && hasSpeechSynth && (!cfg.token || !cfg.email)) {
-    speakWithLedaWebSpeech(speechText, stopRelay, safetyTimer, cfg);
-    return;
-  }
-
+  // 2. Nếu người dùng có cấu hình tài khoản SpeechGen riêng (token & email)
   if (cfg.token && cfg.email) {
     try {
       const audioUrl = await fetchSpeechGenAudio(speechText, cfg);
@@ -992,22 +1093,47 @@ async function speakJapanese(text, btnElement, ev) {
           if (currentSpeechAudio === audio) currentSpeechAudio = null;
         };
         audio.onerror = () => {
-          speakWithLedaWebSpeech(speechText, stopRelay, safetyTimer, cfg);
+          if (jpVoice) {
+            speakWithLedaWebSpeech(speechText, stopRelay, safetyTimer, cfg, () => playOnlineJapaneseAudio(cleanText, stopRelay, safetyTimer));
+          } else {
+            playOnlineJapaneseAudio(cleanText, stopRelay, safetyTimer);
+          }
         };
         const p = audio.play();
         if (p !== undefined) {
           p.catch(() => {
-            speakWithLedaWebSpeech(speechText, stopRelay, safetyTimer, cfg);
+            if (jpVoice) {
+              speakWithLedaWebSpeech(speechText, stopRelay, safetyTimer, cfg, () => playOnlineJapaneseAudio(cleanText, stopRelay, safetyTimer));
+            } else {
+              playOnlineJapaneseAudio(cleanText, stopRelay, safetyTimer);
+            }
           });
         }
         return;
       }
     } catch (apiErr) {
-      console.warn('SpeechGen Cloud API chuyển hướng sang Leda JP Neural:', apiErr.message);
+      console.warn('SpeechGen Cloud API chuyển hướng:', apiErr.message);
     }
   }
 
-  speakWithLedaWebSpeech(speechText, stopRelay, safetyTimer, cfg);
+  // 3. Nếu máy CÓ sẵn giọng đọc tiếng Nhật (như iPhone iOS, Android quốc tế, Windows/Mac) -> dùng Web Speech API siêu mượt
+  const isTouchDevice = typeof window !== 'undefined' && ('ontouchstart' in window || (typeof navigator !== 'undefined' && navigator.maxTouchPoints > 0));
+  const hasSpeechSynth = typeof window !== 'undefined' && 'speechSynthesis' in window && typeof SpeechSynthesisUtterance !== 'undefined';
+
+  if (jpVoice && hasSpeechSynth) {
+    speakWithLedaWebSpeech(speechText, stopRelay, safetyTimer, cfg, () => {
+      playOnlineJapaneseAudio(cleanText, stopRelay, safetyTimer);
+    });
+    return;
+  }
+
+  // 4. Nếu máy KHÔNG có gói giọng đọc tiếng Nhật (thường gặp trên điện thoại Android nội địa Trung: Xiaomi, Redmi, Vivo, Oppo, Huawei...)
+  // Tự động kích hoạt Bộ phát âm thanh trực tuyến đa tầng (Google Translate TTS + Youdao JP), phát âm thanh ngay lập tức!
+  if (!window._warnedNoJpVoice) {
+    window._warnedNoJpVoice = true;
+    showToast("Đang phát âm thanh trực tuyến (Điện thoại chưa cài gói giọng tiếng Nhật ja-JP).");
+  }
+  playOnlineJapaneseAudio(cleanText, stopRelay, safetyTimer);
 }
 
 window.speakJapanese = speakJapanese;
