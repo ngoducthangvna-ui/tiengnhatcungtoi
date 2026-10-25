@@ -1716,8 +1716,11 @@ function renderContent(id) {
         ${quizList.map((q, qIdx) => `
           <div class="quiz-card" id="card-${q.id}">
             <div class="quiz-question-title">
-              <strong>Câu ${qIdx + 1}:</strong> ${q.question}
-              <button class="speak-btn-mini" onclick="speakQuizQuestion('${id}', '${q.id}', this, event)" title="Nghe câu hỏi này" style="margin-left: 8px;">
+              <div class="quiz-q-content">
+                <span class="quiz-q-badge">Câu ${qIdx + 1}</span>
+                <span class="quiz-q-text">${q.question}</span>
+              </div>
+              <button class="speak-btn-mini" onclick="speakQuizQuestion('${id}', '${q.id}', this, event)" title="Nghe câu hỏi này">
                 ${SPEAKER_ICON_HTML}
               </button>
             </div>
@@ -2314,8 +2317,11 @@ function renderDokkaiRoom(dokkaiId) {
             ${dokkai.questions.map((q, qIdx) => `
               <div class="quiz-card" id="card-${q.id}">
                 <div class="quiz-question-title">
-                  <strong>Câu ${qIdx + 1}:</strong> ${q.question}
-                  <button class="speak-btn-mini" onclick="speakDokkaiQuestion('${dokkai.id}', '${q.id}', this, event)" title="Nghe câu hỏi này" style="margin-left: 8px;">
+                  <div class="quiz-q-content">
+                    <span class="quiz-q-badge">Câu ${qIdx + 1}</span>
+                    <span class="quiz-q-text">${q.question}</span>
+                  </div>
+                  <button class="speak-btn-mini" onclick="speakDokkaiQuestion('${dokkai.id}', '${q.id}', this, event)" title="Nghe câu hỏi này">
                     ${SPEAKER_ICON_HTML}
                   </button>
                 </div>
