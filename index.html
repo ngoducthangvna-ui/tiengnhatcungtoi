@@ -14,7 +14,8 @@
   <meta name="theme-color" content="#0d1015">
 
   <!-- Favicon SVG: Triện son Nhật Bản truyền thống (Hanko Seal) -->
-  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='22' fill='%23c23531'/><rect x='8' y='8' width='84' height='84' rx='16' fill='none' stroke='%23ffffff' stroke-width='2.5' stroke-opacity='0.45'/><text x='50' y='72' font-family='serif' font-weight='bold' font-size='60' fill='white' text-anchor='middle'>日</text></svg>">
+  <link rel="icon" type="image/svg+xml" href="favicon.svg">
+  <link rel="alternate icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMDAgMTAwIj4KICA8cmVjdCB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgcng9IjIyIiBmaWxsPSIjYzIzNTMxIi8+CiAgPHJlY3QgeD0iOCIgeT0iOCIgd2lkdGg9Ijg0IiBoZWlnaHQ9Ijg0IiByeD0iMTYiIGZpbGw9Im5vbmUiIHN0cm9rZT0iI2ZmZmZmZiIgc3Ryb2tlLXdpZHRoPSIyLjUiIHN0cm9rZS1vcGFjaXR5PSIwLjQ1Ii8+CiAgPHRleHQgeD0iNTAiIHk9IjcyIiBmb250LWZhbWlseT0iJ05vdG8gU2FucyBKUCcsICdIaXJhZ2lubyBNaW5jaG8gUHJvJywgc2VyaWYiIGZvbnQtd2VpZ2h0PSJib2xkIiBmb250LXNpemU9IjYwIiBmaWxsPSIjZmZmZmZmIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIj7ml6U8L3RleHQ+Cjwvc3ZnPg==">
   
   <!-- ===================================================================
        BẢO MẬT LỚP 1: HTTP SECURITY META TAGS (BROWSER-LEVEL HARDENING)
@@ -50,15 +51,13 @@
   <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400;1,600&family=Noto+Sans+JP:wght@400;500;600;700;800&family=Roboto:ital,wght@0,400;0,500;0,700;1,400&family=Shippori+Mincho:wght@400;500;600;700&family=Zen+Kaku+Gothic+New:wght@400;500;700&display=swap" rel="stylesheet">
   
   <!-- Giao diện CSS thuần -->
-  <link rel="stylesheet" href="style.css?v=20261025_05">
+  <link rel="stylesheet" href="style.css?v=20261025_11">
 </head>
 <body>
-  <!-- NỀN GRADIENT HIỆN ĐẠI: Ánh sáng cực quang mềm mại -->
+  <!-- NỀN GRADIENT HIỆN ĐẠI (Tối ưu GPU: 2 Blob tinh gọn trên Desktop, ẩn hoàn toàn trên Mobile) -->
   <div class="liquid-glass-bg" aria-hidden="true">
     <div class="glass-blob blob-1"></div>
     <div class="glass-blob blob-2"></div>
-    <div class="glass-blob blob-3"></div>
-    <div class="glass-blob blob-4"></div>
   </div>
 
   <!-- SCRIPT KHỞI TẠO TỨC THÌ CHO NÚT VÀO HỌC (FAILSAFE INSTANT DISMISS) -->
@@ -72,7 +71,7 @@
           cover.style.opacity = '0';
           setTimeout(function() {
             cover.style.display = 'none';
-          }, 200);
+          }, 360);
         }
         try { sessionStorage.setItem('minna_cover_closed', 'true'); } catch(e) {}
         var target = targetHash || (window.selectedCoverTarget || (window.location && window.location.hash) || '#bai-1');
@@ -190,24 +189,14 @@
         <path class="landscape-clouds" d="M 0,395 Q 360,360 720,395 T 1440,395 L 1440,420 L 0,420 Z" fill="url(#cloudGrad)"></path>
       </svg>
 
-      <!-- 16 Cánh hoa anh đào rơi tự nhiên (Sakura Rain) -->
-      <div class="sakura-petals-layer">
+      <!-- Cánh hoa anh đào rơi tự nhiên (Tối ưu tải GPU: 6 cánh thanh lịch trên Desktop, ẩn hoàn toàn trên Mobile) -->
+      <div class="sakura-petals-layer" aria-hidden="true">
         <span class="petal p1"></span>
         <span class="petal p2"></span>
         <span class="petal p3"></span>
         <span class="petal p4"></span>
         <span class="petal p5"></span>
         <span class="petal p6"></span>
-        <span class="petal p7"></span>
-        <span class="petal p8"></span>
-        <span class="petal p9"></span>
-        <span class="petal p10"></span>
-        <span class="petal p11"></span>
-        <span class="petal p12"></span>
-        <span class="petal p13"></span>
-        <span class="petal p14"></span>
-        <span class="petal p15"></span>
-        <span class="petal p16"></span>
       </div>
     </div>
 
@@ -562,7 +551,9 @@
   </div>
 
   <!-- THANH ĐIỀU HƯỚNG DƯỚI CÙNG CHO ĐIỆN THOẠI (MOBILE BOTTOM NAVIGATION BAR) -->
-  <nav id="mobile-bottom-nav" class="mobile-bottom-nav" aria-label="Điều hướng nhanh trên điện thoại">
+  <nav id="mobile-bottom-nav" class="mobile-bottom-nav" data-active-index="0" aria-label="Điều hướng nhanh trên điện thoại">
+    <!-- Con trượt viên thuốc lướt mượt mà giữa các tab (Sliding Pill Indicator) -->
+    <span class="mobile-nav-slider-pill" id="mobile-nav-slider-pill" aria-hidden="true"></span>
     <button type="button" class="mobile-nav-item active" data-nav="lesson" onclick="handleMobileBottomNav('lesson')">
       <span class="mobile-nav-icon-wrap">
         <svg class="mobile-nav-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round">
@@ -766,35 +757,9 @@
     </svg>
   </button>
 
-  <!-- Dữ liệu bài học, bài đọc hiểu và bài tập (Bài 1 - 50 N5 & N4) -->
+  <!-- Dữ liệu bài học Minna (Khởi tạo tức thì Bài 1 - 5, các bài khác nạp động theo nhu cầu) -->
   <script src="data/lessons_1_5.js"></script>
-  <script src="data/lessons_6_10.js"></script>
-  <script src="data/lessons_11_15.js"></script>
-  <script src="data/lessons_16_20.js"></script>
-  <script src="data/lessons_21_25.js"></script>
-  <script src="data/lessons_26_30.js"></script>
-  <script src="data/lessons_31_35.js"></script>
-  <script src="data/lessons_36_40.js"></script>
-  <script src="data/lessons_41_45.js"></script>
-  <script src="data/lessons_46_50.js"></script>
-  <script src="data/lessons.js"></script>
-  <script src="data/dokkai.js"></script>
-  <script src="data/quizzes_1_5.js"></script>
-  <script src="data/quizzes_6_10.js"></script>
-  <script src="data/quizzes_11_15.js"></script>
-  <script src="data/quizzes_16_20.js"></script>
-  <script src="data/quizzes_21_25.js"></script>
-  <script src="data/quizzes_26_30.js"></script>
-  <script src="data/quizzes_31_35.js"></script>
-  <script src="data/quizzes_36_40.js"></script>
-  <script src="data/quizzes_41_45.js"></script>
-  <script src="data/quizzes_46_50.js"></script>
-  <script src="data/quiz-master.js"></script>
-  <!-- Dữ liệu 191 Bộ thủ tiếng Nhật (Ngọc Tiệp Minato) -->
-  <script src="data/radicals_data.js"></script>
-  <!-- Dữ liệu Mẹo Nhớ Chữ Hán 50 Bài Minna no Nihongo (N5 & N4) -->
-  <script src="data/kanji_data.js?v=20261025_02"></script>
-  <!-- File logic JavaScript thuần -->
-  <script src="app.js?v=20261025_05"></script>
+  <!-- File logic JavaScript thuần: Tích hợp Code-Splitting, Lazy Loading & Đồng bộ dữ liệu -->
+  <script src="app.js?v=20261025_11"></script>
 </body>
 </html>

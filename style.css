@@ -151,6 +151,9 @@ body::before {
   border-radius: 50%;
   filter: blur(90px);
   opacity: 0.12;
+  will-change: transform;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
 }
 
 .liquid-glass-bg .blob-1 {
@@ -159,6 +162,7 @@ body::before {
   top: -120px;
   left: -100px;
   background: radial-gradient(circle, var(--accent-primary), transparent 70%);
+  animation: floatBlob1 24s ease-in-out infinite alternate;
 }
 
 .liquid-glass-bg .blob-2 {
@@ -167,6 +171,7 @@ body::before {
   top: 35%;
   right: -120px;
   background: radial-gradient(circle, var(--accent-sakura), transparent 70%);
+  animation: floatBlob2 28s ease-in-out infinite alternate;
 }
 
 .liquid-glass-bg .blob-3 {
@@ -175,6 +180,7 @@ body::before {
   bottom: -100px;
   left: 25%;
   background: radial-gradient(circle, var(--accent-indigo), transparent 70%);
+  animation: floatBlob3 22s ease-in-out infinite alternate;
 }
 
 .liquid-glass-bg .blob-4 {
@@ -184,6 +190,31 @@ body::before {
   left: 45%;
   background: radial-gradient(circle, var(--accent-warning), transparent 70%);
   opacity: 0.07;
+  animation: floatBlob4 26s ease-in-out infinite alternate;
+}
+
+@keyframes floatBlob1 {
+  0% { transform: translate3d(0, 0, 0) scale(1); }
+  50% { transform: translate3d(60px, 45px, 0) scale(1.08); }
+  100% { transform: translate3d(-30px, 80px, 0) scale(0.95); }
+}
+
+@keyframes floatBlob2 {
+  0% { transform: translate3d(0, 0, 0) scale(1); }
+  50% { transform: translate3d(-50px, -60px, 0) scale(1.1); }
+  100% { transform: translate3d(40px, 30px, 0) scale(0.92); }
+}
+
+@keyframes floatBlob3 {
+  0% { transform: translate3d(0, 0, 0) scale(1); }
+  50% { transform: translate3d(45px, -40px, 0) scale(1.06); }
+  100% { transform: translate3d(-50px, -30px, 0) scale(0.98); }
+}
+
+@keyframes floatBlob4 {
+  0% { transform: translate3d(0, 0, 0) scale(1); }
+  50% { transform: translate3d(-40px, 50px, 0) scale(1.12); }
+  100% { transform: translate3d(30px, -40px, 0) scale(0.96); }
 }
 
 [data-theme="light"] .liquid-glass-bg .glass-blob {
@@ -480,17 +511,27 @@ rt,
 
 @keyframes sakuraFall3D {
   0% {
-    transform: translate3d(0, 0, 0) rotate(0deg);
+    transform: translate3d(0, -6vh, 0) rotate3d(1, 1, 0, 0deg) rotateZ(0deg);
     opacity: 0;
   }
-  15% {
-    opacity: 0.7;
+  12% {
+    opacity: 0.8;
   }
-  85% {
+  25% {
+    transform: translate3d(24px, 26vh, 15px) rotate3d(1, 1, 0, 90deg) rotateZ(55deg);
+  }
+  50% {
+    transform: translate3d(-18px, 56vh, 30px) rotate3d(1, 0.4, 0, 180deg) rotateZ(135deg);
+    opacity: 0.75;
+  }
+  75% {
+    transform: translate3d(28px, 84vh, 15px) rotate3d(0.4, 1, 0, 270deg) rotateZ(230deg);
+  }
+  90% {
     opacity: 0.65;
   }
   100% {
-    transform: translate3d(70px, 110vh, 0) rotate(360deg);
+    transform: translate3d(-12px, 114vh, 0) rotate3d(1, 1, 0, 360deg) rotateZ(360deg);
     opacity: 0;
   }
 }
@@ -1233,7 +1274,6 @@ rt,
 }
 
 .search-dropdown {
-  display: none;
   position: absolute;
   top: calc(100% + 8px);
   left: 0;
@@ -1247,10 +1287,21 @@ rt,
   max-height: 420px;
   overflow-y: auto;
   z-index: 200;
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transform: translateY(-8px) scale(0.98);
+  transition: opacity 0.24s cubic-bezier(0.16, 1, 0.3, 1),
+              transform 0.24s cubic-bezier(0.16, 1, 0.3, 1),
+              visibility 0.24s;
+  will-change: opacity, transform;
 }
 
 .search-dropdown.active {
-  display: block;
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+  transform: translateY(0) scale(1);
 }
 
 .search-dropdown-header {
@@ -1288,12 +1339,14 @@ rt,
   justify-content: space-between;
   gap: 12px;
   cursor: pointer;
-  transition: var(--transition);
+  transition: background-color 0.18s cubic-bezier(0.16, 1, 0.3, 1),
+              transform 0.18s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .search-result-item:hover,
 .search-result-item.keyboard-selected {
   background-color: var(--bg-tertiary);
+  transform: translateX(4px);
 }
 
 .search-item-left {
@@ -1379,6 +1432,17 @@ body.hide-furigana ruby:hover rt {
   border-color: var(--accent-primary);
   color: var(--accent-primary);
   transform: translateY(-1px);
+}
+
+.theme-toggle-btn svg,
+.cover-theme-toggle svg {
+  transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+  will-change: transform;
+}
+
+.theme-toggle-btn:active svg,
+.cover-theme-toggle:active svg {
+  transform: rotate(360deg) scale(0.85);
 }
 
 .btn-ruby-badge {
@@ -1523,7 +1587,8 @@ body.hide-furigana #btn-toggle-furigana {
 
 .accordion-chevron {
   color: var(--text-muted);
-  transition: transform 0.25s ease;
+  transition: transform 0.32s cubic-bezier(0.34, 1.56, 0.64, 1), color 0.2s ease;
+  will-change: transform;
 }
 
 .accordion-group.open .accordion-chevron {
@@ -1543,6 +1608,19 @@ body.hide-furigana #btn-toggle-furigana {
 
 .accordion-group.open .accordion-body {
   display: block;
+  animation: accordionSlideDown 0.26s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  will-change: opacity, transform;
+}
+
+@keyframes accordionSlideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .accordion-menu-list {
@@ -1565,13 +1643,16 @@ body.hide-furigana #btn-toggle-furigana {
   align-items: center;
   justify-content: space-between;
   gap: 6px;
-  transition: var(--transition);
+  transition: background-color 0.18s cubic-bezier(0.16, 1, 0.3, 1),
+              color 0.18s cubic-bezier(0.16, 1, 0.3, 1),
+              transform 0.18s cubic-bezier(0.16, 1, 0.3, 1);
   position: relative;
 }
 
 .menu-item-btn:hover {
   background-color: var(--bg-tertiary);
   color: var(--text-primary);
+  transform: translateX(3px);
 }
 
 .menu-item-btn.active {
@@ -1654,7 +1735,8 @@ body.hide-furigana #btn-toggle-furigana {
 }
 
 /* Thanh điều hướng dưới cùng trên điện thoại (ẩn trên Desktop) */
-.mobile-bottom-nav {
+.mobile-bottom-nav,
+.mobile-nav-slider-pill {
   display: none;
 }
 
@@ -1684,12 +1766,40 @@ body.hide-furigana #btn-toggle-furigana {
 }
 
 .lesson-content.content-entering {
-  animation: contentTransitionIn 0.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  animation: contentTransitionIn 0.32s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  will-change: opacity, transform;
 }
 
 @keyframes contentTransitionIn {
-  from { opacity: 0; transform: translateY(8px); }
-  to { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translate3d(0, 16px, 0);
+  }
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+.lesson-content.content-entering > * {
+  animation: childFadeSlideIn 0.36s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+.lesson-content.content-entering > *:nth-child(1) { animation-delay: 0.02s; }
+.lesson-content.content-entering > *:nth-child(2) { animation-delay: 0.05s; }
+.lesson-content.content-entering > *:nth-child(3) { animation-delay: 0.08s; }
+.lesson-content.content-entering > *:nth-child(4) { animation-delay: 0.11s; }
+.lesson-content.content-entering > *:nth-child(5) { animation-delay: 0.14s; }
+.lesson-content.content-entering > *:nth-child(n+6) { animation-delay: 0.16s; }
+
+@keyframes childFadeSlideIn {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 10px, 0);
+  }
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
 }
 
 /* Thanh chuyển đổi nhanh 3 chế độ (Bài học - Bài tập - Đọc hiểu) & Chuyển bài */
@@ -2056,7 +2166,7 @@ body.hide-furigana #btn-toggle-furigana {
   color: var(--accent-green);
 }
 
-/* Thẻ lật từ vựng Nhật Bản (単語帳 - Tango-cho) */
+/* Thẻ lật từ vựng Nhật Bản (単語帳 - Tango-cho) - Hoạt họa 3D lật mượt mà */
 .fc-card {
   background: var(--bg-card-inner);
   border: 1px solid var(--border-color);
@@ -2070,14 +2180,31 @@ body.hide-furigana #btn-toggle-furigana {
   text-align: center;
   cursor: pointer;
   position: relative;
-  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.25s ease, box-shadow 0.25s ease;
+  perspective: 1200px;
+  transform-style: preserve-3d;
+  transition: transform 0.45s cubic-bezier(0.2, 0.8, 0.2, 1),
+              border-color 0.3s ease,
+              box-shadow 0.3s ease,
+              background-color 0.3s ease;
   user-select: none;
   box-shadow: var(--shadow-sm);
+  will-change: transform;
 }
 
 .fc-card:hover {
   border-color: var(--accent-primary);
   box-shadow: var(--shadow-md);
+  transform: translateY(-2px);
+}
+
+.fc-card.flipped {
+  transform: rotateY(180deg);
+  border-color: var(--accent-green);
+  background: linear-gradient(145deg, rgba(69, 166, 123, 0.08), var(--bg-card-inner));
+}
+
+.fc-card.flipped:hover {
+  transform: rotateY(180deg) translateY(-2px);
 }
 
 .fc-face {
@@ -2087,23 +2214,19 @@ body.hide-furigana #btn-toggle-furigana {
   justify-content: center;
   gap: 8px;
   width: 100%;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  transform-style: preserve-3d;
+}
+
+.fc-front {
+  transform: rotateY(0deg);
 }
 
 .fc-back {
-  display: none;
-}
-
-.fc-card.flipped {
-  border-color: var(--accent-green);
-  background: linear-gradient(145deg, rgba(69, 166, 123, 0.06), var(--bg-card-inner));
-}
-
-.fc-card.flipped .fc-front {
-  display: none;
-}
-
-.fc-card.flipped .fc-back {
-  display: flex;
+  position: absolute;
+  inset: 22px;
+  transform: rotateY(180deg);
 }
 
 .fc-mode-tag {
@@ -2254,12 +2377,16 @@ body.hide-furigana #btn-toggle-furigana {
   background: rgba(69, 166, 123, 0.18) !important;
   border-color: var(--accent-green) !important;
   color: var(--accent-green) !important;
+  animation: correctOptionPop 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+  will-change: transform;
 }
 
 .kq-opt.wrong {
   background: rgba(224, 82, 68, 0.18) !important;
   border-color: var(--accent-primary) !important;
   color: var(--accent-primary) !important;
+  animation: wrongOptionShake 0.35s cubic-bezier(0.36, 0.07, 0.19, 0.97);
+  will-change: transform;
 }
 
 .kq-finish-box {
@@ -2651,6 +2778,23 @@ body.hide-furigana #btn-toggle-furigana {
   color: #ffffff !important;
   border-color: var(--accent-primary) !important;
   box-shadow: 0 0 0 4px rgba(224, 82, 68, 0.25) !important;
+  animation: audioPulseGlow 1.25s cubic-bezier(0.24, 0, 0.38, 1) infinite !important;
+  will-change: transform, box-shadow;
+}
+
+@keyframes audioPulseGlow {
+  0% {
+    box-shadow: 0 0 0 0 rgba(224, 82, 68, 0.6) !important;
+    transform: scale(1);
+  }
+  50% {
+    box-shadow: 0 0 0 8px rgba(224, 82, 68, 0) !important;
+    transform: scale(1.05);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(224, 82, 68, 0) !important;
+    transform: scale(1);
+  }
 }
 
 .speaker-icon {
@@ -3061,6 +3205,8 @@ body.hide-furigana #btn-toggle-furigana {
   border-color: var(--accent-green) !important;
   color: var(--accent-green) !important;
   font-weight: 700;
+  animation: correctOptionPop 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+  will-change: transform;
 }
 
 .option-btn.correct .option-letter {
@@ -3073,12 +3219,26 @@ body.hide-furigana #btn-toggle-furigana {
   background: rgba(224, 82, 68, 0.16) !important;
   border-color: var(--accent-primary) !important;
   color: var(--accent-primary) !important;
+  animation: wrongOptionShake 0.35s cubic-bezier(0.36, 0.07, 0.19, 0.97);
+  will-change: transform;
 }
 
 .option-btn.incorrect .option-letter,
 .option-btn.wrong .option-letter {
   background-color: var(--accent-primary) !important;
   color: #ffffff !important;
+}
+
+@keyframes correctOptionPop {
+  0% { transform: scale(1); }
+  45% { transform: scale(1.02); }
+  100% { transform: scale(1); }
+}
+
+@keyframes wrongOptionShake {
+  0%, 100% { transform: translateX(0); }
+  20%, 60% { transform: translateX(-4px); }
+  40%, 80% { transform: translateX(4px); }
 }
 
 .quiz-feedback {
@@ -3091,6 +3251,19 @@ body.hide-furigana #btn-toggle-furigana {
 
 .quiz-feedback.show {
   display: block;
+  animation: feedbackSlideIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  will-change: opacity, transform;
+}
+
+@keyframes feedbackSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .feedback-wrong {
@@ -3810,7 +3983,7 @@ body.hide-furigana #btn-toggle-furigana {
   padding: 16px;
   opacity: 0;
   visibility: hidden;
-  transition: opacity 0.22s ease, visibility 0.22s ease;
+  transition: opacity 0.28s cubic-bezier(0.16, 1, 0.3, 1), visibility 0.28s ease;
 }
 
 .voice-modal-backdrop.show-modal {
@@ -3828,6 +4001,15 @@ body.hide-furigana #btn-toggle-furigana {
   overflow: hidden;
   display: flex;
   flex-direction: column;
+  transform: translateY(18px) scale(0.96);
+  opacity: 0;
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.24s cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: transform, opacity;
+}
+
+.voice-modal-backdrop.show-modal .voice-modal-card {
+  transform: translateY(0) scale(1);
+  opacity: 1;
 }
 
 .voice-modal-header {
@@ -3932,13 +4114,15 @@ body.hide-furigana #btn-toggle-furigana {
   z-index: 999;
   transform: translateY(100px);
   opacity: 0;
-  transition: all 0.28s cubic-bezier(0.22, 1, 0.36, 1);
+  transition: transform 0.35s cubic-bezier(0.34, 1.4, 0.64, 1), opacity 0.25s cubic-bezier(0.16, 1, 0.3, 1);
   pointer-events: none;
+  will-change: transform, opacity;
 }
 
 .toast-notification.show {
   transform: translateY(0);
   opacity: 1;
+  pointer-events: auto;
 }
 
 /* ==========================================================================
@@ -4059,6 +4243,43 @@ body.hide-furigana #btn-toggle-furigana {
 .search-highlight-target {
   outline: 2px solid var(--accent-primary);
   box-shadow: 0 0 20px rgba(56, 189, 248, 0.4);
+  animation: targetHighlightPulse 1.4s cubic-bezier(0.16, 1, 0.3, 1) 2;
+}
+
+@keyframes targetHighlightPulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(224, 82, 68, 0.6);
+  }
+  40% {
+    box-shadow: 0 0 0 8px rgba(224, 82, 68, 0.25);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(224, 82, 68, 0);
+  }
+}
+
+.unanswered-pulse {
+  animation: unansweredCardPulse 0.75s cubic-bezier(0.34, 1.56, 0.64, 1) 2;
+  border-color: var(--accent-primary) !important;
+}
+
+@keyframes unansweredCardPulse {
+  0% {
+    transform: scale(1);
+    box-shadow: var(--shadow-sm);
+  }
+  35% {
+    transform: scale(1.015);
+    box-shadow: 0 0 0 4px rgba(224, 82, 68, 0.4), var(--shadow-md);
+    border-color: var(--accent-primary);
+  }
+  70% {
+    transform: scale(0.995);
+  }
+  100% {
+    transform: scale(1);
+    box-shadow: var(--shadow-sm);
+  }
 }
 
 .theme-switching,
@@ -4089,26 +4310,30 @@ body.hide-furigana #btn-toggle-furigana {
     display: none !important;
   }
 
-  /* 2. Giảm độ nặng Gaussian blur trên Header cố định */
-  .app-header {
-    backdrop-filter: blur(8px) !important;
-    -webkit-backdrop-filter: blur(8px) !important;
-  }
-
-  /* 3. Khử hoàn toàn backdrop-filter phức tạp trên thẻ trang bìa để tránh GPU shader lag */
+  /* 2. Triệt tiêu 100% backdrop-filter trên Mobile để hạ nhiệt GPU, giải phóng bộ xử lý đồ họa */
+  .app-header,
+  .sidebar-overlay,
+  .module-sync-bar,
   .cover-feature-card,
   .cover-kanji-card,
   .cover-zen-badge,
   .cover-top-badge,
-  .cover-theme-toggle {
+  .cover-theme-toggle,
+  .practice-hub,
+  .section-card {
     backdrop-filter: none !important;
     -webkit-backdrop-filter: none !important;
+  }
+
+  .app-header {
+    background: var(--bg-surface, var(--bg-secondary)) !important;
   }
 
   /* 4. Ẩn sidebar triệt để khỏi render tree khi đóng */
   .sidebar:not(.mobile-open) {
     visibility: hidden;
     pointer-events: none;
+    transition: transform 0.28s cubic-bezier(0.16, 1, 0.3, 1), visibility 0s 0.28s;
   }
 
   /* 1. HEADER 1 HÀNG HIỆN ĐẠI: TÌM KIẾM CÙNG HÀNG VỚI NÚT CHẾ ĐỘ SÁNG TỐI */
@@ -4240,7 +4465,8 @@ body.hide-furigana #btn-toggle-furigana {
     z-index: 1200 !important;
     margin-left: 0 !important;
     transform: translate3d(-100%, 0, 0);
-    transition: transform 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+    transition: transform 0.28s cubic-bezier(0.16, 1, 0.3, 1), visibility 0.28s;
+    will-change: transform;
     padding-top: env(safe-area-inset-top, 0px);
     padding-bottom: calc(16px + env(safe-area-inset-bottom, 0px));
     background-color: var(--bg-secondary);
@@ -4259,6 +4485,7 @@ body.hide-furigana #btn-toggle-furigana {
     box-shadow: 16px 0 45px rgba(0, 0, 0, 0.65) !important;
     visibility: visible !important;
     pointer-events: auto !important;
+    transition: transform 0.28s cubic-bezier(0.16, 1, 0.3, 1), visibility 0s;
   }
 
   .mobile-sidebar-header {
@@ -4313,9 +4540,9 @@ body.hide-furigana #btn-toggle-furigana {
     width: 100vw;
     height: 100vh;
     height: 100dvh;
-    background: rgba(10, 14, 20, 0.72) !important;
-    backdrop-filter: blur(6px) !important;
-    -webkit-backdrop-filter: blur(6px) !important;
+    background: rgba(10, 14, 20, 0.82) !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
     z-index: 1100 !important;
     opacity: 0;
     visibility: hidden;
@@ -4383,7 +4610,7 @@ body.hide-furigana #btn-toggle-furigana {
     width: calc(100% - 32px);
     max-width: 420px;
     height: 58px;
-    padding: 4px 8px;
+    padding: 0 !important;
     background: var(--bg-surface, var(--bg-secondary));
     backdrop-filter: none !important;
     -webkit-backdrop-filter: none !important;
@@ -4395,6 +4622,10 @@ body.hide-furigana #btn-toggle-furigana {
     align-items: center;
     z-index: 1000;
     transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.22s ease, visibility 0.22s;
+    user-select: none;
+    -webkit-user-select: none;
+    touch-action: pan-y;
+    --slider-index: 0;
   }
 
   [data-theme="light"] .mobile-bottom-nav {
@@ -4409,14 +4640,44 @@ body.hide-furigana #btn-toggle-furigana {
     box-shadow: 0 10px 30px -4px rgba(0, 0, 0, 0.45), 0 4px 12px rgba(0, 0, 0, 0.25);
   }
 
+  /* Con trượt viên thuốc lướt mượt mà giữa các tab (Sliding Pill Indicator) */
+  .mobile-nav-slider-pill {
+    position: absolute;
+    top: 6px;
+    left: calc(10% + var(--slider-index, 0) * 20%);
+    width: 46px;
+    height: 28px;
+    border-radius: 9999px;
+    background: var(--primary);
+    box-shadow: 0 3px 14px rgba(224, 82, 68, 0.45);
+    pointer-events: none;
+    z-index: 1;
+    display: block;
+    transform: translateX(-50%);
+    transition: left 0.36s cubic-bezier(0.34, 1.45, 0.64, 1);
+    will-change: left;
+  }
+
+  [data-theme="light"] .mobile-nav-slider-pill {
+    background: var(--primary);
+    box-shadow: 0 3px 12px rgba(194, 53, 49, 0.38);
+  }
+
+  /* Định vị chính xác tuyệt đối theo data-active-index cho 5 tab */
+  .mobile-bottom-nav[data-active-index="0"] .mobile-nav-slider-pill { left: 10% !important; }
+  .mobile-bottom-nav[data-active-index="1"] .mobile-nav-slider-pill { left: 30% !important; }
+  .mobile-bottom-nav[data-active-index="2"] .mobile-nav-slider-pill { left: 50% !important; }
+  .mobile-bottom-nav[data-active-index="3"] .mobile-nav-slider-pill { left: 70% !important; }
+  .mobile-bottom-nav[data-active-index="4"] .mobile-nav-slider-pill { left: 90% !important; }
+
   .mobile-nav-item {
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: center;
-    gap: 2px;
-    height: 100%;
-    padding: 2px 0;
+    justify-content: flex-start;
+    gap: 3px;
+    height: 58px;
+    padding: 6px 0 4px;
     border-radius: 9999px;
     color: var(--text-muted);
     font-size: 10px;
@@ -4425,9 +4686,10 @@ body.hide-furigana #btn-toggle-furigana {
     background: transparent;
     border: none;
     cursor: pointer;
-    transition: color 0.2s ease, transform 0.15s ease;
+    transition: color 0.25s ease;
     user-select: none;
     -webkit-tap-highlight-color: transparent;
+    z-index: 2;
   }
 
   .mobile-nav-icon-wrap {
@@ -4437,44 +4699,46 @@ body.hide-furigana #btn-toggle-furigana {
     width: 46px;
     height: 28px;
     border-radius: 9999px;
-    background: transparent;
+    background: transparent !important;
+    box-shadow: none !important;
     color: inherit;
-    transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+    transition: color 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    position: relative;
+    z-index: 2;
   }
 
   .mobile-nav-icon {
     width: 18px;
     height: 18px;
     display: block;
-    transition: transform 0.2s ease;
+    transition: transform 0.25s ease;
   }
 
   .mobile-nav-label {
     font-size: 9.5px;
     font-weight: 600;
-    line-height: 1;
+    line-height: 1.2;
     color: inherit;
-    transition: color 0.2s ease, font-weight 0.2s ease;
+    transition: color 0.25s ease, font-weight 0.25s ease;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
     max-width: 100%;
+    position: relative;
+    z-index: 2;
   }
 
-  /* Tab đang chọn (Active): Khối màu bo tròn dạng viên thuốc bao quanh icon */
+  /* Tab đang chọn (Active) */
   .mobile-nav-item.active {
     color: var(--primary);
   }
 
   .mobile-nav-item.active .mobile-nav-icon-wrap {
-    background: var(--primary);
     color: #ffffff !important;
-    box-shadow: 0 3px 10px rgba(224, 82, 68, 0.38);
-    transform: scale(1.04);
   }
 
   .mobile-nav-item.active .mobile-nav-icon {
-    transform: scale(1.05);
+    transform: scale(1.08);
   }
 
   .mobile-nav-item.active .mobile-nav-label {
@@ -5902,15 +6166,46 @@ html[data-thermal-mode="true"] .toast-notification {
 }
 
 html[data-thermal-mode="true"] .sakura-petals-layer,
-html[data-thermal-mode="true"] .petal {
+html[data-thermal-mode="true"] .petal,
+html[data-thermal-mode="true"] .liquid-glass-bg .glass-blob {
   display: none !important;
+  animation: none !important;
+}
+
+html[data-thermal-mode="true"] .lesson-content.content-entering,
+html[data-thermal-mode="true"] .lesson-content.content-entering > *,
+html[data-thermal-mode="true"] .option-btn.correct,
+html[data-thermal-mode="true"] .option-btn.incorrect,
+html[data-thermal-mode="true"] .option-btn.wrong,
+html[data-thermal-mode="true"] .kq-opt.correct,
+html[data-thermal-mode="true"] .kq-opt.wrong,
+html[data-thermal-mode="true"] .speak-btn.is-speaking,
+html[data-thermal-mode="true"] .speak-btn-mini.is-speaking,
+html[data-thermal-mode="true"] .btn-tool.is-speaking,
+html[data-thermal-mode="true"] .kcard-audio-btn.is-speaking,
+html[data-thermal-mode="true"] .kanji-chip.is-speaking,
+html[data-thermal-mode="true"] .unanswered-pulse,
+html[data-thermal-mode="true"] .search-highlight-target {
   animation: none !important;
 }
 
 html[data-thermal-mode="true"] .kcard-char-box,
 html[data-thermal-mode="true"] .kanji-chip,
+html[data-thermal-mode="true"] .mobile-nav-slider-pill,
 html[data-thermal-mode="true"] .header-action-btn {
   transition: none !important;
+  box-shadow: none !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }
 
 /* ==========================================================================
@@ -6133,6 +6428,41 @@ body.focus-mode .app-layout {
 .kq-card-inner {
   -webkit-user-drag: none;
   user-drag: none;
+}
+
+/* ==========================================================================
+   MODULE LAZY LOADER (Hiển thị tải động nhanh khi nạp bài học mới)
+   ========================================================================== */
+.module-lazy-loader {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 64px 20px;
+  gap: 16px;
+  min-height: 280px;
+  text-align: center;
+}
+
+.lazy-loader-spinner {
+  width: 42px;
+  height: 42px;
+  border: 3.5px solid rgba(224, 82, 68, 0.16);
+  border-top-color: var(--primary);
+  border-radius: 50%;
+  animation: lazySpin 0.75s linear infinite;
+  will-change: transform;
+}
+
+@keyframes lazySpin {
+  to { transform: rotate(360deg); }
+}
+
+.lazy-loader-text {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-muted);
+  letter-spacing: 0.3px;
 }
 
 
