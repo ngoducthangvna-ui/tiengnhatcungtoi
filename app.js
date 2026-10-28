@@ -61,6 +61,10 @@ function _csKey(storageKey) {
  * Thay thế trực tiếp safeSetStorage cho các key quan trọng.
  */
 function secureSetStorage(key, value) {
+  if (typeof StorageEngine !== 'undefined' && typeof StorageEngine.secureSetItem === 'function') {
+    StorageEngine.secureSetItem(key, value);
+    return;
+  }
   try {
     if (typeof localStorage === 'undefined' || !localStorage.setItem) return;
     const cs = _fnv1aHash(String(value) + key);
@@ -77,6 +81,9 @@ function secureSetStorage(key, value) {
  * hệ thống trả về giá trị dự phòng (fallback) an toàn thay vì dữ liệu bị hack.
  */
 function secureGetStorage(key, fallback = null) {
+  if (typeof StorageEngine !== 'undefined' && typeof StorageEngine.secureGetItem === 'function') {
+    return StorageEngine.secureGetItem(key, fallback);
+  }
   try {
     if (typeof localStorage === 'undefined' || !localStorage.getItem) return fallback;
     const value = localStorage.getItem(key);
@@ -102,6 +109,9 @@ function secureGetStorage(key, fallback = null) {
  * Đọc JSON an toàn từ secureStorage với xác minh checksum + kiểm tra kiểu.
  */
 function secureGetJsonStorage(key, fallback = null, validator = null) {
+  if (typeof StorageEngine !== 'undefined' && typeof StorageEngine.secureGetJson === 'function') {
+    return StorageEngine.secureGetJson(key, fallback, validator);
+  }
   try {
     const raw = secureGetStorage(key, null);
     if (!raw) return fallback;
@@ -207,6 +217,9 @@ function secureGetJsonStorage(key, fallback = null, validator = null) {
 
 // Hàm mã hóa an toàn HTML chống tấn công DOM XSS
 function escapeHtml(str) {
+  if (typeof StorageEngine !== 'undefined' && typeof StorageEngine.escapeHtml === 'function') {
+    return StorageEngine.escapeHtml(str);
+  }
   if (str === null || str === undefined) return '';
   return String(str)
     .replace(/&/g, '&amp;')
@@ -235,6 +248,9 @@ function sanitizeDeepObject(obj) {
 }
 
 function safeGetStorage(key, fallback = null) {
+  if (typeof StorageEngine !== 'undefined' && typeof StorageEngine.getItem === 'function') {
+    return StorageEngine.getItem(key, fallback);
+  }
   try {
     if (typeof localStorage !== 'undefined' && localStorage.getItem) {
       const val = localStorage.getItem(key);
@@ -245,6 +261,10 @@ function safeGetStorage(key, fallback = null) {
 }
 
 function safeSetStorage(key, value) {
+  if (typeof StorageEngine !== 'undefined' && typeof StorageEngine.setItem === 'function') {
+    StorageEngine.setItem(key, value);
+    return;
+  }
   try {
     if (typeof localStorage !== 'undefined' && localStorage.setItem) {
       localStorage.setItem(key, value);
@@ -255,6 +275,10 @@ function safeSetStorage(key, value) {
 }
 
 function safeRemoveStorage(key) {
+  if (typeof StorageEngine !== 'undefined' && typeof StorageEngine.removeItem === 'function') {
+    StorageEngine.removeItem(key);
+    return;
+  }
   try {
     if (typeof localStorage !== 'undefined' && localStorage.removeItem) {
       localStorage.removeItem(key);
@@ -265,6 +289,9 @@ function safeRemoveStorage(key) {
 
 // Đọc JSON an toàn với bộ lọc Prototype Pollution và hàm kiểm tra kiểu (Validator)
 function safeGetJsonStorage(key, fallback = null, validator = null) {
+  if (typeof StorageEngine !== 'undefined' && typeof StorageEngine.getJson === 'function') {
+    return StorageEngine.getJson(key, fallback, validator);
+  }
   try {
     const raw = safeGetStorage(key);
     if (!raw) return fallback;
@@ -338,9 +365,9 @@ function applyDeviceSettings(settings) {
   const badge = document.getElementById('detected-device-badge');
   if (badge) {
     const labels = {
-      mobile: '📱 Điện thoại',
-      tablet: '📟 Máy tính bảng',
-      desktop: '💻 Máy tính'
+      mobile: 'Điện thoại',
+      tablet: 'Máy tính bảng',
+      desktop: 'Máy tính'
     };
     badge.textContent = (currentMode === 'auto' ? 'Tự động nhận diện: ' : 'Chế độ cố định: ') + (labels[effectiveDevice] || effectiveDevice);
   }
@@ -466,7 +493,7 @@ function initDeviceSettings() {
       saveDeviceSettings(newSettings);
       closeModal();
       triggerHaptic(20);
-      showToast('⚙️ Đã lưu cấu hình cá nhân hóa thiết bị thành công!');
+      showToast('Đã lưu cấu hình cá nhân hóa thiết bị thành công!');
     });
   }
 
@@ -522,7 +549,7 @@ let lastRadicalId = 'radicals-1';
 
 function extractLessonNumber(id) {
   if (!id) return null;
-  const m = String(id).match(/^(?:bai|quiz|dokkai|kanji)-(\d+)$/);
+  const m = String(id).match(/^(?:bai|quiz|dokkai|kanji|kanji-flashcard)-(\d+)$/);
   return m ? parseInt(m[1], 10) : null;
 }
 
@@ -583,7 +610,7 @@ window.toggleLessonComplete = function(id) {
     showToast("Đã hủy đánh dấu hoàn thành");
   } else {
     list.push(id);
-    showToast("🎉 Đã ghi nhận hoàn thành bài học!");
+    showToast("Đã ghi nhận hoàn thành bài học!");
   }
 
   secureSetStorage(STORAGE_COMPLETED_KEY, JSON.stringify(list));
@@ -663,7 +690,14 @@ function syncLoadedData() {
 
   lessonChunks.forEach(chunk => {
     if (Array.isArray(chunk)) {
-      chunk.forEach(l => { if (l && l.id) lessonMap.set(l.id, l); });
+      chunk.forEach(l => {
+        if (l && l.id) {
+          const norm = (typeof DataNormalizer !== 'undefined' && typeof DataNormalizer.normalizeLesson === 'function')
+            ? DataNormalizer.normalizeLesson(l)
+            : l;
+          lessonMap.set(norm.id, norm);
+        }
+      });
     }
   });
 
@@ -719,6 +753,10 @@ const _loadedScriptUrls = new Set();
 const _loadingScriptPromises = new Map();
 
 function getScriptUrlForModule(id) {
+  if (typeof CURRICULUM_MANIFEST !== 'undefined' && typeof CURRICULUM_MANIFEST.getScriptUrl === 'function') {
+    const manifestUrl = CURRICULUM_MANIFEST.getScriptUrl(id);
+    if (manifestUrl) return manifestUrl;
+  }
   if (!id || typeof id !== 'string') return null;
   const lessonMatch = id.match(/^(?:bai|lesson)-(\d+)$/);
   if (lessonMatch) {
@@ -747,6 +785,9 @@ function getScriptUrlForModule(id) {
 }
 
 function loadScriptAsync(src) {
+  if (typeof NavigationEngine !== 'undefined' && typeof NavigationEngine.loadScriptAsync === 'function') {
+    return NavigationEngine.loadScriptAsync(src, syncLoadedData);
+  }
   if (!src) return Promise.resolve();
   if (_loadedScriptUrls.has(src)) return Promise.resolve();
   if (_loadingScriptPromises.has(src)) return _loadingScriptPromises.get(src);
@@ -786,6 +827,10 @@ function loadScriptAsync(src) {
 }
 
 function isModuleDataReady(id) {
+  if (typeof NavigationEngine !== 'undefined' && typeof NavigationEngine.isModuleDataReady === 'function') {
+    syncLoadedData();
+    return NavigationEngine.isModuleDataReady(id);
+  }
   if (!id || typeof id !== 'string') return true;
   syncLoadedData();
   const root = (typeof window !== 'undefined' ? window : (typeof global !== 'undefined' ? global : {}));
@@ -815,6 +860,12 @@ function isModuleDataReady(id) {
 }
 
 function ensureModuleDataLoaded(id) {
+  if (typeof NavigationEngine !== 'undefined' && typeof NavigationEngine.ensureModuleDataLoaded === 'function') {
+    return NavigationEngine.ensureModuleDataLoaded(id, {
+      getUrl: getScriptUrlForModule,
+      onSync: syncLoadedData
+    });
+  }
   if (isModuleDataReady(id)) {
     return Promise.resolve();
   }
@@ -947,6 +998,9 @@ let currentSpeechAudio = null;
 let cachedLedaVoice = null;
 
 function cleanSpeechText(text) {
+  if (typeof AudioEngine !== 'undefined' && typeof AudioEngine.cleanSpeechText === 'function') {
+    return AudioEngine.cleanSpeechText(text);
+  }
   return String(text || '')
     .replace(/<rt>.*?<\/rt>/g, '')
     .replace(/<[^>]*>/g, '')
@@ -956,6 +1010,9 @@ function cleanSpeechText(text) {
 
 // Hàm chuẩn hóa và tạo nhịp ngắt nghỉ tự nhiên theo ngữ pháp tiếng Nhật (Prosody & Syntactic Phrasing)
 function formatJapaneseGrammarSpeech(text) {
+  if (typeof AudioEngine !== 'undefined' && typeof AudioEngine.applyProsody === 'function') {
+    return AudioEngine.applyProsody(text);
+  }
   if (!text) return '';
   let str = String(text).trim();
 
@@ -984,16 +1041,18 @@ function formatJapaneseGrammarSpeech(text) {
     return str;
   }
 
-  // 3. Ngắt nghỉ sau liên từ / thán từ ở đầu câu hoặc sau dấu chấm câu
-  const discourseWords = [
-    'そして', 'それから', 'それに', 'それで', 'ですから', 'だから',
-    'しかし', 'でも', 'けれども', 'だけど', 'また', 'あるいは', 'または',
-    'では', 'それでは', 'じゃ', 'ところで', 'たとえば', '例えば',
-    '実は', 'じつは', 'まず', 'つぎに', '次に', 'さいごに', '最後に',
-    'はい', 'いいえ', 'ええ', 'すみません', 'すいません', 'ごめんなさい',
-    'おはようございます', 'こんにちは', 'こんばんは', 'はじめまして',
-    'どうぞ', 'あのう', 'ええと'
-  ];
+  // 3. Ngắt nghỉ sau liên từ / thán từ ở đầu câu hoặc sau dấu chấm câu (Nạp từ data/audio_prosody_rules.js)
+  const discourseWords = (typeof window !== 'undefined' && window.DISCOURSE_PAUSE_WORDS)
+    || (typeof global !== 'undefined' && global.DISCOURSE_PAUSE_WORDS)
+    || [
+      'そして', 'それから', 'それに', 'それで', 'ですから', 'だから',
+      'しかし', 'でも', 'けれども', 'だけど', 'また', 'あるいは', 'または',
+      'では', 'それでは', 'じゃ', 'ところで', 'たとえば', '例えば',
+      '実は', 'じつは', 'まず', 'つぎに', '次に', 'さいごに', '最後に',
+      'はい', 'いいえ', 'ええ', 'すみません', 'すいません', 'ごめんなさい',
+      'おはようございます', 'こんにちは', 'こんばんは', 'はじめまして',
+      'どうぞ', 'あのう', 'ええと'
+    ];
   const discoursePattern = new RegExp(
     `(^|[。！？\\n])\\s*(${discourseWords.join('|')})(?:\\s*|(?=[ぁ-んァ-ヶ一-龥A-Za-z0-9]))(?!([、。！？』」）\\)]|$))`,
     'g'
@@ -1043,6 +1102,9 @@ function formatJapaneseGrammarSpeech(text) {
 window.formatJapaneseGrammarSpeech = formatJapaneseGrammarSpeech;
 
 function hasKanjiCharacter(text) {
+  if (typeof KanjiEngine !== 'undefined' && typeof KanjiEngine.hasKanji === 'function') {
+    return KanjiEngine.hasKanji(text);
+  }
   if (!text) return false;
   const clean = String(text).replace(/<[^>]*>/g, '');
   return /[\u4e00-\u9faf\u3400-\u4dbf\uf900-\ufaff]/.test(clean);
@@ -1439,6 +1501,14 @@ window.speakJapanese = speakJapanese;
 
 const SPEAKER_ICON_HTML = `<svg class="speaker-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path><path d="M19.07 4.93a10 10 0 0 1 0 14.14"></path></svg>`;
 
+/**
+ * HỆ THỐNG BIỂU TƯỢNG VECTOR SVG TINH TẾ & TỐI GIẢN (MINIMALIST & REFINED ICONS)
+ * Tách biệt tại data/ui_icons.js (Đồng bộ qua window.APP_ICONS kèm fallback an toàn).
+ */
+const APP_ICONS = (typeof window !== 'undefined' && window.APP_ICONS)
+  || (typeof global !== 'undefined' && global.APP_ICONS)
+  || {};
+
 function getWordCategoryKey(type) {
   const raw = String(type || '').trim();
   if (/nhóm\s*1|nhóm\s*2|nhóm\s*3|nhóm\s*i|đt|động\s*từ/i.test(raw)) return 'verb';
@@ -1622,6 +1692,20 @@ function renderSidebar() {
   const isInitialLoad = !sidebarMenu.children || sidebarMenu.children.length === 0;
   sidebarMenu.innerHTML = '';
 
+  // Nút truy cập nhanh Từ Điển trên Sidebar
+  const maziiQuickEl = document.createElement('div');
+  maziiQuickEl.className = 'sidebar-mazii-quick';
+  maziiQuickEl.innerHTML = `
+    <button type="button" class="sidebar-mazii-btn ${currentActiveId === 'mazii-dict' ? 'active' : ''}" onclick="switchModule('mazii-dict')" title="Tra cứu từ vựng, chữ Hán và viết tay">
+      <span class="mazii-quick-left">
+        <span class="mazii-icon">${APP_ICONS.book}</span>
+        <span class="mazii-title">Từ Điển &amp; Viết Tay</span>
+      </span>
+      <span class="mazii-badge">Tra từ</span>
+    </button>
+  `;
+  sidebarMenu.appendChild(maziiQuickEl);
+
   const root = (typeof window !== 'undefined' ? window : (typeof global !== 'undefined' ? global : {}));
   const loadedLessons = Array.isArray(root.lessonsData) ? root.lessonsData : (typeof lessonsData !== 'undefined' && Array.isArray(lessonsData) ? lessonsData : []);
   const loadedQuizzes = (root.practiceQuizData && typeof root.practiceQuizData === 'object') ? root.practiceQuizData : (typeof practiceQuizData !== 'undefined' && practiceQuizData ? practiceQuizData : {});
@@ -1797,31 +1881,41 @@ function renderSidebar() {
 }
 
 // --------------------------------------------------------------------------
-// 3B. THANH ĐỒNG BỘ 4 CHẾ ĐỘ HỌC TẬP THEO TỪNG BÀI (BÀI HỌC - TRẮC NGHIỆM - ĐỌC HIỂU - MẸO NHỚ KANJI)
+// 3B. THANH ĐỒNG BỘ CÁC CHẾ ĐỘ HỌC TẬP THEO TỪNG BÀI (BÀI HỌC - MẸO NHỚ - FLASHCARD - BÀI TẬP - ĐỌC HIỂU)
 // --------------------------------------------------------------------------
+let currentKanjiTab = (typeof window !== 'undefined' && window.currentKanjiTab) ? window.currentKanjiTab : 'list';
+if (typeof window !== 'undefined') window.currentKanjiTab = currentKanjiTab;
+
 function renderModuleSyncBar(lessonNum, activeMode) {
   const num = parseInt(lessonNum, 10) || 1;
   const prevNum = num > 1 ? num - 1 : null;
   const nextNum = num < 50 ? num + 1 : null;
   const modePrefix = activeMode === 'quiz' ? 'quiz' : (activeMode === 'dokkai' ? 'dokkai' : (activeMode === 'kanji' ? 'kanji' : 'bai'));
+  const isKanji = activeMode === 'kanji';
+  const isFcTab = isKanji && (typeof currentKanjiTab !== 'undefined' && currentKanjiTab === 'flashcard');
+  const isListTab = isKanji && !isFcTab;
 
   return `
     <div class="module-sync-bar" aria-label="Chuyển nhanh chế độ học Bài ${num}">
       <div class="module-sync-tabs">
         <button type="button" class="sync-tab-btn ${activeMode === 'lesson' ? 'active' : ''}" onclick="switchModule('bai-${num}')">
-          <span class="sync-tab-icon">📖</span>
+          <span class="sync-tab-icon">${APP_ICONS.book}</span>
           <span>Lý thuyết Bài ${num}</span>
         </button>
-        <button type="button" class="sync-tab-btn ${activeMode === 'kanji' ? 'active' : ''}" onclick="switchModule('kanji-${num}')">
-          <span class="sync-tab-icon">💡</span>
+        <button type="button" class="sync-tab-btn ${isListTab ? 'active' : ''}" onclick="switchKanjiModule('${num}', 'list')">
+          <span class="sync-tab-icon">${APP_ICONS.lightbulb}</span>
           <span>Mẹo nhớ Kanji</span>
         </button>
+        <button type="button" class="sync-tab-btn ${isFcTab ? 'active' : ''}" onclick="switchKanjiModule('${num}', 'flashcard')">
+          <span class="sync-tab-icon">${APP_ICONS.cards}</span>
+          <span>Kiểm tra Flashcard</span>
+        </button>
         <button type="button" class="sync-tab-btn ${activeMode === 'quiz' ? 'active' : ''}" onclick="switchModule('quiz-${num}')">
-          <span class="sync-tab-icon">✍️</span>
+          <span class="sync-tab-icon">${APP_ICONS.pen}</span>
           <span>Trắc nghiệm (50 câu)</span>
         </button>
         <button type="button" class="sync-tab-btn ${activeMode === 'dokkai' ? 'active' : ''}" onclick="switchModule('dokkai-${num}')">
-          <span class="sync-tab-icon">📜</span>
+          <span class="sync-tab-icon">${APP_ICONS.exercise}</span>
           <span>Đọc hiểu Bài ${num}</span>
         </button>
       </div>
@@ -1843,12 +1937,13 @@ function renderModuleFooterNav(lessonNum, activeMode) {
   const prevNum = num > 1 ? num - 1 : null;
   const nextNum = num < 50 ? num + 1 : null;
   const modePrefix = activeMode === 'quiz' ? 'quiz' : (activeMode === 'dokkai' ? 'dokkai' : (activeMode === 'kanji' ? 'kanji' : 'bai'));
+  const isFc = (typeof currentKanjiTab !== 'undefined' && currentKanjiTab === 'flashcard');
 
   return `
     <div class="module-footer-nav">
       <div class="footer-next-steps">
         ${activeMode === 'lesson' ? `
-          <button type="button" class="footer-cta-card accent-amber" onclick="switchModule('kanji-${num}')">
+          <button type="button" class="footer-cta-card accent-amber" onclick="switchKanjiModule('${num}', 'list')">
             <span class="footer-cta-tag">Ghi nhớ chữ Hán</span>
             <strong class="footer-cta-title">Mẹo nhớ Kanji Bài ${num} →</strong>
             <span class="footer-cta-sub">Chiết tự & mẹo nhớ chữ Hán xuất hiện trong bài</span>
@@ -1864,10 +1959,10 @@ function renderModuleFooterNav(lessonNum, activeMode) {
             <span class="footer-cta-sub">Đoạn văn thực tế kèm 100% Furigana & âm thanh</span>
           </button>
         ` : activeMode === 'quiz' ? `
-          <button type="button" class="footer-cta-card accent-amber" onclick="switchModule('kanji-${num}')">
+          <button type="button" class="footer-cta-card accent-amber" onclick="switchKanjiModule('${num}', 'flashcard')">
             <span class="footer-cta-tag">Củng cố Kanji</span>
-            <strong class="footer-cta-title">Mẹo nhớ Kanji Bài ${num} →</strong>
-            <span class="footer-cta-sub">Chiết tự & mẹo nhớ giúp làm tốt phần chữ Hán</span>
+            <strong class="footer-cta-title">Kiểm tra Flashcard Kanji Bài ${num} →</strong>
+            <span class="footer-cta-sub">Lật thẻ 3D & kiểm tra phản xạ chữ Hán</span>
           </button>
           <button type="button" class="footer-cta-card accent-sakura" onclick="switchModule('bai-${num}')">
             <span class="footer-cta-tag">Ôn lại kiến thức</span>
@@ -1880,7 +1975,7 @@ function renderModuleFooterNav(lessonNum, activeMode) {
             <span class="footer-cta-sub">Áp dụng ngữ pháp vào bài đọc thực tế</span>
           </button>
         ` : activeMode === 'dokkai' ? `
-          <button type="button" class="footer-cta-card accent-amber" onclick="switchModule('kanji-${num}')">
+          <button type="button" class="footer-cta-card accent-amber" onclick="switchKanjiModule('${num}', 'list')">
             <span class="footer-cta-tag">Học chữ Hán bài này</span>
             <strong class="footer-cta-title">Mẹo nhớ Kanji Bài ${num} →</strong>
             <span class="footer-cta-sub">Chiết tự dễ thuộc & từ vựng bài đọc</span>
@@ -1896,15 +1991,33 @@ function renderModuleFooterNav(lessonNum, activeMode) {
             <span class="footer-cta-sub">Củng cố toàn diện kiến thức Bài ${num}</span>
           </button>
         ` : `
+          ${isFc ? `
+            <button type="button" class="footer-cta-card accent-amber" onclick="switchKanjiTab('list', true)">
+              <span class="footer-cta-tag">Xem lại chiết tự</span>
+              <strong class="footer-cta-title">← Bảng Mẹo nhớ Kanji Bài ${num}</strong>
+              <span class="footer-cta-sub">Tra cứu chi tiết chiết tự bộ thủ và âm On/Kun</span>
+            </button>
+            <button type="button" class="footer-cta-card accent-sky" onclick="switchModule('quiz-${num}')">
+              <span class="footer-cta-tag">Bước tiếp theo</span>
+              <strong class="footer-cta-title">Làm 50 câu Trắc nghiệm Bài ${num} →</strong>
+              <span class="footer-cta-sub">Kiểm tra khả năng nhận diện Kanji & ngữ pháp</span>
+            </button>
+          ` : `
+            <button type="button" class="footer-cta-card accent-amber" onclick="switchKanjiTab('flashcard', true)">
+              <span class="footer-cta-tag">Kiểm tra ghi nhớ</span>
+              <strong class="footer-cta-title">Kiểm tra Flashcard Bài ${num} →</strong>
+              <span class="footer-cta-sub">Lật thẻ 3D kiểm tra phản xạ & đánh giá mức độ nhớ</span>
+            </button>
+            <button type="button" class="footer-cta-card accent-sky" onclick="switchModule('quiz-${num}')">
+              <span class="footer-cta-tag">Luyện đề</span>
+              <strong class="footer-cta-title">Làm 50 câu Trắc nghiệm Bài ${num} →</strong>
+              <span class="footer-cta-sub">Kiểm tra toàn diện từ vựng, ngữ pháp & chữ Hán</span>
+            </button>
+          `}
           <button type="button" class="footer-cta-card accent-sakura" onclick="switchModule('bai-${num}')">
             <span class="footer-cta-tag">Lý thuyết chính</span>
             <strong class="footer-cta-title">← Lý thuyết Bài ${num}</strong>
             <span class="footer-cta-sub">Học từ vựng và cấu trúc ngữ pháp</span>
-          </button>
-          <button type="button" class="footer-cta-card accent-sky" onclick="switchModule('quiz-${num}')">
-            <span class="footer-cta-tag">Luyện đề</span>
-            <strong class="footer-cta-title">Làm 50 câu Trắc nghiệm Bài ${num} →</strong>
-            <span class="footer-cta-sub">Kiểm tra khả năng nhận diện Kanji & ngữ pháp</span>
           </button>
           <button type="button" class="footer-cta-card accent-emerald" onclick="switchModule('dokkai-${num}')">
             <span class="footer-cta-tag">Đọc hiểu</span>
@@ -2077,16 +2190,22 @@ function renderContent(id) {
             <div class="grammar-item-card">
               <div class="grammar-formula-bar">
                 <span class="grammar-index-pill">Ngữ pháp ${String(gIdx + 1).padStart(2, '0')}</span>
-                <div class="grammar-formula">${g.structure}</div>
+                <div class="grammar-formula">${g.structure || g.pattern || g.title || ''}</div>
               </div>
               <div class="grammar-usage">
-                <div class="usage-title"><strong>💡 Ý nghĩa & Cách dùng:</strong></div>
-                <div class="usage-text">${g.explanation.replace(/\n/g, '<br>')}</div>
+                <div class="usage-title">
+                  ${APP_ICONS.lightbulb}
+                  <strong>Ý nghĩa &amp; Cách dùng:</strong>
+                </div>
+                <div class="usage-text">${(g.explanation || '').replace(/\n/g, '<br>')}</div>
               </div>
               ${g.caution ? `
                 <div class="grammar-note">
-                  <div class="note-title"><strong>⚠️ Lưu ý tránh bẫy trong đề thi:</strong></div>
-                  <div class="note-text">${g.caution.replace(/\n/g, '<br>')}</div>
+                  <div class="note-title">
+                    ${APP_ICONS.alert}
+                    <strong>Lưu ý tránh bẫy trong đề thi:</strong>
+                  </div>
+                  <div class="note-text">${(g.caution || '').replace(/\n/g, '<br>')}</div>
                 </div>
               ` : ''}
               
@@ -2157,7 +2276,10 @@ function renderContent(id) {
       <!-- THANH ĐIỀU HƯỚNG CÂU HỎI & ĐỒNG HỒ ĐẾM NGƯỢC 30 PHÚT -->
       <div class="quiz-top-bar">
         <div class="quiz-timer-wrap">
-          <span>⏱ Thời gian:</span>
+          <span style="display:inline-flex;align-items:center;gap:4px;">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+            <span>Thời gian:</span>
+          </span>
           <span class="quiz-timer-display" id="quiz-timer-clock">30:00</span>
           <button id="btn-pause-timer" class="quiz-palette-toggle-btn" onclick="toggleQuizTimer()">Tạm dừng</button>
         </div>
@@ -2241,16 +2363,28 @@ function renderContent(id) {
     return;
   }
 
-  // 4. TRƯỜNG HỢP: MẸO NHỚ CHỮ HÁN 50 BÀI (kanji-1 đến kanji-50)
+  // 4. TRƯỜNG HỢP: MẸO NHỚ CHỮ HÁN 50 BÀI (kanji-1 đến kanji-50 hoặc kanji-flashcard-1 đến kanji-flashcard-50)
   if (id.startsWith('kanji-')) {
-    renderKanjiSection(id);
+    const isFc = id.startsWith('kanji-flashcard-');
+    renderKanjiSection(id, isFc ? 'flashcard' : null);
     restoreScrollPosition(getModuleScroll(id));
     return;
   }
 
-  // 5. TRƯỜNG HỢP: BỘ THỦ TIẾNG NHẬT (radicals-1 đến radicals-17)
+  // 5. TRƯỜNG HỢP: BỘ THỦ TIẾNG NHẬT (radicals-1 đến radicals-17 hoặc radicals-flashcard-1 đến radicals-flashcard-17)
   if (id.startsWith('radicals-')) {
-    renderRadicalSection(id);
+    const isFc = id.startsWith('radicals-flashcard-');
+    renderRadicalSection(id, isFc ? 'flashcard' : null);
+    restoreScrollPosition(getModuleScroll(id));
+    return;
+  }
+
+  // 6. TRƯỜNG HỢP: TRA TỪ ĐIỂN MAZII & VIẾT TAY (mazii-dict)
+  if (id === 'mazii-dict' || id.startsWith('mazii-dict')) {
+    const qMatch = id.match(/mazii-dict\?(?:q=([^&]*))?(?:&type=([^&]*))?/);
+    const initialQuery = qMatch && qMatch[1] ? decodeURIComponent(qMatch[1]) : '';
+    const initialType = qMatch && qMatch[2] ? decodeURIComponent(qMatch[2]) : 'word';
+    renderMaziiDictSection(initialQuery, initialType);
     restoreScrollPosition(getModuleScroll(id));
     return;
   }
@@ -2264,6 +2398,9 @@ function renderContent(id) {
 // - Nội dung bố trí ngăn nắp, thoáng đãng, tuyệt đối không đè lẫn lên nhau
 // --------------------------------------------------------------------------
 function formatKanjiMnemonic(raw) {
+  if (typeof KanjiEngine !== 'undefined' && typeof KanjiEngine.formatMnemonic === 'function') {
+    return KanjiEngine.formatMnemonic(raw);
+  }
   if (!raw) return '<div class="mnemonic-row"><span class="mnemonic-text">Đang cập nhật mẹo nhớ...</span></div>';
   const lines = String(raw).split('\n').map(l => l.trim()).filter(Boolean);
   return lines.map(line => {
@@ -2295,7 +2432,7 @@ function formatKanjiMnemonic(raw) {
   }).join('');
 }
 
-function renderKanjiSection(sectionId) {
+function renderKanjiSection(sectionId, forcedTab = null) {
   const content = document.getElementById('lesson-content');
   if (!content) return;
 
@@ -2304,11 +2441,23 @@ function renderKanjiSection(sectionId) {
     return;
   }
 
-  const lesson = kanjiLessonsData.find(k => k.id === sectionId) || kanjiLessonsData[0];
+  const lessonNum = extractLessonNumber(sectionId) || 1;
+  const lesson = kanjiLessonsData.find(k => k.lesson === lessonNum || k.id === `kanji-${lessonNum}`) || kanjiLessonsData[0];
   if (!lesson) return;
 
-  const lessonNum = lesson.lesson;
-  const isCompleted = isModuleCompleted(sectionId);
+  currentKfcLesson = lesson;
+  const isDirectFc = String(sectionId).startsWith('kanji-flashcard-');
+  if (forcedTab) {
+    currentKanjiTab = forcedTab;
+  } else if (isDirectFc) {
+    currentKanjiTab = 'flashcard';
+  } else if (!currentKanjiTab) {
+    currentKanjiTab = 'list';
+  }
+
+  const isCompleted = isModuleCompleted(lesson.id);
+  const learnedSet = loadKanjiLearnedSet(lessonNum);
+  const learnedCount = (lesson.items || []).filter(it => learnedSet.has(it.id)).length;
 
   content.innerHTML = `
     ${renderModuleSyncBar(lessonNum, 'kanji')}
@@ -2320,6 +2469,7 @@ function renderKanjiSection(sectionId) {
           <span class="badge badge-sakura">${lesson.level}</span>
           <span class="badge badge-primary">${lesson.items.length} Từ Vựng Chữ Hán</span>
           <span class="badge badge-green">100% Kèm Mẹo Nhớ &amp; Cấu Thành</span>
+          ${learnedCount > 0 ? `<span class="badge badge-amber">Đã nhớ: ${learnedCount}/${lesson.items.length} thẻ</span>` : ''}
         </div>
         <button class="btn-complete-icon ${isCompleted ? 'is-completed' : ''}" 
                 onclick="toggleLessonComplete('${lesson.id}')"
@@ -2332,91 +2482,1219 @@ function renderKanjiSection(sectionId) {
       <p class="lesson-desc">${lesson.description}</p>
     </div>
 
-    <!-- Thanh tìm kiếm lọc nhanh từ vựng trong bài này -->
-    <div class="kanji-search-toolbar">
-      <div class="vocab-filter-search" style="flex: 1; max-width: 520px;">
-        <input type="text"
-               id="kanji-inline-search"
-               class="vocab-search-input"
-               placeholder="Tìm nhanh từ vựng, âm Hán Việt, cách đọc, mẹo nhớ trong bài này..."
-               oninput="filterLessonKanji(this.value)">
-      </div>
-      <div class="kanji-view-stats">
-        <span id="kanji-count-badge" class="badge badge-primary">Hiển thị: ${lesson.items.length}/${lesson.items.length} từ vựng</span>
-      </div>
-    </div>
-
-    <!-- Danh sách các thẻ từ vựng: BỐ TRÍ TẬP TRUNG VÀO TỪ VỰNG & MẸO GHI NHỚ -->
-    <div class="kanji-cards-container" id="kanji-cards-list">
-      ${lesson.items.map((item, idx) => `
-        <article class="kanji-study-card" id="kcard-${item.id}" data-word="${item.word}" data-reading="${item.reading || ''}" data-kanji="${item.kanji || item.word}" data-hanviet="${item.hanViet}" data-meaning="${item.meaning}">
-          
-          <!-- DÒNG TRÊN: TIÊU ĐỀ TỪ VỰNG CHỮ HÁN, ÂM HÁN VIỆT & NGHĨA -->
-          <div class="kcard-top-section">
-            <div class="kcard-word-banner">
-              <div class="kcard-word-info">
-                <div class="kcard-word-title-group">
-                  <h3 class="kcard-word-kanji">${item.word}</h3>
-                  ${item.reading ? `<span class="kcard-word-reading">${item.reading}</span>` : ''}
-                  <button type="button" class="kcard-audio-btn" onclick="speakJapanese('${(item.reading || item.word).replace(/\[.*?\]/g, '').replace(/\(.*?\)/g, '').trim()}', this, event)" title="Nghe phát âm từ: ${item.word}">
-                    <span class="audio-btn-icon">🔊</span>
-                    <span>Nghe</span>
-                  </button>
-                </div>
-                <div class="kcard-word-meaning-line">
-                  <span class="kcard-word-meaning-text">${item.meaning}</span>
-                </div>
-              </div>
-
-              <div class="kcard-word-badges">
-                <div class="kcard-hv-badge-wrap">
-                  <span class="kcard-hv-tag">Hán Việt</span>
-                  <strong class="kcard-word-hanviet">${item.hanViet}</strong>
-                </div>
-                <div class="kcard-badge-row">
-                  <span class="badge ${item.kanjiCount > 1 ? 'badge-primary' : 'badge-sakura'}">
-                    ${item.kanjiCount > 1 ? `${item.kanjiCount} chữ ghép` : 'Chữ đơn'}
-                  </span>
-                  ${item.type ? `<span class="badge badge-subtle">${item.type}</span>` : ''}
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <!-- DÒNG BÊN DƯỚI: TRỌNG TÂM MẸO GHI NHỚ & CẤU THÀNH -->
-          <div class="kcard-bottom-section">
-            <div class="kcard-mnemonic-box">
-              <div class="mnemonic-badge-header">
-                <span class="mnemonic-icon">💡</span>
-                <strong class="mnemonic-title">Mẹo Ghi Nhớ & Cấu Thành</strong>
-              </div>
-              <div class="mnemonic-content-flow">
-                ${formatKanjiMnemonic(item.mnemonic)}
-              </div>
-            </div>
-          </div>
-
-        </article>
-      `).join('')}
-    </div>
-
-    <!-- Khối đánh dấu hoàn thành cuối phần Mẹo nhớ Kanji -->
-    <div class="lesson-completion-card">
-      <div class="completion-card-inner">
-        <div class="completion-text-wrap">
-          <h4 class="completion-heading">Hoàn thành Mẹo nhớ Kanji Bài ${lessonNum}</h4>
-          <p class="completion-sub">Bạn đã ghi nhớ toàn bộ các chữ Hán và mẹo chiết tự của bài này?</p>
-        </div>
-        <button id="btn-complete-lesson" 
-                class="btn-complete-lesson ${isCompleted ? 'is-completed' : ''}" 
-                onclick="toggleLessonComplete('${lesson.id}')">
-          ${isCompleted ? '✓ Đã hoàn thành (Bấm để hủy)' : '✓ Đánh dấu hoàn thành phần này'}
+    <!-- THANH ĐIỀU HƯỚNG 2 THẺ RIÊNG BIỆT: DANH SÁCH MẸO NHỚ & BÀI KIỂM TRA FLASHCARD -->
+    <div class="kanji-tab-nav-wrapper">
+      <div class="kanji-tab-nav" role="tablist" aria-label="Chế độ học Chữ Hán Bài ${lessonNum}">
+        <button type="button" 
+                class="kanji-tab-btn ${currentKanjiTab === 'list' ? 'active' : ''}" 
+                id="tab-btn-kanji-list" 
+                role="tab" 
+                aria-selected="${currentKanjiTab === 'list' ? 'true' : 'false'}"
+                onclick="switchKanjiTab('list')">
+          <span class="kanji-tab-icon">${APP_ICONS.lightbulb}</span>
+          <span class="kanji-tab-title">Chiết Tự &amp; Mẹo Nhớ</span>
+          <span class="kanji-tab-pill">${lesson.items.length} Chữ Hán</span>
         </button>
+        <button type="button" 
+                class="kanji-tab-btn ${currentKanjiTab === 'flashcard' ? 'active' : ''}" 
+                id="tab-btn-kanji-flashcard" 
+                role="tab" 
+                aria-selected="${currentKanjiTab === 'flashcard' ? 'true' : 'false'}"
+                onclick="switchKanjiTab('flashcard')">
+          <span class="kanji-tab-icon">${APP_ICONS.cards}</span>
+          <span class="kanji-tab-title">Kiểm Tra Flashcard</span>
+          <span class="kanji-tab-pill accent-amber">Luyện Trí Nhớ</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- THẺ 1: DANH SÁCH CHI TIẾT CHIẾT TỰ & MẸO GHI NHỚ -->
+    <div id="kanji-tab-pane-list" style="display: ${currentKanjiTab === 'list' ? 'block' : 'none'};">
+      
+      <!-- Thanh tìm kiếm lọc nhanh từ vựng trong bài này -->
+      <div class="kanji-search-toolbar">
+        <div class="vocab-filter-search" style="flex: 1; max-width: 520px;">
+          <input type="text"
+                 id="kanji-inline-search"
+                 class="vocab-search-input"
+                 placeholder="Tìm nhanh từ vựng, âm Hán Việt, cách đọc, mẹo nhớ trong bài này..."
+                 oninput="filterLessonKanji(this.value)">
+        </div>
+        <div class="kanji-view-stats">
+          <span id="kanji-count-badge" class="badge badge-primary">Hiển thị: ${lesson.items.length}/${lesson.items.length} từ vựng</span>
+        </div>
+      </div>
+
+      <!-- Danh sách các thẻ từ vựng: BỐ TRÍ TẬP TRUNG VÀO TỪ VỰNG & MẸO GHI NHỚ -->
+      <div class="kanji-cards-container" id="kanji-cards-list">
+        ${lesson.items.map((item, idx) => `
+          <article class="kanji-study-card" id="kcard-${item.id}" data-word="${item.word}" data-reading="${item.reading || ''}" data-kanji="${item.kanji || item.word}" data-hanviet="${item.hanViet}" data-meaning="${item.meaning}">
+            
+            <!-- DÒNG TRÊN: TIÊU ĐỀ TỪ VỰNG CHỮ HÁN, ÂM HÁN VIỆT & NGHĨA -->
+            <div class="kcard-top-section">
+              <div class="kcard-word-banner">
+                <div class="kcard-word-info">
+                  <div class="kcard-word-title-group">
+                    <h3 class="kcard-word-kanji">${item.word}</h3>
+                    ${item.reading ? `<span class="kcard-word-reading">${item.reading}</span>` : ''}
+                    <button type="button" class="kcard-audio-btn" onclick="speakJapanese('${(item.reading || item.word).replace(/\[.*?\]/g, '').replace(/\(.*?\)/g, '').trim()}', this, event)" title="Nghe phát âm từ: ${item.word}">
+                      <span class="audio-btn-icon">${SPEAKER_ICON_HTML}</span>
+                      <span>Nghe</span>
+                    </button>
+                  </div>
+                  <div class="kcard-word-meaning-line">
+                    <span class="kcard-word-meaning-text">${item.meaning}</span>
+                  </div>
+                </div>
+
+                <div class="kcard-word-badges">
+                  <div class="kcard-hv-badge-wrap">
+                    <span class="kcard-hv-tag">Hán Việt</span>
+                    <strong class="kcard-word-hanviet">${item.hanViet}</strong>
+                  </div>
+                  <div class="kcard-badge-row">
+                    <span class="badge ${item.kanjiCount > 1 ? 'badge-primary' : 'badge-sakura'}">
+                      ${item.kanjiCount > 1 ? `${item.kanjiCount} chữ ghép` : 'Chữ đơn'}
+                    </span>
+                    ${item.type ? `<span class="badge badge-subtle">${item.type}</span>` : ''}
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- DÒNG BÊN DƯỚI: TRỌNG TÂM MẸO GHI NHỚ & CẤU THÀNH -->
+            <div class="kcard-bottom-section">
+              <div class="kcard-mnemonic-box">
+                <div class="mnemonic-badge-header">
+                  <span class="mnemonic-icon">${APP_ICONS.lightbulb}</span>
+                  <strong class="mnemonic-title">Mẹo Ghi Nhớ & Cấu Thành</strong>
+                </div>
+                <div class="mnemonic-content-flow">
+                  ${formatKanjiMnemonic(item.mnemonic)}
+                </div>
+              </div>
+            </div>
+
+          </article>
+        `).join('')}
+      </div>
+
+      <!-- KHỐI GỢI Ý CHUYỂN SANG BÀI KIỂM TRA FLASHCARD -->
+      <div class="kcard-switch-cta-box">
+        <div class="switch-cta-icon">${APP_ICONS.cards}</div>
+        <div class="switch-cta-info">
+          <h4 class="switch-cta-title">Sẵn sàng kiểm tra trí nhớ Kanji Bài ${lessonNum}?</h4>
+          <p class="switch-cta-desc">Chuyển sang Thẻ Kiểm Tra Flashcard để lật thẻ 3D, kiểm tra phản xạ câu chuyện mẹo nhớ và tự đánh giá xem bạn đã thuộc bao nhiêu chữ Hán!</p>
+        </div>
+        <button type="button" class="btn-switch-kfc" onclick="switchKanjiTab('flashcard', true)">
+          <span>Bắt đầu Kiểm tra Flashcard →</span>
+        </button>
+      </div>
+
+      <!-- Khối đánh dấu hoàn thành cuối phần Mẹo nhớ Kanji -->
+      <div class="lesson-completion-card">
+        <div class="completion-card-inner">
+          <div class="completion-text-wrap">
+            <h4 class="completion-heading">Hoàn thành Mẹo nhớ Kanji Bài ${lessonNum}</h4>
+            <p class="completion-sub">Bạn đã ghi nhớ toàn bộ các chữ Hán và mẹo chiết tự của bài này?</p>
+          </div>
+          <button id="btn-complete-lesson" 
+                  class="btn-complete-lesson ${isCompleted ? 'is-completed' : ''}" 
+                  onclick="toggleLessonComplete('${lesson.id}')">
+            ${isCompleted ? '✓ Đã hoàn thành (Bấm để hủy)' : '✓ Đánh dấu hoàn thành phần này'}
+          </button>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- THẺ 2: BÀI KIỂM TRA FLASHCARD MẸO NHỚ (TÁCH RIÊNG HOÀN TOÀN) -->
+    <div id="kanji-tab-pane-flashcard" style="display: ${currentKanjiTab === 'flashcard' ? 'block' : 'none'};">
+      <div id="kanji-flashcard-mount"></div>
+
+      <!-- Khối đánh dấu hoàn thành cuối phần Flashcard -->
+      <div class="lesson-completion-card">
+        <div class="completion-card-inner">
+          <div class="completion-text-wrap">
+            <h4 class="completion-heading">Hoàn thành Kiểm tra Flashcard Bài ${lessonNum}</h4>
+            <p class="completion-sub">Bạn đã thuộc hết bộ thẻ Flashcard và trả lời đúng các câu hỏi phản xạ?</p>
+          </div>
+          <button class="btn-complete-lesson ${isCompleted ? 'is-completed' : ''}" 
+                  onclick="toggleLessonComplete('${lesson.id}')">
+            ${isCompleted ? '✓ Đã hoàn thành (Bấm để hủy)' : '✓ Đánh dấu hoàn thành phần này'}
+          </button>
+        </div>
       </div>
     </div>
 
     ${renderModuleFooterNav(lessonNum, 'kanji')}
   `;
+
+  // Khởi tạo Studio Flashcard
+  initKanjiFlashcardStudio(lesson);
+}
+
+// --------------------------------------------------------------------------
+// 4D. HỆ THỐNG ĐIỀU KHIỂN & BÀI KIỂM TRA FLASHCARD MẸO NHỚ KANJI
+// --------------------------------------------------------------------------
+let currentKfcLesson = null;
+let kfcDeck = [];
+let kfcFilter = 'all'; // 'all' | 'unlearned' | 'learned'
+let kfcMode = 'kanji-first'; // 'kanji-first' | 'mnemonic-first' | 'quiz-mode'
+let kfcIndex = 0;
+let kfcLearnedSet = new Set();
+let kfcKeydownAttached = false;
+let kfcQuizDeck = [];
+let kfcQuizIndex = 0;
+let kfcQuizScore = 0;
+let kfcQuizAdvanceTimer = null;
+
+function getKanjiLearnedStorageKey(lessonNum) {
+  return `minna_kfc_learned_l${lessonNum}`;
+}
+
+function loadKanjiLearnedSet(lessonNum) {
+  if (typeof KanjiEngine !== 'undefined' && typeof KanjiEngine.loadLearnedSet === 'function') {
+    return KanjiEngine.loadLearnedSet(lessonNum);
+  }
+  const arr = safeGetJsonStorage(getKanjiLearnedStorageKey(lessonNum), [], Array.isArray);
+  return new Set(Array.isArray(arr) ? arr : []);
+}
+
+function saveKanjiLearnedSet(lessonNum, learnedSet) {
+  if (typeof KanjiEngine !== 'undefined' && typeof KanjiEngine.saveLearnedSet === 'function') {
+    KanjiEngine.saveLearnedSet(lessonNum, learnedSet);
+    return;
+  }
+  const arr = Array.from(learnedSet);
+  safeSetStorage(getKanjiLearnedStorageKey(lessonNum), JSON.stringify(arr));
+}
+
+window.switchKanjiTab = function(tabName, shouldScroll = false) {
+  currentKanjiTab = tabName === 'flashcard' ? 'flashcard' : 'list';
+  if (typeof window !== 'undefined') window.currentKanjiTab = currentKanjiTab;
+
+  const listBtn = document.getElementById('tab-btn-kanji-list');
+  const fcBtn = document.getElementById('tab-btn-kanji-flashcard');
+  const listPane = document.getElementById('kanji-tab-pane-list');
+  const fcPane = document.getElementById('kanji-tab-pane-flashcard');
+
+  if (listBtn) {
+    listBtn.classList.toggle('active', currentKanjiTab === 'list');
+    listBtn.setAttribute('aria-selected', currentKanjiTab === 'list' ? 'true' : 'false');
+  }
+  if (fcBtn) {
+    fcBtn.classList.toggle('active', currentKanjiTab === 'flashcard');
+    fcBtn.setAttribute('aria-selected', currentKanjiTab === 'flashcard' ? 'true' : 'false');
+  }
+
+  if (listPane) listPane.style.display = currentKanjiTab === 'list' ? 'block' : 'none';
+  if (fcPane) fcPane.style.display = currentKanjiTab === 'flashcard' ? 'block' : 'none';
+
+  // Đồng bộ trạng thái sync-tab trên Desktop
+  const syncTabs = document.querySelectorAll ? document.querySelectorAll('.sync-tab-btn') : [];
+  syncTabs.forEach(btn => {
+    const text = btn.textContent || '';
+    if (text.includes('Mẹo nhớ Kanji')) {
+      btn.classList.toggle('active', currentKanjiTab === 'list');
+    } else if (text.includes('Kiểm tra Flashcard')) {
+      btn.classList.toggle('active', currentKanjiTab === 'flashcard');
+    }
+  });
+
+  if (currentKanjiTab === 'flashcard') {
+    if (currentKfcLesson) {
+      initKanjiFlashcardStudio(currentKfcLesson);
+    }
+    triggerHaptic(10);
+  }
+
+  if (shouldScroll) {
+    const nav = document.querySelector('.kanji-tab-nav-wrapper');
+    if (nav && nav.scrollIntoView) {
+      nav.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  }
+};
+
+window.switchKanjiModule = function(lessonNum, tabName = 'list') {
+  currentKanjiTab = tabName;
+  const targetId = `kanji-${lessonNum}`;
+  if (currentActiveId === targetId) {
+    switchKanjiTab(tabName, true);
+  } else {
+    switchModule(targetId);
+    setTimeout(() => {
+      switchKanjiTab(tabName, true);
+    }, 50);
+  }
+};
+
+function getFilteredKfcDeck() {
+  if (kfcFilter === 'learned') {
+    return kfcDeck.filter(it => kfcLearnedSet.has(it.id));
+  } else if (kfcFilter === 'unlearned') {
+    return kfcDeck.filter(it => !kfcLearnedSet.has(it.id));
+  }
+  return kfcDeck;
+}
+
+window.initKanjiFlashcardStudio = function(lesson) {
+  if (!lesson) return;
+
+  // Khi chuyển sang bài học khác, tự động đặt lại về chế độ Flashcard mặc định (Chữ Hán ➔ Mẹo nhớ)
+  if (!currentKfcLesson || currentKfcLesson.lesson !== lesson.lesson) {
+    kfcMode = 'kanji-first';
+    kfcFilter = 'all';
+  }
+
+  currentKfcLesson = lesson;
+  kfcDeck = Array.isArray(lesson.items) ? [...lesson.items] : [];
+  kfcLearnedSet = loadKanjiLearnedSet(lesson.lesson);
+  kfcIndex = 0;
+
+  const mount = document.getElementById('kanji-flashcard-mount');
+  if (!mount) return;
+
+  const total = kfcDeck.length;
+  const learnedCount = kfcDeck.filter(it => kfcLearnedSet.has(it.id)).length;
+  const unlearnedCount = total - learnedCount;
+
+  mount.innerHTML = `
+    <div class="kanji-flashcard-studio">
+      
+      <!-- Header Studio Kiểm Tra Flashcard -->
+      <div class="kfc-header">
+        <div class="kfc-header-info">
+          <div class="kfc-title-row">
+            <span class="kfc-badge-icon">${APP_ICONS.cards}</span>
+            <div>
+              <h3 class="kfc-title">Kiểm Tra Flashcard Mẹo Nhớ Chữ Hán - Bài ${lesson.lesson}</h3>
+              <p class="kfc-subtitle">Chạm thẻ để lật kiểm tra chiết tự, câu chuyện mẹo nhớ, cách đọc và âm Hán Việt</p>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Bộ lọc trạng thái thẻ: Tất cả / Chưa thuộc / Đã thuộc -->
+        <div class="kfc-filter-group" role="tablist" aria-label="Lọc thẻ kiểm tra">
+          <button type="button" class="kfc-filter-chip ${kfcFilter === 'all' ? 'active' : ''}" data-filter="all" onclick="filterKfcDeck('all', this)">
+            Tất cả (<span id="kfc-count-all">${total}</span>)
+          </button>
+          <button type="button" class="kfc-filter-chip ${kfcFilter === 'unlearned' ? 'active' : ''}" data-filter="unlearned" onclick="filterKfcDeck('unlearned', this)">
+            Chưa thuộc (<span id="kfc-count-unlearned">${unlearnedCount}</span>)
+          </button>
+          <button type="button" class="kfc-filter-chip ${kfcFilter === 'learned' ? 'active' : ''}" data-filter="learned" onclick="filterKfcDeck('learned', this)">
+            Đã thuộc (<span id="kfc-count-learned">${learnedCount}</span>)
+          </button>
+        </div>
+      </div>
+
+      <!-- Thanh tiến độ & Mode Selector -->
+      <div class="kfc-toolbar-bar">
+        <!-- Progress Bar -->
+        <div class="kfc-progress-wrap">
+          <div class="kfc-progress-labels">
+            <span class="kfc-counter-label" id="kfc-index-label">Thẻ 1 / ${total}</span>
+            <span class="kfc-learned-label" id="kfc-learned-label">Đã thuộc: ${learnedCount}/${total} (${Math.round((learnedCount / (total || 1)) * 100)}%)</span>
+          </div>
+          <div class="kfc-progress-track">
+            <div class="kfc-progress-bar" id="kfc-progress-bar" style="width: ${(learnedCount / (total || 1)) * 100}%;"></div>
+          </div>
+        </div>
+
+        <!-- Mode Selector -->
+        <div class="kfc-mode-selector">
+          <span class="kfc-mode-title">Chế độ kiểm tra:</span>
+          <button type="button" class="kfc-mode-btn ${kfcMode === 'kanji-first' ? 'active' : ''}" id="kfc-mode-kanji" onclick="setKfcMode('kanji-first', this)" title="Mặt trước: Chữ Hán ➔ Mặt sau: Mẹo nhớ &amp; Nghĩa">
+            <span>Chữ Hán ➔ Mẹo nhớ</span>
+          </button>
+          <button type="button" class="kfc-mode-btn ${kfcMode === 'mnemonic-first' ? 'active' : ''}" id="kfc-mode-mnemonic" onclick="setKfcMode('mnemonic-first', this)" title="Mặt trước: Mẹo nhớ ➔ Mặt sau: Chữ Hán">
+            <span>Mẹo nhớ ➔ Chữ Hán</span>
+          </button>
+          <button type="button" class="kfc-mode-btn ${kfcMode === 'quiz-mode' ? 'active' : ''}" id="kfc-mode-quiz" onclick="setKfcMode('quiz-mode', this)" title="Trắc nghiệm phản xạ 25 câu: Trộn lẫn Chữ Hán và Nghĩa, nhận diện mặt chữ gần giống nhau">
+            <span style="display:inline-flex;align-items:center;gap:6px;">${APP_ICONS.bolt} <span>Trắc Nghiệm Phản Xạ (25 Câu)</span></span>
+          </button>
+        </div>
+      </div>
+
+      <!-- SÂN KHẤU 1: FLASHCARD CARD 3D -->
+      <div class="kfc-card-stage" id="kfc-card-stage" style="display: ${kfcMode === 'quiz-mode' ? 'none' : 'flex'};">
+        
+        <div class="kfc-flashcard-3d" id="kfc-card" role="button" tabindex="0" title="Chạm để lật thẻ (hoặc phím Space)" onclick="flipKfcCard()">
+          <div class="kfc-face kfc-front" id="kfc-face-front"></div>
+          <div class="kfc-face kfc-back" id="kfc-face-back"></div>
+        </div>
+
+        <!-- BỘ NÚT ĐÁNH GIÁ (SPACED REPETITION) -->
+        <div class="kfc-rating-actions" id="kfc-rating-actions">
+          <button type="button" class="kfc-btn-rate kfc-rate-unlearned" onclick="rateKfcCurrent(false)" title="Đánh dấu Chưa Thuộc (Phím 1)">
+            <span class="rate-icon">${APP_ICONS.xCircle}</span>
+            <span>Chưa Nhớ</span>
+            <span class="key-shortcut">[1]</span>
+          </button>
+          <button type="button" class="kfc-btn-rate kfc-rate-flip" onclick="flipKfcCard()" title="Lật thẻ (Phím Space)">
+            <span class="rate-icon">${APP_ICONS.flip}</span>
+            <span>Lật Thẻ</span>
+            <span class="key-shortcut">[Space]</span>
+          </button>
+          <button type="button" class="kfc-btn-rate kfc-rate-learned" onclick="rateKfcCurrent(true)" title="Đánh dấu Đã Thuộc (Phím 2)">
+            <span class="rate-icon">${APP_ICONS.checkCircle}</span>
+            <span>Đã Nhớ</span>
+            <span class="key-shortcut">[2]</span>
+          </button>
+        </div>
+
+        <!-- BỘ NÚT ĐIỀU HƯỚNG CÔNG CỤ -->
+        <div class="kfc-nav-controls" id="kfc-nav-controls">
+          <button type="button" class="btn-tool" onclick="navKfcPrev()" title="Thẻ trước (Phím ←)">
+            <span style="display:inline-flex;align-items:center;gap:4px;">${APP_ICONS.arrowLeft} <span>Trước</span></span>
+          </button>
+          <button type="button" class="btn-tool btn-tool-primary" id="kfc-audio-btn" onclick="speakKfcCurrent(event)" title="Phát âm tiếng Nhật chuẩn Tokyo">
+            <span style="display:inline-flex;align-items:center;gap:4px;">${SPEAKER_ICON_HTML} <span>Phát Âm</span></span>
+          </button>
+          <button type="button" class="btn-tool" onclick="shuffleKfcDeck()" title="Trộn ngẫu nhiên bộ thẻ">
+            <span style="display:inline-flex;align-items:center;gap:4px;">${APP_ICONS.shuffle} <span>Trộn Thẻ</span></span>
+          </button>
+          <button type="button" class="btn-tool" onclick="resetKfcProgress()" title="Đặt lại đánh giá nhớ của bài này">
+            <span style="display:inline-flex;align-items:center;gap:4px;">${APP_ICONS.refresh} <span>Đặt Lại</span></span>
+          </button>
+          <button type="button" class="btn-tool" onclick="navKfcNext()" title="Thẻ sau (Phím →)">
+            <span style="display:inline-flex;align-items:center;gap:4px;"><span>Tiếp</span> ${APP_ICONS.arrowRight}</span>
+          </button>
+        </div>
+
+      </div>
+
+      <!-- SÂN KHẤU 2: TRẮC NGHIỆM PHẢN XẠ MẸO NHỚ 4 ĐÁP ÁN -->
+      <div class="kfc-quiz-stage" id="kfc-quiz-stage" style="display: ${kfcMode === 'quiz-mode' ? 'block' : 'none'};"></div>
+
+    </div>
+  `;
+
+  if (kfcMode === 'quiz-mode') {
+    startKfcQuiz();
+  } else {
+    renderKfcCard();
+  }
+
+  if (!kfcKeydownAttached && typeof window !== 'undefined' && window.addEventListener) {
+    window.addEventListener('keydown', handleKfcKeydown);
+    kfcKeydownAttached = true;
+  }
+};
+
+function renderKfcCard() {
+  const card = document.getElementById('kfc-card');
+  const front = document.getElementById('kfc-face-front');
+  const back = document.getElementById('kfc-face-back');
+  const stage = document.getElementById('kfc-card-stage');
+  const ratingActions = document.getElementById('kfc-rating-actions');
+  const navControls = document.getElementById('kfc-nav-controls');
+  if (!card || !front || !back) return;
+
+  const filtered = getFilteredKfcDeck();
+  const totalInFilter = filtered.length;
+
+  // Cập nhật bộ đếm & nhãn tiến độ
+  const total = kfcDeck.length;
+  const learnedCount = kfcDeck.filter(it => kfcLearnedSet.has(it.id)).length;
+  const unlearnedCount = total - learnedCount;
+
+  const countAll = document.getElementById('kfc-count-all');
+  const countUnlearned = document.getElementById('kfc-count-unlearned');
+  const countLearned = document.getElementById('kfc-count-learned');
+  const learnedLabel = document.getElementById('kfc-learned-label');
+  const progressBar = document.getElementById('kfc-progress-bar');
+  const indexLabel = document.getElementById('kfc-index-label');
+
+  if (countAll) countAll.textContent = String(total);
+  if (countUnlearned) countUnlearned.textContent = String(unlearnedCount);
+  if (countLearned) countLearned.textContent = String(learnedCount);
+  if (learnedLabel) learnedLabel.textContent = `Đã thuộc: ${learnedCount}/${total} (${Math.round((learnedCount / (total || 1)) * 100)}%)`;
+  if (progressBar) progressBar.style.width = `${(learnedCount / (total || 1)) * 100}%`;
+
+  if (totalInFilter === 0) {
+    card.style.display = 'none';
+    if (ratingActions) ratingActions.style.display = 'none';
+    if (navControls) navControls.style.display = 'none';
+    if (indexLabel) indexLabel.textContent = `0 / 0 thẻ`;
+
+    let emptyHtml = '';
+    if (kfcFilter === 'unlearned') {
+      emptyHtml = `
+        <div class="kfc-empty-box">
+          <div class="kfc-empty-icon">${APP_ICONS.checkCircle}</div>
+          <h4 class="kfc-empty-title">Xuất Sắc! Bạn Đã Ghi Nhớ Toàn Bộ Chữ Hán!</h4>
+          <p class="kfc-empty-desc">Không còn chữ Hán nào chưa thuộc trong Bài ${currentKfcLesson ? currentKfcLesson.lesson : ''}. Bạn đã nắm vững 100% mẹo nhớ và chiết tự!</p>
+          <div style="display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; margin-top: 10px;">
+            <button type="button" class="btn-tool btn-tool-primary" onclick="filterKfcDeck('all')">Xem Tất Cả ${total} Thẻ</button>
+            <button type="button" class="btn-tool" onclick="resetKfcProgress()">
+              <span style="display:inline-flex;align-items:center;gap:4px;">${APP_ICONS.refresh} <span>Đặt Lại Để Luyện Lại</span></span>
+            </button>
+          </div>
+        </div>
+      `;
+    } else if (kfcFilter === 'learned') {
+      emptyHtml = `
+        <div class="kfc-empty-box">
+          <div class="kfc-empty-icon">${APP_ICONS.lightbulb}</div>
+          <h4 class="kfc-empty-title">Chưa Có Thẻ Nào Được Đánh Dấu "Đã Nhớ"</h4>
+          <p class="kfc-empty-desc">Hãy chuyển về danh sách tất cả các thẻ, lật thẻ để kiểm tra và nhấn nút "Đã Nhớ" khi bạn đã thuộc nhé!</p>
+          <button type="button" class="btn-tool btn-tool-primary" onclick="filterKfcDeck('all')">Xem Tất Cả ${total} Thẻ</button>
+        </div>
+      `;
+    } else {
+      emptyHtml = `
+        <div class="kfc-empty-box">
+          <div class="kfc-empty-icon">${APP_ICONS.book}</div>
+          <h4 class="kfc-empty-title">Chưa Có Dữ Liệu Thẻ Cho Bài Này</h4>
+          <p class="kfc-empty-desc">Dữ liệu từ vựng chữ Hán đang được cập nhật.</p>
+        </div>
+      `;
+    }
+
+    const oldEmpty = document.getElementById('kfc-empty-container');
+    if (oldEmpty && oldEmpty.remove) oldEmpty.remove();
+    else if (oldEmpty && oldEmpty.parentNode) oldEmpty.parentNode.removeChild(oldEmpty);
+    const emptyContainer = document.createElement('div');
+    emptyContainer.id = 'kfc-empty-container';
+    emptyContainer.innerHTML = emptyHtml;
+    if (stage && stage.appendChild) stage.appendChild(emptyContainer);
+    return;
+  }
+
+  const oldEmpty = document.getElementById('kfc-empty-container');
+  if (oldEmpty && oldEmpty.remove) oldEmpty.remove();
+  else if (oldEmpty && oldEmpty.parentNode) oldEmpty.parentNode.removeChild(oldEmpty);
+
+  card.style.display = 'block';
+  if (ratingActions) ratingActions.style.display = 'flex';
+  if (navControls) navControls.style.display = 'flex';
+
+  if (kfcIndex >= totalInFilter) kfcIndex = 0;
+  if (kfcIndex < 0) kfcIndex = totalInFilter - 1;
+
+  if (indexLabel) indexLabel.textContent = `Thẻ ${kfcIndex + 1} / ${totalInFilter}`;
+
+  const item = filtered[kfcIndex];
+  card.classList.remove('flipped');
+
+  const isLearned = kfcLearnedSet.has(item.id);
+  const statusPillHtml = `
+    <span class="kfc-status-pill ${isLearned ? 'is-learned' : ''}">
+      ${isLearned ? '✓ Đã thuộc' : '○ Chưa thuộc'}
+    </span>
+  `;
+
+  if (kfcMode === 'mnemonic-first') {
+    // CHẾ ĐỘ 2: NHÌN MẸO NHỚ ➔ ĐOÁN CHỮ HÁN
+    front.innerHTML = `
+      ${statusPillHtml}
+      <span class="kfc-face-tag accent-amber">THỬ THÁCH MẸO NHỚ</span>
+      
+      <div class="kfc-mnemonic-card-box" style="margin: 12px 0;">
+        <div class="kfc-mnemonic-header">
+          <span style="display:inline-flex;align-items:center;gap:5px;">${APP_ICONS.lightbulb} <span>Câu chuyện &amp; Chiết tự:</span></span>
+        </div>
+        <div class="mnemonic-content-flow">
+          ${formatKanjiMnemonic(item.mnemonic)}
+        </div>
+      </div>
+
+      <div class="kfc-chips-row">
+        <span class="badge badge-primary">Nghĩa: <strong>${item.meaning}</strong></span>
+        ${item.hanViet ? `<span class="badge badge-sakura">Âm Hán: <strong>${item.hanViet}</strong></span>` : ''}
+      </div>
+
+      <div class="kfc-flip-hint">
+        <span style="display:inline-flex;align-items:center;gap:5px;">${APP_ICONS.flip} <span>Đố bạn đây là Chữ Hán nào? Chạm để lật xem đáp án</span></span>
+      </div>
+    `;
+
+    back.innerHTML = `
+      ${statusPillHtml}
+      <span class="kfc-face-tag accent-emerald">ĐÁP ÁN CHỮ HÁN</span>
+
+      <div class="kfc-main-kanji accent-glow">${item.word}</div>
+
+      <div class="kfc-back-top">
+        <div class="kfc-back-word-title">
+          <span class="kfc-back-reading">${item.reading || ''}</span>
+          <span class="kfc-hanviet-sub">ÂM HÁN:</span>
+          <strong class="kfc-back-kanji">${item.hanViet}</strong>
+          <button type="button" class="kcard-audio-btn" onclick="speakJapanese('${(item.reading || item.word).replace(/\[.*?\]/g, '').replace(/\(.*?\)/g, '').trim()}', this, event)">
+            ${SPEAKER_ICON_HTML} <span>Nghe</span>
+          </button>
+        </div>
+        <div class="kfc-back-meaning">
+          <span>${item.meaning}</span>
+        </div>
+      </div>
+
+      <div class="kfc-chips-row">
+        ${item.radicals ? `<span class="badge badge-subtle">Bộ thủ: ${item.radicals}</span>` : ''}
+        ${item.strokes ? `<span class="badge badge-subtle">${item.strokes} nét</span>` : ''}
+        ${item.type ? `<span class="badge badge-primary">${item.type}</span>` : ''}
+      </div>
+
+      <div class="kfc-flip-hint">
+        <span style="display:inline-flex;align-items:center;gap:5px;">${APP_ICONS.flip} <span>Chạm để quay lại mặt trước</span></span>
+      </div>
+    `;
+
+  } else {
+    // CHẾ ĐỘ 1: NHÌN CHỮ HÁN ➔ ĐOÁN MẸO NHỚ & NGHĨA (MẶC ĐỊNH)
+    front.innerHTML = `
+      ${statusPillHtml}
+      <span class="kfc-face-tag">CHỮ HÁN &amp; ÂM HÁN VIỆT</span>
+
+      <div class="kfc-main-kanji">${item.word}</div>
+
+      <div class="kfc-hanviet-box">
+        <span class="kfc-hanviet-sub">ÂM HÁN VIỆT</span>
+        <strong class="kfc-hanviet-main">${item.hanViet}</strong>
+      </div>
+
+      <div class="kfc-chips-row">
+        <span class="badge ${item.kanjiCount > 1 ? 'badge-primary' : 'badge-sakura'}">
+          ${item.kanjiCount > 1 ? `${item.kanjiCount} chữ ghép` : 'Chữ đơn'}
+        </span>
+        ${item.strokes ? `<span class="badge badge-subtle">${item.strokes} nét</span>` : ''}
+        ${item.type ? `<span class="badge badge-subtle">${item.type}</span>` : ''}
+      </div>
+
+      <div class="kfc-flip-hint">
+        <span style="display:inline-flex;align-items:center;gap:5px;">${APP_ICONS.flip} <span>Chạm vào thẻ hoặc bấm phím Space để lật xem Mẹo nhớ &amp; Ý nghĩa</span></span>
+      </div>
+    `;
+
+    back.innerHTML = `
+      ${statusPillHtml}
+      <span class="kfc-face-tag accent-emerald">ĐÁP ÁN: MẸO GHI NHỚ &amp; Ý NGHĨA</span>
+
+      <div class="kfc-back-top">
+        <div class="kfc-back-word-title">
+          <strong class="kfc-back-kanji">${item.word}</strong>
+          ${item.reading ? `<span class="kfc-back-reading">${item.reading}</span>` : ''}
+          <button type="button" class="kcard-audio-btn" onclick="speakJapanese('${(item.reading || item.word).replace(/\[.*?\]/g, '').replace(/\(.*?\)/g, '').trim()}', this, event)">
+            ${SPEAKER_ICON_HTML} <span>Nghe</span>
+          </button>
+        </div>
+        <div class="kfc-back-meaning">
+          <span>${item.meaning}</span>
+        </div>
+      </div>
+
+      <div class="kfc-mnemonic-card-box">
+        <div class="kfc-mnemonic-header">
+          <span style="display:inline-flex;align-items:center;gap:5px;">${APP_ICONS.lightbulb} <span>Mẹo Ghi Nhớ &amp; Cấu Thành:</span></span>
+        </div>
+        <div class="mnemonic-content-flow">
+          ${formatKanjiMnemonic(item.mnemonic)}
+        </div>
+      </div>
+
+      ${item.example ? `
+        <div class="kfc-back-example">
+          <strong>Ví dụ:</strong> ${item.example}
+        </div>
+      ` : ''}
+
+      <div class="kfc-flip-hint">
+        <span style="display:inline-flex;align-items:center;gap:5px;">${APP_ICONS.flip} <span>Chạm để quay lại mặt trước</span></span>
+      </div>
+    `;
+  }
+}
+
+window.flipKfcCard = function() {
+  const card = document.getElementById('kfc-card');
+  if (card) {
+    triggerHaptic(10);
+    card.classList.toggle('flipped');
+  }
+};
+
+window.rateKfcCurrent = function(isLearned) {
+  const filtered = getFilteredKfcDeck();
+  if (!filtered.length || !currentKfcLesson) return;
+
+  const item = filtered[kfcIndex];
+  if (!item) return;
+
+  if (isLearned) {
+    kfcLearnedSet.add(item.id);
+    triggerHaptic(15);
+    showToast(`Đã nhớ: ${item.word} (${item.hanViet})`);
+  } else {
+    kfcLearnedSet.delete(item.id);
+    triggerHaptic(25);
+    showToast(`Cần ôn lại: ${item.word} (${item.hanViet})`);
+  }
+
+  saveKanjiLearnedSet(currentKfcLesson.lesson, kfcLearnedSet);
+
+  // Nếu đang lọc theo 'unlearned' hoặc 'learned', danh sách lọc sẽ thay đổi kích thước
+  if (kfcFilter !== 'all') {
+    const nextFiltered = getFilteredKfcDeck();
+    if (kfcIndex >= nextFiltered.length) kfcIndex = 0;
+  } else {
+    kfcIndex = (kfcIndex + 1) % filtered.length;
+  }
+
+  renderKfcCard();
+};
+
+window.navKfcNext = function() {
+  const filtered = getFilteredKfcDeck();
+  if (!filtered.length) return;
+  triggerHaptic(10);
+  kfcIndex = (kfcIndex + 1) % filtered.length;
+  renderKfcCard();
+};
+
+window.navKfcPrev = function() {
+  const filtered = getFilteredKfcDeck();
+  if (!filtered.length) return;
+  triggerHaptic(10);
+  kfcIndex = (kfcIndex - 1 + filtered.length) % filtered.length;
+  renderKfcCard();
+};
+
+window.shuffleKfcDeck = function() {
+  if (!kfcDeck.length) return;
+  triggerHaptic(12);
+  kfcDeck.sort(() => Math.random() - 0.5);
+  kfcIndex = 0;
+  renderKfcCard();
+  showToast("Đã trộn ngẫu nhiên bộ thẻ Flashcard!");
+};
+
+window.resetKfcProgress = function() {
+  if (!currentKfcLesson) return;
+  kfcLearnedSet.clear();
+  saveKanjiLearnedSet(currentKfcLesson.lesson, kfcLearnedSet);
+  kfcIndex = 0;
+  triggerHaptic(15);
+  renderKfcCard();
+  showToast(`Đã đặt lại tiến độ ghi nhớ Bài ${currentKfcLesson.lesson}`);
+};
+
+window.filterKfcDeck = function(filterType, btnEl = null) {
+  kfcFilter = filterType || 'all';
+  kfcIndex = 0;
+  triggerHaptic(10);
+
+  const chips = document.querySelectorAll ? document.querySelectorAll('.kfc-filter-chip') : [];
+  chips.forEach(chip => {
+    chip.classList.toggle('active', chip.getAttribute('data-filter') === kfcFilter);
+  });
+
+  // Nếu đang ở quiz-mode mà bấm chọn bộ lọc flashcard (Tất cả / Chưa thuộc / Đã thuộc),
+  // tự động quay lại chế độ xem Flashcard tương ứng
+  if (kfcMode === 'quiz-mode') {
+    setKfcMode('kanji-first');
+  } else {
+    renderKfcCard();
+  }
+};
+
+window.setKfcMode = function(mode, btnEl = null) {
+  kfcMode = mode || 'kanji-first';
+  triggerHaptic(10);
+
+  const btns = document.querySelectorAll ? document.querySelectorAll('.kfc-mode-btn') : [];
+  btns.forEach(b => b.classList.remove('active'));
+  if (btnEl) {
+    btnEl.classList.add('active');
+  } else {
+    const targetId = kfcMode === 'quiz-mode' ? 'kfc-mode-quiz' :
+      kfcMode === 'mnemonic-first' ? 'kfc-mode-mnemonic' : 'kfc-mode-kanji';
+    const targetBtn = document.getElementById(targetId);
+    if (targetBtn) targetBtn.classList.add('active');
+  }
+
+  const cardStage = document.getElementById('kfc-card-stage');
+  const quizStage = document.getElementById('kfc-quiz-stage');
+
+  if (kfcMode === 'quiz-mode') {
+    if (cardStage) cardStage.style.display = 'none';
+    if (quizStage) {
+      quizStage.style.display = 'block';
+      startKfcQuiz();
+    }
+  } else {
+    if (quizStage) quizStage.style.display = 'none';
+    if (cardStage) {
+      cardStage.style.display = 'flex';
+      renderKfcCard();
+    }
+  }
+};
+
+window.speakKfcCurrent = function(event) {
+  if (event && event.stopPropagation) event.stopPropagation();
+  const filtered = getFilteredKfcDeck();
+  if (!filtered.length) return;
+  const item = filtered[kfcIndex];
+  if (!item) return;
+  const targetText = (item.reading || item.word || '').replace(/\[.*?\]/g, '').replace(/\(.*?\)/g, '').trim();
+  const btn = document.getElementById('kfc-audio-btn');
+  speakJapanese(targetText, btn, event);
+};
+
+function handleKfcKeydown(e) {
+  const mount = document.getElementById('kanji-flashcard-mount');
+  if (!mount) return;
+  const fcPane = document.getElementById('kanji-tab-pane-flashcard');
+  if (!fcPane || fcPane.style.display === 'none') return;
+
+  const targetTag = (e.target && e.target.tagName) ? e.target.tagName.toUpperCase() : '';
+  if (targetTag === 'INPUT' || targetTag === 'TEXTAREA' || (e.target && e.target.isContentEditable)) return;
+
+  if (kfcMode === 'quiz-mode') return; // Trong chế độ trắc nghiệm không lật flashcard
+
+  if (e.code === 'Space' || e.key === ' ' || e.key === 'ArrowUp' || e.key === 'ArrowDown') {
+    e.preventDefault();
+    flipKfcCard();
+  } else if (e.key === 'ArrowRight') {
+    e.preventDefault();
+    navKfcNext();
+  } else if (e.key === 'ArrowLeft') {
+    e.preventDefault();
+    navKfcPrev();
+  } else if (e.key === '1') {
+    e.preventDefault();
+    rateKfcCurrent(false);
+  } else if (e.key === '2') {
+    e.preventDefault();
+    rateKfcCurrent(true);
+  }
+}
+
+// --------------------------------------------------------------------------
+// 4E. HỆ THỐNG TRẮC NGHIỆM PHẢN XẠ CHỮ HÁN (25 CÂU MIX KANJI & NGHĨA)
+// --------------------------------------------------------------------------
+
+// Từ điển ánh xạ các chữ Hán có nét/bộ thủ gần giống nhau (Confusable Look-alike Kanji)
+// Tách biệt tại data/kanji_lookalikes.js (Đồng bộ qua window.KANJI_LOOKALIKES_MAP kèm fallback an toàn)
+const KANJI_LOOKALIKES_MAP = (typeof window !== 'undefined' && window.KANJI_LOOKALIKES_MAP)
+  || (typeof global !== 'undefined' && global.KANJI_LOOKALIKES_MAP)
+  || {};
+
+// Hàm sinh 3 chữ Hán gây nhiễu có nét/cách viết gần giống nhau (Look-alike Distractors)
+function getLookalikeKanjiDistractors(item, lessonItems) {
+  if (typeof QuizEngine !== 'undefined' && typeof QuizEngine.getLookalikeKanjiDistractors === 'function') {
+    return QuizEngine.getLookalikeKanjiDistractors(item, lessonItems);
+  }
+  const distractors = [];
+  const word = (item.word || item.kanji || '').trim();
+  const kanjis = Array.isArray(item.kanjis) && item.kanjis.length > 0 
+    ? item.kanjis 
+    : Array.from(word).filter(ch => /[\u4e00-\u9faf]/.test(ch));
+
+  // 1. Thay thế trực tiếp các Hán tự bằng các chữ viết gần giống từ từ điển KANJI_LOOKALIKES_MAP
+  for (const k of kanjis) {
+    const lookalikes = (typeof KANJI_LOOKALIKES_MAP !== 'undefined' ? KANJI_LOOKALIKES_MAP[k] : (typeof window !== 'undefined' && window.KANJI_LOOKALIKES_MAP && window.KANJI_LOOKALIKES_MAP[k])) || [];
+    for (const sim of lookalikes) {
+      if (sim !== k) {
+        const fakeWord = word.replace(new RegExp(k, 'g'), sim);
+        if (fakeWord !== word && !distractors.includes(fakeWord)) {
+          distractors.push(fakeWord);
+          if (distractors.length >= 3) break;
+        }
+      }
+    }
+    if (distractors.length >= 3) break;
+  }
+
+  // 2. Nếu chưa đủ 3 đáp án nhiễu, tìm các từ khác trong bài có chứa bộ thủ hoặc chữ gần giống
+  if (distractors.length < 3 && Array.isArray(lessonItems)) {
+    for (const other of lessonItems) {
+      const oWord = (other.word || other.kanji || '').trim();
+      if (oWord && oWord !== word && !distractors.includes(oWord)) {
+        if (Math.abs(oWord.length - word.length) <= 1) {
+          distractors.push(oWord);
+          if (distractors.length >= 3) break;
+        }
+      }
+    }
+  }
+
+  // 3. Fallback: Nếu vẫn chưa đủ 3, lấy các từ bất kỳ khác trong bài
+  if (distractors.length < 3 && Array.isArray(lessonItems)) {
+    for (const other of lessonItems) {
+      const oWord = (other.word || other.kanji || '').trim();
+      if (oWord && oWord !== word && !distractors.includes(oWord)) {
+        distractors.push(oWord);
+        if (distractors.length >= 3) break;
+      }
+    }
+  }
+
+  // 4. Fallback toàn cục từ các bài khác nếu bài học có quá ít từ
+  if (distractors.length < 3 && typeof kanjiLessonsData !== 'undefined' && Array.isArray(kanjiLessonsData)) {
+    for (const kl of kanjiLessonsData) {
+      if (!kl.items) continue;
+      for (const other of kl.items) {
+        const oWord = (other.word || other.kanji || '').trim();
+        if (oWord && oWord !== word && !distractors.includes(oWord)) {
+          distractors.push(oWord);
+          if (distractors.length >= 3) break;
+        }
+      }
+      if (distractors.length >= 3) break;
+    }
+  }
+
+  return distractors.slice(0, 3);
+}
+
+// Hàm sinh 3 nghĩa tiếng Việt gây nhiễu cho bài trắc nghiệm
+function getMeaningDistractors(item, lessonItems) {
+  const correctMeaning = (item.meaning || '').trim();
+  const distractors = [];
+
+  const pool = (lessonItems || []).filter(it => (it.meaning || '').trim() && (it.meaning || '').trim() !== correctMeaning);
+  const shuffledPool = [...pool].sort(() => Math.random() - 0.5);
+
+  for (const other of shuffledPool) {
+    const m = (other.meaning || '').trim();
+    if (m && m !== correctMeaning && !distractors.includes(m)) {
+      distractors.push(m);
+      if (distractors.length >= 3) break;
+    }
+  }
+
+  if (distractors.length < 3 && typeof kanjiLessonsData !== 'undefined' && Array.isArray(kanjiLessonsData)) {
+    for (const kl of kanjiLessonsData) {
+      if (!kl.items) continue;
+      for (const other of kl.items) {
+        const m = (other.meaning || '').trim();
+        if (m && m !== correctMeaning && !distractors.includes(m)) {
+          distractors.push(m);
+          if (distractors.length >= 3) break;
+        }
+      }
+      if (distractors.length >= 3) break;
+    }
+  }
+
+  if (distractors.length < 3 && typeof lessonsData !== 'undefined' && Array.isArray(lessonsData)) {
+    for (const l of lessonsData) {
+      if (!l.vocabulary) continue;
+      for (const other of l.vocabulary) {
+        const m = (other.meaning || '').trim();
+        if (m && m !== correctMeaning && !distractors.includes(m)) {
+          distractors.push(m);
+          if (distractors.length >= 3) break;
+        }
+      }
+      if (distractors.length >= 3) break;
+    }
+  }
+
+  return distractors.slice(0, 3);
+}
+
+function startKfcQuiz() {
+  if (kfcQuizAdvanceTimer) {
+    clearTimeout(kfcQuizAdvanceTimer);
+    kfcQuizAdvanceTimer = null;
+  }
+
+  const quizStage = document.getElementById('kfc-quiz-stage');
+  if (!quizStage) return;
+
+  if (!currentKfcLesson && typeof kanjiLessonsData !== 'undefined' && Array.isArray(kanjiLessonsData)) {
+    const num = (typeof lastLessonNumber !== 'undefined' ? lastLessonNumber : 1);
+    currentKfcLesson = kanjiLessonsData.find(l => l.lesson === num) || kanjiLessonsData[0];
+  }
+  if (!currentKfcLesson) return;
+
+  const items = currentKfcLesson.items || [];
+  if (items.length < 2) {
+    quizStage.innerHTML = `<p class="kq-empty">Bài này đang cập nhật câu hỏi trắc nghiệm phản xạ.</p>`;
+    return;
+  }
+
+  // TỔNG SỐ LƯỢNG CÂU HỎI: CHUẨN ĐÚNG 25 CÂU
+  const TARGET_QUIZ_COUNT = 25;
+  const half1 = Math.ceil(TARGET_QUIZ_COUNT / 2); // 13 câu
+  const half2 = TARGET_QUIZ_COUNT - half1; // 12 câu
+
+  // Trộn danh sách từ vựng bài học
+  const shuffledPool1 = [...items].sort(() => Math.random() - 0.5);
+  const shuffledPool2 = [...items].sort(() => Math.random() - 0.5);
+
+  // Chọn 13 từ cho Dạng 1: Chữ Hán ➔ Chọn Nghĩa Tiếng Việt
+  const k2mItems = [];
+  for (let i = 0; i < half1; i++) {
+    k2mItems.push(shuffledPool1[i % shuffledPool1.length]);
+  }
+
+  // Chọn 12 từ cho Dạng 2: Nghĩa Tiếng Việt ➔ Chọn Chữ Hán (ưu tiên các từ chưa trùng với Dạng 1)
+  const remaining = shuffledPool1.slice(half1);
+  const m2kItems = [];
+  for (const it of remaining) {
+    if (m2kItems.length >= half2) break;
+    m2kItems.push(it);
+  }
+  for (const it of shuffledPool2) {
+    if (m2kItems.length >= half2) break;
+    if (!m2kItems.includes(it)) m2kItems.push(it);
+  }
+  while (m2kItems.length < half2 && items.length > 0) {
+    m2kItems.push(items[m2kItems.length % items.length]);
+  }
+
+  // Xây dựng câu hỏi Dạng 1: Chữ Hán ➔ 4 Nghĩa tiếng Việt
+  const questionsType1 = k2mItems.map((item) => {
+    const correctMeaning = (item.meaning || '').trim();
+    const wrongMeanings = getMeaningDistractors(item, items);
+    const options = [
+      { text: correctMeaning, isCorrect: true },
+      ...wrongMeanings.map(m => ({ text: m, isCorrect: false }))
+    ].sort(() => Math.random() - 0.5);
+
+    return {
+      item,
+      type: 'kanji-to-meaning',
+      options
+    };
+  });
+
+  // Xây dựng câu hỏi Dạng 2: Nghĩa Tiếng Việt ➔ 4 Chữ Hán có nét/cách viết gần giống nhau
+  const questionsType2 = m2kItems.map((item) => {
+    const correctWord = (item.word || '').trim();
+    const wrongKanjiWords = getLookalikeKanjiDistractors(item, items);
+    const options = [
+      { text: correctWord, isCorrect: true },
+      ...wrongKanjiWords.map(w => ({ text: w, isCorrect: false }))
+    ].sort(() => Math.random() - 0.5);
+
+    return {
+      item,
+      type: 'meaning-to-kanji',
+      options
+    };
+  });
+
+  // Trộn lẫn xen kẽ cả 2 dạng câu hỏi để tối đa hóa khả năng nhận diện phản xạ
+  kfcQuizDeck = [...questionsType1, ...questionsType2]
+    .sort(() => Math.random() - 0.5)
+    .slice(0, TARGET_QUIZ_COUNT);
+
+  kfcQuizIndex = 0;
+  kfcQuizScore = 0;
+  if (typeof window !== 'undefined') window.kfcQuizDeck = kfcQuizDeck;
+  renderKfcQuizQuestion();
+}
+
+function renderKfcQuizQuestion() {
+  if (kfcQuizAdvanceTimer) {
+    clearTimeout(kfcQuizAdvanceTimer);
+    kfcQuizAdvanceTimer = null;
+  }
+
+  const quizStage = document.getElementById('kfc-quiz-stage');
+  if (!quizStage) return;
+
+  if (kfcQuizIndex >= kfcQuizDeck.length) {
+    const percent = Math.round((kfcQuizScore / kfcQuizDeck.length) * 100);
+    quizStage.innerHTML = `
+      <div class="kfc-empty-box" style="padding: 36px 20px;">
+        <div class="kfc-empty-icon">${percent >= 80 ? APP_ICONS.checkCircle : APP_ICONS.cards}</div>
+        <h4 class="kfc-empty-title">Hoàn Thành Bài Kiểm Tra 25 Câu!</h4>
+        <p class="kfc-empty-desc">
+          Kết quả phản xạ nhận biết: <strong>${kfcQuizScore} / ${kfcQuizDeck.length}</strong> câu chính xác (${percent}%).
+        </p>
+        <div style="display: flex; gap: 12px; flex-wrap: wrap; justify-content: center; margin-top: 14px;">
+          <button type="button" class="btn-tool btn-tool-primary" onclick="startKfcQuiz()" style="min-height: 44px; padding: 10px 20px;">
+            <span style="display:inline-flex;align-items:center;gap:4px;">${APP_ICONS.refresh} <span>Làm Lại Lượt Mới (25 câu)</span></span>
+          </button>
+          <button type="button" class="btn-tool" onclick="setKfcMode('kanji-first')" style="min-height: 44px; padding: 10px 20px;">
+            <span style="display:inline-flex;align-items:center;gap:4px;">${APP_ICONS.cards} <span>Quay Lại Lật Flashcard 3D</span></span>
+          </button>
+        </div>
+      </div>
+    `;
+    return;
+  }
+
+  const q = kfcQuizDeck[kfcQuizIndex];
+  const item = q.item;
+  const isK2M = q.type === 'kanji-to-meaning';
+
+  // Tiêu đề & Thẻ tag nhận diện
+  const typeTag = isK2M ? 'Đoán Nghĩa Chữ Hán' : 'Phân Biệt Mặt Chữ Hán';
+  const modeTitle = isK2M ? 'Chữ Hán ➔ Nghĩa Tiếng Việt' : 'Nghĩa Tiếng Việt ➔ Chữ Hán';
+  const modeSubtitle = isK2M 
+    ? 'Quan sát Chữ Hán và chọn đúng Ý nghĩa Tiếng Việt tương ứng' 
+    : 'Chọn đúng Chữ Hán tương ứng (chú ý phân biệt các chữ viết gần giống nhau)';
+
+  quizStage.innerHTML = `
+    <div class="practice-box" style="padding: 22px;">
+      <div class="practice-box-header">
+        <div class="practice-box-title">
+          <span class="practice-icon-badge ${isK2M ? 'accent-sakura' : 'accent-indigo'}">${APP_ICONS.bolt}</span>
+          <div>
+            <h4>Trắc Nghiệm Phản Xạ: ${modeTitle}</h4>
+            <span class="practice-sub">${modeSubtitle}</span>
+          </div>
+        </div>
+        <span class="practice-counter-pill accent-emerald">Đúng: ${kfcQuizScore}/${kfcQuizDeck.length}</span>
+      </div>
+
+      <div class="kq-body" style="min-height: 250px; justify-content: flex-start; gap: 16px;">
+        <!-- KHUNG HIỂN THỊ ĐỀ BÀI (HOÀN TOÀN KHÔNG CÓ CHỮ HIRAGANA ĐỂ TRÁNH LỘ ĐÁP ÁN) -->
+        <div style="text-align: center; width: 100%;">
+          <span class="kq-step-tag">Câu ${kfcQuizIndex + 1}/${kfcQuizDeck.length} • ${typeTag}</span>
+          
+          ${isK2M ? `
+            <!-- DẠNG 1: ĐỀ BÀI LÀ CHỮ HÁN LỚN (KHÔNG CÓ CHỮ HIRAGANA) -->
+            <div class="kfc-quiz-main-kanji" style="font-family: var(--font-mincho); font-size: clamp(48px, 6vw, 64px); font-weight: 700; color: var(--text-primary); margin: 10px 0; letter-spacing: 2px;">
+              ${item.word}
+            </div>
+          ` : `
+            <!-- DẠNG 2: ĐỀ BÀI LÀ NGHĨA TIẾNG VIỆT (KHÔNG CÓ CHỮ HIRAGANA) -->
+            <div class="kfc-quiz-main-meaning">
+              "${item.meaning}"
+            </div>
+          `}
+        </div>
+
+        <!-- CÁC ĐÁP ÁN LỰA CHỌN (DẠNG LƯỚI 2x2 CÂN ĐỐI) -->
+        <div class="kq-options">
+          ${q.options.map((opt, oIdx) => `
+            <button type="button" 
+                    class="kq-opt" 
+                    style="font-size: ${isK2M ? '13.5px' : '17px'}; font-weight: ${isK2M ? '600' : '700'}; ${!isK2M ? 'font-family: var(--font-mincho), serif; letter-spacing: 0.5px;' : ''}" 
+                    data-correct="${opt.isCorrect ? 'true' : 'false'}">
+              <span style="display: flex; align-items: center; gap: 8px;">
+                <strong style="color: var(--accent-primary); font-size: 13.5px; font-family: var(--font-sans); flex-shrink: 0;">${String.fromCharCode(65 + oIdx)}.</strong>
+                <span>${opt.text}</span>
+              </span>
+              <span class="kq-feedback-icon" style="display: none; font-size: 15px; font-weight: 800; font-family: var(--font-sans);"></span>
+            </button>
+          `).join('')}
+        </div>
+
+        <!-- VÙNG HIỂN THỊ MẸO NHỚ & CHI TIẾT ĐẦY ĐỦ CỦNG CỐ SAU KHI CHỌN -->
+        <div id="kfc-quiz-mnemonic-reveal" style="display: none; width: 100%; margin-top: 8px;">
+          <div class="kfc-mnemonic-card-box" style="margin: 0; background: var(--bg-card-inner); border-left: 4px solid var(--accent-primary);">
+            
+            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; margin-bottom: 8px;">
+              <span style="font-weight: 800; font-size: 14px; color: var(--text-primary); display: inline-flex; align-items: center; gap: 6px;">${APP_ICONS.book} <span>Thông Tin Từ Vựng &amp; Cách Đọc:</span></span>
+              <button type="button" class="kcard-audio-btn" onclick="speakJapanese('${(item.reading || item.word || '').replace(/\[.*?\]/g, '').replace(/\(.*?\)/g, '').trim()}', this, event)" style="margin: 0; min-height: 36px; padding: 4px 12px;">
+                ${SPEAKER_ICON_HTML} <span>Nghe Phát Âm</span>
+              </button>
+            </div>
+
+            <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 12px; flex-wrap: wrap; padding-bottom: 10px; border-bottom: 1px dashed var(--border-color);">
+              <span style="font-family: var(--font-mincho); font-size: 26px; font-weight: 800; color: var(--text-primary); letter-spacing: 1px;">${item.word}</span>
+              ${item.reading ? `<span style="font-family: var(--font-japanese); font-size: 17px; font-weight: 700; color: var(--accent-primary);">${item.reading}</span>` : ''}
+              <span style="font-size: 13.5px; font-weight: 700; color: var(--text-secondary); background: var(--bg-tertiary); padding: 3px 10px; border-radius: 6px; border: 1px solid var(--border-color);">
+                Hán Việt: <strong>${item.hanViet}</strong>
+              </span>
+              <span style="font-size: 14px; font-weight: 600; color: var(--text-secondary);">
+                = <strong>${item.meaning}</strong>
+              </span>
+            </div>
+
+            <div class="kfc-mnemonic-header">
+              <span style="display: inline-flex; align-items: center; gap: 6px;">${APP_ICONS.lightbulb} <span>Mẹo Ghi Nhớ &amp; Phân Tích Bộ Thủ:</span></span>
+            </div>
+            <div class="mnemonic-content-flow">
+              ${formatKanjiMnemonic(item.mnemonic)}
+            </div>
+
+            ${item.example ? `
+              <div style="margin-top: 10px; padding: 8px 12px; background: var(--bg-tertiary); border-radius: 8px; font-size: 13.5px;">
+                <strong>Ví dụ:</strong> <span style="font-family: var(--font-japanese);">${item.example}</span>
+              </div>
+            ` : ''}
+
+            <div style="margin-top: 14px; text-align: right;">
+              <button type="button" class="btn-tool btn-tool-primary" id="kfc-quiz-next-btn" onclick="advanceKfcQuizQuestion()" style="min-height: 44px; padding: 8px 18px; font-size: 14.5px; font-weight: 700; width: 100%; justify-content: center; display: inline-flex; align-items: center; gap: 6px;">
+                <span>Câu Tiếp Theo</span> ${APP_ICONS.arrowRight}
+              </button>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="kq-controls">
+        <button type="button" class="btn-tool" onclick="startKfcQuiz()">
+          <span style="display:inline-flex;align-items:center;gap:4px;">${APP_ICONS.refresh} <span>Đổi Bộ Câu Hỏi</span></span>
+        </button>
+        <button type="button" class="btn-tool" onclick="setKfcMode('kanji-first')">
+          <span style="display:inline-flex;align-items:center;gap:4px;">${APP_ICONS.cards} <span>Về Thẻ Flashcard 3D</span></span>
+        </button>
+      </div>
+    </div>
+  `;
+
+  const optBtns = quizStage.querySelectorAll('.kq-opt');
+  const revealBox = quizStage.querySelector('#kfc-quiz-mnemonic-reveal');
+
+  optBtns.forEach(btn => {
+    btn.onclick = () => {
+      triggerHaptic(10);
+      optBtns.forEach(b => b.disabled = true);
+      const isCor = btn.getAttribute('data-correct') === 'true';
+      const icon = btn.querySelector('.kq-feedback-icon');
+
+      if (isCor) {
+        btn.classList.add('correct');
+        if (icon) { icon.textContent = '✓'; icon.style.display = 'inline'; }
+        kfcQuizScore++;
+      } else {
+        btn.classList.add('wrong');
+        if (icon) { icon.textContent = '✗'; icon.style.display = 'inline'; }
+        optBtns.forEach(b => {
+          if (b.getAttribute('data-correct') === 'true') {
+            b.classList.add('correct');
+            const cIcon = b.querySelector('.kq-feedback-icon');
+            if (cIcon) { cIcon.textContent = '✓'; cIcon.style.display = 'inline'; }
+          }
+        });
+      }
+
+      // Cập nhật điểm trên thanh tiêu đề
+      const scorePill = quizStage.querySelector('.practice-counter-pill');
+      if (scorePill) scorePill.textContent = `Đúng: ${kfcQuizScore}/${kfcQuizDeck.length}`;
+
+      // Hiển thị chi tiết cách đọc, Hán Việt, phát âm và mẹo nhớ để củng cố
+      if (revealBox) revealBox.style.display = 'block';
+
+      // Tự động chuyển câu sau một khoảng dừng thoải mái hoặc chuyển ngay khi bấm nút Tiếp Theo
+      if (kfcQuizAdvanceTimer) clearTimeout(kfcQuizAdvanceTimer);
+      kfcQuizAdvanceTimer = setTimeout(() => {
+        advanceKfcQuizQuestion();
+      }, 1600);
+    };
+  });
+}
+
+function advanceKfcQuizQuestion() {
+  if (kfcQuizAdvanceTimer) {
+    clearTimeout(kfcQuizAdvanceTimer);
+    kfcQuizAdvanceTimer = null;
+  }
+  kfcQuizIndex++;
+  renderKfcQuizQuestion();
+}
+
+if (typeof window !== 'undefined') {
+  window.startKfcQuiz = startKfcQuiz;
+  window.renderKfcQuizQuestion = renderKfcQuizQuestion;
+  window.advanceKfcQuizQuestion = advanceKfcQuizQuestion;
+  window.kfcQuizDeck = kfcQuizDeck;
+  window.KANJI_LOOKALIKES_MAP = KANJI_LOOKALIKES_MAP;
+  window.getLookalikeKanjiDistractors = getLookalikeKanjiDistractors;
+  window.getMeaningDistractors = getMeaningDistractors;
 }
 
 window.filterLessonKanji = function(query) {
@@ -2476,7 +3754,63 @@ function sleep(ms) {
   return new Promise(resolve => setTimeout(resolve, ms));
 }
 
-function renderRadicalSection(sectionId) {
+let currentRadicalTab = 'list'; // 'list' | 'flashcard'
+let currentRadicalGroup = null;
+let rfcScope = 'group'; // 'group' (chỉ nhóm hiện tại) | 'all' (toàn bộ 191 bộ thủ)
+let rfcFilter = 'all'; // 'all' | 'unlearned' | 'learned'
+let rfcMode = 'char-first'; // 'char-first' | 'meaning-first' | 'quiz-mode'
+let rfcIndex = 0;
+let rfcDeck = [];
+let rfcLearnedSet = new Set();
+let rfcKeydownAttached = false;
+let rfcQuizDeck = [];
+let rfcQuizIndex = 0;
+let rfcQuizScore = 0;
+let rfcQuizAdvanceTimer = null;
+
+function getRadicalLearnedStorageKey() {
+  return 'minna_rfc_learned_ids';
+}
+
+function loadRadicalLearnedSet() {
+  const arr = safeGetJsonStorage(getRadicalLearnedStorageKey(), [], Array.isArray);
+  return new Set(Array.isArray(arr) ? arr : []);
+}
+
+function saveRadicalLearnedSet(learnedSet) {
+  const arr = Array.from(learnedSet);
+  safeSetStorage(getRadicalLearnedStorageKey(), JSON.stringify(arr));
+}
+
+function getAllRadicalsList() {
+  if (typeof radicalsData === 'undefined' || !Array.isArray(radicalsData)) return [];
+  const list = [];
+  for (const g of radicalsData) {
+    if (Array.isArray(g.items)) {
+      list.push(...g.items);
+    }
+  }
+  return list;
+}
+
+function getRfcCurrentScopeDeck() {
+  if (rfcScope === 'all') {
+    return getAllRadicalsList();
+  }
+  return (currentRadicalGroup && Array.isArray(currentRadicalGroup.items)) ? [...currentRadicalGroup.items] : [];
+}
+
+function getFilteredRfcDeck() {
+  const base = rfcDeck.length > 0 ? rfcDeck : getRfcCurrentScopeDeck();
+  if (rfcFilter === 'learned') {
+    return base.filter(it => rfcLearnedSet.has(it.id));
+  } else if (rfcFilter === 'unlearned') {
+    return base.filter(it => !rfcLearnedSet.has(it.id));
+  }
+  return base;
+}
+
+function renderRadicalSection(sectionId, forcedTab = null) {
   activeRadicalSession++;
   const currentSession = activeRadicalSession;
 
@@ -2484,10 +3818,21 @@ function renderRadicalSection(sectionId) {
   if (!content) return;
 
   if (typeof radicalsData === 'undefined') return;
-  const group = radicalsData.find(g => g.id === sectionId) || radicalsData[0];
+  const isDirectFc = String(sectionId).startsWith('radicals-flashcard-');
+  const cleanId = isDirectFc ? sectionId.replace('radicals-flashcard-', 'radicals-') : sectionId;
+  const group = radicalsData.find(g => g.id === cleanId) || radicalsData[0];
   if (!group) return;
 
-  const isCompleted = isModuleCompleted(sectionId);
+  if (forcedTab) {
+    currentRadicalTab = forcedTab;
+  } else if (isDirectFc) {
+    currentRadicalTab = 'flashcard';
+  } else if (!currentRadicalTab) {
+    currentRadicalTab = 'list';
+  }
+
+  const isCompleted = isModuleCompleted(cleanId);
+  currentRadicalGroup = group;
 
   content.innerHTML = `
     <!-- Thanh chọn nhanh 17 nhóm số nét Bộ thủ -->
@@ -2523,112 +3868,1096 @@ function renderRadicalSection(sectionId) {
       <p class="lesson-desc">${group.description}</p>
     </div>
 
-    <!-- TÌM KIẾM BỘ THỦ TRONG PHẦN NÀY -->
-    <div class="radical-filter-bar">
-      <input type="text" 
-             id="radical-filter-input"
-             class="vocab-search-input radical-search-input" 
-             placeholder="Tìm nhanh bộ thủ trong nhóm này (tên, nghĩa, chữ Hán...)" 
-             oninput="filterRadicalsInGroup(this.value)">
+    <!-- ĐIỀU HƯỚNG TAB: TRA CỨU & NÉT VIẾT vs BÀI KIỂM TRA FLASHCARD -->
+    <div class="kanji-tab-nav-wrapper radical-tab-nav-wrapper">
+      <div class="kanji-tab-nav" role="tablist" aria-label="Chuyển chế độ học Bộ Thủ">
+        <button type="button" 
+                class="kanji-tab-btn ${currentRadicalTab === 'list' ? 'active' : ''}" 
+                id="tab-btn-radical-list" 
+                role="tab" 
+                aria-selected="${currentRadicalTab === 'list' ? 'true' : 'false'}"
+                onclick="switchRadicalTab('list')">
+          <span class="kanji-tab-icon">${APP_ICONS.book}</span>
+          <span class="kanji-tab-title">Tra Cứu &amp; Nét Viết</span>
+          <span class="kanji-tab-pill">${group.items.length} Bộ thủ</span>
+        </button>
+        <button type="button" 
+                class="kanji-tab-btn ${currentRadicalTab === 'flashcard' ? 'active' : ''}" 
+                id="tab-btn-radical-flashcard" 
+                role="tab" 
+                aria-selected="${currentRadicalTab === 'flashcard' ? 'true' : 'false'}"
+                onclick="switchRadicalTab('flashcard')">
+          <span class="kanji-tab-icon">${APP_ICONS.cards}</span>
+          <span class="kanji-tab-title">Kiểm Tra Flashcard</span>
+          <span class="kanji-tab-pill accent-amber">Luyện Trí Nhớ</span>
+        </button>
+      </div>
     </div>
 
-    <!-- Danh sách các bộ thủ tuân thủ cùng 1 format chuẩn -->
-    <div class="radicals-container">
-      ${group.items.map(item => `
-        <article class="radical-card" id="card-${item.id}" data-id="${item.id}" data-strokes="${item.strokeCount}">
-          
-          <!-- 1. CÁCH VIẾT: Ô ĐỦ LỚN & CÁC NÉT TỰ ĐỘNG VIẾT LẶP ĐI LẶP LẠI -->
-          <div class="radical-writing-section">
-            <div class="writing-label">
-              <span class="label-title">Cách viết (${item.strokeCount} nét)</span>
-            </div>
+    <!-- THẺ 1: DANH SÁCH TRA CỨU CHI TIẾT & NÉT VIẾT BỘ THỦ -->
+    <div id="radical-tab-pane-list" style="display: ${currentRadicalTab === 'list' ? 'block' : 'none'};">
+      
+      <!-- TÌM KIẾM BỘ THỦ TRONG PHẦN NÀY -->
+      <div class="radical-filter-bar">
+        <input type="text" 
+               id="radical-filter-input"
+               class="vocab-search-input radical-search-input" 
+               placeholder="Tìm nhanh bộ thủ trong nhóm này (tên, nghĩa, chữ Hán...)" 
+               oninput="filterRadicalsInGroup(this.value)">
+      </div>
+
+      <!-- Danh sách các bộ thủ tuân thủ cùng 1 format chuẩn -->
+      <div class="radicals-container">
+        ${group.items.map(item => `
+          <article class="radical-card" id="card-${item.id}" data-id="${item.id}" data-strokes="${item.strokeCount}">
             
-            <div class="radical-stroke-box">
-              <!-- Lưới chữ điền mễ tự cách 田 -->
-              <div class="stroke-grid-lines" aria-hidden="true">
-                <div class="grid-line grid-line-h"></div>
-                <div class="grid-line grid-line-v"></div>
+            <!-- 1. CÁCH VIẾT: Ô ĐỦ LỚN & CÁC NÉT TỰ ĐỘNG VIẾT LẶP ĐI LẶP LẠI -->
+            <div class="radical-writing-section">
+              <div class="writing-label">
+                <span class="label-title">Cách viết (${item.strokeCount} nét)</span>
               </div>
               
-              <!-- SVG hiển thị nét chữ chuẩn vector KanjiVG -->
-              <svg class="radical-stroke-svg" viewBox="0 0 109 109" data-id="${item.id}">
-                <!-- Lớp nét phác thảo mờ ở nền (Ghost strokes) -->
-                <g class="ghost-strokes">
-                  ${item.paths.map(p => `<path d="${p}" />`).join('')}
-                </g>
-                <!-- Lớp nét vẽ động tuần hoàn lặp đi lặp lại -->
-                <g class="animated-strokes">
-                  ${item.paths.map((p, idx) => `<path class="stroke-path" data-stroke="${idx}" d="${p}" />`).join('')}
-                </g>
-              </svg>
-            </div>
-          </div>
-
-          <!-- THÔNG TIN BỘ THỦ -->
-          <div class="radical-info-body">
-            
-            <!-- 2. TÊN CỦA BỘ ĐÓ -->
-            <div class="radical-field radical-name-field">
-              <div class="field-label">Tên bộ:</div>
-              <div class="field-value radical-name-value">
-                <span class="radical-main-char">${item.character}</span>
-                <span class="radical-full-name">${item.name}</span>
+              <div class="radical-stroke-box">
+                <!-- Lưới chữ điền mễ tự cách 田 -->
+                <div class="stroke-grid-lines" aria-hidden="true">
+                  <div class="grid-line grid-line-h"></div>
+                  <div class="grid-line grid-line-v"></div>
+                </div>
+                
+                <!-- SVG hiển thị nét chữ chuẩn vector KanjiVG -->
+                <svg class="radical-stroke-svg" viewBox="0 0 109 109" data-id="${item.id}">
+                  <!-- Lớp nét phác thảo mờ ở nền (Ghost strokes) -->
+                  <g class="ghost-strokes">
+                    ${item.paths.map(p => `<path d="${p}" />`).join('')}
+                  </g>
+                  <!-- Lớp nét vẽ động tuần hoàn lặp đi lặp lại -->
+                  <g class="animated-strokes">
+                    ${item.paths.map((p, idx) => `<path class="stroke-path" data-stroke="${idx}" d="${p}" />`).join('')}
+                  </g>
+                </svg>
               </div>
             </div>
 
-            <!-- 3. Ý NGHĨA CỦA BỘ THỦ ĐÓ -->
-            <div class="radical-field radical-meaning-field">
-              <div class="field-label">Ý nghĩa của bộ thủ:</div>
-              <div class="field-value radical-meaning-value">
-                ${item.meaning}
+            <!-- THÔNG TIN BỘ THỦ -->
+            <div class="radical-info-body">
+              
+              <!-- 2. TÊN CỦA BỘ ĐÓ -->
+              <div class="radical-field radical-name-field">
+                <div class="field-label">Tên bộ:</div>
+                <div class="field-value radical-name-value">
+                  <span class="radical-main-char">${item.character}</span>
+                  <span class="radical-full-name">${item.name}</span>
+                </div>
               </div>
-            </div>
 
-            <!-- 4. Ý NGHĨA CỦA BỘ THỦ ĐÓ TRONG KANJI -->
-            <div class="radical-field radical-kanji-meaning-field">
-              <div class="field-label">Ý nghĩa của bộ thủ trong Kanji:</div>
-              <div class="field-value radical-kanji-meaning-value">
-                <p class="kanji-meaning-desc">${item.kanjiMeaning}</p>
-                ${item.examples && item.examples.length > 0 ? `
-                  <div class="radical-examples-wrap">
-                    <span class="examples-tag">Chữ Hán ví dụ (Chạm để nghe):</span>
-                    <div class="kanji-example-chips">
-                      ${item.examples.map(ex => `
-                        <div class="kanji-chip" onclick="speakJapanese('${ex.kanji}', this, event)" role="button" tabindex="0" title="Chạm để nghe phát âm chữ ${ex.kanji}">
-                          <span class="chip-char">${ex.kanji}</span>
-                          <span class="chip-han">${ex.amHan}</span>
-                          <span class="chip-mean">${ex.nghia}</span>
-                        </div>
-                      `).join('')}
+              <!-- 3. Ý NGHĨA CỦA BỘ THỦ ĐÓ -->
+              <div class="radical-field radical-meaning-field">
+                <div class="field-label">Ý nghĩa của bộ thủ:</div>
+                <div class="field-value radical-meaning-value">
+                  ${item.meaning}
+                </div>
+              </div>
+
+              <!-- 4. Ý NGHĨA CỦA BỘ THỦ ĐÓ TRONG KANJI -->
+              <div class="radical-field radical-kanji-meaning-field">
+                <div class="field-label">Ý nghĩa của bộ thủ trong Kanji:</div>
+                <div class="field-value radical-kanji-meaning-value">
+                  <p class="kanji-meaning-desc">${item.kanjiMeaning}</p>
+                  ${item.examples && item.examples.length > 0 ? `
+                    <div class="radical-examples-wrap">
+                      <span class="examples-tag">Chữ Hán ví dụ (Chạm để nghe):</span>
+                      <div class="kanji-example-chips">
+                        ${item.examples.map(ex => `
+                          <div class="kanji-chip" onclick="speakJapanese('${ex.kanji}', this, event)" role="button" tabindex="0" title="Chạm để nghe phát âm chữ ${ex.kanji}">
+                            <span class="chip-char">${ex.kanji}</span>
+                            <span class="chip-han">${ex.amHan}</span>
+                            <span class="chip-mean">${ex.nghia}</span>
+                          </div>
+                        `).join('')}
+                      </div>
                     </div>
-                  </div>
-                ` : ''}
+                  ` : ''}
+                </div>
               </div>
+
             </div>
 
-          </div>
+          </article>
+        `).join('')}
+      </div>
 
-        </article>
-      `).join('')}
+      <!-- KHỐI GỢI Ý CHUYỂN SANG BÀI KIỂM TRA FLASHCARD -->
+      <div class="kcard-switch-cta-box">
+        <div class="switch-cta-icon">${APP_ICONS.cards}</div>
+        <div class="switch-cta-info">
+          <h4 class="switch-cta-title">Sẵn sàng kiểm tra trí nhớ ${group.title}?</h4>
+          <p class="switch-cta-desc">Chuyển sang Thẻ Kiểm Tra Flashcard để lật thẻ 3D, kiểm tra phản xạ tên bộ, ý nghĩa gốc và làm 25 câu trắc nghiệm phản xạ bộ thủ!</p>
+        </div>
+        <button type="button" class="btn-switch-kfc" onclick="switchRadicalTab('flashcard', true)">
+          <span style="display:inline-flex;align-items:center;gap:6px;"><span>Bắt đầu Kiểm tra Flashcard</span> ${APP_ICONS.arrowRight}</span>
+        </button>
+      </div>
+
+      <!-- Khối đánh dấu hoàn thành cuối phần Bộ thủ -->
+      <div class="lesson-completion-card">
+        <div class="completion-card-inner">
+          <div class="completion-text-wrap">
+            <h4 class="completion-heading">Hoàn thành ${group.title}</h4>
+            <p class="completion-sub">Bạn đã ghi nhớ toàn bộ các bộ thủ của nhóm này?</p>
+          </div>
+          <button id="btn-complete-lesson" 
+                  class="btn-complete-lesson ${isCompleted ? 'is-completed' : ''}" 
+                  onclick="toggleLessonComplete('${group.id}')">
+            ${isCompleted ? '✓ Đã hoàn thành (Bấm để hủy)' : '✓ Đánh dấu hoàn thành phần này'}
+          </button>
+        </div>
+      </div>
+
     </div>
 
-    <!-- Khối đánh dấu hoàn thành cuối phần Bộ thủ -->
-    <div class="lesson-completion-card">
-      <div class="completion-card-inner">
-        <div class="completion-text-wrap">
-          <h4 class="completion-heading">Hoàn thành ${group.title}</h4>
-          <p class="completion-sub">Bạn đã ghi nhớ toàn bộ các bộ thủ của nhóm này?</p>
+    <!-- THẺ 2: BÀI KIỂM TRA FLASHCARD BỘ THỦ -->
+    <div id="radical-tab-pane-flashcard" style="display: ${currentRadicalTab === 'flashcard' ? 'block' : 'none'};">
+      <div id="radical-flashcard-mount"></div>
+
+      <!-- Khối đánh dấu hoàn thành cuối phần Flashcard Bộ thủ -->
+      <div class="lesson-completion-card">
+        <div class="completion-card-inner">
+          <div class="completion-text-wrap">
+            <h4 class="completion-heading">Hoàn thành Flashcard ${group.title}</h4>
+            <p class="completion-sub">Bạn đã thuộc hết bộ thẻ Flashcard và trả lời đúng các câu hỏi phản xạ?</p>
+          </div>
+          <button class="btn-complete-lesson ${isCompleted ? 'is-completed' : ''}" 
+                  onclick="toggleLessonComplete('${group.id}')">
+            ${isCompleted ? '✓ Đã hoàn thành (Bấm để hủy)' : '✓ Đánh dấu hoàn thành phần này'}
+          </button>
         </div>
-        <button id="btn-complete-lesson" 
-                class="btn-complete-lesson ${isCompleted ? 'is-completed' : ''}" 
-                onclick="toggleLessonComplete('${group.id}')">
-          ${isCompleted ? '✓ Đã hoàn thành (Bấm để hủy)' : '✓ Đánh dấu hoàn thành phần này'}
+      </div>
+    </div>
+  `;
+
+  initRadicalFlashcardStudio(group);
+  if (currentRadicalTab === 'list') {
+    initRadicalStrokeLoops(currentSession);
+  }
+}
+
+function switchRadicalTab(tabName, shouldScroll = false) {
+  currentRadicalTab = tabName === 'flashcard' ? 'flashcard' : 'list';
+  if (typeof window !== 'undefined') window.currentRadicalTab = currentRadicalTab;
+
+  const listBtn = document.getElementById('tab-btn-radical-list');
+  const fcBtn = document.getElementById('tab-btn-radical-flashcard');
+  const listPane = document.getElementById('radical-tab-pane-list');
+  const fcPane = document.getElementById('radical-tab-pane-flashcard');
+
+  if (listBtn) {
+    listBtn.classList.toggle('active', currentRadicalTab === 'list');
+    listBtn.setAttribute('aria-selected', currentRadicalTab === 'list' ? 'true' : 'false');
+  }
+  if (fcBtn) {
+    fcBtn.classList.toggle('active', currentRadicalTab === 'flashcard');
+    fcBtn.setAttribute('aria-selected', currentRadicalTab === 'flashcard' ? 'true' : 'false');
+  }
+
+  if (listPane) listPane.style.display = currentRadicalTab === 'list' ? 'block' : 'none';
+  if (fcPane) fcPane.style.display = currentRadicalTab === 'flashcard' ? 'block' : 'none';
+
+  if (currentRadicalTab === 'flashcard') {
+    if (currentRadicalGroup) {
+      initRadicalFlashcardStudio(currentRadicalGroup);
+    }
+    triggerHaptic(10);
+  } else if (currentRadicalTab === 'list') {
+    initRadicalStrokeLoops(activeRadicalSession);
+  }
+
+  if (shouldScroll) {
+    const nav = document.querySelector('.radical-tab-nav-wrapper');
+    if (nav && nav.scrollIntoView) {
+      nav.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  }
+};
+
+function initRadicalFlashcardStudio(group) {
+  if (!group) return;
+
+  // Khi chuyển sang nhóm bộ thủ khác, reset về chế độ Flashcard mặc định
+  if (!currentRadicalGroup || currentRadicalGroup.id !== group.id) {
+    rfcMode = 'char-first';
+    rfcFilter = 'all';
+    rfcScope = 'group';
+  }
+
+  currentRadicalGroup = group;
+  rfcLearnedSet = loadRadicalLearnedSet();
+  rfcDeck = getRfcCurrentScopeDeck();
+  rfcIndex = 0;
+
+  const mount = document.getElementById('radical-flashcard-mount');
+  if (!mount) return;
+
+  const total = rfcDeck.length;
+  const learnedCount = rfcDeck.filter(it => rfcLearnedSet.has(it.id)).length;
+  const unlearnedCount = total - learnedCount;
+
+  mount.innerHTML = `
+    <div class="kanji-flashcard-studio">
+      
+      <!-- Header Studio Kiểm Tra Flashcard Bộ Thủ -->
+      <div class="kfc-header">
+        <div class="kfc-header-info">
+          <div class="kfc-title-row">
+            <span class="kfc-badge-icon">${APP_ICONS.cards}</span>
+            <div>
+              <h3 class="kfc-title">Kiểm Tra Flashcard Bộ Thủ - ${rfcScope === 'all' ? 'Toàn Bộ 191 Bộ Thủ' : group.title}</h3>
+              <p class="kfc-subtitle">Chạm thẻ để lật kiểm tra tên bộ, ý nghĩa gốc, ý nghĩa trong chữ Hán và các ví dụ</p>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Chọn phạm vi luyện tập: Nhóm này vs Toàn bộ 191 bộ -->
+        <div class="rfc-scope-selector" role="group" aria-label="Phạm vi luyện tập">
+          <button type="button" class="rfc-scope-btn ${rfcScope === 'group' ? 'active' : ''}" onclick="setRfcScope('group', this)">
+            Nhóm ${group.strokeCount} nét (${group.items.length})
+          </button>
+          <button type="button" class="rfc-scope-btn ${rfcScope === 'all' ? 'active' : ''}" onclick="setRfcScope('all', this)">
+            Toàn bộ 191 Bộ Thủ
+          </button>
+        </div>
+
+        <!-- Bộ lọc trạng thái thẻ: Tất cả / Chưa thuộc / Đã thuộc -->
+        <div class="kfc-filter-group" role="tablist" aria-label="Lọc thẻ kiểm tra">
+          <button type="button" class="kfc-filter-chip ${rfcFilter === 'all' ? 'active' : ''}" data-filter="all" onclick="filterRfcDeck('all', this)">
+            Tất cả (<span id="rfc-count-all">${total}</span>)
+          </button>
+          <button type="button" class="kfc-filter-chip ${rfcFilter === 'unlearned' ? 'active' : ''}" data-filter="unlearned" onclick="filterRfcDeck('unlearned', this)">
+            Chưa thuộc (<span id="rfc-count-unlearned">${unlearnedCount}</span>)
+          </button>
+          <button type="button" class="kfc-filter-chip ${rfcFilter === 'learned' ? 'active' : ''}" data-filter="learned" onclick="filterRfcDeck('learned', this)">
+            Đã thuộc (<span id="rfc-count-learned">${learnedCount}</span>)
+          </button>
+        </div>
+      </div>
+
+      <!-- Thanh tiến độ & Mode Selector -->
+      <div class="kfc-toolbar-bar">
+        <!-- Progress Bar -->
+        <div class="kfc-progress-wrap">
+          <div class="kfc-progress-labels">
+            <span class="kfc-counter-label" id="rfc-index-label">Thẻ 1 / ${total}</span>
+            <span class="kfc-learned-label" id="rfc-learned-label">Đã thuộc: ${learnedCount}/${total} (${Math.round((learnedCount / (total || 1)) * 100)}%)</span>
+          </div>
+          <div class="kfc-progress-track">
+            <div class="kfc-progress-bar" id="rfc-progress-bar" style="width: ${(learnedCount / (total || 1)) * 100}%;"></div>
+          </div>
+        </div>
+
+        <!-- Mode Selector -->
+        <div class="kfc-mode-selector">
+          <span class="kfc-mode-title">Chế độ kiểm tra:</span>
+          <button type="button" class="kfc-mode-btn ${rfcMode === 'char-first' ? 'active' : ''}" id="rfc-mode-char" onclick="setRfcMode('char-first', this)" title="Mặt trước: Ký tự Bộ thủ ➔ Mặt sau: Tên &amp; Ý nghĩa">
+            <span>Bộ thủ ➔ Tên &amp; Ý nghĩa</span>
+          </button>
+          <button type="button" class="kfc-mode-btn ${rfcMode === 'meaning-first' ? 'active' : ''}" id="rfc-mode-meaning" onclick="setRfcMode('meaning-first', this)" title="Mặt trước: Tên &amp; Ý nghĩa ➔ Mặt sau: Ký tự Bộ thủ">
+            <span>Ý nghĩa ➔ Ký tự Bộ thủ</span>
+          </button>
+          <button type="button" class="kfc-mode-btn ${rfcMode === 'quiz-mode' ? 'active' : ''}" id="rfc-mode-quiz" onclick="setRfcMode('quiz-mode', this)" title="Trắc nghiệm phản xạ 25 câu: Trộn lẫn Ký tự Bộ thủ và Ý nghĩa">
+            <span style="display:inline-flex;align-items:center;gap:6px;">${APP_ICONS.bolt} <span>Trắc Nghiệm Phản Xạ (25 Câu)</span></span>
+          </button>
+        </div>
+      </div>
+
+      <!-- SÂN KHẤU 1: FLASHCARD CARD 3D -->
+      <div class="kfc-card-stage" id="rfc-card-stage" style="display: ${rfcMode === 'quiz-mode' ? 'none' : 'flex'};">
+        
+        <div class="kfc-flashcard-3d" id="rfc-card" role="button" tabindex="0" title="Chạm để lật thẻ (hoặc phím Space)" onclick="flipRfcCard()">
+          <div class="kfc-face kfc-front" id="rfc-face-front"></div>
+          <div class="kfc-face kfc-back" id="rfc-face-back"></div>
+        </div>
+
+        <!-- BỘ NÚT ĐÁNH GIÁ (SPACED REPETITION) -->
+        <div class="kfc-rating-actions" id="rfc-rating-actions">
+          <button type="button" class="kfc-btn-rate kfc-rate-unlearned" onclick="rateRfcCurrent(false)" title="Đánh dấu Chưa Thuộc (Phím 1)">
+            <span class="rate-icon">${APP_ICONS.xCircle}</span>
+            <span>Chưa Nhớ</span>
+            <span class="key-shortcut">[1]</span>
+          </button>
+          <button type="button" class="kfc-btn-rate kfc-rate-flip" onclick="flipRfcCard()" title="Lật thẻ (Phím Space)">
+            <span class="rate-icon">${APP_ICONS.flip}</span>
+            <span>Lật Thẻ</span>
+            <span class="key-shortcut">[Space]</span>
+          </button>
+          <button type="button" class="kfc-btn-rate kfc-rate-learned" onclick="rateRfcCurrent(true)" title="Đánh dấu Đã Thuộc (Phím 2)">
+            <span class="rate-icon">${APP_ICONS.checkCircle}</span>
+            <span>Đã Nhớ</span>
+            <span class="key-shortcut">[2]</span>
+          </button>
+        </div>
+
+        <!-- BỘ NÚT ĐIỀU HƯỚNG CÔNG CỤ -->
+        <div class="kfc-nav-controls" id="rfc-nav-controls">
+          <button type="button" class="btn-tool" onclick="navRfcPrev()" title="Thẻ trước (Phím ←)">
+            <span style="display:inline-flex;align-items:center;gap:4px;">${APP_ICONS.arrowLeft} <span>Trước</span></span>
+          </button>
+          <button type="button" class="btn-tool btn-tool-primary" id="rfc-audio-btn" onclick="speakRfcCurrent(event)" title="Phát âm tiếng Nhật chuẩn">
+            <span style="display:inline-flex;align-items:center;gap:4px;">${SPEAKER_ICON_HTML} <span>Phát Âm</span></span>
+          </button>
+          <button type="button" class="btn-tool" onclick="shuffleRfcDeck()" title="Trộn ngẫu nhiên bộ thẻ">
+            <span style="display:inline-flex;align-items:center;gap:4px;">${APP_ICONS.shuffle} <span>Trộn Thẻ</span></span>
+          </button>
+          <button type="button" class="btn-tool" onclick="resetRfcProgress()" title="Đặt lại đánh giá nhớ của phần này">
+            <span style="display:inline-flex;align-items:center;gap:4px;">${APP_ICONS.refresh} <span>Đặt Lại</span></span>
+          </button>
+          <button type="button" class="btn-tool" onclick="navRfcNext()" title="Thẻ sau (Phím →)">
+            <span style="display:inline-flex;align-items:center;gap:4px;"><span>Tiếp</span> ${APP_ICONS.arrowRight}</span>
+          </button>
+        </div>
+          <button type="button" class="btn-tool" onclick="navRfcNext()" title="Thẻ sau (Phím →)">
+            <span style="display:inline-flex;align-items:center;gap:4px;"><span>Tiếp</span> ${APP_ICONS.arrowRight}</span>
+          </button>
+        </div>
+
+      </div>
+
+      <!-- SÂN KHẤU 2: TRẮC NGHIỆM PHẢN XẠ BỘ THỦ 4 ĐÁP ÁN -->
+      <div class="kfc-quiz-stage" id="rfc-quiz-stage" style="display: ${rfcMode === 'quiz-mode' ? 'block' : 'none'};"></div>
+
+    </div>
+  `;
+
+  if (rfcMode === 'quiz-mode') {
+    startRfcQuiz();
+  } else {
+    renderRfcCard();
+  }
+
+  if (!rfcKeydownAttached && typeof window !== 'undefined' && window.addEventListener) {
+    window.addEventListener('keydown', handleRfcKeydown);
+    rfcKeydownAttached = true;
+  }
+};
+
+function renderRfcCard() {
+  const card = document.getElementById('rfc-card');
+  const front = document.getElementById('rfc-face-front');
+  const back = document.getElementById('rfc-face-back');
+  const stage = document.getElementById('rfc-card-stage');
+  const ratingActions = document.getElementById('rfc-rating-actions');
+  const navControls = document.getElementById('rfc-nav-controls');
+  if (!card || !front || !back) return;
+
+  const filtered = getFilteredRfcDeck();
+  const totalInFilter = filtered.length;
+
+  const total = rfcDeck.length;
+  const learnedCount = rfcDeck.filter(it => rfcLearnedSet.has(it.id)).length;
+  const unlearnedCount = total - learnedCount;
+
+  const countAll = document.getElementById('rfc-count-all');
+  const countUnlearned = document.getElementById('rfc-count-unlearned');
+  const countLearned = document.getElementById('rfc-count-learned');
+  const learnedLabel = document.getElementById('rfc-learned-label');
+  const progressBar = document.getElementById('rfc-progress-bar');
+  const indexLabel = document.getElementById('rfc-index-label');
+
+  if (countAll) countAll.textContent = String(total);
+  if (countUnlearned) countUnlearned.textContent = String(unlearnedCount);
+  if (countLearned) countLearned.textContent = String(learnedCount);
+  if (learnedLabel) learnedLabel.textContent = `Đã thuộc: ${learnedCount}/${total} (${Math.round((learnedCount / (total || 1)) * 100)}%)`;
+  if (progressBar) progressBar.style.width = `${(learnedCount / (total || 1)) * 100}%`;
+
+  if (totalInFilter === 0) {
+    card.style.display = 'none';
+    if (ratingActions) ratingActions.style.display = 'none';
+    if (navControls) navControls.style.display = 'none';
+    if (indexLabel) indexLabel.textContent = `0 / 0 thẻ`;
+
+    let emptyHtml = '';
+    if (rfcFilter === 'unlearned') {
+      emptyHtml = `
+        <div class="kfc-empty-box">
+          <div class="kfc-empty-icon">${APP_ICONS.checkCircle}</div>
+          <h4 class="kfc-empty-title">Xuất Sắc! Bạn Đã Ghi Nhớ Toàn Bộ Bộ Thủ!</h4>
+          <p class="kfc-empty-desc">Không còn bộ thủ nào chưa thuộc trong phần này. Bạn đã nắm vững 100% tên và ý nghĩa bộ thủ!</p>
+          <div style="display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; margin-top: 10px;">
+            <button type="button" class="btn-tool btn-tool-primary" onclick="filterRfcDeck('all')">Xem Tất Cả ${total} Thẻ</button>
+            <button type="button" class="btn-tool" onclick="resetRfcProgress()">
+              <span style="display:inline-flex;align-items:center;gap:4px;">${APP_ICONS.refresh} <span>Đặt Lại Để Luyện Lại</span></span>
+            </button>
+          </div>
+        </div>
+      `;
+    } else if (rfcFilter === 'learned') {
+      emptyHtml = `
+        <div class="kfc-empty-box">
+          <div class="kfc-empty-icon">${APP_ICONS.lightbulb}</div>
+          <h4 class="kfc-empty-title">Chưa Có Thẻ Nào Được Đánh Dấu "Đã Nhớ"</h4>
+          <p class="kfc-empty-desc">Hãy chuyển về danh sách tất cả các thẻ, lật thẻ để kiểm tra và nhấn nút "Đã Nhớ" khi bạn đã thuộc nhé!</p>
+          <button type="button" class="btn-tool btn-tool-primary" onclick="filterRfcDeck('all')">Xem Tất Cả ${total} Thẻ</button>
+        </div>
+      `;
+    } else {
+      emptyHtml = `
+        <div class="kfc-empty-box">
+          <div class="kfc-empty-icon">${APP_ICONS.book}</div>
+          <h4 class="kfc-empty-title">Chưa Có Dữ Liệu Bộ Thủ</h4>
+          <p class="kfc-empty-desc">Dữ liệu bộ thủ đang được cập nhật.</p>
+        </div>
+      `;
+    }
+
+    const oldEmpty = document.getElementById('rfc-empty-container');
+    if (oldEmpty && oldEmpty.remove) oldEmpty.remove();
+    else if (oldEmpty && oldEmpty.parentNode) oldEmpty.parentNode.removeChild(oldEmpty);
+    const emptyContainer = document.createElement('div');
+    emptyContainer.id = 'rfc-empty-container';
+    emptyContainer.innerHTML = emptyHtml;
+    if (stage && stage.appendChild) stage.appendChild(emptyContainer);
+    return;
+  }
+
+  const oldEmpty = document.getElementById('rfc-empty-container');
+  if (oldEmpty && oldEmpty.remove) oldEmpty.remove();
+  else if (oldEmpty && oldEmpty.parentNode) oldEmpty.parentNode.removeChild(oldEmpty);
+
+  card.style.display = 'block';
+  if (ratingActions) ratingActions.style.display = 'flex';
+  if (navControls) navControls.style.display = 'flex';
+
+  if (rfcIndex >= totalInFilter) rfcIndex = 0;
+  if (rfcIndex < 0) rfcIndex = totalInFilter - 1;
+
+  if (indexLabel) indexLabel.textContent = `Thẻ ${rfcIndex + 1} / ${totalInFilter}`;
+
+  const item = filtered[rfcIndex];
+  if (!item) return;
+
+  const isLearned = rfcLearnedSet.has(item.id);
+  const statusPillHtml = isLearned 
+    ? `<span class="badge badge-green" style="font-size: 11px; display: inline-flex; align-items: center; gap: 4px;">${APP_ICONS.check} <span>Đã nhớ</span></span>`
+    : `<span class="badge badge-sakura" style="font-size: 11px;">Chưa nhớ</span>`;
+
+  card.classList.remove('flipped');
+
+  if (rfcMode === 'char-first') {
+    front.innerHTML = `
+      <div class="kfc-front-meta">
+        <span class="badge badge-primary">Bộ thủ ${item.strokeCount} nét</span>
+        ${statusPillHtml}
+      </div>
+
+      <div class="kfc-front-center">
+        <div class="rfc-main-char">${item.character}</div>
+        <div class="rfc-stroke-badge">${item.strokeCount} nét bút</div>
+      </div>
+
+      <div class="kfc-flip-hint">
+        <span style="display:inline-flex;align-items:center;gap:5px;">${APP_ICONS.flip} <span>Chạm thẻ để lật xem Tên bộ &amp; Ý nghĩa (hoặc phím Space)</span></span>
+      </div>
+    `;
+
+    back.innerHTML = `
+      ${statusPillHtml}
+
+      <div class="rfc-back-header">
+        <span class="rfc-back-char">${item.character}</span>
+        <div class="rfc-back-name-wrap">
+          <h4 class="rfc-back-name">${item.name}</h4>
+          <span class="rfc-back-stroke">${item.strokeCount} nét viết</span>
+        </div>
+      </div>
+
+      <div class="rfc-info-row">
+        <span class="rfc-info-tag">Ý nghĩa của bộ thủ:</span>
+        <span class="rfc-info-text">${item.meaning}</span>
+      </div>
+
+      <div class="rfc-info-row">
+        <span class="rfc-info-tag">Ý nghĩa trong chữ Hán:</span>
+        <span class="rfc-info-text">${item.kanjiMeaning}</span>
+      </div>
+
+      ${item.examples && item.examples.length > 0 ? `
+        <div class="rfc-examples-section">
+          <span class="rfc-examples-title">Chữ Hán ví dụ (Chạm để nghe phát âm):</span>
+          <div class="kanji-example-chips">
+            ${item.examples.slice(0, 5).map(ex => `
+              <div class="kanji-chip" onclick="speakJapanese('${ex.kanji}', this, event)" role="button" tabindex="0" title="Chạm nghe phát âm ${ex.kanji}">
+                <span class="chip-char">${ex.kanji}</span>
+                <span class="chip-han">${ex.amHan}</span>
+                <span class="chip-mean">${ex.nghia}</span>
+              </div>
+            `).join('')}
+          </div>
+        </div>
+      ` : ''}
+
+      <div class="kfc-flip-hint">
+        <span style="display:inline-flex;align-items:center;gap:5px;">${APP_ICONS.flip} <span>Chạm để quay lại mặt trước</span></span>
+      </div>
+    `;
+  } else {
+    // meaning-first mode
+    front.innerHTML = `
+      <div class="kfc-front-meta">
+        <span class="badge badge-primary">Bộ thủ ${item.strokeCount} nét</span>
+        ${statusPillHtml}
+      </div>
+
+      <div class="kfc-front-center">
+        <div class="rfc-main-meaning">"${item.meaning}"</div>
+        <div class="rfc-sub-name">${item.name} • ${item.strokeCount} nét</div>
+      </div>
+
+      <div class="kfc-flip-hint">
+        <span style="display:inline-flex;align-items:center;gap:5px;">${APP_ICONS.flip} <span>Đố bạn đây là Bộ thủ nào? Chạm để lật xem đáp án</span></span>
+      </div>
+    `;
+
+    back.innerHTML = `
+      ${statusPillHtml}
+
+      <div class="rfc-back-header">
+        <span class="rfc-back-char">${item.character}</span>
+        <div class="rfc-back-name-wrap">
+          <h4 class="rfc-back-name">${item.name}</h4>
+          <span class="rfc-back-stroke">${item.strokeCount} nét viết</span>
+        </div>
+      </div>
+
+      <div class="rfc-info-row">
+        <span class="rfc-info-tag">Ý nghĩa trong chữ Hán:</span>
+        <span class="rfc-info-text">${item.kanjiMeaning}</span>
+      </div>
+
+      ${item.examples && item.examples.length > 0 ? `
+        <div class="rfc-examples-section">
+          <span class="rfc-examples-title">Chữ Hán ví dụ:</span>
+          <div class="kanji-example-chips">
+            ${item.examples.slice(0, 5).map(ex => `
+              <div class="kanji-chip" onclick="speakJapanese('${ex.kanji}', this, event)" role="button" tabindex="0" title="Chạm nghe phát âm ${ex.kanji}">
+                <span class="chip-char">${ex.kanji}</span>
+                <span class="chip-han">${ex.amHan}</span>
+                <span class="chip-mean">${ex.nghia}</span>
+              </div>
+            `).join('')}
+          </div>
+        </div>
+      ` : ''}
+
+      <div class="kfc-flip-hint">
+        <span style="display:inline-flex;align-items:center;gap:5px;">${APP_ICONS.flip} <span>Chạm để quay lại mặt trước</span></span>
+      </div>
+    `;
+  }
+}
+
+window.flipRfcCard = function() {
+  const card = document.getElementById('rfc-card');
+  if (!card) return;
+  triggerHaptic(10);
+  card.classList.toggle('flipped');
+};
+
+window.rateRfcCurrent = function(isLearned) {
+  const filtered = getFilteredRfcDeck();
+  if (!filtered.length) return;
+
+  const item = filtered[rfcIndex];
+  if (!item) return;
+
+  if (isLearned) {
+    rfcLearnedSet.add(item.id);
+    triggerHaptic(15);
+    showToast(`Đã ghi nhớ: ${item.name}`);
+  } else {
+    rfcLearnedSet.delete(item.id);
+    triggerHaptic(10);
+  }
+
+  saveRadicalLearnedSet(rfcLearnedSet);
+
+  if (rfcFilter !== 'all') {
+    const nextFiltered = getFilteredRfcDeck();
+    if (rfcIndex >= nextFiltered.length) rfcIndex = 0;
+  } else {
+    rfcIndex = (rfcIndex + 1) % filtered.length;
+  }
+
+  renderRfcCard();
+};
+
+window.navRfcNext = function() {
+  const filtered = getFilteredRfcDeck();
+  if (!filtered.length) return;
+  rfcIndex = (rfcIndex + 1) % filtered.length;
+  triggerHaptic(10);
+  renderRfcCard();
+};
+
+window.navRfcPrev = function() {
+  const filtered = getFilteredRfcDeck();
+  if (!filtered.length) return;
+  rfcIndex = (rfcIndex - 1 + filtered.length) % filtered.length;
+  triggerHaptic(10);
+  renderRfcCard();
+};
+
+window.shuffleRfcDeck = function() {
+  rfcDeck.sort(() => Math.random() - 0.5);
+  rfcIndex = 0;
+  triggerHaptic(15);
+  renderRfcCard();
+  showToast('Đã xáo trộn ngẫu nhiên bộ thẻ Bộ thủ!');
+};
+
+window.resetRfcProgress = function() {
+  const deck = getRfcCurrentScopeDeck();
+  deck.forEach(it => rfcLearnedSet.delete(it.id));
+  saveRadicalLearnedSet(rfcLearnedSet);
+  rfcIndex = 0;
+  triggerHaptic(15);
+  renderRfcCard();
+  showToast('Đã đặt lại tiến độ ghi nhớ Bộ thủ!');
+};
+
+window.filterRfcDeck = function(filterType, btnEl = null) {
+  rfcFilter = filterType || 'all';
+  rfcIndex = 0;
+  triggerHaptic(10);
+
+  const chips = document.querySelectorAll ? document.querySelectorAll('.kfc-filter-chip') : [];
+  chips.forEach(chip => {
+    chip.classList.toggle('active', chip.getAttribute('data-filter') === rfcFilter);
+  });
+
+  if (rfcMode === 'quiz-mode') {
+    setRfcMode('char-first');
+  } else {
+    renderRfcCard();
+  }
+};
+
+window.setRfcScope = function(scope, btnEl = null) {
+  rfcScope = scope || 'group';
+  triggerHaptic(10);
+
+  const btns = document.querySelectorAll ? document.querySelectorAll('.rfc-scope-btn') : [];
+  btns.forEach(b => b.classList.remove('active'));
+  if (btnEl) btnEl.classList.add('active');
+
+  rfcDeck = getRfcCurrentScopeDeck();
+  rfcIndex = 0;
+
+  if (rfcMode === 'quiz-mode') {
+    startRfcQuiz();
+  } else {
+    renderRfcCard();
+  }
+};
+
+window.setRfcMode = function(mode, btnEl = null) {
+  rfcMode = mode || 'char-first';
+  triggerHaptic(10);
+
+  const btns = document.querySelectorAll ? document.querySelectorAll('.kfc-mode-btn') : [];
+  btns.forEach(b => b.classList.remove('active'));
+  if (btnEl) {
+    btnEl.classList.add('active');
+  } else {
+    const targetId = rfcMode === 'quiz-mode' ? 'rfc-mode-quiz' :
+      rfcMode === 'meaning-first' ? 'rfc-mode-meaning' : 'rfc-mode-char';
+    const targetBtn = document.getElementById(targetId);
+    if (targetBtn) targetBtn.classList.add('active');
+  }
+
+  const cardStage = document.getElementById('rfc-card-stage');
+  const quizStage = document.getElementById('rfc-quiz-stage');
+
+  if (rfcMode === 'quiz-mode') {
+    if (cardStage) cardStage.style.display = 'none';
+    if (quizStage) {
+      quizStage.style.display = 'block';
+      startRfcQuiz();
+    }
+  } else {
+    if (quizStage) quizStage.style.display = 'none';
+    if (cardStage) {
+      cardStage.style.display = 'flex';
+      renderRfcCard();
+    }
+  }
+};
+
+window.speakRfcCurrent = function(event) {
+  if (event && event.stopPropagation) event.stopPropagation();
+  const filtered = getFilteredRfcDeck();
+  if (!filtered.length) return;
+  const item = filtered[rfcIndex];
+  if (!item) return;
+
+  const textToSpeak = (item.examples && item.examples[0] && item.examples[0].kanji) ? item.examples[0].kanji : item.character;
+  speakJapanese(textToSpeak, null, event);
+};
+
+function getRadicalMeaningDistractors(targetItem, allPool) {
+  const correctName = (targetItem.name || '').trim();
+  const distractors = [];
+  const shuffled = [...allPool].sort(() => Math.random() - 0.5);
+  for (const other of shuffled) {
+    const oName = (other.name || '').trim();
+    if (oName && oName !== correctName && !distractors.includes(oName)) {
+      distractors.push(oName);
+      if (distractors.length >= 3) break;
+    }
+  }
+  return distractors.slice(0, 3);
+}
+
+function getRadicalCharDistractors(targetItem, allPool) {
+  const correctChar = (targetItem.character || '').trim();
+  const distractors = [];
+  // Ưu tiên các bộ thủ có cùng hoặc gần số nét
+  const sameStroke = allPool.filter(it => it.character !== correctChar && Math.abs(it.strokeCount - targetItem.strokeCount) <= 1);
+  const shuffledSame = [...sameStroke].sort(() => Math.random() - 0.5);
+  for (const other of shuffledSame) {
+    const oChar = (other.character || '').trim();
+    if (oChar && oChar !== correctChar && !distractors.includes(oChar)) {
+      distractors.push(oChar);
+      if (distractors.length >= 3) break;
+    }
+  }
+  if (distractors.length < 3) {
+    const shuffledAll = [...allPool].sort(() => Math.random() - 0.5);
+    for (const other of shuffledAll) {
+      const oChar = (other.character || '').trim();
+      if (oChar && oChar !== correctChar && !distractors.includes(oChar)) {
+        distractors.push(oChar);
+        if (distractors.length >= 3) break;
+      }
+    }
+  }
+  return distractors.slice(0, 3);
+}
+
+function startRfcQuiz() {
+  if (rfcQuizAdvanceTimer) {
+    clearTimeout(rfcQuizAdvanceTimer);
+    rfcQuizAdvanceTimer = null;
+  }
+
+  const quizStage = document.getElementById('rfc-quiz-stage');
+  if (!quizStage) return;
+
+  const allPool = getAllRadicalsList();
+  const pool = rfcDeck.length > 0 ? rfcDeck : allPool;
+  if (pool.length === 0) {
+    quizStage.innerHTML = `<p class="kq-empty">Đang cập nhật câu hỏi trắc nghiệm bộ thủ.</p>`;
+    return;
+  }
+
+  const TARGET_QUIZ_COUNT = Math.min(25, pool.length >= 5 ? 25 : pool.length * 4);
+  const half1 = Math.ceil(TARGET_QUIZ_COUNT / 2);
+  const half2 = TARGET_QUIZ_COUNT - half1;
+
+  const shuffledPool1 = [...pool].sort(() => Math.random() - 0.5);
+  const shuffledPool2 = [...pool].sort(() => Math.random() - 0.5);
+
+  const c2mItems = [];
+  for (let i = 0; i < half1; i++) {
+    c2mItems.push(shuffledPool1[i % shuffledPool1.length]);
+  }
+
+  const m2cItems = [];
+  for (let i = 0; i < half2; i++) {
+    m2cItems.push(shuffledPool2[i % shuffledPool2.length]);
+  }
+
+  // Dạng 1: Ký tự Bộ thủ ➔ 4 Tên & Ý nghĩa
+  const q1 = c2mItems.map(item => {
+    const correctText = `${item.name}: ${item.meaning.split(';')[0].trim()}`;
+    const wrongItems = getRadicalMeaningDistractors(item, allPool);
+    const options = [
+      { text: correctText, isCorrect: true },
+      ...wrongItems.map(w => {
+        const matching = allPool.find(r => r.name === w);
+        const desc = matching ? matching.meaning.split(';')[0].trim() : '';
+        return { text: `${w}: ${desc}`, isCorrect: false };
+      })
+    ].sort(() => Math.random() - 0.5);
+
+    return {
+      item,
+      type: 'char-to-name',
+      options
+    };
+  });
+
+  // Dạng 2: Ý nghĩa & Tên Bộ thủ ➔ 4 Ký tự Bộ thủ
+  const q2 = m2cItems.map(item => {
+    const correctChar = item.character;
+    const wrongChars = getRadicalCharDistractors(item, allPool);
+    const options = [
+      { text: correctChar, isCorrect: true },
+      ...wrongChars.map(c => ({ text: c, isCorrect: false }))
+    ].sort(() => Math.random() - 0.5);
+
+    return {
+      item,
+      type: 'name-to-char',
+      options
+    };
+  });
+
+  rfcQuizDeck = [...q1, ...q2].sort(() => Math.random() - 0.5).slice(0, TARGET_QUIZ_COUNT);
+  rfcQuizIndex = 0;
+  rfcQuizScore = 0;
+  if (typeof window !== 'undefined') window.rfcQuizDeck = rfcQuizDeck;
+  renderRfcQuizQuestion();
+}
+
+function renderRfcQuizQuestion() {
+  if (rfcQuizAdvanceTimer) {
+    clearTimeout(rfcQuizAdvanceTimer);
+    rfcQuizAdvanceTimer = null;
+  }
+
+  const quizStage = document.getElementById('rfc-quiz-stage');
+  if (!quizStage) return;
+
+  if (rfcQuizIndex >= rfcQuizDeck.length) {
+    const percent = Math.round((rfcQuizScore / (rfcQuizDeck.length || 1)) * 100);
+    quizStage.innerHTML = `
+      <div class="kfc-empty-box" style="padding: 36px 20px;">
+        <div class="kfc-empty-icon">${percent >= 80 ? APP_ICONS.checkCircle : APP_ICONS.cards}</div>
+        <h4 class="kfc-empty-title">Hoàn Thành Bài Kiểm Tra Bộ Thủ!</h4>
+        <p class="kfc-empty-desc">
+          Kết quả phản xạ nhận biết: <strong>${rfcQuizScore} / ${rfcQuizDeck.length}</strong> câu chính xác (${percent}%).
+        </p>
+        <div style="display: flex; gap: 12px; flex-wrap: wrap; justify-content: center; margin-top: 14px;">
+          <button type="button" class="btn-tool btn-tool-primary" onclick="startRfcQuiz()" style="min-height: 44px; padding: 10px 20px;">
+            <span style="display:inline-flex;align-items:center;gap:4px;">${APP_ICONS.refresh} <span>Làm Lại Lượt Mới (25 câu)</span></span>
+          </button>
+          <button type="button" class="btn-tool" onclick="setRfcMode('char-first')" style="min-height: 44px; padding: 10px 20px;">
+            <span style="display:inline-flex;align-items:center;gap:4px;">${APP_ICONS.cards} <span>Quay Lại Lật Flashcard 3D</span></span>
+          </button>
+        </div>
+      </div>
+    `;
+    return;
+  }
+
+  const q = rfcQuizDeck[rfcQuizIndex];
+  const item = q.item;
+  const isC2N = q.type === 'char-to-name';
+
+  const typeTag = isC2N ? 'Đoán Tên & Ý Nghĩa Bộ Thủ' : 'Phân Biệt Ký Tự Bộ Thủ';
+  const modeTitle = isC2N ? 'Ký Tự Bộ Thủ ➔ Tên & Ý Nghĩa' : 'Ý Nghĩa & Tên ➔ Ký Tự Bộ Thủ';
+  const modeSubtitle = isC2N 
+    ? 'Quan sát Ký tự Bộ thủ và chọn đúng Tên & Ý nghĩa tương ứng' 
+    : 'Đọc Ý nghĩa/Tên và chọn đúng Ký tự Bộ thủ tương ứng';
+
+  quizStage.innerHTML = `
+    <div class="practice-box" style="padding: 22px;">
+      <div class="practice-box-header">
+        <div class="practice-box-title">
+          <span class="practice-icon-badge ${isC2N ? 'accent-sakura' : 'accent-indigo'}">${APP_ICONS.bolt}</span>
+          <div>
+            <h4>Trắc Nghiệm Phản Xạ: ${modeTitle}</h4>
+            <span class="practice-sub">${modeSubtitle}</span>
+          </div>
+        </div>
+        <span class="practice-counter-pill accent-emerald">Đúng: ${rfcQuizScore}/${rfcQuizDeck.length}</span>
+      </div>
+
+      <div class="kq-body" style="min-height: 250px; justify-content: flex-start; gap: 16px;">
+        <!-- KHUNG HIỂN THỊ ĐỀ BÀI -->
+        <div style="text-align: center; width: 100%;">
+          <span class="kq-step-tag">Câu ${rfcQuizIndex + 1}/${rfcQuizDeck.length} • ${typeTag}</span>
+          
+          ${isC2N ? `
+            <!-- DẠNG 1: ĐỀ BÀI LÀ KÝ TỰ BỘ THỦ LỚN -->
+            <div class="rfc-main-char" style="font-size: clamp(56px, 8vw, 76px); margin: 8px 0;">
+              ${item.character}
+            </div>
+            <div style="font-size: 13px; color: var(--text-muted); font-weight: 600;">
+              (${item.strokeCount} nét bút)
+            </div>
+          ` : `
+            <!-- DẠNG 2: ĐỀ BÀI LÀ Ý NGHĨA & TÊN BỘ THỦ -->
+            <div class="kfc-quiz-main-meaning" style="font-size: clamp(18px, 3.2vw, 24px); margin: 10px auto; max-width: 90%;">
+              "${item.meaning}"
+            </div>
+            <div style="font-size: 14px; color: var(--accent-primary); font-weight: 700; margin-top: 4px;">
+              ${item.name} (${item.strokeCount} nét)
+            </div>
+          `}
+        </div>
+
+        <!-- CÁC ĐÁP ÁN LỰA CHỌN (DẠNG LƯỚI 2x2 CÂN ĐỐI) -->
+        <div class="kq-options">
+          ${q.options.map((opt, oIdx) => `
+            <button type="button" 
+                    class="kq-opt" 
+                    style="font-size: ${isC2N ? '13px' : '20px'}; font-weight: ${isC2N ? '600' : '700'}; ${!isC2N ? 'font-family: var(--font-mincho), serif;' : ''}" 
+                    data-correct="${opt.isCorrect ? 'true' : 'false'}">
+              <span style="display: flex; align-items: center; gap: 8px;">
+                <strong style="color: var(--accent-primary); font-size: 13.5px; font-family: var(--font-sans); flex-shrink: 0;">${String.fromCharCode(65 + oIdx)}.</strong>
+                <span>${opt.text}</span>
+              </span>
+              <span class="kq-feedback-icon" style="display: none; font-size: 15px; font-weight: 800; font-family: var(--font-sans);"></span>
+            </button>
+          `).join('')}
+        </div>
+
+        <!-- VÙNG HIỂN THỊ CHI TIẾT CỦNG CỐ SAU KHI CHỌN ĐÁP ÁN -->
+        <div id="rfc-quiz-explain-reveal" style="display: none; width: 100%; margin-top: 8px;">
+          <div class="kfc-mnemonic-card-box" style="margin: 0; background: var(--bg-card-inner); border-left: 4px solid var(--accent-primary);">
+            
+            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; margin-bottom: 8px;">
+              <span style="font-weight: 800; font-size: 14px; color: var(--text-primary); display: inline-flex; align-items: center; gap: 6px;">${APP_ICONS.book} <span>Thông Tin Chi Tiết Bộ Thủ:</span></span>
+              <button type="button" class="kcard-audio-btn" onclick="speakJapanese('${item.character}', this, event)" style="margin: 0; min-height: 36px; padding: 4px 12px;">
+                ${SPEAKER_ICON_HTML} <span>Nghe Phát Âm</span>
+              </button>
+            </div>
+
+            <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 12px; flex-wrap: wrap; padding-bottom: 10px; border-bottom: 1px dashed var(--border-color);">
+              <span style="font-family: var(--font-mincho); font-size: 32px; font-weight: 800; color: var(--accent-primary);">${item.character}</span>
+              <span style="font-size: 16px; font-weight: 700; color: var(--text-primary);">${item.name}</span>
+              <span style="font-size: 13px; font-weight: 600; color: var(--text-muted); background: var(--bg-tertiary); padding: 3px 10px; border-radius: 6px; border: 1px solid var(--border-color);">
+                ${item.strokeCount} nét
+              </span>
+            </div>
+
+            <div style="margin-bottom: 8px; font-size: 14px; line-height: 1.5;">
+              <strong style="color: var(--accent-primary);">Ý nghĩa gốc:</strong> ${item.meaning}
+            </div>
+
+            <div style="margin-bottom: 10px; font-size: 13.5px; line-height: 1.5; color: var(--text-secondary);">
+              <strong style="color: var(--text-primary);">Ý nghĩa trong chữ Hán:</strong> ${item.kanjiMeaning}
+            </div>
+
+            ${item.examples && item.examples.length > 0 ? `
+              <div style="margin-top: 10px; padding: 10px 14px; background: var(--bg-tertiary); border-radius: 8px; font-size: 13px;">
+                <strong style="color: var(--text-primary);">Chữ Hán ví dụ:</strong>
+                <div class="kanji-example-chips" style="margin-top: 6px;">
+                  ${item.examples.slice(0, 5).map(ex => `
+                    <div class="kanji-chip" onclick="speakJapanese('${ex.kanji}', this, event)" role="button" tabindex="0">
+                      <span class="chip-char">${ex.kanji}</span>
+                      <span class="chip-han">${ex.amHan}</span>
+                      <span class="chip-mean">${ex.nghia}</span>
+                    </div>
+                  `).join('')}
+                </div>
+              </div>
+            ` : ''}
+
+            <div style="margin-top: 14px; text-align: right;">
+              <button type="button" class="btn-tool btn-tool-primary" id="rfc-quiz-next-btn" onclick="advanceRfcQuizQuestion()" style="min-height: 44px; padding: 8px 18px; font-size: 14.5px; font-weight: 700; width: 100%; justify-content: center; display: inline-flex; align-items: center; gap: 6px;">
+                <span>Câu Tiếp Theo</span> ${APP_ICONS.arrowRight}
+              </button>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="kq-controls">
+        <button type="button" class="btn-tool" onclick="startRfcQuiz()">
+          <span style="display:inline-flex;align-items:center;gap:4px;">${APP_ICONS.refresh} <span>Đổi Bộ Câu Hỏi</span></span>
+        </button>
+        <button type="button" class="btn-tool" onclick="setRfcMode('char-first')">
+          <span style="display:inline-flex;align-items:center;gap:4px;">${APP_ICONS.cards} <span>Về Thẻ Flashcard 3D</span></span>
         </button>
       </div>
     </div>
   `;
 
-  initRadicalStrokeLoops(currentSession);
+  const optBtns = quizStage.querySelectorAll('.kq-opt');
+  const revealBox = quizStage.querySelector('#rfc-quiz-explain-reveal');
+
+  optBtns.forEach(btn => {
+    btn.onclick = () => {
+      triggerHaptic(10);
+      optBtns.forEach(b => b.disabled = true);
+      const isCor = btn.getAttribute('data-correct') === 'true';
+      const icon = btn.querySelector('.kq-feedback-icon');
+
+      if (isCor) {
+        btn.classList.add('correct');
+        if (icon) { icon.textContent = '✓'; icon.style.display = 'inline'; }
+        rfcQuizScore++;
+      } else {
+        btn.classList.add('wrong');
+        if (icon) { icon.textContent = '✗'; icon.style.display = 'inline'; }
+        optBtns.forEach(b => {
+          if (b.getAttribute('data-correct') === 'true') {
+            b.classList.add('correct');
+            const cIcon = b.querySelector('.kq-feedback-icon');
+            if (cIcon) { cIcon.textContent = '✓'; cIcon.style.display = 'inline'; }
+          }
+        });
+      }
+
+      if (revealBox) revealBox.style.display = 'block';
+
+      const counterPill = quizStage.querySelector('.practice-counter-pill');
+      if (counterPill) counterPill.textContent = `Đúng: ${rfcQuizScore}/${rfcQuizDeck.length}`;
+
+      const nextBtn = quizStage.querySelector('#rfc-quiz-next-btn');
+      if (nextBtn) nextBtn.focus();
+    };
+  });
+}
+
+function advanceRfcQuizQuestion() {
+  if (rfcQuizAdvanceTimer) {
+    clearTimeout(rfcQuizAdvanceTimer);
+    rfcQuizAdvanceTimer = null;
+  }
+  rfcQuizIndex++;
+  renderRfcQuizQuestion();
+}
+
+function handleRfcKeydown(e) {
+  const mount = document.getElementById('radical-flashcard-mount');
+  if (!mount) return;
+  const fcPane = document.getElementById('radical-tab-pane-flashcard');
+  if (!fcPane || fcPane.style.display === 'none') return;
+
+  const targetTag = (e.target && e.target.tagName) ? e.target.tagName.toUpperCase() : '';
+  if (targetTag === 'INPUT' || targetTag === 'TEXTAREA' || (e.target && e.target.isContentEditable)) return;
+
+  if (rfcMode === 'quiz-mode') return;
+
+  if (e.code === 'Space' || e.key === ' ' || e.key === 'ArrowUp' || e.key === 'ArrowDown') {
+    e.preventDefault();
+    flipRfcCard();
+  } else if (e.key === 'ArrowRight') {
+    e.preventDefault();
+    navRfcNext();
+  } else if (e.key === 'ArrowLeft') {
+    e.preventDefault();
+    navRfcPrev();
+  } else if (e.key === '1') {
+    e.preventDefault();
+    rateRfcCurrent(false);
+  } else if (e.key === '2') {
+    e.preventDefault();
+    rateRfcCurrent(true);
+  }
+}
+
+if (typeof window !== 'undefined') {
+  window.switchRadicalTab = switchRadicalTab;
+  window.initRadicalFlashcardStudio = initRadicalFlashcardStudio;
+  window.startRfcQuiz = startRfcQuiz;
+  window.renderRfcQuizQuestion = renderRfcQuizQuestion;
+  window.advanceRfcQuizQuestion = advanceRfcQuizQuestion;
+  window.rfcQuizDeck = rfcQuizDeck;
+  window.currentRadicalGroup = currentRadicalGroup;
+  window.currentRadicalTab = currentRadicalTab;
 }
 
 window.filterRadicalsInGroup = function(query) {
@@ -2744,7 +5073,7 @@ function renderDokkaiRoom(dokkaiId) {
         <span class="badge badge-primary">1 Bài Đọc</span>
         <span class="badge badge-green">5 Câu Hỏi Đi Kèm</span>
         <button class="btn-redo" onclick="resetDokkaiProgress('${dokkai.id}')" title="Làm lại bài đọc hiểu này">
-          <span>↻ Làm lại bài</span>
+          <span style="display:inline-flex;align-items:center;gap:4px;">${APP_ICONS.refresh} <span>Làm lại bài</span></span>
         </button>
       </div>
       <h2 class="lesson-title">${dokkai.title}</h2>
@@ -2764,7 +5093,7 @@ function renderDokkaiRoom(dokkaiId) {
               ${SPEAKER_ICON_HTML} <span>Nghe Bài Đọc</span>
             </button>
             <button class="btn-dokkai-tool" onclick="toggleDokkaiTranslation('${dokkai.id}', this)" title="Xem bản dịch nghĩa Tiếng Việt đầy đủ">
-              <span>📖 Xem Dịch Nghĩa</span>
+              <span style="display:inline-flex;align-items:center;gap:5px;">${APP_ICONS.eye} <span>Xem Dịch Nghĩa</span></span>
             </button>
           </div>
           <div id="dokkai-trans-${dokkai.id}" class="dokkai-translation-box" style="display: none;">
@@ -2842,7 +5171,9 @@ window.toggleDokkaiTranslation = function(dokkaiId, btn) {
     const isHidden = (box.style.display === 'none');
     box.style.display = isHidden ? 'block' : 'none';
     if (btn) {
-      btn.innerHTML = isHidden ? '<span>🙈 Ẩn Dịch Nghĩa</span>' : '<span>📖 Xem Dịch Nghĩa</span>';
+      btn.innerHTML = isHidden 
+        ? `<span style="display:inline-flex;align-items:center;gap:5px;">${APP_ICONS.eyeOff} <span>Ẩn Dịch Nghĩa</span></span>` 
+        : `<span style="display:inline-flex;align-items:center;gap:5px;">${APP_ICONS.eye} <span>Xem Dịch Nghĩa</span></span>`;
     }
   }
 };
@@ -2901,6 +5232,10 @@ window.initQuizTimer = function() {
   if (quizTimerInterval) {
     clearInterval(quizTimerInterval);
     quizTimerInterval = null;
+  }
+
+  if (typeof stopMaziiVoiceSearch === 'function' && targetId !== 'mazii-dict') {
+    stopMaziiVoiceSearch(true);
   }
   quizSecondsLeft = 30 * 60;
   isQuizTimerPaused = false;
@@ -3079,6 +5414,10 @@ function finalizePracticeQuizSubmission(quizId) {
   if (quizTimerInterval) {
     clearInterval(quizTimerInterval);
     quizTimerInterval = null;
+  }
+
+  if (typeof stopMaziiVoiceSearch === 'function' && targetId !== 'mazii-dict') {
+    stopMaziiVoiceSearch(true);
   }
 
   let correctCount = 0;
@@ -3564,7 +5903,7 @@ function searchEverything(keyword) {
           results.push({
             category: "Chữ Hán & Mẹo Nhớ",
             title: `${displayWord}${displayReading} (${item.hanViet}) - ${item.meaning.slice(0, 35)}`,
-            sub: `💡 Mẹo nhớ: ${cleanMnemonic.slice(0, 50)}... • Bài ${kl.lesson}`,
+            sub: `Mẹo nhớ: ${cleanMnemonic.slice(0, 50)}... • Bài ${kl.lesson}`,
             targetId: kl.id,
             highlight: raw
           });
@@ -3600,6 +5939,16 @@ function initQuickSearch() {
     list.addEventListener('click', (e) => {
       const item = e.target.closest ? e.target.closest('.search-result-item') : null;
       if (!item) return;
+      const maziiQuery = item.getAttribute('data-mazii-query');
+      if (maziiQuery) {
+        dropdown.classList.remove('active');
+        if (typeof openMaziiWithQuery === 'function') {
+          openMaziiWithQuery(maziiQuery);
+        } else {
+          switchModule('mazii-dict');
+        }
+        return;
+      }
       const targetId = item.getAttribute('data-target');
       const highlight = decodeURIComponent(item.getAttribute('data-highlight') || '');
       handleSearchClick(targetId, highlight);
@@ -3625,8 +5974,21 @@ function initQuickSearch() {
         dropdown.classList.add('active');
 
         if (res.length === 0) {
-          label.textContent = "Không có kết quả phù hợp";
-          list.innerHTML = `<div class="search-empty">Không tìm thấy cho "<strong>${escapeHtml(val)}</strong>". Thử tìm: "tabemasu", "an", "xin phep", "bai 1"...</div>`;
+          label.textContent = "Không có trong giáo trình";
+          list.innerHTML = `
+            <div class="search-empty">Không tìm thấy "<strong>${escapeHtml(val)}</strong>" trong 50 bài học.</div>
+            <div class="search-result-item" data-target="mazii-dict" data-mazii-query="${escapeHtml(val)}" style="border-top:1px dashed var(--border-color);margin-top:6px;">
+              <div class="search-item-left">
+                <div class="search-item-main" style="color:#e05244;font-weight:700;display:inline-flex;align-items:center;gap:6px;">
+                  ${APP_ICONS.book}
+                  <span>Tra "${escapeHtml(val)}" trên Từ Điển</span>
+                  ${APP_ICONS.arrowRight}
+                </div>
+                <div class="search-item-sub">Tra cứu từ vựng và chữ Hán trực tuyến</div>
+              </div>
+              <span class="search-badge" style="background:#e05244;color:#fff;">Từ điển</span>
+            </div>
+          `;
           return;
         }
 
@@ -3931,6 +6293,9 @@ function persistScrollPositions() {
 }
 
 function saveModuleScroll(moduleId, scrollY) {
+  if (typeof NavigationEngine !== 'undefined' && typeof NavigationEngine.saveModuleScroll === 'function') {
+    NavigationEngine.saveModuleScroll(moduleId, scrollY);
+  }
   if (!moduleId) return;
   const val = Math.max(0, Math.round(scrollY || 0));
   moduleScrollPositions[moduleId] = val;
@@ -3938,6 +6303,10 @@ function saveModuleScroll(moduleId, scrollY) {
 }
 
 function getModuleScroll(moduleId) {
+  if (typeof NavigationEngine !== 'undefined' && typeof NavigationEngine.getModuleScroll === 'function') {
+    const val = NavigationEngine.getModuleScroll(moduleId);
+    if (typeof val === 'number' && val > 0) return val;
+  }
   if (!moduleId) return 0;
   if (typeof moduleScrollPositions[moduleId] === 'number') {
     return moduleScrollPositions[moduleId];
@@ -4017,6 +6386,10 @@ window.switchModule = function(targetId, updateHash = true) {
   if (quizTimerInterval) {
     clearInterval(quizTimerInterval);
     quizTimerInterval = null;
+  }
+
+  if (typeof stopMaziiVoiceSearch === 'function' && targetId !== 'mazii-dict') {
+    stopMaziiVoiceSearch(true);
   }
 
   if (updateHash && typeof window !== 'undefined' && window.location && window.location.hash.replace('#', '') !== targetId) {
@@ -4108,7 +6481,7 @@ function initThemeToggle() {
       const cur = document.documentElement.getAttribute('data-theme') || 'dark';
       const nxt = cur === 'dark' ? 'light' : 'dark';
       applyTheme(nxt);
-      showToast(nxt === 'dark' ? '🌙 Đã đổi sang giao diện Tối' : '☀️ Đã đổi sang giao diện Sáng');
+      showToast(nxt === 'dark' ? 'Đã chuyển sang Giao diện Tối' : 'Đã chuyển sang Giao diện Sáng');
     });
   }
 }
@@ -4126,12 +6499,12 @@ function initFullscreenToggle() {
       if (document.documentElement.requestFullscreen && !document.fullscreenElement) {
         document.documentElement.requestFullscreen().catch(() => {});
       }
-      showToast('▯ Đã bật chế độ Toàn màn hình / Tập trung (Bấm Esc hoặc nút ▯ để thoát)');
+      showToast('Đã bật chế độ Toàn màn hình / Tập trung');
     } else {
       if (document.exitFullscreen && document.fullscreenElement) {
         document.exitFullscreen().catch(() => {});
       }
-      showToast('❐ Đã thoát chế độ Toàn màn hình');
+      showToast('Đã thoát chế độ Toàn màn hình');
     }
 
     const label = btn.querySelector('.sidebar-action-label');
@@ -4745,7 +7118,7 @@ function renderLessonPractice(vocabList, containerSelector = '#lesson-practice-m
     <div class="practice-box">
       <div class="practice-box-header">
         <div class="practice-box-title">
-          <span class="practice-icon-badge accent-sky">🗂️</span>
+          <span class="practice-icon-badge accent-sky">${APP_ICONS.cards}</span>
           <div>
             <h4>Flashcard Ghi Nhớ Từ Mới</h4>
             <span class="practice-sub">Chạm vào thẻ để lật xem nghĩa & chữ Hán</span>
@@ -4758,38 +7131,54 @@ function renderLessonPractice(vocabList, containerSelector = '#lesson-practice-m
           <span class="fc-mode-tag">Từ vựng Tiếng Nhật</span>
           <div class="fc-hiragana" id="fc-kana"></div>
           <div class="fc-kanji-sub" id="fc-kanji-front"></div>
-          <div class="fc-hint">👆 Chạm để lật xem nghĩa Tiếng Việt</div>
+          <div class="fc-hint">
+            <span style="display:inline-flex;align-items:center;gap:4px;">${APP_ICONS.flip} <span>Chạm để lật xem nghĩa Tiếng Việt</span></span>
+          </div>
         </div>
         <div class="fc-face fc-back">
           <span class="fc-mode-tag accent-emerald">Ý nghĩa Tiếng Việt</span>
           <div class="fc-meaning" id="fc-vi"></div>
           <div class="fc-kanji-back" id="fc-kanji-back"></div>
-          <div class="fc-hint">👆 Chạm để quay lại mặt trước</div>
+          <div class="fc-hint">
+            <span style="display:inline-flex;align-items:center;gap:4px;">${APP_ICONS.flip} <span>Chạm để quay lại mặt trước</span></span>
+          </div>
         </div>
       </div>
       <div class="fc-controls">
-        <button type="button" class="btn-tool" id="fc-prev" title="Từ trước">← Trước</button>
-        <button type="button" class="btn-tool btn-tool-primary" id="fc-speak" title="Nghe phát âm">🔊 Nghe</button>
-        <button type="button" class="btn-tool" id="fc-shuffle" title="Trộn ngẫu nhiên">🔀 Trộn</button>
-        <button type="button" class="btn-tool" id="fc-next" title="Từ tiếp theo">Tiếp →</button>
+        <button type="button" class="btn-tool" id="fc-prev" title="Từ trước">
+          <span style="display:inline-flex;align-items:center;gap:4px;">${APP_ICONS.arrowLeft} <span>Trước</span></span>
+        </button>
+        <button type="button" class="btn-tool btn-tool-primary" id="fc-speak" title="Nghe phát âm">
+          <span style="display:inline-flex;align-items:center;gap:4px;">${SPEAKER_ICON_HTML} <span>Nghe</span></span>
+        </button>
+        <button type="button" class="btn-tool" id="fc-shuffle" title="Trộn ngẫu nhiên">
+          <span style="display:inline-flex;align-items:center;gap:4px;">${APP_ICONS.shuffle} <span>Trộn</span></span>
+        </button>
+        <button type="button" class="btn-tool" id="fc-next" title="Từ tiếp theo">
+          <span style="display:inline-flex;align-items:center;gap:4px;"><span>Tiếp</span> ${APP_ICONS.arrowRight}</span>
+        </button>
       </div>
     </div>
 
     <div class="practice-box">
       <div class="practice-box-header">
         <div class="practice-box-title">
-          <span class="practice-icon-badge accent-sakura">⚡</span>
+          <span class="practice-icon-badge accent-sakura">${APP_ICONS.bolt}</span>
           <div>
             <h4>Phản Xạ Chữ Hán & Từ Vựng</h4>
             <span class="practice-sub">Kiểm tra nhanh từ vựng ngay trong bài</span>
           </div>
         </div>
-        <span class="practice-counter-pill accent-emerald" id="kq-score">Đúng: 0/${kanjiList.length || cleanVocab.length}</span>
+        <span class="practice-counter-pill accent-emerald" id="kq-score">Đúng: 0/25</span>
       </div>
       <div class="kq-body" id="kq-body"></div>
       <div class="kq-controls">
-        <button type="button" class="btn-tool" id="kq-mode-btn">Chế độ: Kanji ➔ Hiragana</button>
-        <button type="button" class="btn-tool" id="kq-reset-btn">↻ Đổi bộ câu hỏi</button>
+        <button type="button" class="btn-tool" id="kq-reset-btn" title="Làm lại bộ câu hỏi này">
+          <span style="display:inline-flex;align-items:center;gap:4px;">${APP_ICONS.refresh} <span>Làm Lại</span></span>
+        </button>
+        <button type="button" class="btn-tool btn-tool-primary" id="kq-mode-btn" title="Trộn ngẫu nhiên 25 câu hỏi mới">
+          <span style="display:inline-flex;align-items:center;gap:4px;">${APP_ICONS.shuffle} <span>Đổi Đề Mới (25 câu)</span></span>
+        </button>
       </div>
     </div>
   `;
@@ -4861,52 +7250,148 @@ function renderLessonPractice(vocabList, containerSelector = '#lesson-practice-m
   const kqScoreEl = hub.querySelector('#kq-score');
   const kqModeBtn = hub.querySelector('#kq-mode-btn');
   const kqResetBtn = hub.querySelector('#kq-reset-btn');
-  let quizMode = 'hiragana';
   let kqDeck = [];
   let kqIndex = 0;
   let kqCorrect = 0;
-  const sourcePool = kanjiList.length >= 4 ? kanjiList : cleanVocab;
+  let kqAdvanceTimer = null;
+  const sourcePool = kanjiList.length >= 2 ? kanjiList : cleanVocab;
 
   function startKanjiQuiz() {
+    if (kqAdvanceTimer) {
+      clearTimeout(kqAdvanceTimer);
+      kqAdvanceTimer = null;
+    }
+
     if (sourcePool.length < 2) {
       kqBody.innerHTML = `<p class="kq-empty">Bài này đang cập nhật câu hỏi phản xạ nhanh.</p>`;
       return;
     }
-    kqDeck = [...sourcePool].sort(() => Math.random() - 0.5).slice(0, 10);
+
+    // TỔNG SỐ LƯỢNG CÂU HỎI: CHUẨN 25 CÂU
+    const TARGET_QUIZ_COUNT = 25;
+    const half1 = Math.ceil(TARGET_QUIZ_COUNT / 2); // 13 câu
+    const half2 = TARGET_QUIZ_COUNT - half1; // 12 câu
+
+    const shuffledPool1 = [...sourcePool].sort(() => Math.random() - 0.5);
+    const shuffledPool2 = [...sourcePool].sort(() => Math.random() - 0.5);
+
+    // Dạng 1: Chữ Hán ➔ Chọn Nghĩa Tiếng Việt
+    const k2mItems = [];
+    for (let i = 0; i < half1; i++) {
+      k2mItems.push(shuffledPool1[i % shuffledPool1.length]);
+    }
+
+    // Dạng 2: Nghĩa Tiếng Việt ➔ Chọn Chữ Hán (ưu tiên các từ chưa trùng)
+    const remaining = shuffledPool1.slice(half1);
+    const m2kItems = [];
+    for (const it of remaining) {
+      if (m2kItems.length >= half2) break;
+      m2kItems.push(it);
+    }
+    for (const it of shuffledPool2) {
+      if (m2kItems.length >= half2) break;
+      if (!m2kItems.includes(it)) m2kItems.push(it);
+    }
+    while (m2kItems.length < half2 && sourcePool.length > 0) {
+      m2kItems.push(sourcePool[m2kItems.length % sourcePool.length]);
+    }
+
+    // Tạo câu hỏi Dạng 1: Chữ Hán ➔ 4 Nghĩa Tiếng Việt (KHÔNG CÓ CHỮ HIRAGANA)
+    const qType1 = k2mItems.map(item => {
+      const correctMeaning = (item.meaning || '').trim();
+      const wrongMeanings = getMeaningDistractors(item, cleanVocab);
+      const options = [
+        { text: correctMeaning, isCorrect: true },
+        ...wrongMeanings.map(m => ({ text: m, isCorrect: false }))
+      ].sort(() => Math.random() - 0.5);
+
+      return {
+        item,
+        type: 'kanji-to-meaning',
+        options
+      };
+    });
+
+    // Tạo câu hỏi Dạng 2: Nghĩa Tiếng Việt ➔ 4 Chữ Hán có nét/cách viết gần giống nhau
+    const qType2 = m2kItems.map(item => {
+      const correctKanji = (item.kanji || item.word || '').trim();
+      const wrongKanjis = getLookalikeKanjiDistractors(item, cleanVocab);
+      const options = [
+        { text: correctKanji, isCorrect: true },
+        ...wrongKanjis.map(w => ({ text: w, isCorrect: false }))
+      ].sort(() => Math.random() - 0.5);
+
+      return {
+        item,
+        type: 'meaning-to-kanji',
+        options
+      };
+    });
+
+    // Trộn lẫn xen kẽ cả 2 dạng câu hỏi
+    kqDeck = [...qType1, ...qType2]
+      .sort(() => Math.random() - 0.5)
+      .slice(0, TARGET_QUIZ_COUNT);
+
     kqIndex = 0;
     kqCorrect = 0;
+    if (typeof window !== 'undefined') window.lastLessonPracticeDeck = kqDeck;
     renderKanjiQuestion();
   }
 
   function renderKanjiQuestion() {
+    if (kqAdvanceTimer) {
+      clearTimeout(kqAdvanceTimer);
+      kqAdvanceTimer = null;
+    }
+
     kqScoreEl.textContent = `Đúng: ${kqCorrect}/${kqDeck.length}`;
     if (kqIndex >= kqDeck.length) {
+      const percent = Math.round((kqCorrect / kqDeck.length) * 100);
       kqBody.innerHTML = `
-        <div class="kq-finish-box">
-          <div class="kq-finish-title">🎉 Hoàn thành lượt luyện phản xạ!</div>
-          <div class="kq-finish-sub">Kết quả: <strong>${kqCorrect} / ${kqDeck.length}</strong> câu chính xác</div>
+        <div class="kq-finish-box" style="padding: 24px 16px; text-align: center;">
+          <div class="kq-finish-title" style="font-size: 20px; font-weight: 800; margin-bottom: 8px; display: inline-flex; align-items: center; justify-content: center; gap: 8px;">
+            ${percent >= 80 ? APP_ICONS.checkCircle : APP_ICONS.cards} <span>Hoàn thành bài kiểm tra 25 câu!</span>
+          </div>
+          <div class="kq-finish-sub" style="font-size: 14.5px; color: var(--text-secondary);">Kết quả phản xạ: <strong>${kqCorrect} / ${kqDeck.length}</strong> câu chính xác (${percent}%)</div>
+          <div style="margin-top: 14px;">
+            <button type="button" class="btn-tool btn-tool-primary" id="kq-retry-finish-btn" style="min-height: 44px; padding: 10px 20px;">
+              <span style="display:inline-flex;align-items:center;gap:4px;">${APP_ICONS.refresh} <span>Làm Lại Lượt Mới (25 câu)</span></span>
+            </button>
+          </div>
         </div>`;
+      const retryBtn = kqBody.querySelector('#kq-retry-finish-btn');
+      if (retryBtn) retryBtn.onclick = startKanjiQuiz;
       return;
     }
 
-    const current = kqDeck[kqIndex];
-    const answerKey = quizMode === 'hiragana' ? 'hiragana' : 'meaning';
-    const promptText = (current.kanji && current.kanji !== current.hiragana) ? current.kanji : current.hiragana;
-    const wrongPool = cleanVocab
-      .filter(v => v[answerKey] !== current[answerKey])
-      .sort(() => Math.random() - 0.5)
-      .slice(0, 3);
-
-    const options = [current, ...wrongPool].sort(() => Math.random() - 0.5);
+    const q = kqDeck[kqIndex];
+    const item = q.item;
+    const isK2M = q.type === 'kanji-to-meaning';
+    const typeTag = isK2M ? 'Đoán Nghĩa Chữ Hán' : 'Phân Biệt Mặt Chữ Hán';
 
     kqBody.innerHTML = `
       <div class="kq-question-wrap">
-        <span class="kq-step-tag">Câu ${kqIndex + 1}/${kqDeck.length}</span>
-        <div class="kq-question">${promptText}</div>
+        <span class="kq-step-tag">Câu ${kqIndex + 1}/${kqDeck.length} • ${typeTag}</span>
+        ${isK2M ? `
+          <div class="kq-question">${item.kanji || item.word}</div>
+        ` : `
+          <div class="kq-question-meaning">"${item.meaning}"</div>
+        `}
       </div>
+
       <div class="kq-options">
-        ${options.map(opt => `
-          <button type="button" class="kq-opt" data-ans="${opt[answerKey].replace(/"/g, '&quot;')}">${opt[answerKey]}</button>
+        ${q.options.map((opt, oIdx) => `
+          <button type="button" 
+                  class="kq-opt" 
+                  style="font-size: ${isK2M ? '13.5px' : '17px'}; font-weight: ${isK2M ? '600' : '700'}; ${!isK2M ? 'font-family: var(--font-mincho), serif; letter-spacing: 0.5px;' : ''}"
+                  data-correct="${opt.isCorrect ? 'true' : 'false'}">
+            <span style="display: flex; align-items: center; gap: 8px;">
+              <strong style="color: var(--accent-primary); font-size: 13.5px; font-family: var(--font-sans); flex-shrink: 0;">${String.fromCharCode(65 + oIdx)}.</strong>
+              <span>${opt.text}</span>
+            </span>
+            <span class="kq-feedback-icon" style="display: none; font-size: 15px; font-weight: 800; font-family: var(--font-sans);"></span>
+          </button>
         `).join('')}
       </div>
     `;
@@ -4916,32 +7401,36 @@ function renderLessonPractice(vocabList, containerSelector = '#lesson-practice-m
       btn.onclick = () => {
         triggerHaptic(10);
         optBtns.forEach(b => b.disabled = true);
-        if (btn.dataset.ans === current[answerKey]) {
+        const isCor = btn.getAttribute('data-correct') === 'true';
+        const icon = btn.querySelector('.kq-feedback-icon');
+
+        if (isCor) {
           btn.classList.add('correct');
+          if (icon) { icon.textContent = '✓'; icon.style.display = 'inline'; }
           kqCorrect++;
         } else {
           btn.classList.add('wrong');
+          if (icon) { icon.textContent = '✗'; icon.style.display = 'inline'; }
           optBtns.forEach(b => {
-            if (b.dataset.ans === current[answerKey]) b.classList.add('correct');
+            if (b.getAttribute('data-correct') === 'true') {
+              b.classList.add('correct');
+              const cIcon = b.querySelector('.kq-feedback-icon');
+              if (cIcon) { cIcon.textContent = '✓'; cIcon.style.display = 'inline'; }
+            }
           });
         }
         kqScoreEl.textContent = `Đúng: ${kqCorrect}/${kqDeck.length}`;
-        setTimeout(() => {
+
+        kqAdvanceTimer = setTimeout(() => {
           kqIndex++;
           renderKanjiQuestion();
-        }, 750);
+        }, 850);
       };
     });
   }
 
   if (kqModeBtn) {
-    kqModeBtn.onclick = () => {
-      quizMode = quizMode === 'hiragana' ? 'meaning' : 'hiragana';
-      kqModeBtn.textContent = quizMode === 'hiragana'
-        ? 'Chế độ: Kanji ➔ Hiragana'
-        : 'Chế độ: Kanji ➔ Nghĩa Việt';
-      startKanjiQuiz();
-    };
+    kqModeBtn.onclick = startKanjiQuiz;
   }
   if (kqResetBtn) {
     kqResetBtn.onclick = startKanjiQuiz;
@@ -4950,3 +7439,1743 @@ function renderLessonPractice(vocabList, containerSelector = '#lesson-practice-m
   startKanjiQuiz();
 }
 window.renderLessonPractice = renderLessonPractice;
+
+// ==========================================================================
+// MODULE TỪ ĐIỂN MAZII & NHẬN DIỆN CHỮ HÁN VIẾT TAY (MAZII DICTIONARY STUDIO)
+// Kết nối trực tiếp https://mazii.net/vi-VN & Google Handwriting Recognition
+// ==========================================================================
+
+let maziiCurrentTab = 'word'; // 'word' | 'kanji' | 'grammar'
+let maziiCurrentQuery = '';
+let maziiIsHwOpen = false;
+let maziiVoiceRecognition = null;
+let maziiIsVoiceListening = false;
+let maziiVoiceLang = 'ja-JP';
+const maziiCache = new Map();
+
+// Trạng thái Canvas viết tay
+let hwStrokes = [];
+let hwCurrentStroke = null;
+let hwIsDrawing = false;
+let hwCanvas = null;
+let hwCtx = null;
+let hwDpr = 1;
+let hwTimer = null;
+let hwStartTime = 0;
+
+/**
+ * Thuật toán chuyển đổi Romaji sang Hiragana thông minh
+ */
+function romajiToHiragana(input) {
+  if (typeof DictionaryEngine !== 'undefined' && typeof DictionaryEngine.romajiToHiragana === 'function') {
+    return DictionaryEngine.romajiToHiragana(input);
+  }
+  if (!input || typeof input !== 'string') return '';
+  let str = input.toLowerCase();
+
+  // Bảng ánh xạ Romaji ➔ Hiragana (Nạp từ data/romaji_kana_map.js kèm fallback)
+  const map = (typeof window !== 'undefined' && window.ROMAJI_TO_HIRAGANA_MAP)
+    || (typeof global !== 'undefined' && global.ROMAJI_TO_HIRAGANA_MAP)
+    || {
+      kya: 'きゃ', kyu: 'きゅ', kyo: 'きょ',
+      sha: 'しゃ', shu: 'しゅ', sho: 'しょ',
+      cha: 'ちゃ', chu: 'ちゅ', cho: 'ちょ',
+      nya: 'にゃ', nyu: 'にゅ', nyo: 'にょ',
+      hya: 'ひゃ', hyu: 'ひゅ', hyo: 'ひょ',
+      mya: 'みゃ', myu: 'みゅ', myo: 'みょ',
+      rya: 'りゃ', ryu: 'りゅ', ryo: 'りょ',
+      gya: 'ぎゃ', gyu: 'ぎゅ', gyo: 'ぎょ',
+      ja: 'じゃ', ju: 'じゅ', jo: 'じょ',
+      bya: 'びゃ', byu: 'びゅ', byo: 'びょ',
+      pya: 'ぴゃ', pyu: 'ぴゅ', pyo: 'ぴょ',
+      tsu: 'つ', shi: 'し', chi: 'ち',
+      ka: 'か', ki: 'き', ku: 'く', ke: 'け', ko: 'こ',
+      sa: 'さ', si: 'し', su: 'す', se: 'せ', so: 'そ',
+      ta: 'た', ti: 'ち', tu: 'つ', te: 'て', to: 'と',
+      na: 'な', ni: 'に', nu: 'ぬ', ne: 'ね', no: 'の',
+      ha: 'は', hi: 'ひ', fu: 'ふ', hu: 'ふ', he: 'へ', ho: 'ほ',
+      ma: 'ま', mi: 'み', mu: 'む', me: 'め', mo: 'も',
+      ya: 'や', yu: 'ゆ', yo: 'よ',
+      ra: 'ら', ri: 'り', ru: 'る', re: 'れ', ro: 'ろ',
+      wa: 'わ', wo: 'を', nn: 'ん',
+      ga: 'が', gi: 'ぎ', gu: 'ぐ', ge: 'げ', go: 'ご',
+      za: 'ざ', zi: 'じ', ji: 'じ', zu: 'ず', ze: 'ぜ', zo: 'ぞ',
+      da: 'だ', di: 'ぢ', du: 'づ', de: 'で', do: 'ど',
+      ba: 'ば', bi: 'び', bu: 'ぶ', be: 'べ', bo: 'ぼ',
+      pa: 'ぱ', pi: 'ぴ', pu: 'ぷ', pe: 'ぺ', po: 'ぽ',
+      a: 'あ', i: 'い', u: 'う', e: 'え', o: 'お'
+    };
+
+  str = str.replace(/([bcdfghjklmpqrstvwxyz])(?=\1)/g, 'っ');
+
+  const sortedKeys = Object.keys(map).sort((a, b) => b.length - a.length);
+  for (const k of sortedKeys) {
+    str = str.split(k).join(map[k]);
+  }
+  str = str.replace(/n(?=[^aiueoy]|$)/g, 'ん');
+  return str;
+}
+
+/**
+ * Phát âm mẫu chuẩn sử dụng hệ thống speakJapanese của website
+ */
+function speakMaziiAudio(text, btnElement, ev) {
+  if (ev && ev.stopPropagation) ev.stopPropagation();
+  if (!text) return;
+
+  let btn = btnElement;
+  if (!btn && typeof window !== 'undefined' && window.event) {
+    const t = window.event.currentTarget || window.event.target;
+    if (t) btn = t.closest ? t.closest('.mazii-audio-btn, .speak-btn-mini, button') : t;
+  }
+
+  if (typeof speakJapanese === 'function') {
+    speakJapanese(text, btn, ev);
+  } else if (typeof window !== 'undefined' && typeof window.speakJapanese === 'function') {
+    window.speakJapanese(text, btn, ev);
+  } else {
+    try {
+      window.speechSynthesis.cancel();
+      const utter = new SpeechSynthesisUtterance(text);
+      utter.lang = 'ja-JP';
+      window.speechSynthesis.speak(utter);
+    } catch (e) {
+      console.warn('Speech error:', e);
+    }
+  }
+}
+window.speakMaziiAudio = speakMaziiAudio;
+
+/**
+ * Gọi API Mazii tra cứu Từ vựng, Chữ Hán, Ngữ pháp
+ */
+async function fetchMaziiSearch(query, type = 'word') {
+  if (typeof DictionaryEngine !== 'undefined' && typeof DictionaryEngine.fetchMaziiSearch === 'function') {
+    return DictionaryEngine.fetchMaziiSearch(query, type);
+  }
+  if (!query || !query.trim()) return null;
+  const q = query.trim();
+  const cacheKey = `${type}_${q}`;
+  if (maziiCache.has(cacheKey)) {
+    return maziiCache.get(cacheKey);
+  }
+
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), 6000);
+
+  try {
+    const res = await fetch('https://mazii.net/api/search', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json'
+      },
+      body: JSON.stringify({ dict: 'javi', type, query: q, page: 1 }),
+      signal: controller.signal
+    });
+    clearTimeout(timeoutId);
+
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const data = await res.json();
+
+    // Nếu tìm từ vựng không thấy và từ khóa có dạng romaji -> thử đổi sang hiragana
+    if (type === 'word' && (!data.data || data.data.length === 0)) {
+      const kanaQ = romajiToHiragana(q);
+      if (kanaQ && kanaQ !== q) {
+        try {
+          const fallbackRes = await fetch('https://mazii.net/api/search', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+            body: JSON.stringify({ dict: 'javi', type, query: kanaQ, page: 1 })
+          });
+          if (fallbackRes.ok) {
+            const fallbackData = await fallbackRes.json();
+            if (fallbackData.data && fallbackData.data.length > 0) {
+              maziiCache.set(cacheKey, fallbackData);
+              return fallbackData;
+            }
+          }
+        } catch (e) {}
+      }
+    }
+
+    maziiCache.set(cacheKey, data);
+    return data;
+  } catch (err) {
+    clearTimeout(timeoutId);
+    console.warn('[MaziiAPI] Lỗi tra cứu trực tuyến:', err);
+    throw err;
+  }
+}
+
+/**
+ * Quản lý lịch sử tra cứu Mazii trong storage
+ */
+function getMaziiHistory() {
+  try {
+    const raw = (typeof safeGetStorage === 'function') ? safeGetStorage('minna_mazii_history') : localStorage.getItem('minna_mazii_history');
+    return raw ? JSON.parse(raw) : [];
+  } catch (e) {
+    return [];
+  }
+}
+
+function saveMaziiHistory(query, type) {
+  if (!query) return;
+  try {
+    let list = getMaziiHistory();
+    list = list.filter(item => item.query.toLowerCase() !== query.toLowerCase() || item.type !== type);
+    list.unshift({ query, type, time: Date.now() });
+    if (list.length > 15) list = list.slice(0, 15);
+    const json = JSON.stringify(list);
+    if (typeof safeSetStorage === 'function') safeSetStorage('minna_mazii_history', json);
+    else localStorage.setItem('minna_mazii_history', json);
+  } catch (e) {}
+}
+
+/**
+ * Logic Bảng Viết Tay Canvas & Nhận diện nét bút
+ */
+function initHandwritingPad() {
+  hwCanvas = document.getElementById('mazii-canvas');
+  if (!hwCanvas) return;
+
+  hwCtx = hwCanvas.getContext('2d');
+  hwDpr = (typeof window !== 'undefined' && window.devicePixelRatio) ? window.devicePixelRatio : 1;
+
+  // Cấu hình kích thước vật lý theo DPI
+  const rect = hwCanvas.getBoundingClientRect();
+  const parentWidth = hwCanvas.parentElement ? hwCanvas.parentElement.clientWidth : 0;
+  const cssWidth = Math.round(rect.width || parentWidth || 340);
+  const cssHeight = Math.round(rect.height || 360);
+  hwCanvas.width = Math.round(cssWidth * hwDpr);
+  hwCanvas.height = Math.round(cssHeight * hwDpr);
+
+  drawHandwritingGrid();
+
+  // Lắng nghe thay đổi kích thước màn hình để tự động căng tràn canvas tối đa
+  if (typeof window !== 'undefined' && !window.__maziiPadResizeBound) {
+    window.__maziiPadResizeBound = true;
+    window.addEventListener('resize', () => {
+      if (maziiIsHwOpen && hwCanvas) {
+        initHandwritingPad();
+        redrawHandwritingCanvas();
+      }
+    });
+  }
+
+  // Bắt sự kiện Pointer (chuột + cảm ứng ngón tay + bút stylus)
+  hwCanvas.onpointerdown = (e) => {
+    e.preventDefault();
+    hwIsDrawing = true;
+    try { hwCanvas.setPointerCapture(e.pointerId); } catch(err) {}
+
+    const pt = getCanvasPoint(e);
+    hwStartTime = Date.now();
+    hwCurrentStroke = [[pt.x], [pt.y], [0]];
+
+    hwCtx.save();
+    hwCtx.scale(hwDpr, hwDpr);
+    hwCtx.beginPath();
+    hwCtx.lineCap = 'round';
+    hwCtx.lineJoin = 'round';
+    hwCtx.lineWidth = 4;
+    hwCtx.strokeStyle = getThemeStrokeColor();
+    hwCtx.moveTo(pt.x, pt.y);
+  };
+
+  hwCanvas.onpointermove = (e) => {
+    if (!hwIsDrawing || !hwCurrentStroke) return;
+    e.preventDefault();
+    const pt = getCanvasPoint(e);
+    const dt = Date.now() - hwStartTime;
+
+    hwCurrentStroke[0].push(pt.x);
+    hwCurrentStroke[1].push(pt.y);
+    hwCurrentStroke[2].push(dt);
+
+    hwCtx.lineTo(pt.x, pt.y);
+    hwCtx.stroke();
+  };
+
+  const endDrawing = (e) => {
+    if (!hwIsDrawing) return;
+    hwIsDrawing = false;
+    hwCtx.restore();
+
+    if (hwCurrentStroke && hwCurrentStroke[0].length > 0) {
+      hwStrokes.push(hwCurrentStroke);
+      hwCurrentStroke = null;
+      redrawHandwritingCanvas();
+
+      // Hẹn giờ nhận diện tự động sau 550ms người dùng ngưng vẽ
+      clearTimeout(hwTimer);
+      hwTimer = setTimeout(() => {
+        recognizeHandwritingStrokes();
+      }, 550);
+    }
+  };
+
+  hwCanvas.onpointerup = endDrawing;
+  hwCanvas.onpointercancel = endDrawing;
+}
+
+function getCanvasPoint(e) {
+  const rect = hwCanvas.getBoundingClientRect();
+  return {
+    x: Math.round(e.clientX - rect.left),
+    y: Math.round(e.clientY - rect.top)
+  };
+}
+
+function getThemeStrokeColor() {
+  const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+  return isDark ? '#f1f5f9' : '#1e293b';
+}
+
+function drawHandwritingGrid() {
+  if (!hwCtx || !hwCanvas) return;
+  const w = hwCanvas.width / hwDpr;
+  const h = hwCanvas.height / hwDpr;
+
+  hwCtx.save();
+  hwCtx.scale(hwDpr, hwDpr);
+  hwCtx.clearRect(0, 0, w, h);
+
+  // Vẽ lưới ô chữ Hán genkouyoushi (dấu thập nét đứt)
+  hwCtx.strokeStyle = 'rgba(224, 82, 68, 0.22)';
+  hwCtx.lineWidth = 1;
+  hwCtx.setLineDash([5, 5]);
+
+  hwCtx.beginPath();
+  hwCtx.moveTo(0, h / 2);
+  hwCtx.lineTo(w, h / 2);
+  hwCtx.moveTo(w / 2, 0);
+  hwCtx.lineTo(w / 2, h);
+  hwCtx.stroke();
+  hwCtx.setLineDash([]);
+  hwCtx.restore();
+}
+
+function redrawHandwritingCanvas() {
+  if (!hwCtx || !hwCanvas) return;
+  drawHandwritingGrid();
+
+  const strokeColor = getThemeStrokeColor();
+  hwCtx.save();
+  hwCtx.scale(hwDpr, hwDpr);
+  hwCtx.lineCap = 'round';
+  hwCtx.lineJoin = 'round';
+  hwCtx.lineWidth = 4;
+  hwCtx.strokeStyle = strokeColor;
+
+  for (const stroke of hwStrokes) {
+    const xs = stroke[0];
+    const ys = stroke[1];
+    if (!xs || xs.length === 0) continue;
+
+    hwCtx.beginPath();
+    hwCtx.moveTo(xs[0], ys[0]);
+    for (let i = 1; i < xs.length; i++) {
+      hwCtx.lineTo(xs[i], ys[i]);
+    }
+    hwCtx.stroke();
+  }
+  hwCtx.restore();
+}
+
+function undoHandwritingStroke() {
+  if (hwStrokes.length === 0) return;
+  hwStrokes.pop();
+  redrawHandwritingCanvas();
+  if (hwStrokes.length > 0) {
+    recognizeHandwritingStrokes();
+  } else {
+    renderCandidates([]);
+  }
+}
+
+function clearHandwritingCanvas() {
+  hwStrokes = [];
+  hwCurrentStroke = null;
+  clearTimeout(hwTimer);
+  drawHandwritingGrid();
+  renderCandidates([]);
+}
+
+/**
+ * Gửi nét vẽ lên Google Handwriting Recognition API
+ */
+/**
+ * Chụp hình ảnh nét vẽ trên Canvas sang Base64 PNG (nền trắng nét đen rõ nét cho AI)
+ */
+function getCanvasImageBase64() {
+  if (!hwCanvas || hwStrokes.length === 0) return null;
+  const tempCanvas = document.createElement('canvas');
+  tempCanvas.width = hwCanvas.width || 300;
+  tempCanvas.height = hwCanvas.height || 280;
+  const tempCtx = tempCanvas.getContext('2d');
+
+  // Vẽ nền trắng tinh
+  tempCtx.fillStyle = '#ffffff';
+  tempCtx.fillRect(0, 0, tempCanvas.width, tempCanvas.height);
+
+  // Vẽ các nét vẽ của người dùng bằng màu đen đậm rõ nét
+  tempCtx.lineCap = 'round';
+  tempCtx.lineJoin = 'round';
+  tempCtx.lineWidth = Math.round(6 * hwDpr);
+  tempCtx.strokeStyle = '#000000';
+
+  for (const stroke of hwStrokes) {
+    const xs = stroke[0];
+    const ys = stroke[1];
+    if (!xs || xs.length === 0) continue;
+
+    tempCtx.beginPath();
+    tempCtx.moveTo(xs[0] * hwDpr, ys[0] * hwDpr);
+    for (let i = 1; i < xs.length; i++) {
+      tempCtx.lineTo(xs[i] * hwDpr, ys[i] * hwDpr);
+    }
+    tempCtx.stroke();
+  }
+
+  const dataUrl = tempCanvas.toDataURL('image/png');
+  return dataUrl.replace(/^data:image\/png;base64,/, '');
+}
+
+/**
+ * Nhận diện nét vẽ chữ Hán & Từ mới qua Trí tuệ Nhân tạo (AI Handwriting Recognition Engine)
+ * Tự động 100%, kết nối mạng neural không cần cấu hình khóa API.
+ */
+async function recognizeHandwritingStrokes() {
+  if (hwStrokes.length === 0) {
+    if (typeof showToast === 'function') showToast('Vui lòng vẽ chữ lên bảng vẽ trước');
+    return;
+  }
+  const listEl = document.getElementById('mazii-candidates-list');
+  if (listEl) {
+    listEl.innerHTML = `
+      <span class="mazii-candidate-item empty-hint" style="color:#6366f1;display:inline-flex;align-items:center;gap:6px;">
+        <span class="mazii-spinner-small"></span>
+        <span style="display:inline-flex;align-items:center;gap:6px;">${APP_ICONS.robot} <span>AI đang nhận diện nét vẽ...</span></span>
+      </span>
+    `;
+  }
+
+  if (typeof DictionaryEngine !== 'undefined' && typeof DictionaryEngine.recognizeHandwriting === 'function') {
+    try {
+      const candidates = await DictionaryEngine.recognizeHandwriting(hwStrokes, {
+        width: hwCanvas ? hwCanvas.width : 300,
+        height: hwCanvas ? hwCanvas.height : 320,
+        dpr: hwDpr || 1
+      });
+      if (Array.isArray(candidates) && candidates.length > 0) {
+        renderCandidates(candidates);
+        return;
+      }
+    } catch (e) {
+      console.warn('[Handwriting] Lỗi nhận diện qua DictionaryEngine:', e);
+    }
+  }
+
+  const payload = {
+    app_version: 0.4,
+    api_level: '537.36',
+    device: '537.36',
+    input_type: '0',
+    options: 'enable_pre_space',
+    requests: [{
+      writing_guide: {
+        writing_area_width: Math.round(hwCanvas ? hwCanvas.width / hwDpr : 300),
+        writing_area_height: Math.round(hwCanvas ? hwCanvas.height / hwDpr : 320)
+      },
+      pre_context: '',
+      max_num_results: 12,
+      max_completions: 0,
+      language: 'ja',
+      ink: hwStrokes
+    }]
+  };
+
+  const endpoints = [
+    'https://inputtools.google.com/request?ime=handwriting&app=mobilesearch&cs=1&oe=UTF-8',
+    'https://www.google.com/inputtools/request?ime=handwriting&app=mobilesearch&cs=1&oe=UTF-8'
+  ];
+
+  let candidates = [];
+  let lastError = null;
+
+  for (const url of endpoints) {
+    try {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 4000);
+
+      const res = await fetch(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+        signal: controller.signal
+      });
+      clearTimeout(timeoutId);
+
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const data = await res.json();
+      if (data && data[0] === 'SUCCESS' && data[1] && data[1][0] && data[1][0][1]) {
+        candidates = data[1][0][1];
+        if (Array.isArray(candidates) && candidates.length > 0) {
+          break; // Nhận diện thành công
+        }
+      }
+    } catch (err) {
+      lastError = err;
+      console.warn('[Handwriting AI] Endpoint ' + url + ' thất bại:', err);
+    }
+  }
+
+  if (candidates.length > 0) {
+    renderCandidates(candidates);
+    return;
+  }
+
+  if (listEl) {
+    listEl.innerHTML = `
+      <span class="mazii-candidate-item empty-hint" style="color:#ef4444;display:inline-flex;align-items:center;gap:8px;flex-wrap:wrap;">
+        <span>Không thể kết nối máy chủ AI (${escapeHtml(lastError ? lastError.message : 'Lỗi mạng')}).</span>
+        <button type="button" class="mazii-hw-btn btn-hw-ai" style="min-height:36px;font-size:12.5px;padding:4px 12px;" onclick="recognizeHandwritingStrokes()">
+          <span style="display:inline-flex;align-items:center;gap:4px;">${APP_ICONS.refresh} <span>Thử lại</span></span>
+        </button>
+      </span>
+    `;
+  }
+}
+
+/**
+ * Xóa 1 ký tự cuối cùng trong ô tìm kiếm Mazii
+ */
+function backspaceSearchChar() {
+  const input = document.getElementById('mazii-search-input');
+  if (input && input.value) {
+    input.value = input.value.slice(0, -1);
+    if (input.value.trim()) {
+      executeMaziiSearch(input.value);
+    } else {
+      const resultsBox = document.getElementById('mazii-results-container');
+      if (resultsBox) {
+        resultsBox.innerHTML = `
+          <div class="mazii-empty-state">
+            <span class="mazii-empty-icon">${APP_ICONS.book}</span>
+            <div class="mazii-empty-title">Tra từ điển Nhật - Việt</div>
+            <p class="mazii-empty-desc">Nhập từ vựng, kanji bằng Romaji/Hiragana hoặc vẽ tay chữ Hán</p>
+          </div>
+        `;
+      }
+    }
+  }
+}
+
+function renderCandidates(candidates) {
+  const listEl = document.getElementById('mazii-candidates-list');
+  if (!listEl) return;
+
+  if (!candidates || candidates.length === 0) {
+    listEl.innerHTML = '<span class="mazii-candidate-item empty-hint">Vẽ chữ vào ô phía trên để nhận diện chữ Hán &amp; Từ mới</span>';
+    return;
+  }
+
+  listEl.innerHTML = candidates.map(char => `
+    <button type="button" class="mazii-candidate-item" data-char="${escapeHtml(char)}" title="Chọn chữ ${escapeHtml(char)}">
+      ${escapeHtml(char)}
+    </button>
+  `).join('');
+
+  listEl.querySelectorAll('.mazii-candidate-item').forEach(btn => {
+    btn.onclick = () => {
+      const char = btn.getAttribute('data-char');
+      if (!char) return;
+      const input = document.getElementById('mazii-search-input');
+      if (input) {
+        input.value = (input.value ? input.value + char : char);
+        input.focus();
+        // Tự động chuyển sang tab Kanji nếu chỉ chọn 1 ký tự chữ Hán
+        if (/^[\u4e00-\u9faf]$/.test(char) && maziiCurrentTab === 'grammar') {
+          switchMaziiTab('kanji');
+        }
+        executeMaziiSearch(input.value);
+      }
+    };
+  });
+}
+
+/**
+ * Tiện ích chuẩn hoá chuỗi & Tra cứu từ điển dự phòng ngoại tuyến
+ */
+function safeTrim(val) {
+  if (val === null || val === undefined) return '';
+  if (typeof val === 'string') return val.trim();
+  if (Array.isArray(val)) return val.map(x => safeTrim(x)).filter(Boolean).join(' ');
+  if (typeof val === 'number') return String(val);
+  if (typeof val === 'object') {
+    return safeTrim(val.mean || val.text || val.value || val.kanji || val.kana || '');
+  }
+  return String(val).trim();
+}
+
+function safeKind(kind) {
+  if (!kind) return '';
+  if (typeof kind === 'string') return kind.toUpperCase();
+  if (Array.isArray(kind)) return kind.map(k => safeTrim(k)).filter(Boolean).join(', ').toUpperCase();
+  return String(kind).toUpperCase();
+}
+
+function removeVietnameseTones(str) {
+  if (!str) return '';
+  return str.normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/đ/g, 'd').replace(/Đ/g, 'D')
+    .toLowerCase();
+}
+
+function stripRubyText(html) {
+  if (!html) return '';
+  return html.replace(/<rt>.*?<\/rt>/g, '').replace(/<[^>]+>/g, '').trim();
+}
+
+function scoreDictMatch(text, query, textNoTone, queryNoTone, hasTone) {
+  if (!text) return 0;
+  const t = text.toLowerCase();
+  if (t === query) return 200;
+  if (!hasTone && textNoTone === queryNoTone) return 150;
+  if (t.startsWith(query)) return 120;
+  if (!hasTone && textNoTone.startsWith(queryNoTone)) return 100;
+  
+  // Trùng khớp nguyên từ (ví dụ "ăn" trong "ăn cơm", "tôi" trong "của tôi")
+  const wordRegex = new RegExp('(?:^|[^a-zà-ỹ0-9])' + query.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&') + '(?:$|[^a-zà-ỹ0-9])', 'i');
+  if (wordRegex.test(t)) return 110;
+
+  if (!hasTone) {
+    const wordNoToneRegex = new RegExp('(?:^|[^a-z0-9])' + queryNoTone.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&') + '(?:$|[^a-z0-9])', 'i');
+    if (wordNoToneRegex.test(textNoTone)) return 80;
+  }
+
+  if (t.includes(query)) return 50;
+  if (!hasTone && textNoTone.includes(queryNoTone)) return 30;
+  return 0;
+}
+
+/**
+ * Tra cứu kho từ vựng, chữ Hán và ngữ pháp 50 bài Minna SGK nội bộ (Offline Fallback Engine)
+ * Hoạt động 100% không cần mạng, phản hồi tức thì dưới 10ms.
+ */
+function searchInternalDictionary(q, type = 'word') {
+  if (!q || typeof q !== 'string') return { status: 200, data: [], isInternal: true };
+  const query = q.trim();
+  if (!query) return { status: 200, data: [], isInternal: true };
+  const queryLower = query.toLowerCase();
+  const queryNoTone = removeVietnameseTones(query);
+  const hasTone = queryLower !== queryNoTone;
+  const candidates = [];
+  const seen = new Set();
+
+  // 1. TỪ VỰNG (type: 'word')
+  if (type === 'word') {
+    function evaluateWord(word, phonetic, han, meaning, pos) {
+      if (!word) return;
+      const w = safeTrim(word);
+      const p = safeTrim(phonetic);
+      const h = safeTrim(han);
+      const m = safeTrim(meaning);
+
+      const wLower = w.toLowerCase();
+      const pLower = p.toLowerCase();
+      const hLower = h.toLowerCase();
+      const mLower = m.toLowerCase();
+
+      const wNT = removeVietnameseTones(w);
+      const pNT = removeVietnameseTones(p);
+      const hNT = removeVietnameseTones(h);
+      const mNT = removeVietnameseTones(m);
+
+      const sWord = scoreDictMatch(wLower, queryLower, wNT, queryNoTone, hasTone);
+      const sPhonetic = scoreDictMatch(pLower, queryLower, pNT, queryNoTone, hasTone);
+      const sHan = scoreDictMatch(hLower, queryLower, hNT, queryNoTone, hasTone);
+      const sMean = scoreDictMatch(mLower, queryLower, mNT, queryNoTone, hasTone);
+
+      const bestScore = Math.max(sWord * 1.5, sPhonetic * 1.4, sHan * 1.3, sMean);
+      if (bestScore >= 30) {
+        if (!seen.has(w)) {
+          seen.add(w);
+          candidates.push({
+            score: bestScore,
+            item: {
+              word: w,
+              phonetic: p || '',
+              han: h || '',
+              means: [{ kind: pos || 'Từ vựng', mean: m || '' }]
+            }
+          });
+        }
+      }
+    }
+
+    // Tra trong toàn bộ 50 bài học Minna SGK
+    const lList = (typeof lessonsData !== 'undefined' && Array.isArray(lessonsData)) ? lessonsData : [];
+    for (const l of lList) {
+      if (!l.vocabulary) continue;
+      for (const v of l.vocabulary) {
+        const rawW = stripRubyText(v.kanji) || v.hiragana;
+        evaluateWord(rawW, v.hiragana, '', v.meaning, v.type);
+      }
+    }
+
+    // Tra trong kho 1.806 từ vựng chữ Hán Minna
+    const klList = (typeof kanjiLessonsData !== 'undefined' && Array.isArray(kanjiLessonsData)) ? kanjiLessonsData : [];
+    for (const kl of klList) {
+      if (!kl.items) continue;
+      for (const it of kl.items) {
+        evaluateWord(it.word || it.kanji, it.reading, it.hanViet, it.meaning, it.type);
+      }
+    }
+
+    candidates.sort((a, b) => b.score - a.score);
+    return { status: 200, data: candidates.slice(0, 20).map(c => c.item), isInternal: true };
+  }
+
+  // 2. CHỮ HÁN (type: 'kanji')
+  if (type === 'kanji') {
+    const klList = (typeof kanjiLessonsData !== 'undefined' && Array.isArray(kanjiLessonsData)) ? kanjiLessonsData : [];
+    for (const kl of klList) {
+      if (!kl.items) continue;
+      for (const it of kl.items) {
+        const w = safeTrim(it.word || it.kanji || '');
+        const han = safeTrim(it.hanViet || '');
+        const mean = safeTrim(it.meaning || '');
+        const hanNT = removeVietnameseTones(han);
+        const meanNT = removeVietnameseTones(mean);
+
+        const isExactChar = (w === query || (Array.isArray(it.kanjis) && it.kanjis.includes(query)));
+        const sChar = isExactChar ? 300 : 0;
+        const sHan = scoreDictMatch(han.toLowerCase(), queryLower, hanNT, queryNoTone, hasTone);
+        const sMean = scoreDictMatch(mean.toLowerCase(), queryLower, meanNT, queryNoTone, hasTone);
+        const score = Math.max(sChar, sHan * 1.3, sMean);
+
+        if (score >= 30) {
+          const char = it.kanji || (Array.isArray(it.kanjis) && it.kanjis[0]) || w;
+          if (!seen.has(char)) {
+            seen.add(char);
+            candidates.push({
+              score,
+              item: {
+                kanji: char,
+                mean: han || '',
+                on: safeTrim(it.reading),
+                kun: '',
+                stroke_count: it.kanjiCount || '',
+                level: kl.level || 'Minna N5'
+              }
+            });
+          }
+        }
+      }
+    }
+
+    // Tra trong 214 Bộ thủ Kanji
+    const radList = (typeof radicalsData !== 'undefined' && Array.isArray(radicalsData)) ? radicalsData : [];
+    for (const grp of radList) {
+      if (!grp.items) continue;
+      for (const rad of grp.items) {
+        const ch = safeTrim(rad.character);
+        const name = safeTrim(rad.name);
+        const mean = safeTrim(rad.meaning);
+        const nameNT = removeVietnameseTones(name);
+        const meanNT = removeVietnameseTones(mean);
+
+        const isExactChar = (ch === query);
+        const sChar = isExactChar ? 350 : 0;
+        const sName = scoreDictMatch(name.toLowerCase(), queryLower, nameNT, queryNoTone, hasTone);
+        const sMean = scoreDictMatch(mean.toLowerCase(), queryLower, meanNT, queryNoTone, hasTone);
+        const score = Math.max(sChar, sName * 1.3, sMean);
+
+        if (score >= 30) {
+          if (!seen.has(ch)) {
+            seen.add(ch);
+            candidates.push({
+              score,
+              item: {
+                kanji: ch,
+                mean: name || '',
+                on: '',
+                kun: '',
+                stroke_count: rad.strokeCount || grp.strokeCount || '',
+                level: 'Bộ thủ'
+              }
+            });
+          }
+        }
+      }
+    }
+
+    candidates.sort((a, b) => b.score - a.score);
+    const results = candidates.slice(0, 15).map(c => c.item);
+    return { status: 200, results: results, data: results, isInternal: true };
+  }
+
+  // 3. NGỮ PHÁP (type: 'grammar')
+  if (type === 'grammar') {
+    const lList = (typeof lessonsData !== 'undefined' && Array.isArray(lessonsData)) ? lessonsData : [];
+    for (const l of lList) {
+      if (!l.grammar) continue;
+      for (const g of l.grammar) {
+        const struct = safeTrim(g.structure);
+        const exp = safeTrim(g.explanation);
+        const structNT = removeVietnameseTones(struct);
+        const expNT = removeVietnameseTones(exp);
+
+        const sStruct = scoreDictMatch(struct.toLowerCase(), queryLower, structNT, queryNoTone, hasTone);
+        const sExp = scoreDictMatch(exp.toLowerCase(), queryLower, expNT, queryNoTone, hasTone);
+        const score = Math.max(sStruct * 1.5, sExp);
+
+        if (score >= 30) {
+          if (!seen.has(struct)) {
+            seen.add(struct);
+            candidates.push({
+              score,
+              item: {
+                title: struct,
+                level: l.level || 'Minna',
+                mean: exp
+              }
+            });
+          }
+        }
+      }
+    }
+
+    candidates.sort((a, b) => b.score - a.score);
+    const results = candidates.slice(0, 15).map(c => c.item);
+    return { status: 200, results: results, data: results, isInternal: true };
+  }
+
+  return { status: 200, data: [], isInternal: true };
+}
+
+/**
+ * Thực thi tìm kiếm Mazii kết hợp cả Từ Vựng và Chữ Hán (Unified Dictionary Engine)
+ */
+async function executeMaziiSearch(queryOverride = null) {
+  const input = document.getElementById('mazii-search-input');
+  const query = safeTrim(queryOverride !== null ? queryOverride : (input ? input.value : ''));
+  if (!query) return;
+
+  maziiCurrentQuery = query;
+  saveMaziiHistory(query, 'word');
+  renderHistoryChips();
+
+  const resultsBox = document.getElementById('mazii-results-container');
+  if (!resultsBox) return;
+
+  resultsBox.innerHTML = `
+    <div class="mazii-status-box">
+      <div class="mazii-spinner"></div>
+      <div class="mazii-status-title">Đang tra cứu từ điển...</div>
+      <div class="mazii-status-desc">Đang tải kết quả cho từ khóa "<strong>${escapeHtml(query)}</strong>"</div>
+    </div>
+  `;
+
+  let wordData = null;
+  let kanjiData = null;
+  let onlineFailedCount = 0;
+
+  // 1. Gọi song song cả API Từ Vựng (word) và Chữ Hán (kanji)
+  const [wordRes, kanjiRes] = await Promise.allSettled([
+    fetchMaziiSearch(query, 'word'),
+    fetchMaziiSearch(query, 'kanji')
+  ]);
+
+  if (wordRes.status === 'fulfilled' && wordRes.value) {
+    wordData = wordRes.value;
+  } else {
+    onlineFailedCount++;
+  }
+
+  if (kanjiRes.status === 'fulfilled' && kanjiRes.value) {
+    kanjiData = kanjiRes.value;
+  } else {
+    onlineFailedCount++;
+  }
+
+  // 2. Kiểm tra & Fallback dữ liệu Từ vựng
+  let hasWordResults = wordData && Array.isArray(wordData.data) && wordData.data.length > 0;
+  if (!hasWordResults) {
+    const internalWords = searchInternalDictionary(query, 'word');
+    if (internalWords && Array.isArray(internalWords.data) && internalWords.data.length > 0) {
+      wordData = internalWords;
+      hasWordResults = true;
+    }
+  }
+
+  // 3. Kiểm tra & Fallback dữ liệu Chữ Hán
+  let hasKanjiResults = false;
+  if (kanjiData) {
+    const rawList = Array.isArray(kanjiData.results) ? kanjiData.results : (Array.isArray(kanjiData.data) ? kanjiData.data : []);
+    const validList = rawList.filter(k => k && hasKanjiCharacter(k.kanji || k.word || ''));
+    if (validList.length > 0) {
+      kanjiData = { ...kanjiData, results: validList, data: validList };
+      hasKanjiResults = true;
+    } else {
+      kanjiData = null;
+    }
+  }
+
+  if (!hasKanjiResults) {
+    const internalKanji = searchInternalDictionary(query, 'kanji');
+    if (internalKanji) {
+      const rawInt = Array.isArray(internalKanji.results) ? internalKanji.results : (Array.isArray(internalKanji.data) ? internalKanji.data : []);
+      const validInt = rawInt.filter(k => k && hasKanjiCharacter(k.kanji || k.word || ''));
+      if (validInt.length > 0) {
+        kanjiData = { ...internalKanji, results: validInt, data: validInt };
+        hasKanjiResults = true;
+      }
+    }
+  }
+
+  // Nếu từ khóa chứa ký tự Hán tự (ví dụ: "食べる", "日本語")
+  // ➔ Tự động bóc tách từng chữ Hán trong từ để tra cứu bổ sung đầy đủ chiết tự chữ Hán!
+  const kanjiChars = query.match(/[\u4e00-\u9faf]/g);
+  if (kanjiChars && kanjiChars.length > 0) {
+    const uniqueChars = Array.from(new Set(kanjiChars));
+    const extractedKanjis = (kanjiData && (kanjiData.results || kanjiData.data)) ? [...(kanjiData.results || kanjiData.data)] : [];
+    const existingChars = new Set(extractedKanjis.map(k => k.kanji));
+
+    for (const char of uniqueChars) {
+      if (!existingChars.has(char)) {
+        const charKData = searchInternalDictionary(char, 'kanji');
+        const charItems = (charKData && (charKData.results || charKData.data)) || [];
+        if (charItems.length > 0) {
+          extractedKanjis.push(...charItems);
+          existingChars.add(char);
+        } else {
+          try {
+            const onlineCharK = await fetchMaziiSearch(char, 'kanji');
+            const onlineItems = (onlineCharK && (onlineCharK.results || onlineCharK.data)) || [];
+            if (onlineItems.length > 0) {
+              extractedKanjis.push(...onlineItems);
+              existingChars.add(char);
+            }
+          } catch(e) {}
+        }
+      }
+    }
+
+    if (extractedKanjis.length > 0) {
+      kanjiData = { status: 200, results: extractedKanjis, isInternal: (kanjiData && kanjiData.isInternal) || true };
+      hasKanjiResults = true;
+    }
+  }
+
+  // 4. Nếu cả 2 đều không tìm thấy kết quả
+  if (!hasWordResults && !hasKanjiResults) {
+    if (onlineFailedCount === 2) {
+      resultsBox.innerHTML = `
+        <div class="mazii-status-box">
+          <div class="mazii-status-icon">${APP_ICONS.alert}</div>
+          <div class="mazii-status-title">Không thể kết nối đến máy chủ từ điển</div>
+          <div class="mazii-status-desc">Vui lòng kiểm tra kết nối mạng hoặc thử vẽ tay để tra chữ Hán.</div>
+          <div style="margin-top:14px;display:flex;gap:8px;justify-content:center;flex-wrap:wrap;">
+            <button type="button" class="mazii-hw-btn btn-hw-primary" onclick="executeMaziiSearch('${escapeHtml(query)}')">
+              ${APP_ICONS.refresh} <span>Thử lại</span>
+            </button>
+            <button type="button" class="mazii-hw-btn" onclick="toggleHandwritingPanel(true)">
+              ${APP_ICONS.pen} <span>Bảng viết tay</span>
+            </button>
+          </div>
+        </div>
+      `;
+    } else {
+      resultsBox.innerHTML = `
+        <div class="mazii-status-box">
+          <div class="mazii-status-icon">${APP_ICONS.search}</div>
+          <div class="mazii-status-title">Không tìm thấy từ vựng hoặc chữ Hán phù hợp</div>
+          <div class="mazii-status-desc">Không có kết quả cho "<strong>${escapeHtml(query)}</strong>". Bạn có thể thử vẽ tay để tra chữ Hán hoặc kiểm tra lại từ khóa.</div>
+          <div style="margin-top:14px;display:flex;gap:8px;justify-content:center;flex-wrap:wrap;">
+            <button type="button" class="mazii-hw-btn btn-hw-primary" onclick="toggleHandwritingPanel(true)">
+              ${APP_ICONS.pen} <span>Mở bảng viết tay</span>
+            </button>
+          </div>
+        </div>
+      `;
+    }
+    return;
+  }
+
+  // 5. Hiển thị kết quả kết hợp tinh gọn
+  try {
+    renderCombinedMaziiResults(wordData, kanjiData, query);
+  } catch (renderErr) {
+    console.error('[Mazii] Lỗi render:', renderErr);
+    resultsBox.innerHTML = `
+      <div class="mazii-status-box">
+        <div class="mazii-status-icon">${APP_ICONS.alert}</div>
+        <div class="mazii-status-title">Đã xảy ra lỗi khi hiển thị kết quả</div>
+        <div class="mazii-status-desc">Vui lòng thử lại với từ khóa khác.</div>
+      </div>
+    `;
+  }
+}
+
+/**
+ * Định dạng thẻ Từ Vựng Compact Card
+ */
+function formatWordCompactCard(w, query) {
+  const wordText = safeTrim(w.word || query);
+  let phonetic = safeTrim(w.phonetic).split(/\s+/)[0] || '';
+  if (!phonetic && Array.isArray(w.pronunciation) && w.pronunciation[0]) {
+    phonetic = safeTrim(w.pronunciation[0].kana);
+  }
+  const han = safeTrim(w.han);
+  const rawMeans = Array.isArray(w.means) ? w.means : [];
+
+  const uniqueMeans = [];
+  const seen = new Set();
+  for (const m of rawMeans) {
+    if (!m) continue;
+    const kind = safeKind(m.kind);
+    const mean = safeTrim(typeof m === 'object' ? (m.mean || m.value) : m);
+    if (mean && !seen.has(mean.toLowerCase())) {
+      seen.add(mean.toLowerCase());
+      uniqueMeans.push({ kind, mean });
+      if (uniqueMeans.length >= 2) break;
+    }
+  }
+
+  if (uniqueMeans.length === 0 && w.short_mean) {
+    uniqueMeans.push({ kind: '', mean: safeTrim(w.short_mean) });
+  }
+  if (uniqueMeans.length === 0) {
+    uniqueMeans.push({ kind: '', mean: 'Chưa có định nghĩa' });
+  }
+
+  const meansHtml = uniqueMeans.map(m => `
+    <div class="dict-meaning-block">
+      ${m.kind ? `<div class="dict-pos">${escapeHtml(m.kind)}</div>` : ''}
+      <div class="dict-mean-text">${escapeHtml(m.mean)}</div>
+    </div>
+  `).join('');
+
+  return `
+    <div class="dict-compact-card">
+      <div class="dict-card-header">
+        <div class="dict-card-main-info">
+          <span class="dict-word">${escapeHtml(wordText)}</span>
+          ${phonetic ? `<span class="dict-phonetic">${escapeHtml(phonetic)}</span>` : ''}
+          ${han ? `<span class="dict-hanviet">${escapeHtml(han)}</span>` : ''}
+        </div>
+        <button type="button" class="dict-audio-btn" onclick="speakMaziiAudio('${escapeHtml(wordText)}', this, event)" title="Nghe phát âm chuẩn website">
+          ${typeof SPEAKER_ICON_HTML !== 'undefined' ? SPEAKER_ICON_HTML : '🔊'}
+        </button>
+      </div>
+
+      <div class="dict-means-container">
+        ${meansHtml}
+      </div>
+    </div>
+  `;
+}
+
+/**
+ * Định dạng thẻ Chữ Hán Compact Card
+ */
+function formatKanjiCompactCard(k, query) {
+  if (!k || typeof k !== 'object') return '';
+  const char = safeTrim(k.kanji || k.word || '');
+  // Chỉ chấp nhận nếu char thực sự chứa ký tự chữ Hán CJK, tuyệt đối không lấy query tiếng Việt
+  if (!char || !hasKanjiCharacter(char)) {
+    return '';
+  }
+  const han = safeTrim(k.mean || '');
+  const on = safeTrim(k.on).split(/\s+/).slice(0, 2).join(' ');
+  const kun = safeTrim(k.kun).split(/\s+/).slice(0, 2).join(' ');
+  const reading = [on, kun].filter(Boolean).join(' • ');
+  const strokes = k.stroke_count ? `${safeTrim(k.stroke_count)} Nét` : '';
+  const levelVal = Array.isArray(k.level) ? k.level[0] : k.level;
+  const level = safeTrim(levelVal);
+  const detailInfo = [strokes, level].filter(Boolean).join(' | ');
+
+  return `
+    <div class="dict-compact-card">
+      <div class="dict-card-header">
+        <div class="dict-card-main-info">
+          <span class="dict-word">${escapeHtml(char)}</span>
+          ${reading ? `<span class="dict-phonetic">${escapeHtml(reading)}</span>` : ''}
+          ${han ? `<span class="dict-hanviet">${escapeHtml(han)}</span>` : ''}
+        </div>
+        <button type="button" class="dict-audio-btn" onclick="speakMaziiAudio('${escapeHtml(char)}', this, event)" title="Nghe phát âm chuẩn website">
+          ${typeof SPEAKER_ICON_HTML !== 'undefined' ? SPEAKER_ICON_HTML : '🔊'}
+        </button>
+      </div>
+
+      <div class="dict-means-container">
+        <div class="dict-meaning-block">
+          ${detailInfo ? `<div class="dict-pos">${escapeHtml(detailInfo.toUpperCase())}</div>` : ''}
+          <div class="dict-mean-text">${escapeHtml(han || 'Chữ Hán')} (Âm On: ${escapeHtml(on || '—')} / Âm Kun: ${escapeHtml(kun || '—')})</div>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+/**
+ * Render kết quả tra cứu kết hợp cả Từ Vựng và Chữ Hán
+ */
+function renderCombinedMaziiResults(wordData, kanjiData, query) {
+  const resultsBox = document.getElementById('mazii-results-container');
+  if (!resultsBox) return;
+
+  const isInternal = (wordData && wordData.isInternal) || (kanjiData && kanjiData.isInternal);
+  const sourceBadgeHtml = ''; // Đã xóa ô tra cứu ngoại tuyến theo yêu cầu người dùng
+
+  const words = (wordData && Array.isArray(wordData.data)) ? wordData.data : [];
+  const rawKanjis = (kanjiData && (Array.isArray(kanjiData.results) ? kanjiData.results : (Array.isArray(kanjiData.data) ? kanjiData.data : []))) || [];
+
+  // LỌC CHẶT CHẼ: Bắt buộc mục Chữ Hán phải có chứa ký tự chữ Hán (CJK ideograph)
+  // Tuyệt đối loại bỏ các câu ví dụ hoặc chuỗi tiếng Việt mà Mazii trả về trong mục kanji
+  const kanjis = rawKanjis.filter(k => {
+    if (!k || typeof k !== 'object') return false;
+    const char = safeTrim(k.kanji || k.word || '');
+    return Boolean(char && hasKanjiCharacter(char));
+  });
+
+  if (words.length === 0 && kanjis.length === 0) {
+    resultsBox.innerHTML = `
+      <div class="mazii-status-box">
+        <div class="mazii-status-icon">${APP_ICONS.search}</div>
+        <div class="mazii-status-title">Không tìm thấy từ vựng hoặc chữ Hán phù hợp</div>
+        <div class="mazii-status-desc">Không có kết quả cho "<strong>${escapeHtml(query)}</strong>". Bạn có thể thử vẽ tay để tra chữ Hán.</div>
+        <div style="margin-top:14px;display:flex;gap:8px;justify-content:center;flex-wrap:wrap;">
+          <button type="button" class="mazii-hw-btn btn-hw-primary" onclick="toggleHandwritingPanel(true)">
+            ${APP_ICONS.pen} <span>Mở bảng viết tay</span>
+          </button>
+        </div>
+      </div>
+    `;
+    return;
+  }
+
+  // Khối HTML chữ Hán
+  const kanjiHtml = kanjis.length > 0 ? `
+    <div class="dict-results-section">
+      <div class="dict-section-header">
+        <span class="dict-section-pill pill-kanji">${APP_ICONS.kanjiBadge} <span>Chữ Hán</span></span>
+        <span class="dict-section-count">${kanjis.length} kết quả</span>
+      </div>
+      <div class="dict-section-cards">
+        ${kanjis.slice(0, 15).map(k => formatKanjiCompactCard(k, query)).filter(Boolean).join('')}
+      </div>
+    </div>
+  ` : '';
+
+  // Khối HTML từ vựng
+  const wordHtml = words.length > 0 ? `
+    <div class="dict-results-section">
+      <div class="dict-section-header">
+        <span class="dict-section-pill pill-word">${APP_ICONS.book} <span>Từ Vựng</span></span>
+        <span class="dict-section-count">${words.length} kết quả</span>
+      </div>
+      <div class="dict-section-cards">
+        ${words.slice(0, 20).map(w => formatWordCompactCard(w, query)).join('')}
+      </div>
+    </div>
+  ` : '';
+
+  // Ưu tiên hiển thị:
+  // Nếu là 1 chữ Hán đơn lẻ (ví dụ "食", "学"), khối Chữ Hán đứng trước, Từ vựng đứng sau
+  // Ngược lại (từ vựng, câu, romaji, tiếng Việt), Từ vựng đứng trước, Chữ Hán đứng sau
+  const isSingleKanji = /^[\u4e00-\u9faf]$/.test(query);
+  const sectionsHtml = isSingleKanji ? (kanjiHtml + wordHtml) : (wordHtml + kanjiHtml);
+
+  resultsBox.innerHTML = sourceBadgeHtml + sectionsHtml;
+}
+
+/**
+ * Hàm tương thích ngược render kết quả cũ
+ */
+function renderMaziiResults(data, query, type) {
+  if (type === 'word') {
+    renderCombinedMaziiResults(data, null, query);
+  } else if (type === 'kanji') {
+    renderCombinedMaziiResults(null, data, query);
+  } else if (type === 'grammar') {
+    renderGrammarResults(data, query);
+  } else {
+    renderCombinedMaziiResults(data && data.wordData ? data.wordData : data, data && data.kanjiData ? data.kanjiData : null, query);
+  }
+}
+
+/**
+ * Render kết quả Ngữ pháp
+ */
+function renderGrammarResults(data, query) {
+  const resultsBox = document.getElementById('mazii-results-container');
+  if (!resultsBox) return;
+
+  const isInternal = data && data.isInternal === true;
+  const sourceBadgeHtml = ''; // Đã xóa ô tra cứu ngoại tuyến theo yêu cầu người dùng
+
+  const grammars = (data && (Array.isArray(data.results) ? data.results : (Array.isArray(data.data) ? data.data : []))) || [];
+  if (grammars.length === 0) {
+    resultsBox.innerHTML = `
+      <div class="mazii-status-box">
+        <div class="mazii-status-icon">文</div>
+        <div class="mazii-status-title">Không tìm thấy Ngữ pháp phù hợp</div>
+        <div class="mazii-status-desc">Không tìm thấy cấu trúc ngữ pháp cho "<strong>${escapeHtml(query)}</strong>".</div>
+      </div>
+    `;
+    return;
+  }
+
+  resultsBox.innerHTML = sourceBadgeHtml + grammars.slice(0, 15).map(g => {
+    const title = safeTrim(g.title || query);
+    const level = safeTrim(g.level || '');
+    const mean = safeTrim(g.mean || '');
+
+    return `
+      <div class="dict-compact-card">
+        <div class="dict-card-header">
+          <div class="dict-card-main-info">
+            <span class="dict-word" style="font-size:18px;">${escapeHtml(title)}</span>
+            ${level ? `<span class="dict-hanviet">${escapeHtml(level)}</span>` : ''}
+          </div>
+          <button type="button" class="dict-audio-btn" onclick="speakMaziiAudio('${escapeHtml(title.split('=>')[0].trim())}', this, event)" title="Nghe mẫu ngữ pháp">
+            ${typeof SPEAKER_ICON_HTML !== 'undefined' ? SPEAKER_ICON_HTML : '🔊'}
+          </button>
+        </div>
+        ${mean ? `
+        <div class="dict-means-container">
+          <div class="dict-meaning-block">
+            <div class="dict-mean-text">${escapeHtml(mean)}</div>
+          </div>
+        </div>` : ''}
+      </div>
+    `;
+  }).join('');
+}
+
+/**
+ * Chuyển đổi tab Từ vựng / Chữ Hán / Ngữ pháp
+ */
+function switchMaziiTab(tab) {
+  maziiCurrentTab = tab;
+  document.querySelectorAll('.mazii-type-tab').forEach(t => {
+    t.classList.toggle('active', t.getAttribute('data-tab') === tab);
+  });
+  const input = document.getElementById('mazii-search-input');
+  if (input && input.value.trim()) {
+    executeMaziiSearch(input.value.trim());
+  }
+}
+
+/**
+ * ==========================================================================
+ * TÌM KIẾM TỪ ĐIỂN BẰNG GIỌNG NÓI (VOICE SEARCH ENGINE)
+ * Hỗ trợ nhận diện giọng nói Tiếng Nhật (ja-JP) & Tiếng Việt (vi-VN)
+ * ==========================================================================
+ */
+
+/**
+ * Bật / Tắt chế độ tìm kiếm bằng giọng nói
+ */
+function toggleMaziiVoiceSearch() {
+  if (maziiIsVoiceListening) {
+    stopMaziiVoiceSearch();
+  } else {
+    startMaziiVoiceSearch(maziiVoiceLang);
+  }
+}
+
+/**
+ * Thay đổi ngôn ngữ nhận diện giọng nói (ja-JP hoặc vi-VN)
+ */
+function setMaziiVoiceLang(lang) {
+  maziiVoiceLang = lang || 'ja-JP';
+  const panel = document.getElementById('mazii-voice-panel');
+  if (panel) {
+    const btns = panel.querySelectorAll('.mazii-voice-lang-btn');
+    btns.forEach(b => {
+      const isCurrent = (lang === 'ja-JP' && b.innerText.includes('Nhật')) ||
+                        (lang === 'vi-VN' && b.innerText.includes('Việt'));
+      b.classList.toggle('active', isCurrent);
+    });
+  }
+  // Nếu đang nghe thì chuyển sang nghe với ngôn ngữ mới
+  if (maziiIsVoiceListening) {
+    stopMaziiVoiceSearch(false);
+    setTimeout(() => startMaziiVoiceSearch(maziiVoiceLang), 150);
+  }
+}
+
+/**
+ * Bắt đầu nhận diện giọng nói
+ */
+function startMaziiVoiceSearch(lang = 'ja-JP') {
+  const panel = document.getElementById('mazii-voice-panel');
+  const voiceBtn = document.getElementById('mazii-btn-voice');
+  const titleEl = document.getElementById('mazii-voice-title');
+  const transcriptEl = document.getElementById('mazii-voice-transcript');
+
+  // Kiểm tra hỗ trợ Web Speech API
+  const isSupported = (typeof DictionaryEngine !== 'undefined' && typeof DictionaryEngine.isVoiceSearchSupported === 'function')
+    ? DictionaryEngine.isVoiceSearchSupported()
+    : Boolean(typeof window !== 'undefined' && (window.SpeechRecognition || window.webkitSpeechRecognition));
+
+  if (!isSupported) {
+    if (panel) {
+      panel.style.display = 'flex';
+      if (titleEl) titleEl.textContent = 'Trình duyệt chưa hỗ trợ';
+      if (transcriptEl) transcriptEl.textContent = 'Trình duyệt của bạn chưa hỗ trợ nhận diện giọng nói Web Speech. Vui lòng sử dụng Chrome, Edge hoặc Safari.';
+    }
+    return;
+  }
+
+  // Đóng bảng viết tay nếu đang mở để tránh chồng chéo giao diện
+  if (maziiIsHwOpen) {
+    toggleHandwritingPanel(false);
+  }
+
+  try {
+    if (maziiVoiceRecognition) {
+      try { maziiVoiceRecognition.abort(); } catch(e) {}
+      maziiVoiceRecognition = null;
+    }
+
+    const callbacks = {
+      onStart: () => {
+        maziiIsVoiceListening = true;
+        if (voiceBtn) {
+          voiceBtn.classList.add('listening');
+          voiceBtn.setAttribute('title', 'Đang nghe... Bấm để dừng');
+        }
+        if (panel) panel.style.display = 'flex';
+        if (titleEl) {
+          titleEl.textContent = lang === 'ja-JP'
+            ? 'Đang lắng nghe tiếng Nhật (日本語)...'
+            : 'Đang lắng nghe tiếng Việt...';
+        }
+        if (transcriptEl) {
+          transcriptEl.textContent = 'Hãy nói từ vựng hoặc câu bạn muốn tra...';
+          transcriptEl.classList.remove('has-text');
+        }
+      },
+      onResult: ({ transcript, isFinal, alternatives }) => {
+        if (!transcript) return;
+        if (transcriptEl) {
+          transcriptEl.textContent = `"${transcript}"`;
+          transcriptEl.classList.add('has-text');
+        }
+        const input = document.getElementById('mazii-search-input');
+        if (input) {
+          input.value = transcript;
+          const clearBtn = document.getElementById('mazii-btn-clear');
+          if (clearBtn) clearBtn.style.display = 'flex';
+        }
+
+        // Tự động kích hoạt tìm kiếm khi phát hiện dứt câu
+        if (isFinal) {
+          stopMaziiVoiceSearch(false);
+          renderVoiceCandidates(alternatives, transcript);
+          setTimeout(() => {
+            executeMaziiSearch(transcript);
+          }, 300);
+        }
+      },
+      onError: (err) => {
+        console.warn('[VoiceSearch] Thông báo:', err);
+        if (panel) panel.style.display = 'flex';
+        if (titleEl) {
+          titleEl.textContent = (err.code === 'not-allowed') ? 'Micrô đang bị chặn' : 'Lỗi nhận diện giọng nói';
+        }
+        if (transcriptEl) {
+          if (err.code === 'not-allowed') {
+            const isFile = typeof window !== 'undefined' && window.location && window.location.protocol === 'file:';
+            transcriptEl.textContent = isFile
+              ? 'Chrome chặn Micro do bạn mở file trực tiếp (file://). Bấm vào icon Micro có dấu gạch chéo trên thanh địa chỉ để "Cho phép", hoặc chạy qua Live Server/localhost.'
+              : 'Trang web chưa được cấp quyền Micro. Vui lòng nhấp vào biểu tượng ổ khóa/micro trên thanh địa chỉ để cấp quyền.';
+          } else {
+            transcriptEl.textContent = err.message || 'Không thể nhận diện giọng nói. Vui lòng thử lại.';
+          }
+        }
+        if (voiceBtn) voiceBtn.classList.remove('listening');
+        maziiIsVoiceListening = false;
+      },
+      onEnd: () => {
+        maziiIsVoiceListening = false;
+        if (voiceBtn) voiceBtn.classList.remove('listening');
+      }
+    };
+
+    if (typeof DictionaryEngine !== 'undefined' && typeof DictionaryEngine.createVoiceRecognition === 'function') {
+      maziiVoiceRecognition = DictionaryEngine.createVoiceRecognition(callbacks, lang, { maxAlternatives: 5 });
+    } else {
+      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+      const rec = new SpeechRecognition();
+      rec.lang = lang || 'ja-JP';
+      rec.continuous = false;
+      rec.interimResults = true;
+      rec.maxAlternatives = 5;
+      rec.onstart = callbacks.onStart;
+      rec.onresult = (e) => {
+        let interim = '';
+        let final = '';
+        const alts = [];
+        const clean = (s) => (s || '').replace(/[。、.,?!？！]/g, '').trim();
+        for (let i = e.resultIndex; i < e.results.length; ++i) {
+          if (e.results[i].isFinal) {
+            final += e.results[i][0].transcript;
+            for (let j = 0; j < e.results[i].length; ++j) {
+              const a = clean(e.results[i][j].transcript);
+              if (a && !alts.includes(a)) alts.push(a);
+            }
+          } else {
+            interim += e.results[i][0].transcript;
+          }
+        }
+        callbacks.onResult({
+          transcript: clean(final) || clean(interim),
+          isFinal: Boolean(final),
+          interim: clean(interim),
+          final: clean(final),
+          alternatives: alts
+        });
+      };
+      rec.onerror = (e) => callbacks.onError(new Error(e.error === 'not-allowed' ? 'Chưa cấp quyền Micro.' : 'Không nghe thấy giọng nói.'));
+      rec.onend = callbacks.onEnd;
+      maziiVoiceRecognition = rec;
+    }
+
+    if (maziiVoiceRecognition) {
+      maziiVoiceRecognition.start();
+    }
+  } catch (err) {
+    console.error('[VoiceSearch] Lỗi khởi động:', err);
+    if (transcriptEl) transcriptEl.textContent = 'Không thể mở Micro. Vui lòng cấp quyền Micro cho trình duyệt.';
+  }
+}
+
+/**
+ * Dừng nhận diện giọng nói
+ */
+function stopMaziiVoiceSearch(hidePanel = true) {
+  maziiIsVoiceListening = false;
+  if (maziiVoiceRecognition) {
+    try { maziiVoiceRecognition.abort(); } catch(e) {}
+    maziiVoiceRecognition = null;
+  }
+  const voiceBtn = document.getElementById('mazii-btn-voice');
+  if (voiceBtn) {
+    voiceBtn.classList.remove('listening');
+    voiceBtn.setAttribute('title', 'Tìm kiếm bằng giọng nói');
+  }
+  const panel = document.getElementById('mazii-voice-panel');
+  if (panel && hidePanel) {
+    panel.style.display = 'none';
+  }
+}
+
+/**
+ * Hiển thị danh sách ứng viên nhận diện AI từ Google Translate
+ */
+function renderVoiceCandidates(alternatives, currentQuery) {
+  const container = document.getElementById('mazii-voice-candidates');
+  if (!container) return;
+  const list = Array.isArray(alternatives) ? alternatives : [];
+  if (list.length <= 1 && (!currentQuery || currentQuery.length < 5)) {
+    container.innerHTML = '';
+    container.style.display = 'none';
+    return;
+  }
+
+  const chipsHtml = list.map(alt => {
+    const isSelected = alt.toLowerCase() === (currentQuery || '').toLowerCase();
+    return `
+      <button type="button" class="mazii-voice-candidate-chip ${isSelected ? 'active' : ''}" onclick="selectVoiceCandidate('${escapeHtml(alt)}')">
+        <span>${escapeHtml(alt)}</span>
+      </button>
+    `;
+  }).join('');
+
+  container.innerHTML = `
+    <div class="mazii-voice-candidates-header">
+      <span class="mazii-voice-candidates-label">✨ Gợi ý từ Google Translate AI (${list.length} phương án):</span>
+      <a href="https://translate.google.com/?sl=auto&tl=vi&text=${encodeURIComponent(currentQuery || '')}&op=translate" target="_blank" rel="noopener" class="mazii-gt-link" title="Xem bản dịch câu đầy đủ trên Google Translate">
+        🌐 Mở Google Dịch ↗
+      </a>
+    </div>
+    <div class="mazii-voice-candidates-chips">
+      ${chipsHtml}
+    </div>
+  `;
+  container.style.display = 'flex';
+}
+
+/**
+ * Chọn nhanh một ứng viên gợi ý từ Google Translate
+ */
+function selectVoiceCandidate(text) {
+  if (!text) return;
+  const input = document.getElementById('mazii-search-input');
+  if (input) {
+    input.value = text;
+    const clearBtn = document.getElementById('mazii-btn-clear');
+    if (clearBtn) clearBtn.style.display = 'flex';
+  }
+  executeMaziiSearch(text);
+  const panel = document.getElementById('mazii-voice-panel');
+  if (panel) panel.style.display = 'none';
+}
+
+/**
+ * Bật / tắt bảng vẽ viết tay
+ */
+function toggleHandwritingPanel(forceOpen = null) {
+  const panel = document.getElementById('mazii-hw-panel');
+  const btn = document.getElementById('mazii-btn-hw-toggle');
+  if (!panel) return;
+
+  if (forceOpen !== null) {
+    maziiIsHwOpen = forceOpen;
+  } else {
+    maziiIsHwOpen = !maziiIsHwOpen;
+  }
+
+  panel.classList.toggle('open', maziiIsHwOpen);
+  if (btn) {
+    btn.classList.toggle('active', maziiIsHwOpen);
+  }
+
+  if (maziiIsHwOpen) {
+    setTimeout(() => {
+      initHandwritingPad();
+      if (typeof window !== 'undefined' && window.innerWidth <= 768) {
+        try { panel.scrollIntoView({ behavior: 'smooth', block: 'nearest' }); } catch(e) {}
+      }
+    }, 60);
+  }
+}
+
+/**
+ * Render thanh lịch sử tra cứu
+ */
+function renderHistoryChips() {
+  const container = document.getElementById('mazii-history-chips');
+  if (!container) return;
+  const history = getMaziiHistory();
+  if (history.length === 0) {
+    container.innerHTML = '<span style="font-size:12px;color:var(--text-muted);">Chưa có lịch sử tra cứu</span>';
+    return;
+  }
+
+  container.innerHTML = history.slice(0, 10).map(item => `
+    <button type="button" class="mazii-tag-chip" onclick="switchMaziiTab('${escapeHtml(item.type)}');executeMaziiSearch('${escapeHtml(item.query)}')">
+      <span>${escapeHtml(item.query)}</span>
+      <span style="font-size:10px;opacity:0.7;">(${item.type === 'kanji' ? 'Kanji' : (item.type === 'grammar' ? 'Ngữ pháp' : 'Từ')})</span>
+    </button>
+  `).join('');
+}
+
+/**
+ * Hàm chính Render Module Mazii Dictionary Studio vào #lesson-content
+ */
+function renderMaziiDictSection(initialQuery = '', initialType = 'word') {
+  const content = document.getElementById('lesson-content');
+  if (!content) return;
+
+  if (initialType) maziiCurrentTab = initialType;
+  if (initialQuery) maziiCurrentQuery = initialQuery;
+
+  content.innerHTML = `
+    <div class="mazii-dict-studio">
+      <!-- 1. Header Banner -->
+      <div class="mazii-hero-card">
+        <div class="mazii-hero-top">
+          <div class="mazii-hero-title-wrap">
+            <h2>
+              ${APP_ICONS.book}
+              <span>Từ Điển Nhật - Việt</span>
+            </h2>
+            <p class="mazii-hero-desc">
+              Tra cứu Từ vựng &amp; Chữ Hán bằng bàn phím, giọng nói hoặc Bảng vẽ tay nhận diện AI.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- 2. Thanh tìm kiếm & Bảng vẽ (Cùng 1 dòng, tách làm 2 ô riêng biệt) -->
+      <div class="mazii-search-panel">
+        <div class="mazii-search-row">
+          <!-- Ô 1: Ô tìm kiếm -->
+          <div class="mazii-input-wrapper">
+            <input type="text"
+                   id="mazii-search-input"
+                   class="mazii-search-input"
+                   placeholder="Tra từ vựng, chữ Hán, Romaji..."
+                   value="${escapeHtml(maziiCurrentQuery)}"
+                   autocomplete="off"
+                   autocorrect="off"
+                   spellcheck="false">
+
+            <div class="mazii-input-actions">
+              <button type="button" id="mazii-btn-clear" class="mazii-btn-clear" style="display:${maziiCurrentQuery ? 'flex' : 'none'};" title="Xóa nội dung nhập" aria-label="Xóa nội dung">${APP_ICONS.clear}</button>
+              <button type="button" id="mazii-btn-voice" class="mazii-btn-voice ${maziiIsVoiceListening ? 'listening' : ''}" onclick="toggleMaziiVoiceSearch()" title="Tìm kiếm bằng giọng nói (Tiếng Nhật / Tiếng Việt)" aria-label="Tìm kiếm giọng nói">
+                ${APP_ICONS.mic}
+              </button>
+              <button type="button" id="mazii-btn-search" class="mazii-btn-search" onclick="executeMaziiSearch()" title="Tra cứu" aria-label="Tra cứu">
+                ${APP_ICONS.search}
+              </button>
+            </div>
+          </div>
+
+          <!-- Ô 2: Ô viết tay riêng biệt trên cùng 1 dòng -->
+          <button type="button"
+                  id="mazii-btn-hw-toggle"
+                  class="mazii-hw-box-btn ${maziiIsHwOpen ? 'active' : ''}"
+                  onclick="toggleHandwritingPanel()"
+                  title="Bật/Tắt bảng vẽ nhận diện chữ viết tay"
+                  aria-label="Bảng viết tay">
+            <span class="mazii-hw-box-icon">${APP_ICONS.pen}</span>
+            <span class="mazii-hw-box-text">Viết tay</span>
+          </button>
+        </div>
+
+        <!-- Khung trạng thái tìm kiếm giọng nói (Voice Search Panel) -->
+        <div id="mazii-voice-panel" class="mazii-voice-panel" style="display:${maziiIsVoiceListening ? 'flex' : 'none'};">
+          <div class="mazii-voice-top-row">
+            <div class="mazii-voice-status">
+              <div class="mazii-voice-pulse">
+                <span class="voice-wave wave-1"></span>
+                <span class="voice-wave wave-2"></span>
+                <span class="voice-wave wave-3"></span>
+                <span class="voice-mic-icon">${APP_ICONS.mic}</span>
+              </div>
+              <div class="mazii-voice-info">
+                <div class="mazii-voice-title" id="mazii-voice-title">${maziiVoiceLang === 'ja-JP' ? 'Đang lắng nghe tiếng Nhật (日本語)...' : 'Đang lắng nghe tiếng Việt...'}</div>
+                <div class="mazii-voice-transcript" id="mazii-voice-transcript">Hãy nói từ vựng hoặc câu bạn muốn tra...</div>
+              </div>
+            </div>
+
+            <div class="mazii-voice-actions">
+              <div class="mazii-voice-lang-group" role="radiogroup" aria-label="Chọn ngôn ngữ giọng nói">
+                <button type="button" class="mazii-voice-lang-btn ${maziiVoiceLang === 'ja-JP' ? 'active' : ''}" onclick="setMaziiVoiceLang('ja-JP')" title="Nói bằng tiếng Nhật">
+                  <span>🇯🇵 Tiếng Nhật</span>
+                </button>
+                <button type="button" class="mazii-voice-lang-btn ${maziiVoiceLang === 'vi-VN' ? 'active' : ''}" onclick="setMaziiVoiceLang('vi-VN')" title="Nói bằng tiếng Việt">
+                  <span>🇻🇳 Tiếng Việt</span>
+                </button>
+              </div>
+              <button type="button" class="mazii-voice-stop-btn" onclick="stopMaziiVoiceSearch()" title="Dừng nhận diện">
+                ✕ Dừng
+              </button>
+            </div>
+          </div>
+
+          <!-- Khu vực hiển thị các ứng viên nhận diện thay thế từ Google Translate -->
+          <div id="mazii-voice-candidates" class="mazii-voice-candidates" style="display:none;"></div>
+        </div>
+
+        <!-- 3. Bảng viết tay (Handwriting Pad) -->
+        <div id="mazii-hw-panel" class="mazii-hw-panel ${maziiIsHwOpen ? 'open' : ''}">
+          <div class="mazii-canvas-wrapper">
+            <canvas id="mazii-canvas" class="mazii-canvas"></canvas>
+          </div>
+
+          <div class="mazii-hw-toolbar">
+            <button type="button" class="mazii-hw-btn" onclick="undoHandwritingStroke()" title="Hoàn tác nét vừa vẽ">
+              ${APP_ICONS.undo} <span>Xóa nét</span>
+            </button>
+            <button type="button" class="mazii-hw-btn" onclick="clearHandwritingCanvas()" title="Xóa toàn bộ nét vẽ">
+              ${APP_ICONS.trash} <span>Xóa hết</span>
+            </button>
+            <button type="button" class="mazii-hw-btn btn-hw-ai" style="display:none;" onclick="recognizeHandwritingStrokes()" title="Nhận diện chữ Hán &amp; Từ mới bằng Trí tuệ Nhân tạo (AI)" aria-hidden="true">
+              ${APP_ICONS.robot} <span>Nhận diện AI</span>
+            </button>
+            <button type="button" class="mazii-hw-btn" onclick="backspaceSearchChar()" title="Xóa 1 ký tự cuối trong ô tìm kiếm">
+              ${APP_ICONS.backspace} <span>Xóa chữ cuối</span>
+            </button>
+          </div>
+
+          <div class="mazii-candidates-box">
+            <div id="mazii-candidates-list" class="mazii-candidates-list">
+              <span class="mazii-candidate-item empty-hint">Vẽ chữ vào khung trên để nhận diện</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 4. Khu vực hiển thị kết quả từ điển -->
+      <div id="mazii-results-container" class="mazii-results-container">
+        <div class="mazii-status-box">
+          <div class="mazii-status-icon">${APP_ICONS.book}</div>
+          <div class="mazii-status-title">Tra cứu Từ Điển Nhật - Việt</div>
+          <div class="mazii-status-desc">Nhập từ vựng, chữ Hán hoặc vẽ tay trên bảng vẽ để xem nghĩa và phát âm.</div>
+        </div>
+      </div>
+    </div>
+  `;
+
+  // Bắt sự kiện bàn phím & input
+  const searchInput = document.getElementById('mazii-search-input');
+  const clearBtn = document.getElementById('mazii-btn-clear');
+
+  if (searchInput) {
+    searchInput.oninput = () => {
+      if (clearBtn) {
+        clearBtn.style.display = searchInput.value.length > 0 ? 'flex' : 'none';
+      }
+    };
+    searchInput.onkeydown = (e) => {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        executeMaziiSearch();
+      }
+    };
+  }
+
+  if (clearBtn && searchInput) {
+    clearBtn.onclick = () => {
+      searchInput.value = '';
+      clearBtn.style.display = 'none';
+      searchInput.focus();
+    };
+  }
+
+  renderHistoryChips();
+
+  if (maziiIsHwOpen) {
+    setTimeout(initHandwritingPad, 50);
+  }
+
+  if (initialQuery) {
+    executeMaziiSearch(initialQuery);
+  }
+}
+
+/**
+ * Mở Từ Điển Mazii với từ khóa bất kỳ từ Quick Search hoặc nút liên kết
+ */
+window.openMaziiWithQuery = function(query, type = 'word') {
+  if (typeof switchModule === 'function') {
+    switchModule('mazii-dict', true);
+    setTimeout(() => {
+      switchMaziiTab(type);
+      const input = document.getElementById('mazii-search-input');
+      if (input) input.value = query;
+      executeMaziiSearch(query);
+    }, 60);
+  }
+};
+
+// Xuất bản các hàm Voice Search ra Window cho tương tác toàn cục
+window.toggleMaziiVoiceSearch = toggleMaziiVoiceSearch;
+window.startMaziiVoiceSearch = startMaziiVoiceSearch;
+window.stopMaziiVoiceSearch = stopMaziiVoiceSearch;
+window.setMaziiVoiceLang = setMaziiVoiceLang;
+window.renderVoiceCandidates = renderVoiceCandidates;
+window.selectVoiceCandidate = selectVoiceCandidate;
+

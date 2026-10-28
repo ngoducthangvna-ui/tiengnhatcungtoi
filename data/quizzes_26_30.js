@@ -634,7 +634,7 @@ const quizzes_26_30 = {
         "<ruby>行<rt>い</rt></ruby>けます",
         "<ruby>行<rt>い</rt></ruby>きます",
         "<ruby>行<rt>い</rt></ruby>かれます",
-        "<ruby>行<rt>い</rt></ruby>かれます"
+        "<ruby>行<rt>い</rt></ruby>かせます"
       ],
       "correctIdx": 0,
       "explanation": "[Độ khó: DỄ | Khả năng đi] 行く -> 行ける: 行けますか."
@@ -645,8 +645,8 @@ const quizzes_26_30 = {
       "options": [
         "<ruby>食<rt>た</rt></ruby>べられます",
         "<ruby>食<rt>た</rt></ruby>べれます",
-        "<ruby>食<rt>た</rt></ruby>べられます",
-        "<ruby>食<rt>た</rt></ruby>べられます"
+        "<ruby>食<rt>た</rt></ruby>べます",
+        "<ruby>食<rt>た</rt></ruby>べさせます"
       ],
       "correctIdx": 0,
       "explanation": "[Độ khó: DỄ | Nhóm 2 thể khả năng] 食べる (bỏ る thêm られる) -> 食べられます."
@@ -1029,7 +1029,7 @@ const quizzes_26_30 = {
       "options": [
         "<ruby>来<rt>き</rt></ruby>られる",
         "<ruby>来<rt>き</rt></ruby>れる",
-        "<ruby>来<rt>き</rt></ruby>られる",
+        "<ruby>来<rt>こ</rt></ruby>ない",
         "<ruby>来<rt>き</rt></ruby>させる"
       ],
       "correctIdx": 0,
@@ -2823,7 +2823,7 @@ const quizzes_26_30 = {
       "options": [
         "<ruby>読<rt>よ</rt></ruby>んどく",
         "<ruby>読<rt>よ</rt></ruby>みとく",
-        "<ruby>読<rt>よ</rt></ruby>んどく",
+        "<ruby>読<rt>よ</rt></ruby>んでみる",
         "<ruby>読<rt>よ</rt></ruby>んだとく"
       ],
       "correctIdx": 0,

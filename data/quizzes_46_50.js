@@ -1356,7 +1356,7 @@ const quizzes_46_50 = {
         "<ruby>話<rt>はなし</rt></ruby>させる",
         "<ruby>話<rt>はなし</rt></ruby>させられる",
         "<ruby>話<rt>はなし</rt></ruby>される",
-        "<ruby>話<rt>はなし</rt></ruby>させる"
+        "<ruby>話<rt>はな</rt></ruby>す"
       ],
       "correctIdx": 0,
       "explanation": "[Độ khó: DỄ | Nhóm 1: su -> saseru] 話す -> 話させる."
@@ -1380,7 +1380,7 @@ const quizzes_46_50 = {
         "<ruby>起<rt>お</rt></ruby>きさせる",
         "<ruby>起<rt>お</rt></ruby>きられる",
         "<ruby>起<rt>お</rt></ruby>きせる",
-        "<ruby>起<rt>お</rt></ruby>きさせる"
+        "<ruby>起<rt>お</rt></ruby>きる"
       ],
       "correctIdx": 0,
       "explanation": "[Độ khó: DỄ | Nhóm 2: ru -> saseru] 起きる -> 起きさせる."

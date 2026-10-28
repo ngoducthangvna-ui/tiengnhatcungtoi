@@ -31,7 +31,7 @@
     font-src 'self' https://fonts.gstatic.com data:;
     img-src 'self' data: https: blob:;
     media-src 'self' data: blob: https:;
-    connect-src 'self' https://speechgen.io https://api.speechgen.io;
+    connect-src 'self' https://speechgen.io https://api.speechgen.io https://mazii.net https://*.mazii.net https://www.mazii.net https://inputtools.google.com https://www.google.com https://generativelanguage.googleapis.com;
     frame-ancestors 'none';
     object-src 'none';
     base-uri 'self';
@@ -51,7 +51,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400;1,600&family=Noto+Sans+JP:wght@400;500;600;700;800&family=Roboto:ital,wght@0,400;0,500;0,700;1,400&family=Shippori+Mincho:wght@400;500;600;700&family=Zen+Kaku+Gothic+New:wght@400;500;700&display=swap" rel="stylesheet">
   
   <!-- Giao diện CSS thuần -->
-  <link rel="stylesheet" href="style.css?v=20261025_11">
+  <link rel="stylesheet" href="style.css?v=20261028_02">
 </head>
 <body>
   <!-- NỀN GRADIENT HIỆN ĐẠI (Tối ưu GPU: 2 Blob tinh gọn trên Desktop, ẩn hoàn toàn trên Mobile) -->
@@ -280,7 +280,13 @@
             <span class="greeting-jp">「こんにちは！日本語の世界へようこそ」</span>
             <span class="greeting-vi">Xin chào! Chào mừng bạn đến với hành trình học Tiếng Nhật</span>
           </div>
-          <span class="greeting-listen-tag">🔊 Nghe thử</span>
+          <span class="greeting-listen-tag">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -1px; margin-right: 4px;" aria-hidden="true">
+              <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+              <path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+              <path d="M19.07 4.93a10 10 0 0 1 0 14.14"></path>
+            </svg>Nghe thử
+          </span>
         </div>
 
         <!-- Bảng 5 trụ cột tri thức Bento Grid hiện đại (Chạm vào bất kỳ thẻ nào để vào học ngay lập tức) -->
@@ -318,14 +324,14 @@
             </div>
           </div>
 
-          <div class="cover-feature-card" data-target="#kanji-1" onclick="enterApp('#kanji-1')" role="button" tabindex="0" title="Vào xem ngay: Mẹo nhớ Kanji 50 bài học">
+          <div class="cover-feature-card" data-target="#kanji-1" onclick="enterApp('#kanji-1')" role="button" tabindex="0" title="Vào xem ngay: Mẹo nhớ Kanji &amp; Flashcard 50 bài học">
             <div class="feature-stat-box accent-amber">
               <span class="stat-num">50</span>
               <span class="stat-unit">BÀI KANJI</span>
             </div>
             <div class="feature-info">
-              <h3 class="feature-title">Mẹo Nhớ Kanji</h3>
-              <p class="feature-desc">Chữ Hán trên, Mẹo nhớ dưới trọn bộ 50 bài</p>
+              <h3 class="feature-title">Mẹo Nhớ &amp; Flashcard Kanji</h3>
+              <p class="feature-desc">Chiết tự, Mẹo nhớ &amp; Thẻ kiểm tra Flashcard 50 bài</p>
             </div>
           </div>
 
@@ -339,6 +345,22 @@
               <p class="feature-desc">Hoạt họa thứ tự nét bút &amp; chữ Hán mẫu</p>
             </div>
           </div>
+
+          <div class="cover-feature-card" data-target="#mazii-dict" onclick="enterApp('#mazii-dict')" role="button" tabindex="0" title="Tra cứu trực tiếp Từ vựng & Chữ Hán có bảng viết tay">
+            <div class="feature-stat-box accent-sakura" style="background: linear-gradient(135deg, rgba(239, 68, 68, 0.15), rgba(249, 115, 22, 0.2)); color: #e05244;">
+              <span class="stat-num">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path>
+                  <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path>
+                </svg>
+              </span>
+              <span class="stat-unit">TỪ ĐIỂN</span>
+            </div>
+            <div class="feature-info">
+              <h3 class="feature-title">Từ Điển &amp; Viết Tay</h3>
+              <p class="feature-desc">Tra từ vựng, chữ Hán, ngữ pháp • Bảng vẽ tay nhận diện Kanji</p>
+            </div>
+          </div>
         </div>
 
         <!-- Thanh điều hướng nhanh theo mục tiêu -->
@@ -348,8 +370,14 @@
           <button class="target-chip" data-target="#bai-26" onclick="enterApp('#bai-26')">N4 Nâng Cao (26-50)</button>
           <button class="target-chip" data-target="#quiz-1" onclick="enterApp('#quiz-1')">Luyện Đề JLPT</button>
           <button class="target-chip" data-target="#dokkai-1" onclick="enterApp('#dokkai-1')">Luyện Đọc Hiểu</button>
-          <button class="target-chip" data-target="#kanji-1" onclick="enterApp('#kanji-1')">Mẹo Nhớ Kanji</button>
+          <button class="target-chip" data-target="#kanji-1" onclick="enterApp('#kanji-1')">Mẹo Nhớ &amp; Flashcard</button>
           <button class="target-chip" data-target="#radicals-1" onclick="enterApp('#radicals-1')">191 Bộ Thủ</button>
+          <button class="target-chip" data-target="#mazii-dict" onclick="enterApp('#mazii-dict')">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -2px; margin-right: 5px;" aria-hidden="true">
+              <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path>
+              <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path>
+            </svg>Tra Từ Điển
+          </button>
         </div>
 
         <!-- Nút hành động chính -->
@@ -435,6 +463,16 @@
 
     <!-- Nhóm nút chức năng phía bên phải Header -->
     <div class="header-right">
+      <!-- Nút Tra Từ Điển (Chỉ Icon Tinh Tế) -->
+      <button id="btn-open-mazii-dict" class="header-action-btn mazii-header-btn" onclick="switchModule('mazii-dict')" aria-label="Mở Từ Điển &amp; Viết Tay" title="Tra cứu Từ vựng, Chữ Hán &amp; Bảng viết tay">
+        <span class="mazii-badge-icon" aria-hidden="true">
+          <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path>
+            <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path>
+          </svg>
+        </span>
+      </button>
+
       <!-- Nút Bật/Tắt Furigana (Ruby) -->
       <button id="btn-toggle-furigana" class="header-action-btn" aria-label="Bật/Tắt Furigana" title="Bật / Ẩn phiên âm Furigana trên chữ Hán (Phím F)">
         <span class="btn-ruby-badge">あ/漢</span>
@@ -471,14 +509,17 @@
   <div class="app-layout">
     <!-- Cột bên trái: Sidebar chứa toàn bộ danh mục bài học -->
     <aside id="sidebar" class="sidebar collapsed">
-      <!-- Header hiển thị riêng trên giao diện điện thoại của Sidebar -->
+      <!-- Header hiển thị riêng trên giao diện điện thoại của Sidebar (Thiết kế tinh tế & tối giản) -->
       <div class="mobile-sidebar-header">
         <div class="mobile-sidebar-brand">
           <span class="brand-badge">日本語</span>
-          <span class="sidebar-heading">Mục Lục Khóa Học</span>
+          <span class="sidebar-heading">Mục lục khóa học</span>
         </div>
         <button id="close-sidebar-btn" class="close-sidebar-btn" onclick="closeMobileSidebar()" aria-label="Đóng menu bài học" title="Đóng menu">
-          <span>Đóng ✕</span>
+          <svg class="close-icon-svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
         </button>
       </div>
 
@@ -502,7 +543,12 @@
           <div id="sidebar-gear-popup" class="sidebar-gear-popup" role="menu" aria-label="Menu cài đặt &amp; tiện ích" aria-hidden="true">
             <!-- 1. Làm mới / Reset -->
             <button id="btn-reset-progress" class="sidebar-action-item gear-menu-item" role="menuitem" aria-label="Làm mới / Đặt lại tiến độ" title="Tải lại bài học hoặc đặt lại tiến độ / trạng thái tương tác trên trang">
-              <span class="sidebar-action-icon">↻</span>
+              <span class="sidebar-action-icon">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <polyline points="23 4 23 10 17 10"></polyline>
+                  <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path>
+                </svg>
+              </span>
               <span class="sidebar-action-label">Làm mới / Reset</span>
             </button>
 
@@ -676,10 +722,18 @@
             <span class="device-setting-hint">Tùy biến bố cục cho kích thước màn hình</span>
           </div>
           <div class="device-pill-group" id="device-mode-selector">
-            <button type="button" class="device-pill active" data-mode="auto">📱💻 Tự động</button>
-            <button type="button" class="device-pill" data-mode="mobile">📱 Điện thoại</button>
-            <button type="button" class="device-pill" data-mode="tablet">📟 Máy tính bảng</button>
-            <button type="button" class="device-pill" data-mode="desktop">💻 Máy tính</button>
+            <button type="button" class="device-pill active" data-mode="auto">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;margin-right:4px;" aria-hidden="true"><rect x="2" y="3" width="20" height="14" rx="2"></rect><line x1="8" y1="21" x2="16" y2="21"></line><line x1="12" y1="17" x2="12" y2="21"></line></svg>Tự động
+            </button>
+            <button type="button" class="device-pill" data-mode="mobile">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;margin-right:4px;" aria-hidden="true"><rect x="5" y="2" width="14" height="20" rx="2"></rect><line x1="12" y1="18" x2="12.01" y2="18"></line></svg>Điện thoại
+            </button>
+            <button type="button" class="device-pill" data-mode="tablet">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;margin-right:4px;" aria-hidden="true"><rect x="4" y="2" width="16" height="20" rx="2"></rect><line x1="12" y1="18" x2="12.01" y2="18"></line></svg>Máy tính bảng
+            </button>
+            <button type="button" class="device-pill" data-mode="desktop">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;margin-right:4px;" aria-hidden="true"><rect x="2" y="3" width="20" height="14" rx="2"></rect><line x1="8" y1="21" x2="16" y2="21"></line><line x1="12" y1="17" x2="12" y2="21"></line></svg>Máy tính
+            </button>
           </div>
         </div>
 
@@ -713,7 +767,9 @@
         <!-- 4. Chế độ làm mát & tiết kiệm pin (Thermal Saver Mode) -->
         <div class="device-setting-group device-setting-toggle-row">
           <div class="device-toggle-info">
-            <span class="device-setting-title">❄️ Chế Độ Làm Mát &amp; Tiết Kiệm Pin</span>
+            <span class="device-setting-title">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;margin-right:5px;" aria-hidden="true"><line x1="12" y1="2" x2="12" y2="22"></line><line x1="2" y1="12" x2="22" y2="12"></line><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"></line><line x1="19.07" y1="4.93" x2="4.93" y2="19.07"></line></svg>Chế Độ Làm Mát &amp; Tiết Kiệm Pin
+            </span>
             <span class="device-setting-hint">Tắt làm mờ GPU (backdrop-filter) &amp; khử animation nặng giúp điện thoại không bị nóng khi học lâu</span>
           </div>
           <label class="device-switch" aria-label="Bật/Tắt Chế độ làm mát">
@@ -725,7 +781,9 @@
         <!-- 5. Phản hồi xúc giác (Haptic Feedback) -->
         <div class="device-setting-group device-setting-toggle-row">
           <div class="device-toggle-info">
-            <span class="device-setting-title">📳 Rung Phản Hồi Xúc Giác (Haptic)</span>
+            <span class="device-setting-title">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;margin-right:5px;" aria-hidden="true"><rect x="6" y="2" width="12" height="20" rx="2"></rect><path d="M2 8v8"></path><path d="M22 8v8"></path></svg>Rung Phản Hồi Xúc Giác (Haptic)
+            </span>
             <span class="device-setting-hint">Rung nhẹ khi chọn đáp án trắc nghiệm hoặc lật thẻ (trên điện thoại hỗ trợ)</span>
           </div>
           <label class="device-switch" aria-label="Bật/Tắt Rung phản hồi">
@@ -757,9 +815,25 @@
     </svg>
   </button>
 
+  <!-- Tầng Dữ liệu & Quy tắc Độc lập (Data & Rules Layer) -->
+  <script src="data/ui_icons.js?v=20261028_02"></script>
+  <script src="data/curriculum_manifest.js?v=20261028_02"></script>
+  <script src="data/data_normalizer.js?v=20261028_02"></script>
+  <script src="data/audio_prosody_rules.js?v=20261028_02"></script>
+  <script src="data/romaji_kana_map.js?v=20261028_02"></script>
+  <script src="data/kanji_lookalikes.js?v=20261028_02"></script>
+
+  <!-- Các Động cơ Xử lý Độc lập (Core Logic Engines) -->
+  <script src="src/storage_engine.js?v=20261028_02"></script>
+  <script src="src/audio_engine.js?v=20261028_02"></script>
+  <script src="src/quiz_engine.js?v=20261028_02"></script>
+  <script src="src/kanji_engine.js?v=20261028_02"></script>
+  <script src="src/navigation_engine.js?v=20261028_02"></script>
+  <script src="src/dictionary_engine.js?v=20261028_02"></script>
+
   <!-- Dữ liệu bài học Minna (Khởi tạo tức thì Bài 1 - 5, các bài khác nạp động theo nhu cầu) -->
   <script src="data/lessons_1_5.js"></script>
   <!-- File logic JavaScript thuần: Tích hợp Code-Splitting, Lazy Loading & Đồng bộ dữ liệu -->
-  <script src="app.js?v=20261025_11"></script>
+  <script src="app.js?v=20261028_02"></script>
 </body>
 </html>

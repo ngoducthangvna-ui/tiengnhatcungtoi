@@ -668,7 +668,7 @@ const quizzes_36_40 = {
       "question": "<ruby>誘<rt>さそ</rt></ruby>う -> Thể bị động là:",
       "options": [
         "<ruby>誘<rt>さそ</rt></ruby>われる",
-        "<ruby>誘<rt>さそ</rt></ruby>われる",
+        "<ruby>誘<rt>さそ</rt></ruby>う",
         "<ruby>誘<rt>さそ</rt></ruby>いられる",
         "<ruby>誘<rt>さそ</rt></ruby>わせる"
       ],
@@ -1078,7 +1078,7 @@ const quizzes_36_40 = {
         "<ruby>見<rt>み</rt></ruby>られる",
         "<ruby>見<rt>み</rt></ruby>させる",
         "<ruby>見<rt>み</rt></ruby>れる",
-        "<ruby>見<rt>み</rt></ruby>られる"
+        "<ruby>見<rt>み</rt></ruby>ます"
       ],
       "correctIdx": 0,
       "explanation": "[Độ khó: DỄ | Nhóm 2] 見る -> 見られる."
@@ -1090,7 +1090,7 @@ const quizzes_36_40 = {
         "<ruby>食<rt>た</rt></ruby>べられる",
         "<ruby>食<rt>た</rt></ruby>べさせる",
         "<ruby>食<rt>た</rt></ruby>べれる",
-        "<ruby>食<rt>た</rt></ruby>べられる"
+        "<ruby>食<rt>た</rt></ruby>べます"
       ],
       "correctIdx": 0,
       "explanation": "[Độ khó: DỄ | Nhóm 2] 食べる -> 食べられる."

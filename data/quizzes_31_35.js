@@ -534,7 +534,7 @@ const quizzes_31_35 = {
       "question": "Điền từ:「<ruby>銀行<rt>ぎんこう</rt></ruby>は まだ ........ いません」(Chưa mở cửa)",
       "options": [
         "<ruby>開<rt>あ</rt></ruby>いて",
-        "<ruby>開<rt>あ</rt></ruby>いて",
+        "<ruby>閉<rt>し</rt></ruby>まって",
         "<ruby>開<rt>あ</rt></ruby>けて",
         "<ruby>開<rt>あ</rt></ruby>け"
       ],

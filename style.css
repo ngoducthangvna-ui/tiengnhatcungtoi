@@ -2315,19 +2315,23 @@ body.hide-furigana #btn-toggle-furigana {
   background: var(--bg-card-inner);
   border: 1px solid var(--border-color);
   border-radius: var(--radius-md);
-  padding: 16px 18px;
-  min-height: 168px;
+  padding: 16px;
+  min-height: 180px;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  gap: 12px;
+  align-items: center;
+  gap: 10px;
 }
 
 .kq-question-wrap {
   display: flex;
+  flex-direction: column;
   align-items: center;
-  justify-content: space-between;
-  gap: 10px;
+  justify-content: center;
+  text-align: center;
+  gap: 6px;
+  width: 100%;
 }
 
 .kq-step-tag {
@@ -2335,27 +2339,51 @@ body.hide-furigana #btn-toggle-furigana {
   font-weight: 700;
   color: var(--text-muted);
   background: var(--bg-tertiary);
-  padding: 3px 9px;
+  padding: 3px 10px;
   border-radius: 999px;
+  border: 1px solid var(--border-color);
 }
 
 .kq-question {
-  font-family: var(--font-mincho);
-  font-size: clamp(24px, 2.8vw, 30px);
+  font-family: var(--font-mincho), serif;
+  font-size: clamp(30px, 3.8vw, 40px);
+  font-weight: 700;
+  color: var(--accent-primary, #c23531);
+  text-align: center;
+  margin: 2px 0;
+  letter-spacing: 1.5px;
+  line-height: 1.25;
+}
+
+.kq-question-meaning {
+  font-size: clamp(16px, 2vw, 19px);
   font-weight: 700;
   color: var(--accent-primary);
-  text-align: right;
+  text-align: center;
+  line-height: 1.35;
+  padding: 6px 14px;
+  background: var(--bg-tertiary);
+  border-radius: 8px;
+  border: 1px solid var(--border-color);
+  max-width: 92%;
 }
 
 .kq-options {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   gap: 8px;
+  width: 100%;
+}
+
+@media (max-width: 480px) {
+  .kq-options {
+    grid-template-columns: 1fr;
+  }
 }
 
 .kq-opt {
   min-height: 44px;
-  padding: 8px 10px;
+  padding: 8px 12px;
   border-radius: var(--radius-sm);
   background: var(--bg-secondary);
   border: 1px solid var(--border-color);
@@ -2364,7 +2392,11 @@ body.hide-furigana #btn-toggle-furigana {
   font-weight: 600;
   font-family: var(--font-main);
   transition: var(--transition);
-  text-align: center;
+  text-align: left;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
   word-break: break-word;
 }
 
@@ -4488,47 +4520,120 @@ body.hide-furigana #btn-toggle-furigana {
     transition: transform 0.28s cubic-bezier(0.16, 1, 0.3, 1), visibility 0s;
   }
 
+  /* Header hiển thị riêng trên giao diện điện thoại của Sidebar - Thiết kế tinh tế & tối giản */
   .mobile-sidebar-header {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 12px 14px;
-    border-bottom: 1px solid var(--border-color);
-    background: var(--bg-secondary);
-    flex-shrink: 0;
+    gap: 12px;
+    height: 56px;
+    min-height: 56px;
+    padding: 0 16px;
+    border-bottom: 1px solid var(--border-color, rgba(0, 0, 0, 0.08));
+    background: var(--bg-card, #ffffff);
+    flex-shrink: 0 !important; /* Mobile Web Guardrails: Bất biến chống co rút */
+    box-sizing: border-box;
+  }
+
+  [data-theme="dark"] .mobile-sidebar-header {
+    background: #181c24;
+    border-bottom-color: rgba(255, 255, 255, 0.08);
   }
 
   .mobile-sidebar-brand {
     display: flex;
     align-items: center;
-    gap: 8px;
-    font-size: 14px;
-    font-weight: 800;
-    color: var(--text-primary);
+    gap: 10px;
+    min-width: 0;
+    flex: 1;
+  }
+
+  .mobile-sidebar-brand .brand-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 3px 8px;
+    font-size: 11.5px;
+    font-weight: 700;
+    font-family: var(--font-mincho);
+    letter-spacing: 0.5px;
+    border-radius: 6px;
+    white-space: nowrap;
+    flex-shrink: 0;
+    background: rgba(224, 82, 68, 0.08);
+    color: #e05244;
+    border: 1px solid rgba(224, 82, 68, 0.2);
+    box-shadow: none;
+  }
+
+  [data-theme="dark"] .mobile-sidebar-brand .brand-badge {
+    background: rgba(239, 68, 68, 0.12);
+    color: #f87171;
+    border-color: rgba(239, 68, 68, 0.25);
+  }
+
+  .sidebar-heading {
+    font-size: 14.5px;
+    font-weight: 700;
+    color: var(--text-primary, #1e293b);
+    letter-spacing: -0.2px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 
   .close-sidebar-btn {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    gap: 6px;
-    min-width: 44px;
+    width: 36px;
+    height: 36px;
+    min-width: 44px; /* Chuẩn Apple & Google Touch Target */
     min-height: 44px;
-    padding: 0 12px;
-    border-radius: 10px;
-    background: var(--bg-tertiary);
-    border: 1px solid var(--border-card);
-    font-size: 13px;
-    font-weight: 700;
-    color: var(--text-secondary);
+    padding: 0;
+    border-radius: 50%;
+    background: var(--bg-tertiary, rgba(0, 0, 0, 0.04));
+    border: 1px solid var(--border-color, rgba(0, 0, 0, 0.08));
+    color: var(--text-secondary, #64748b);
     cursor: pointer;
-    transition: var(--transition);
+    flex-shrink: 0;
+    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    box-sizing: border-box;
   }
 
   .close-sidebar-btn:hover {
-    background: var(--bg-hover);
-    color: var(--accent-primary);
-    border-color: var(--accent-primary);
+    background: var(--bg-hover, rgba(0, 0, 0, 0.08));
+    color: var(--text-primary, #1e293b);
+    border-color: rgba(0, 0, 0, 0.15);
+    transform: scale(1.05);
+  }
+
+  .close-sidebar-btn:active {
+    transform: scale(0.95);
+    background: rgba(0, 0, 0, 0.1);
+  }
+
+  [data-theme="dark"] .close-sidebar-btn {
+    background: rgba(255, 255, 255, 0.06);
+    border-color: rgba(255, 255, 255, 0.1);
+    color: #cbd5e1;
+  }
+
+  [data-theme="dark"] .close-sidebar-btn:hover {
+    background: rgba(255, 255, 255, 0.12);
+    color: #ffffff;
+    border-color: rgba(255, 255, 255, 0.2);
+  }
+
+  .close-sidebar-btn .close-icon-svg {
+    width: 17px;
+    height: 17px;
+    stroke-width: 2.2;
+    transition: transform 0.2s ease;
+  }
+
+  .close-sidebar-btn:hover .close-icon-svg {
+    transform: rotate(90deg);
   }
 
   .sidebar-overlay {
@@ -6465,6 +6570,2752 @@ body.focus-mode .app-layout {
   letter-spacing: 0.3px;
 }
 
+/* ==========================================================================
+   MODULE MẸO NHỚ KANJI: CHẾ ĐỘ 2 THẺ RIÊNG BIỆT (TAB NAV & FLASHCARD TEST STUDIO)
+   ========================================================================== */
 
+/* Thanh điều hướng 2 Thẻ: Chiết Tự & Mẹo Nhớ vs Bài Kiểm Tra Flashcard */
+.kanji-tab-nav-wrapper {
+  margin: 0 0 22px 0;
+  width: 100%;
+}
+
+.kanji-tab-nav {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  padding: 6px;
+  box-shadow: var(--shadow-sm);
+}
+
+.kanji-tab-btn {
+  flex: 1 1 0;
+  min-height: 48px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 10px 16px;
+  border-radius: var(--radius-md);
+  background: transparent;
+  border: 1px solid transparent;
+  color: var(--text-secondary);
+  font-family: var(--font-main);
+  font-size: 14.5px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: var(--transition);
+  user-select: none;
+}
+
+.kanji-tab-btn:hover {
+  color: var(--text-primary);
+  background: var(--bg-tertiary);
+}
+
+.kanji-tab-btn.active {
+  background: var(--bg-card-inner);
+  color: var(--accent-primary);
+  border-color: rgba(224, 82, 68, 0.28);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+  font-weight: 700;
+}
+
+[data-theme="light"] .kanji-tab-btn.active {
+  background: #ffffff;
+  border-color: rgba(194, 53, 49, 0.25);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.kanji-tab-icon {
+  font-size: 18px;
+  line-height: 1;
+}
+
+.kanji-tab-title {
+  letter-spacing: 0.2px;
+}
+
+.kanji-tab-pill {
+  font-size: 11px;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: var(--bg-tertiary);
+  color: var(--text-muted);
+  transition: var(--transition);
+}
+
+.kanji-tab-btn.active .kanji-tab-pill {
+  background: rgba(224, 82, 68, 0.12);
+  color: var(--accent-primary);
+}
+
+.kanji-tab-pill.accent-amber {
+  background: rgba(216, 164, 76, 0.16);
+  color: var(--accent-amber);
+}
+
+/* Khối gợi ý chuyển sang Thẻ Flashcard ở cuối danh sách */
+.kcard-switch-cta-box {
+  background: linear-gradient(145deg, rgba(224, 82, 68, 0.07), var(--bg-secondary));
+  border: 1px dashed rgba(224, 82, 68, 0.35);
+  border-radius: var(--radius-lg);
+  padding: 22px 24px;
+  margin: 28px 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  flex-wrap: wrap;
+}
+
+.switch-cta-icon {
+  font-size: 32px;
+  line-height: 1;
+}
+
+.switch-cta-info {
+  flex: 1 1 280px;
+}
+
+.switch-cta-title {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0 0 4px 0;
+}
+
+.switch-cta-desc {
+  font-size: 13.5px;
+  color: var(--text-secondary);
+  margin: 0;
+  line-height: 1.45;
+}
+
+.btn-switch-kfc {
+  min-height: 44px;
+  padding: 10px 22px;
+  border-radius: var(--radius-md);
+  background: var(--accent-primary);
+  color: #ffffff;
+  border: none;
+  font-size: 13.5px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: var(--transition);
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  box-shadow: 0 4px 14px rgba(224, 82, 68, 0.28);
+}
+
+.btn-switch-kfc:hover {
+  background: var(--accent-hover);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 18px rgba(224, 82, 68, 0.38);
+}
+
+/* ==========================================================================
+   STUDIO BÀI KIỂM TRA FLASHCARD MẸO NHỚ KANJI
+   ========================================================================== */
+.kanji-flashcard-studio {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  padding: 24px 22px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  box-shadow: var(--shadow-sm);
+  margin-bottom: 24px;
+}
+
+.kfc-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+
+.kfc-header-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+}
+
+.kfc-title-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.kfc-badge-icon {
+  font-size: 26px;
+  line-height: 1;
+}
+
+.kfc-title {
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0 0 3px 0;
+}
+
+.kfc-subtitle {
+  font-size: 13px;
+  color: var(--text-secondary);
+  margin: 0;
+}
+
+/* Bộ lọc trạng thái thẻ */
+.kfc-filter-group {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.kfc-filter-chip {
+  min-height: 36px;
+  padding: 6px 14px;
+  border-radius: 999px;
+  border: 1px solid var(--border-color);
+  background: var(--bg-tertiary);
+  color: var(--text-secondary);
+  font-size: 12.5px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.kfc-filter-chip:hover {
+  border-color: var(--accent-primary);
+  color: var(--text-primary);
+}
+
+.kfc-filter-chip.active {
+  background: var(--accent-primary);
+  color: #ffffff;
+  border-color: var(--accent-primary);
+  box-shadow: 0 2px 8px rgba(224, 82, 68, 0.25);
+}
+
+/* Thanh tiến độ & Mode Selector */
+.kfc-toolbar-bar {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 14px 16px;
+  background: var(--bg-card-inner);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+}
+
+.kfc-progress-wrap {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.kfc-progress-labels {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.kfc-counter-label {
+  color: var(--accent-primary);
+}
+
+.kfc-learned-label {
+  color: var(--accent-green);
+}
+
+.kfc-progress-track {
+  width: 100%;
+  height: 8px;
+  background: var(--bg-tertiary);
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.kfc-progress-bar {
+  height: 100%;
+  background: linear-gradient(90deg, #45a67b, #10b981);
+  border-radius: 999px;
+  transition: width 0.3s ease;
+}
+
+.kfc-mode-selector {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  padding-bottom: 2px;
+}
+
+.kfc-mode-selector::-webkit-scrollbar {
+  display: none;
+}
+
+.kfc-mode-title {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-muted);
+  margin-right: 2px;
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+
+.kfc-mode-btn {
+  min-height: 36px;
+  padding: 6px 14px;
+  border-radius: var(--radius-sm);
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border-color);
+  color: var(--text-secondary);
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: var(--transition);
+  flex-shrink: 0;
+  white-space: nowrap;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.kfc-mode-btn:hover {
+  border-color: var(--accent-primary);
+  color: var(--text-primary);
+}
+
+.kfc-mode-btn.active {
+  background: rgba(224, 82, 68, 0.12);
+  color: var(--accent-primary);
+  border-color: rgba(224, 82, 68, 0.35);
+  font-weight: 700;
+}
+
+/* Khối Thẻ Flashcard 3D */
+.kfc-card-stage {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 18px;
+  width: 100%;
+}
+
+.kfc-flashcard-3d {
+  width: 100%;
+  max-width: 720px;
+  min-height: 380px;
+  background: var(--bg-card-inner);
+  border: 2px solid var(--border-color);
+  border-radius: 18px;
+  position: relative;
+  perspective: 1400px;
+  transform-style: preserve-3d;
+  transition: transform 0.45s cubic-bezier(0.2, 0.8, 0.2, 1),
+              box-shadow 0.3s ease,
+              border-color 0.3s ease;
+  box-shadow: var(--shadow-md);
+  cursor: pointer;
+  user-select: none;
+  outline: none;
+}
+
+.kfc-flashcard-3d:hover {
+  border-color: var(--accent-primary);
+  box-shadow: 0 12px 32px rgba(224, 82, 68, 0.12);
+  transform: translateY(-2px);
+}
+
+.kfc-flashcard-3d:focus-visible {
+  outline: 3px solid var(--accent-primary);
+  outline-offset: 3px;
+}
+
+.kfc-flashcard-3d.flipped {
+  transform: rotateY(180deg);
+  border-color: var(--accent-green);
+  box-shadow: 0 12px 32px rgba(69, 166, 123, 0.15);
+}
+
+.kfc-flashcard-3d.flipped:hover {
+  transform: rotateY(180deg) translateY(-2px);
+}
+
+/* Các mặt của Flashcard */
+.kfc-face {
+  position: absolute;
+  inset: 0;
+  padding: 26px 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  width: 100%;
+  height: 100%;
+  box-sizing: border-box;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  transform-style: preserve-3d;
+  text-align: center;
+  overflow-y: auto;
+  border-radius: 16px;
+}
+
+.kfc-front {
+  transform: rotateY(0deg);
+}
+
+.kfc-back {
+  transform: rotateY(180deg);
+  background: linear-gradient(180deg, rgba(69, 166, 123, 0.05) 0%, var(--bg-card-inner) 100%);
+}
+
+.kfc-status-pill {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 3px 10px;
+  border-radius: 999px;
+  background: var(--bg-tertiary);
+  color: var(--text-muted);
+  border: 1px solid var(--border-subtle);
+}
+
+.kfc-status-pill.is-learned {
+  background: rgba(69, 166, 123, 0.15);
+  color: var(--accent-green);
+  border-color: rgba(69, 166, 123, 0.35);
+}
+
+.kfc-face-tag {
+  font-size: 11.5px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--accent-primary);
+  background: rgba(224, 82, 68, 0.10);
+  padding: 3px 12px;
+  border-radius: 999px;
+}
+
+.kfc-face-tag.accent-amber {
+  color: var(--accent-amber);
+  background: rgba(216, 164, 76, 0.12);
+}
+
+.kfc-face-tag.accent-emerald {
+  color: var(--accent-green);
+  background: rgba(69, 166, 123, 0.12);
+}
+
+.kfc-main-kanji {
+  font-family: var(--font-mincho);
+  font-size: clamp(48px, 6vw, 68px);
+  font-weight: 700;
+  color: var(--text-primary);
+  line-height: 1.1;
+  letter-spacing: 2px;
+  margin: 6px 0;
+}
+
+.kfc-main-kanji.accent-glow {
+  color: var(--accent-primary);
+  text-shadow: 0 0 20px rgba(224, 82, 68, 0.25);
+}
+
+.kfc-hanviet-box {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding: 6px 18px;
+  background: rgba(224, 82, 68, 0.08);
+  border: 1px solid rgba(224, 82, 68, 0.22);
+  border-radius: 10px;
+}
+
+.kfc-hanviet-sub {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  color: var(--accent-primary);
+}
+
+.kfc-hanviet-main {
+  font-size: 19px;
+  font-weight: 800;
+  color: var(--text-primary);
+  letter-spacing: 0.5px;
+}
+
+.kfc-chips-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.kfc-flip-hint {
+  font-size: 12px;
+  color: var(--text-muted);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 4px;
+}
+
+/* Mặt sau chi tiết */
+.kfc-back-top {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  width: 100%;
+}
+
+.kfc-back-word-title {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.kfc-back-kanji {
+  font-family: var(--font-mincho);
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.kfc-back-reading {
+  font-family: var(--font-japanese);
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--accent-primary);
+}
+
+.kfc-back-meaning {
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--accent-green);
+}
+
+.kfc-mnemonic-card-box {
+  width: 100%;
+  max-width: 640px;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-left: 4px solid var(--accent-amber);
+  border-radius: var(--radius-sm);
+  padding: 12px 14px;
+  text-align: left;
+  box-sizing: border-box;
+}
+
+.kfc-mnemonic-header {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--accent-amber);
+  margin-bottom: 6px;
+}
+
+.kfc-back-example {
+  font-size: 13px;
+  color: var(--text-secondary);
+  background: var(--bg-tertiary);
+  padding: 6px 12px;
+  border-radius: 6px;
+  max-width: 640px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* Hàng nút đánh giá Spaced Repetition */
+.kfc-rating-actions {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  width: 100%;
+  max-width: 640px;
+  flex-wrap: wrap;
+}
+
+.kfc-btn-rate {
+  flex: 1 1 160px;
+  min-height: 46px;
+  padding: 10px 16px;
+  border-radius: var(--radius-md);
+  font-family: var(--font-main);
+  font-size: 13.5px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: var(--transition);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.kfc-btn-rate .key-shortcut {
+  font-size: 11px;
+  opacity: 0.6;
+  font-weight: 500;
+}
+
+.kfc-rate-unlearned {
+  background: rgba(239, 68, 68, 0.08);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  color: #ef4444;
+}
+
+.kfc-rate-unlearned:hover {
+  background: #ef4444;
+  color: #ffffff;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.25);
+}
+
+.kfc-rate-flip {
+  background: var(--bg-card-inner);
+  border: 1px solid var(--border-color);
+  color: var(--text-primary);
+}
+
+.kfc-rate-flip:hover {
+  border-color: var(--accent-primary);
+  color: var(--accent-primary);
+  transform: translateY(-2px);
+}
+
+.kfc-rate-learned {
+  background: rgba(69, 166, 123, 0.10);
+  border: 1px solid rgba(69, 166, 123, 0.35);
+  color: var(--accent-green);
+}
+
+.kfc-rate-learned:hover {
+  background: #10b981;
+  color: #ffffff;
+  border-color: #10b981;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.25);
+}
+
+/* Hàng nút điều khiển công cụ */
+.kfc-nav-controls {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  max-width: 640px;
+  flex-wrap: wrap;
+}
+
+/* Khối hoàn thành hoặc trống của Flashcard */
+.kfc-empty-box {
+  width: 100%;
+  max-width: 640px;
+  padding: 36px 24px;
+  background: var(--bg-card-inner);
+  border: 1px dashed var(--border-color);
+  border-radius: var(--radius-lg);
+  text-align: center;
+  margin: 16px auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+
+.kfc-empty-icon {
+  font-size: 42px;
+}
+
+.kfc-empty-title {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.kfc-empty-desc {
+  font-size: 14px;
+  color: var(--text-secondary);
+  max-width: 440px;
+  margin: 0;
+  line-height: 1.5;
+}
+
+/* Sân khấu Trắc nghiệm Phản xạ Mẹo nhớ */
+.kfc-quiz-stage {
+  width: 100%;
+  max-width: 720px;
+  margin: 0 auto;
+}
+
+.kfc-quiz-main-meaning {
+  font-size: clamp(22px, 3.8vw, 30px);
+  font-weight: 800;
+  color: var(--accent-primary);
+  margin: 12px auto;
+  line-height: 1.35;
+  padding: 12px 20px;
+  background: var(--bg-tertiary);
+  border-radius: 12px;
+  border: 1px solid var(--border-color);
+  display: inline-block;
+  max-width: 90%;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+}
+
+.kfc-quiz-prompt-guide {
+  font-size: 13.5px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  margin-bottom: 2px;
+}
+
+.kfc-quiz-opt-kanji {
+  font-family: var(--font-mincho), serif;
+  font-size: clamp(20px, 3.5vw, 26px);
+  font-weight: 700;
+  letter-spacing: 1px;
+}
+
+/* Mobile Responsive */
+@media (max-width: 768px) {
+  .kanji-tab-btn {
+    min-height: 44px;
+    padding: 8px 10px;
+    font-size: 13px;
+    gap: 6px;
+  }
+
+  .kanji-tab-title {
+    font-size: 13px;
+  }
+
+  .kanji-flashcard-studio {
+    padding: 16px 14px;
+    gap: 16px;
+  }
+
+  .kfc-flashcard-3d {
+    min-height: 350px;
+  }
+
+  .kfc-face {
+    padding: 20px 16px;
+    gap: 10px;
+  }
+
+  .kfc-main-kanji {
+    font-size: 46px;
+  }
+
+  .kfc-btn-rate .key-shortcut {
+    display: none;
+  }
+
+  .kfc-btn-rate {
+    min-height: 44px;
+    padding: 8px 10px;
+    font-size: 12.5px;
+    flex: 1 1 30%;
+  }
+
+  .kcard-switch-cta-box {
+    padding: 16px;
+  }
+}
+
+/* ==========================================================================
+   FLASHCARD BỘ THỦ TIẾNG NHẬT (RADICAL FLASHCARDS)
+   ========================================================================== */
+.rfc-main-char {
+  font-family: var(--font-mincho), serif;
+  font-size: clamp(68px, 12vw, 92px);
+  font-weight: 700;
+  color: var(--accent-primary, #c23531);
+  line-height: 1.1;
+  margin: 6px 0;
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+}
+
+.rfc-stroke-badge {
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--text-muted);
+  background: var(--bg-tertiary);
+  padding: 4px 14px;
+  border-radius: 999px;
+  border: 1px solid var(--border-color);
+}
+
+.rfc-main-meaning {
+  font-size: clamp(20px, 3.8vw, 26px);
+  font-weight: 800;
+  color: var(--accent-primary);
+  line-height: 1.35;
+  margin: 8px 0;
+  padding: 10px 18px;
+  background: var(--bg-card-inner);
+  border-radius: 12px;
+  border: 1px solid var(--border-color);
+  max-width: 90%;
+}
+
+.rfc-sub-name {
+  font-size: 14.5px;
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+
+.rfc-back-header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  width: 100%;
+  padding-bottom: 12px;
+  border-bottom: 1px dashed var(--border-color);
+}
+
+.rfc-back-char {
+  font-family: var(--font-mincho), serif;
+  font-size: 42px;
+  font-weight: 800;
+  color: var(--accent-primary);
+  line-height: 1;
+}
+
+.rfc-back-name-wrap {
+  text-align: left;
+}
+
+.rfc-back-name {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0 0 2px 0;
+}
+
+.rfc-back-stroke {
+  font-size: 12px;
+  color: var(--text-muted);
+  font-weight: 600;
+}
+
+.rfc-info-row {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  text-align: left;
+  gap: 4px;
+  width: 100%;
+  background: var(--bg-tertiary);
+  padding: 8px 14px;
+  border-radius: 8px;
+  border: 1px solid var(--border-color);
+}
+
+.rfc-info-tag {
+  font-size: 11.5px;
+  font-weight: 700;
+  color: var(--accent-primary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.rfc-info-text {
+  font-size: 13.5px;
+  color: var(--text-primary);
+  line-height: 1.45;
+}
+
+.rfc-examples-section {
+  width: 100%;
+  text-align: left;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.rfc-examples-title {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--text-muted);
+}
+
+.rfc-scope-selector {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--bg-secondary);
+  padding: 3px;
+  border-radius: 999px;
+  border: 1px solid var(--border-color);
+}
+
+.rfc-scope-btn {
+  border: none;
+  background: transparent;
+  padding: 4px 12px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.rfc-scope-btn:hover {
+  color: var(--text-primary);
+}
+
+.rfc-scope-btn.active {
+  background: var(--accent-primary);
+  color: #ffffff;
+  font-weight: 700;
+  box-shadow: 0 2px 6px rgba(224, 82, 68, 0.28);
+}
+
+/* ==========================================================================
+   MODULE TRA TỪ ĐIỂN MAZII & BẢNG VIẾT TAY NHẬN DIỆN CHỮ HÁN (MAZII DICT)
+   ========================================================================== */
+
+/* Nút truy cập nhanh trên Header */
+.mazii-header-btn {
+  display: inline-flex !important;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  min-width: 44px;
+  width: 40px;
+  height: 40px;
+  padding: 0 !important;
+  border-radius: 12px;
+  background: linear-gradient(135deg, rgba(239, 68, 68, 0.12), rgba(249, 115, 22, 0.14));
+  border: 1px solid rgba(239, 68, 68, 0.32);
+  color: #e05244;
+  font-size: 18px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+}
+
+.mazii-header-btn:hover {
+  background: linear-gradient(135deg, rgba(239, 68, 68, 0.22), rgba(249, 115, 22, 0.24));
+  border-color: #e05244;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.2);
+}
+
+.mazii-badge-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  line-height: 1;
+}
+
+/* Nút truy cập nhanh trên Sidebar */
+.sidebar-mazii-quick {
+  padding: 8px 12px 4px 12px;
+  flex-shrink: 0 !important;
+}
+
+.sidebar-mazii-btn {
+  width: 100%;
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 14px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, rgba(239, 68, 68, 0.08), rgba(249, 115, 22, 0.12));
+  border: 1.5px solid rgba(239, 68, 68, 0.28);
+  color: #e05244;
+  font-weight: 700;
+  font-size: 13.5px;
+  cursor: pointer;
+  transition: all 0.22s ease;
+  flex-shrink: 0 !important;
+}
+
+.sidebar-mazii-btn:hover,
+.sidebar-mazii-btn.active {
+  background: linear-gradient(135deg, #e05244, #f97316);
+  color: #ffffff;
+  border-color: #e05244;
+  box-shadow: 0 4px 14px rgba(224, 82, 68, 0.3);
+  transform: translateY(-1px);
+}
+
+.sidebar-mazii-btn .mazii-quick-left {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.sidebar-mazii-btn .mazii-icon {
+  font-size: 17px;
+}
+
+.sidebar-mazii-btn .mazii-badge {
+  font-size: 10px;
+  padding: 2px 7px;
+  border-radius: 999px;
+  background: rgba(224, 82, 68, 0.15);
+  color: #e05244;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+
+.sidebar-mazii-btn.active .mazii-badge,
+.sidebar-mazii-btn:hover .mazii-badge {
+  background: rgba(255, 255, 255, 0.25);
+  color: #ffffff;
+}
+
+/* ================== KHUNG CHÍNH MAZII DICT STUDIO ================== */
+.mazii-dict-studio {
+  width: 100%;
+  max-width: 1040px;
+  margin: 0 auto;
+  padding: 12px 14px 96px 14px;
+  box-sizing: border-box;
+}
+
+/* Hero Banner */
+.mazii-hero-card {
+  position: relative;
+  background: var(--bg-card, #ffffff);
+  border-radius: 20px;
+  padding: 24px 24px 20px 24px;
+  border: 1px solid var(--border-color, rgba(0, 0, 0, 0.08));
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.04);
+  margin-bottom: 20px;
+  overflow: hidden;
+}
+
+.mazii-hero-top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.mazii-hero-title-wrap h2 {
+  font-size: 24px;
+  font-weight: 800;
+  margin: 0 0 6px 0;
+  color: var(--text-primary, #1e293b);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.mazii-hero-desc {
+  font-size: 14px;
+  color: var(--text-muted, #64748b);
+  margin: 0;
+  line-height: 1.5;
+}
+
+
+
+/* ================== THANH TÌM KIẾM & BỘ ĐIỀU KHIỂN ================== */
+.mazii-search-panel {
+  background: var(--bg-card, #ffffff);
+  border-radius: 18px;
+  padding: 18px 20px;
+  border: 1px solid var(--border-color, rgba(0, 0, 0, 0.08));
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.04);
+  margin-bottom: 20px;
+}
+
+/* Tabs chọn loại từ điển */
+.mazii-type-tabs {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 14px;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  padding-bottom: 4px;
+}
+
+.mazii-type-tab {
+  min-height: 44px;
+  padding: 8px 18px;
+  border-radius: 12px;
+  background: var(--bg-card-hover, rgba(0, 0, 0, 0.04));
+  border: 1px solid transparent;
+  color: var(--text-muted, #64748b);
+  font-size: 13.5px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.mazii-type-tab:hover {
+  color: var(--text-primary, #1e293b);
+  background: var(--bg-card-hover, rgba(0, 0, 0, 0.08));
+}
+
+.mazii-type-tab.active {
+  background: linear-gradient(135deg, #e05244, #f97316);
+  color: #ffffff;
+  box-shadow: 0 3px 10px rgba(224, 82, 68, 0.3);
+}
+
+/* Khung chứa hàng tìm kiếm: Cùng 1 dòng, 2 ô riêng biệt */
+.mazii-search-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+}
+
+/* Ô 1: Ô nhập liệu tìm kiếm */
+.mazii-input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  flex: 1;
+  min-width: 0;
+}
+
+.mazii-search-input {
+  width: 100%;
+  min-height: 52px;
+  padding: 12px 132px 12px 18px;
+  font-size: 16px; /* Chống auto-zoom trên iOS Safari */
+  font-family: inherit;
+  border-radius: 14px;
+  border: 2px solid var(--border-color, rgba(0, 0, 0, 0.12));
+  background: var(--bg-card, #ffffff);
+  color: var(--text-primary, #1e293b);
+  outline: none;
+  transition: all 0.2s ease;
+  box-sizing: border-box;
+}
+
+.mazii-search-input:focus {
+  border-color: #e05244;
+  box-shadow: 0 0 0 4px rgba(224, 82, 68, 0.12);
+}
+
+.mazii-input-actions {
+  position: absolute;
+  right: 6px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.mazii-btn-clear {
+  min-width: 32px;
+  min-height: 32px;
+  width: 32px;
+  height: 32px;
+  border: none;
+  background: var(--bg-card-hover, rgba(0, 0, 0, 0.06));
+  color: var(--text-muted, #94a3b8);
+  font-size: 13px;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.18s ease;
+}
+
+.mazii-btn-clear:hover {
+  color: var(--text-primary, #1e293b);
+  background: var(--bg-card-hover, rgba(0, 0, 0, 0.12));
+}
+
+[data-theme="dark"] .mazii-btn-clear {
+  background: rgba(255, 255, 255, 0.08);
+  color: #cbd5e1;
+}
+
+/* Nút tìm kiếm giọng nói Micro */
+.mazii-btn-voice {
+  min-width: 36px;
+  min-height: 36px;
+  width: 36px;
+  height: 36px;
+  border: none;
+  background: var(--bg-card-hover, rgba(0, 0, 0, 0.06));
+  color: var(--text-muted, #94a3b8);
+  font-size: 15px;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  flex-shrink: 0;
+}
+
+.mazii-btn-voice:hover {
+  color: var(--accent-primary, #e05244);
+  background: rgba(224, 82, 68, 0.12);
+  transform: scale(1.08);
+}
+
+.mazii-btn-voice.listening {
+  background: #e05244 !important;
+  color: #ffffff !important;
+  box-shadow: 0 0 0 4px rgba(224, 82, 68, 0.25);
+  animation: voicePulse 1.4s infinite;
+}
+
+@keyframes voicePulse {
+  0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(224, 82, 68, 0.5); }
+  70% { transform: scale(1.06); box-shadow: 0 0 0 8px rgba(224, 82, 68, 0); }
+  100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(224, 82, 68, 0); }
+}
+
+[data-theme="dark"] .mazii-btn-voice {
+  background: rgba(255, 255, 255, 0.08);
+  color: #cbd5e1;
+}
+
+[data-theme="dark"] .mazii-btn-voice:hover {
+  background: rgba(224, 82, 68, 0.2);
+  color: #f87171;
+}
+
+.mazii-btn-search {
+  min-height: 44px;
+  min-width: 44px;
+  padding: 0 14px;
+  border-radius: 10px;
+  border: none;
+  background: linear-gradient(135deg, #e05244, #f97316);
+  color: #ffffff;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+  box-shadow: 0 2px 8px rgba(224, 82, 68, 0.25);
+}
+
+.mazii-btn-search:hover {
+  opacity: 0.94;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(224, 82, 68, 0.35);
+}
+
+/* Ô 2: Ô viết tay riêng biệt trên cùng 1 dòng */
+.mazii-hw-box-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  min-height: 52px;
+  height: 52px;
+  padding: 0 16px;
+  border-radius: 14px;
+  background: var(--bg-card, #ffffff);
+  border: 2px solid var(--border-color, rgba(0, 0, 0, 0.12));
+  color: var(--text-primary, #1e293b);
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  white-space: nowrap;
+  flex-shrink: 0;
+  transition: all 0.2s ease;
+  box-sizing: border-box;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
+}
+
+.mazii-hw-box-btn:hover {
+  border-color: #6366f1;
+  background: rgba(99, 102, 241, 0.06);
+  color: #6366f1;
+  transform: translateY(-1px);
+  box-shadow: 0 3px 10px rgba(99, 102, 241, 0.15);
+}
+
+.mazii-hw-box-btn:active {
+  transform: translateY(0);
+}
+
+.mazii-hw-box-btn.active {
+  background: linear-gradient(135deg, #6366f1, #8b5cf6) !important;
+  border-color: transparent !important;
+  color: #ffffff !important;
+  box-shadow: 0 3px 12px rgba(99, 102, 241, 0.35);
+}
+
+.mazii-hw-box-icon {
+  font-size: 17px;
+  line-height: 1;
+}
+
+.mazii-hw-box-text {
+  font-size: 13.5px;
+  font-weight: 700;
+}
+
+[data-theme="dark"] .mazii-hw-box-btn {
+  background: #181c24;
+  border-color: rgba(255, 255, 255, 0.14);
+  color: #f1f5f9;
+}
+
+[data-theme="dark"] .mazii-hw-box-btn.active {
+  color: #ffffff !important;
+}
+
+/* Fallback tương thích ngược */
+.mazii-btn-hw-icon {
+  min-width: 44px;
+  min-height: 44px;
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  background: var(--bg-card-hover, rgba(0, 0, 0, 0.05));
+  border: 1px solid var(--border-color, rgba(0, 0, 0, 0.1));
+  color: var(--text-primary, #1e293b);
+  font-size: 16px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+}
+
+/* ================== BẢNG VIẾT TAY (HANDWRITING PAD) ================== */
+.mazii-hw-panel {
+  margin-top: 14px;
+  padding: 16px;
+  border-radius: 16px;
+  background: var(--bg-secondary, #f8fafc);
+  border: 1.5px solid var(--border-color, rgba(0, 0, 0, 0.08));
+  display: none;
+  animation: fadeInDown 0.25s ease;
+}
+
+.mazii-hw-panel.open {
+  display: block;
+}
+
+@keyframes fadeInDown {
+  from { opacity: 0; transform: translateY(-8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.mazii-hw-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.mazii-hw-title {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text-primary, #1e293b);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.mazii-canvas-wrapper {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 0 0 14px 0;
+  max-width: 100%;
+  width: 100%;
+}
+
+.mazii-canvas {
+  width: 100% !important;
+  max-width: 100% !important;
+  height: 380px;
+  min-height: 280px;
+  box-sizing: border-box;
+  touch-action: none !important; /* QUAN TRỌNG: Chống trôi cuộn màn hình trên di động */
+  border: 2px dashed rgba(224, 82, 68, 0.45);
+  border-radius: 14px;
+  background: var(--bg-card, #ffffff);
+  cursor: crosshair;
+  box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.04);
+}
+
+/* Thanh công cụ bảng vẽ tay */
+.mazii-hw-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-bottom: 14px;
+  flex-wrap: wrap;
+}
+
+.mazii-hw-btn {
+  min-height: 44px;
+  padding: 6px 14px;
+  border-radius: 10px;
+  background: var(--bg-card, #ffffff);
+  border: 1px solid var(--border-color, rgba(0, 0, 0, 0.12));
+  color: var(--text-primary, #1e293b);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.18s ease;
+}
+
+.mazii-hw-btn:hover {
+  border-color: #e05244;
+  color: #e05244;
+  background: rgba(224, 82, 68, 0.05);
+}
+
+.mazii-hw-btn.btn-hw-primary {
+  background: linear-gradient(135deg, #e05244, #f97316);
+  color: #ffffff;
+  border: none;
+  font-weight: 700;
+  box-shadow: 0 2px 8px rgba(224, 82, 68, 0.28);
+}
+
+.mazii-hw-btn.btn-hw-primary:hover {
+  opacity: 0.94;
+  box-shadow: 0 4px 12px rgba(224, 82, 68, 0.35);
+}
+
+/* Danh sách chữ gợi ý nhận diện (Candidates) */
+.mazii-candidates-box {
+  background: var(--bg-card, #ffffff);
+  border-radius: 12px;
+  padding: 10px 12px;
+  border: 1px solid var(--border-color, rgba(0, 0, 0, 0.08));
+}
+
+.mazii-candidates-label {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--text-muted, #64748b);
+  margin-bottom: 8px;
+  display: block;
+}
+
+.mazii-candidates-list {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  padding-bottom: 4px;
+  min-height: 48px;
+}
+
+.mazii-candidate-item {
+  min-width: 44px;
+  min-height: 44px;
+  padding: 4px 10px;
+  border-radius: 10px;
+  background: var(--bg-card-hover, rgba(0, 0, 0, 0.04));
+  border: 1px solid var(--border-color, rgba(0, 0, 0, 0.1));
+  color: var(--text-primary, #1e293b);
+  font-family: 'Shippori Mincho', 'Noto Serif JP', serif;
+  font-size: 24px;
+  font-weight: 700;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.18s ease;
+  flex-shrink: 0;
+}
+
+.mazii-candidate-item:hover {
+  background: #e05244;
+  color: #ffffff;
+  border-color: #e05244;
+  transform: scale(1.08);
+  box-shadow: 0 4px 10px rgba(224, 82, 68, 0.3);
+}
+
+.mazii-candidate-item.empty-hint {
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-muted, #94a3b8);
+  border: none;
+  background: transparent;
+  cursor: default;
+}
+
+/* ================== KHUNG TRẠNG THÁI TÌM KIẾM GIỌNG NÓI ================== */
+.mazii-voice-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 12px 16px;
+  margin-top: 10px;
+  background: var(--bg-card-inner, rgba(224, 82, 68, 0.04));
+  border: 1.5px solid rgba(224, 82, 68, 0.3);
+  border-radius: 14px;
+  animation: voiceSlideIn 0.25s ease-out;
+}
+
+.mazii-voice-top-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  width: 100%;
+  flex-wrap: wrap;
+}
+
+@keyframes voiceSlideIn {
+  from { opacity: 0; transform: translateY(-8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.mazii-voice-status {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+  flex: 1;
+}
+
+.mazii-voice-pulse {
+  position: relative;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: #e05244;
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.voice-wave {
+  position: absolute;
+  top: -3px;
+  left: -3px;
+  right: -3px;
+  bottom: -3px;
+  border-radius: 50%;
+  border: 2px solid rgba(224, 82, 68, 0.4);
+  animation: wavePulse 1.8s infinite ease-out;
+}
+
+.voice-wave.wave-2 {
+  animation-delay: 0.6s;
+}
+
+.voice-wave.wave-3 {
+  animation-delay: 1.2s;
+}
+
+@keyframes wavePulse {
+  0% { transform: scale(1); opacity: 0.9; }
+  100% { transform: scale(1.6); opacity: 0; }
+}
+
+.mazii-voice-info {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+}
+
+.mazii-voice-title {
+  font-size: 13.5px;
+  font-weight: 700;
+  color: #e05244;
+}
+
+.mazii-voice-transcript {
+  font-size: 13px;
+  color: var(--text-muted);
+  font-style: italic;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.mazii-voice-transcript.has-text {
+  color: var(--text-primary);
+  font-style: normal;
+  font-weight: 600;
+}
+
+.mazii-voice-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.mazii-voice-lang-group {
+  display: flex;
+  align-items: center;
+  background: var(--bg-tertiary);
+  padding: 3px;
+  border-radius: 10px;
+  border: 1px solid var(--border-color);
+  gap: 3px;
+}
+
+.mazii-voice-lang-btn {
+  border: none;
+  background: transparent;
+  padding: 5px 10px;
+  border-radius: 7px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all 0.18s ease;
+  min-height: 32px;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.mazii-voice-lang-btn.active {
+  background: #e05244;
+  color: #ffffff;
+  font-weight: 700;
+  box-shadow: 0 1px 4px rgba(224, 82, 68, 0.3);
+}
+
+.mazii-voice-stop-btn {
+  min-height: 36px;
+  padding: 6px 14px;
+  border-radius: 10px;
+  border: 1px solid var(--border-color);
+  background: var(--bg-tertiary);
+  color: var(--text-secondary);
+  font-size: 12.5px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.18s ease;
+}
+
+.mazii-voice-stop-btn:hover {
+  background: rgba(224, 82, 68, 0.1);
+  color: #e05244;
+  border-color: rgba(224, 82, 68, 0.3);
+}
+
+.mazii-voice-candidates {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 100%;
+  padding-top: 10px;
+  border-top: 1px dashed rgba(224, 82, 68, 0.25);
+  margin-top: 4px;
+}
+
+.mazii-voice-candidates-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  font-size: 12px;
+  flex-wrap: wrap;
+}
+
+.mazii-voice-candidates-label {
+  font-weight: 700;
+  color: var(--text-secondary);
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.mazii-gt-link {
+  font-size: 12px;
+  font-weight: 600;
+  color: #3b82f6;
+  text-decoration: none;
+  transition: all 0.18s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.mazii-gt-link:hover {
+  text-decoration: underline;
+  color: #1d4ed8;
+}
+
+.mazii-voice-candidates-chips {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.mazii-voice-candidate-chip {
+  min-height: 34px;
+  padding: 4px 12px;
+  border-radius: 999px;
+  border: 1px solid var(--border-color);
+  background: var(--bg-tertiary);
+  color: var(--text-primary);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.18s ease;
+}
+
+.mazii-voice-candidate-chip:hover {
+  border-color: #e05244;
+  color: #e05244;
+  background: rgba(224, 82, 68, 0.08);
+  transform: translateY(-1px);
+}
+
+.mazii-voice-candidate-chip.active {
+  background: #e05244;
+  color: #ffffff;
+  border-color: #e05244;
+}
+
+/* ================== KHU VỰC HIỂN THỊ KẾT QUẢ ================== */
+.mazii-results-container {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* Thẻ kết quả Từ Vựng (Word Card) */
+.mazii-card {
+  background: var(--bg-card, #ffffff);
+  border-radius: 18px;
+  padding: 20px 22px;
+  border: 1px solid var(--border-color, rgba(0, 0, 0, 0.08));
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.03);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.mazii-card:hover {
+  border-color: rgba(224, 82, 68, 0.3);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
+}
+
+.mazii-card-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 12px;
+  flex-wrap: wrap;
+}
+
+.mazii-card-title-row {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.mazii-card-word {
+  font-size: 26px;
+  font-weight: 800;
+  color: var(--text-primary, #1e293b);
+  font-family: 'Shippori Mincho', 'Noto Serif JP', serif;
+}
+
+.mazii-card-phonetic {
+  font-size: 17px;
+  font-weight: 600;
+  color: #e05244;
+}
+
+.mazii-card-han {
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+  padding: 2px 8px;
+  border-radius: 6px;
+  background: rgba(224, 82, 68, 0.1);
+  color: #e05244;
+}
+
+.mazii-card-meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.mazii-badge-level {
+  font-size: 11px;
+  font-weight: 800;
+  padding: 3px 8px;
+  border-radius: 6px;
+  background: linear-gradient(135deg, #10b981, #059669);
+  color: #ffffff;
+}
+
+.mazii-audio-btn {
+  min-width: 44px;
+  min-height: 44px;
+  border-radius: 10px;
+  border: 1px solid var(--border-color, rgba(0, 0, 0, 0.1));
+  background: var(--bg-card-hover, rgba(0, 0, 0, 0.04));
+  color: var(--text-primary, #1e293b);
+  font-size: 16px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.18s ease;
+}
+
+.mazii-audio-btn:hover {
+  background: #e05244;
+  color: #ffffff;
+  border-color: #e05244;
+}
+
+.mazii-audio-btn.is-speaking {
+  background: var(--accent-primary) !important;
+  color: #ffffff !important;
+  border-color: var(--accent-primary) !important;
+  box-shadow: 0 0 0 4px rgba(224, 82, 68, 0.25) !important;
+  animation: audioPulseGlow 1.25s cubic-bezier(0.24, 0, 0.38, 1) infinite !important;
+}
+
+/* Phần định nghĩa nghĩa & ví dụ */
+.mazii-means-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 10px;
+}
+
+.mazii-mean-item {
+  padding-left: 12px;
+  border-left: 3px solid #e05244;
+}
+
+.mazii-mean-kind {
+  display: inline-block;
+  font-size: 11.5px;
+  font-weight: 700;
+  color: var(--text-muted, #64748b);
+  text-transform: uppercase;
+  margin-bottom: 2px;
+}
+
+.mazii-mean-text {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text-primary, #1e293b);
+  line-height: 1.5;
+  margin-bottom: 6px;
+}
+
+.mazii-examples-box {
+  background: var(--bg-secondary, #f8fafc);
+  border-radius: 10px;
+  padding: 10px 14px;
+  margin-top: 6px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.mazii-example-item {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  font-size: 13.5px;
+}
+
+.mazii-ex-ja {
+  font-weight: 600;
+  color: var(--text-primary, #1e293b);
+}
+
+.mazii-ex-vi {
+  color: var(--text-muted, #64748b);
+  font-size: 12.5px;
+}
+
+/* Thẻ kết quả Chữ Hán (Kanji Card) */
+.mazii-kanji-card {
+  border-left: 4px solid #f97316;
+}
+
+.mazii-kanji-hero-row {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  margin-bottom: 14px;
+}
+
+.mazii-kanji-char-box {
+  width: 72px;
+  height: 72px;
+  border-radius: 16px;
+  background: linear-gradient(135deg, rgba(239, 68, 68, 0.08), rgba(249, 115, 22, 0.12));
+  border: 1.5px solid rgba(249, 115, 22, 0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 42px;
+  font-weight: 800;
+  font-family: 'Shippori Mincho', 'Noto Serif JP', serif;
+  color: #e05244;
+  flex-shrink: 0;
+}
+
+.mazii-kanji-info-main {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.mazii-kanji-hanviet {
+  font-size: 20px;
+  font-weight: 800;
+  color: var(--text-primary, #1e293b);
+  letter-spacing: 0.5px;
+}
+
+.mazii-kanji-badges-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.mazii-kanji-badge {
+  font-size: 11px;
+  font-weight: 700;
+  padding: 2px 7px;
+  border-radius: 6px;
+  background: var(--bg-card-hover, rgba(0, 0, 0, 0.05));
+  color: var(--text-muted, #64748b);
+}
+
+.mazii-readings-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 10px;
+  background: var(--bg-secondary, #f8fafc);
+  padding: 12px 14px;
+  border-radius: 12px;
+  margin-bottom: 14px;
+}
+
+.mazii-reading-item strong {
+  font-size: 12px;
+  color: var(--text-muted, #64748b);
+  display: block;
+  margin-bottom: 2px;
+}
+
+.mazii-reading-val {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text-primary, #1e293b);
+}
+
+.mazii-comp-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+  margin-bottom: 14px;
+}
+
+.mazii-comp-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 8px;
+  border-radius: 6px;
+  background: var(--bg-card-hover, rgba(0, 0, 0, 0.05));
+  border: 1px solid var(--border-color, rgba(0, 0, 0, 0.08));
+  font-size: 12px;
+}
+
+.mazii-comp-char {
+  font-weight: 800;
+  color: #e05244;
+}
+
+.mazii-comp-name {
+  color: var(--text-muted, #64748b);
+}
+
+.mazii-compounds-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.mazii-compound-item {
+  padding: 8px 12px;
+  border-radius: 10px;
+  background: var(--bg-secondary, #f8fafc);
+  border: 1px solid var(--border-color, rgba(0, 0, 0, 0.06));
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.mazii-cp-top {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+}
+
+.mazii-cp-word {
+  font-weight: 700;
+  font-size: 15px;
+  color: var(--text-primary, #1e293b);
+}
+
+.mazii-cp-phonetic {
+  font-size: 12.5px;
+  color: #e05244;
+}
+
+.mazii-cp-han {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--text-muted, #64748b);
+}
+
+.mazii-cp-mean {
+  font-size: 12px;
+  color: var(--text-muted, #64748b);
+}
+
+/* Thẻ kết quả Ngữ pháp (Grammar Card) */
+.mazii-grammar-card {
+  border-left: 4px solid #6366f1;
+}
+
+.mazii-grammar-title {
+  font-size: 18px;
+  font-weight: 800;
+  color: var(--text-primary, #1e293b);
+  margin-bottom: 8px;
+}
+
+.mazii-grammar-synopsis {
+  background: var(--bg-secondary, #f8fafc);
+  border-radius: 10px;
+  padding: 10px 14px;
+  font-size: 13.5px;
+  font-family: monospace;
+  color: #6366f1;
+  margin-bottom: 10px;
+  line-height: 1.5;
+}
+
+.mazii-grammar-explain {
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--text-primary, #1e293b);
+  margin-bottom: 12px;
+}
+
+/* Trạng thái tải & Rỗng */
+.mazii-status-box {
+  padding: 40px 20px;
+  text-align: center;
+  background: var(--bg-card, #ffffff);
+  border-radius: 18px;
+  border: 1px dashed var(--border-color, rgba(0, 0, 0, 0.12));
+}
+
+.mazii-status-icon {
+  font-size: 36px;
+  margin-bottom: 10px;
+  display: inline-block;
+}
+
+.mazii-status-title {
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--text-primary, #1e293b);
+  margin-bottom: 6px;
+}
+
+.mazii-status-desc {
+  font-size: 13.5px;
+  color: var(--text-muted, #64748b);
+  max-width: 460px;
+  margin: 0 auto;
+  line-height: 1.5;
+}
+
+.mazii-spinner {
+  width: 32px;
+  height: 32px;
+  border: 3px solid rgba(224, 82, 68, 0.2);
+  border-top-color: #e05244;
+  border-radius: 50%;
+  animation: maziiSpin 0.8s linear infinite;
+  margin: 0 auto 12px auto;
+}
+
+@keyframes maziiSpin {
+  to { transform: rotate(360deg); }
+}
+
+
+
+/* Dark mode theme overrides */
+[data-theme="dark"] .mazii-dict-studio {
+  --bg-card: #181c24;
+  --bg-secondary: #12151b;
+  --bg-card-hover: rgba(255, 255, 255, 0.06);
+  --border-color: rgba(255, 255, 255, 0.1);
+  --text-primary: #f1f5f9;
+  --text-muted: #94a3b8;
+}
+
+[data-theme="dark"] .mazii-canvas {
+  background: #181c24;
+  border-color: rgba(239, 68, 68, 0.5);
+}
+
+[data-theme="dark"] .mazii-search-input {
+  background: #181c24;
+  color: #f1f5f9;
+  border-color: rgba(255, 255, 255, 0.14);
+}
+
+/* Tối ưu hóa màn hình di động (<= 768px) */
+@media (max-width: 768px) {
+  .mazii-dict-studio {
+    padding: 8px 10px 110px 10px;
+  }
+  .mazii-hero-card {
+    padding: 12px 14px;
+    margin-bottom: 10px;
+    border-radius: 14px;
+  }
+  .mazii-hero-title-wrap h2 {
+    font-size: 17px;
+    margin-bottom: 3px;
+    gap: 8px;
+  }
+  .mazii-hero-desc {
+    font-size: 12px;
+    line-height: 1.4;
+  }
+  .mazii-search-panel {
+    padding: 12px 10px;
+    border-radius: 14px;
+    margin-bottom: 10px;
+  }
+  .mazii-search-row {
+    gap: 8px;
+  }
+  .mazii-search-input {
+    min-height: 48px;
+    padding: 10px 118px 10px 12px;
+    font-size: 14.5px;
+    border-radius: 12px;
+  }
+  .mazii-btn-voice {
+    min-width: 38px;
+    min-height: 38px;
+    width: 38px;
+    height: 38px;
+  }
+  .mazii-hw-box-btn {
+    min-height: 48px;
+    height: 48px;
+    padding: 0 12px;
+    border-radius: 12px;
+  }
+  .mazii-hw-box-icon {
+    font-size: 16px;
+  }
+  .mazii-hw-box-text {
+    font-size: 13px;
+  }
+  .mazii-btn-hw-icon {
+    min-width: 40px;
+    min-height: 40px;
+    width: 38px;
+    height: 38px;
+    font-size: 15px;
+  }
+  .mazii-btn-search {
+    min-height: 40px;
+    min-width: 42px;
+    padding: 0 12px;
+    border-radius: 8px;
+  }
+  .mazii-btn-clear {
+    width: 32px;
+    height: 32px;
+    min-width: 32px;
+    min-height: 32px;
+  }
+  .mazii-status-box {
+    padding: 24px 14px;
+    border-radius: 14px;
+  }
+  .mazii-status-icon {
+    font-size: 28px;
+    margin-bottom: 6px;
+  }
+  .mazii-status-title {
+    font-size: 16px;
+    margin-bottom: 4px;
+  }
+  .mazii-status-desc {
+    font-size: 12.5px;
+    line-height: 1.4;
+  }
+  .mazii-canvas-wrapper {
+    max-width: 100%;
+    width: 100%;
+    margin: 0 0 10px 0;
+  }
+  .mazii-canvas {
+    width: 100% !important;
+    max-width: 100% !important;
+    height: min(85vw, 360px);
+    min-height: 280px;
+  }
+  .mazii-hw-panel {
+    padding: 12px 10px;
+    border-radius: 14px;
+  }
+  .mazii-hw-btn {
+    min-height: 40px;
+    padding: 6px 10px;
+    font-size: 12px;
+  }
+  .dict-compact-card {
+    padding: 14px 14px;
+    margin-bottom: 10px;
+    border-radius: 12px;
+  }
+  .dict-word {
+    font-size: 20px;
+  }
+  .dict-phonetic {
+    font-size: 14px;
+  }
+  .dict-audio-btn {
+    width: 42px;
+    height: 42px;
+    min-width: 42px;
+    min-height: 42px;
+  }
+  .dict-mean-text {
+    font-size: 14px;
+  }
+}
+
+@media (max-width: 520px) {
+  .mazii-header-btn {
+    min-width: 44px !important;
+    min-height: 44px !important;
+  }
+}
+
+/* ==========================================================================
+   TÍNH NĂNG NHẬN DIỆN CHỮ VIẾT TAY & TỪ MỚI BẰNG TRÍ TUỆ NHÂN TẠO (AI ENGINE)
+   ========================================================================== */
+.btn-hw-ai {
+  display: none !important; /* Luôn ẩn nút Nhận diện AI vì hệ thống đã tự động nhận diện AI ngầm khi vẽ */
+  min-height: 44px;
+  padding: 6px 16px;
+  border-radius: 10px;
+  background: linear-gradient(135deg, #6366f1, #8b5cf6) !important;
+  color: #ffffff !important;
+  border: none !important;
+  font-weight: 700;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 10px rgba(99, 102, 241, 0.32);
+}
+
+.btn-hw-ai:hover {
+  opacity: 0.94;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 14px rgba(99, 102, 241, 0.45);
+}
+
+.btn-hw-ai:active {
+  transform: translateY(0);
+}
+
+.mazii-spinner-small {
+  width: 14px;
+  height: 14px;
+  border: 2px solid rgba(99, 102, 241, 0.25);
+  border-top-color: #6366f1;
+  border-radius: 50%;
+  animation: maziiSpin 0.7s linear infinite;
+  display: inline-block;
+  vertical-align: middle;
+}
+
+/* ==========================================================================
+   KẾT QUẢ KẾT HỢP TỪ VỰNG & CHỮ HÁN (COMBINED DICTIONARY SECTIONS)
+   ========================================================================== */
+.dict-results-section {
+  margin-bottom: 22px;
+}
+
+.dict-section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin: 16px 0 10px 0;
+  padding: 0 4px;
+}
+
+.dict-results-section:first-child .dict-section-header {
+  margin-top: 4px;
+}
+
+.dict-section-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  font-weight: 700;
+  padding: 4px 12px;
+  border-radius: 20px;
+  letter-spacing: 0.3px;
+}
+
+.dict-section-pill.pill-kanji {
+  background: rgba(224, 82, 68, 0.1);
+  color: #e05244;
+  border: 1px solid rgba(224, 82, 68, 0.25);
+}
+
+.dict-section-pill.pill-word {
+  background: rgba(99, 102, 241, 0.1);
+  color: #6366f1;
+  border: 1px solid rgba(99, 102, 241, 0.25);
+}
+
+.dict-section-count {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-muted, #64748b);
+}
+
+[data-theme="dark"] .dict-section-pill.pill-kanji {
+  background: rgba(239, 68, 68, 0.15);
+  color: #f87171;
+  border-color: rgba(239, 68, 68, 0.3);
+}
+
+[data-theme="dark"] .dict-section-pill.pill-word {
+  background: rgba(99, 102, 241, 0.18);
+  color: #a5b4fc;
+  border-color: rgba(99, 102, 241, 0.35);
+}
+
+/* ==========================================================================
+   THẺ KẾT QUẢ TRA TỪ ĐIỂN TINH GỌN (COMPACT DICT CARD)
+   ========================================================================== */
+.dict-compact-card {
+  background: var(--bg-card, #ffffff);
+  border-radius: 14px;
+  border: 1px solid var(--border-color, rgba(0, 0, 0, 0.08));
+  padding: 16px 20px;
+  margin-bottom: 12px;
+  box-shadow: 0 3px 12px rgba(0, 0, 0, 0.04);
+  transition: transform 0.18s ease, box-shadow 0.18s ease;
+}
+
+.dict-compact-card:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+}
+
+.dict-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.dict-card-main-info {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.dict-word {
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--text-primary, #1e293b);
+  font-family: 'Shippori Mincho', 'Noto Serif JP', serif;
+  line-height: 1.2;
+}
+
+.dict-phonetic {
+  font-size: 16px;
+  font-weight: 600;
+  color: #e05244;
+  line-height: 1.2;
+}
+
+.dict-hanviet {
+  display: inline-flex;
+  align-items: center;
+  font-size: 11.5px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  color: #e05244;
+  background: rgba(224, 82, 68, 0.12);
+  padding: 2.5px 8px;
+  border-radius: 6px;
+  text-transform: uppercase;
+}
+
+.dict-audio-btn {
+  width: 44px;
+  height: 44px;
+  min-width: 44px;
+  min-height: 44px;
+  border-radius: 10px;
+  background: var(--bg-card-hover, rgba(0, 0, 0, 0.04));
+  border: 1px solid var(--border-color, rgba(0, 0, 0, 0.1));
+  color: var(--text-primary, #1e293b);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.18s ease;
+  flex-shrink: 0;
+}
+
+.dict-audio-btn:hover {
+  background: rgba(224, 82, 68, 0.12);
+  border-color: #e05244;
+  color: #e05244;
+  transform: scale(1.04);
+}
+
+.dict-audio-btn.is-speaking {
+  background: #e05244 !important;
+  border-color: #e05244 !important;
+  color: #ffffff !important;
+  animation: audioPulseGlow 1.25s infinite !important;
+}
+
+.dict-means-container {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.dict-meaning-block {
+  margin-top: 10px;
+  padding-left: 12px;
+  border-left: 3px solid #e05244;
+}
+
+.dict-pos {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--text-muted, #64748b);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 2px;
+}
+
+.dict-mean-text {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text-primary, #1e293b);
+  line-height: 1.45;
+}
+
+[data-theme="dark"] .dict-compact-card {
+  background: #181b24;
+  border-color: rgba(255, 255, 255, 0.08);
+}
+
+[data-theme="dark"] .dict-word {
+  color: #ffffff;
+}
+
+[data-theme="dark"] .dict-phonetic {
+  color: #f87171;
+}
+
+[data-theme="dark"] .dict-hanviet {
+  color: #f87171;
+  background: rgba(248, 113, 113, 0.14);
+}
+
+[data-theme="dark"] .dict-audio-btn {
+  background: rgba(255, 255, 255, 0.06);
+  border-color: rgba(255, 255, 255, 0.1);
+  color: #f1f5f9;
+}
+
+[data-theme="dark"] .dict-mean-text {
+  color: #f1f5f9;
+}
+
+[data-theme="dark"] .dict-pos {
+  color: #94a3b8;
+}
+
+.dict-source-badge {
+  display: none !important; /* Đã xóa ô tra cứu ngoại tuyến theo yêu cầu người dùng */
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #059669;
+  background: rgba(16, 185, 129, 0.1);
+  border: 1px solid rgba(16, 185, 129, 0.25);
+  padding: 5px 12px;
+  border-radius: 999px;
+  margin-bottom: 12px;
+}
+
+[data-theme="dark"] .dict-source-badge {
+  color: #34d399;
+  background: rgba(52, 211, 153, 0.12);
+  border-color: rgba(52, 211, 153, 0.25);
+}
+
+/* ==========================================================================
+   MINIMALIST & REFINED SVG ICON SYSTEM
+   ========================================================================== */
+.icon-svg {
+  display: inline-block;
+  vertical-align: middle;
+  flex-shrink: 0;
+  stroke: currentColor;
+}
+
+.mazii-badge-icon svg {
+  width: 19px;
+  height: 19px;
+  stroke: currentColor;
+  display: block;
+}
+
+.mazii-btn-search svg {
+  width: 17px;
+  height: 17px;
+  stroke: currentColor;
+  display: block;
+}
+
+.mazii-btn-clear svg {
+  width: 13px;
+  height: 13px;
+  stroke: currentColor;
+  display: block;
+}
+
+.mazii-hw-box-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.mazii-hw-box-icon svg {
+  width: 17px;
+  height: 17px;
+  stroke: currentColor;
+  display: block;
+}
+
+.mazii-hw-btn svg {
+  width: 14px;
+  height: 14px;
+  stroke: currentColor;
+  flex-shrink: 0;
+}
+
+.mazii-status-icon svg {
+  width: 38px;
+  height: 38px;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  display: block;
+}
+
+.mazii-empty-icon svg {
+  width: 38px;
+  height: 38px;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  display: block;
+}
+
+.dict-section-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.dict-section-pill svg {
+  width: 14px;
+  height: 14px;
+  stroke: currentColor;
+  flex-shrink: 0;
+}
+
+.sync-tab-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.sync-tab-icon svg {
+  width: 16px;
+  height: 16px;
+  stroke: currentColor;
+}
+
+.kanji-tab-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.kanji-tab-icon svg {
+  width: 16px;
+  height: 16px;
+  stroke: currentColor;
+}
+
+.kfc-badge-icon svg {
+  width: 24px;
+  height: 24px;
+  stroke: currentColor;
+}
+
+.switch-cta-icon svg {
+  width: 26px;
+  height: 26px;
+  stroke: currentColor;
+}
+
+.mnemonic-icon svg {
+  width: 15px;
+  height: 15px;
+  stroke: currentColor;
+}
+
+.rate-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.rate-icon svg {
+  width: 16px;
+  height: 16px;
+  stroke: currentColor;
+}
+
+.btn-tool svg {
+  width: 14px;
+  height: 14px;
+  stroke: currentColor;
+  flex-shrink: 0;
+}
+
+.btn-dokkai-tool svg {
+  width: 15px;
+  height: 15px;
+  stroke: currentColor;
+  flex-shrink: 0;
+}
+
+.practice-icon-badge svg {
+  width: 18px;
+  height: 18px;
+  stroke: currentColor;
+}
+
+.sidebar-mazii-btn .mazii-icon svg {
+  width: 17px;
+  height: 17px;
+  stroke: currentColor;
+}
 
 
