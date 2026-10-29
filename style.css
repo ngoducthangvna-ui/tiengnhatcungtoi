@@ -5684,32 +5684,25 @@ body.hide-furigana #btn-toggle-furigana {
 .kcard-top-section {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 10px;
   padding: 16px 18px 14px;
 }
 
-/* Header từ vựng chính */
-.kcard-word-banner {
+/* Hàng 1: Chữ Hán & Âm Hán (trái) + Từ loại & Nút Nghe (phải) */
+.kcard-header-bar {
   display: flex;
   justify-content: space-between;
-  align-items: flex-start;
-  gap: 14px;
+  align-items: center;
+  gap: 12px;
   flex-wrap: wrap;
 }
 
-.kcard-word-info {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  min-width: 0;
-  flex: 1;
-}
-
-.kcard-word-title-group {
+.kcard-title-group {
   display: flex;
   align-items: baseline;
-  gap: 10px;
+  gap: 12px;
   flex-wrap: wrap;
+  min-width: 0;
 }
 
 .kcard-word-kanji {
@@ -5720,96 +5713,108 @@ body.hide-furigana #btn-toggle-furigana {
   color: var(--text-primary);
   margin: 0;
   letter-spacing: 0.5px;
+  white-space: nowrap;
   word-break: keep-all;
 }
 
-.kcard-word-reading {
-  font-family: var(--font-japanese);
-  font-size: 14px;
-  font-weight: 600;
+.kcard-word-hanviet {
+  font-family: var(--font-vietnamese, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif);
+  font-size: 16.5px;
+  font-weight: 700;
   color: var(--accent-primary);
+  letter-spacing: 0.6px;
+  white-space: nowrap;
+  text-transform: uppercase;
+  line-height: 1.2;
+}
+
+.kcard-meta-group {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+  margin-left: auto;
+}
+
+.kcard-type-badge {
+  font-size: 12px;
+  font-weight: 600;
+  padding: 4px 10px;
+  border-radius: 6px;
+  background: var(--bg-tertiary);
+  color: var(--text-secondary);
+  border: 1px solid var(--border-subtle);
+  white-space: nowrap;
 }
 
 .kcard-audio-btn {
   display: inline-flex;
   align-items: center;
-  gap: 4px;
-  padding: 3px 10px;
-  border-radius: 14px;
+  gap: 5px;
+  padding: 5px 12px;
+  min-height: 36px;
+  border-radius: 18px;
   background: var(--bg-tertiary);
   border: 1px solid var(--border-subtle);
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 600;
   color: var(--text-secondary);
   cursor: pointer;
   transition: var(--transition);
   line-height: 1.2;
+  touch-action: manipulation;
+  user-select: none;
 }
 
 .kcard-audio-btn:hover {
   background: var(--bg-hover);
   border-color: var(--accent-primary);
   color: var(--accent-primary);
-  transform: scale(1.03);
+  transform: translateY(-1px);
+}
+
+.kcard-audio-btn:active {
+  transform: scale(0.97);
 }
 
 .audio-btn-icon {
-  font-size: 11px;
+  font-size: 12px;
+  display: inline-flex;
+  align-items: center;
 }
 
-.kcard-word-meaning-line {
+/* Hàng 2: Cách đọc Hiragana & Nghĩa tiếng Việt toàn chiều ngang */
+.kcard-body-bar {
   display: flex;
-  align-items: center;
-  gap: 6px;
+  align-items: baseline;
+  gap: 8px 10px;
+  flex-wrap: wrap;
+  line-height: 1.45;
+  width: 100%;
+}
+
+.kcard-word-reading {
+  font-family: var(--font-japanese);
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--accent-primary);
+  white-space: nowrap;
+  letter-spacing: 0.3px;
+}
+
+.kcard-reading-dot {
+  color: var(--text-muted);
+  font-size: 14px;
+  user-select: none;
+  opacity: 0.65;
 }
 
 .kcard-word-meaning-text {
-  font-size: 14.5px;
+  font-size: 15px;
   font-weight: 600;
   color: var(--text-primary);
-  line-height: 1.4;
+  line-height: 1.45;
   word-break: break-word;
-}
-
-.kcard-word-badges {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  gap: 6px;
-  flex-shrink: 0;
-}
-
-.kcard-hv-badge-wrap {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-}
-
-.kcard-hv-tag {
-  font-size: 10px;
-  font-weight: 700;
-  text-transform: uppercase;
-  color: var(--accent-primary);
-  background: rgba(194, 53, 49, 0.10);
-  padding: 2px 6px;
-  border-radius: 4px;
-  letter-spacing: 0.5px;
-}
-
-.kcard-word-hanviet {
-  font-family: var(--font-vietnamese);
-  font-size: 18px;
-  font-weight: 700;
-  color: var(--accent-primary);
-  letter-spacing: 0.5px;
-}
-
-.kcard-badge-row {
-  display: flex;
-  align-items: center;
-  gap: 5px;
-  flex-wrap: wrap;
-  justify-content: flex-end;
 }
 
 /* DÒNG BÊN DƯỚI: TRỌNG TÂM MẸO GHI NHỚ & CẤU THÀNH */
@@ -5939,26 +5944,39 @@ body.hide-furigana #btn-toggle-furigana {
     border-radius: var(--radius-md);
   }
 
-  /* DÒNG TRÊN: Tiêu đề từ vựng */
+  /* DÒNG TRÊN: Tiêu đề từ vựng & Âm Hán */
   .kcard-top-section {
     padding: 14px 16px 12px;
     gap: 10px;
+  }
+
+  .kcard-header-bar {
+    gap: 8px 10px;
+  }
+
+  .kcard-title-group {
+    gap: 8px 10px;
   }
 
   .kcard-word-kanji {
     font-size: clamp(24px, 5.5vw, 28px);
   }
 
+  .kcard-word-hanviet {
+    font-size: 15.5px;
+  }
+
   .kcard-word-reading {
-    font-size: 13px;
+    font-size: 14.5px;
   }
 
-  .kcard-word-badges {
-    align-items: flex-start;
+  .kcard-word-meaning-text {
+    font-size: 14.5px;
   }
 
-  .kcard-badge-row {
-    justify-content: flex-start;
+  .kcard-audio-btn {
+    min-height: 38px;
+    padding: 5px 12px;
   }
 
   /* DÒNG BÊN DƯỚI: Mẹo nhớ bên dưới */
@@ -5983,8 +6001,39 @@ body.hide-furigana #btn-toggle-furigana {
     gap: 8px;
   }
 
+  .kcard-header-bar {
+    gap: 6px 8px;
+  }
+
+  .kcard-title-group {
+    gap: 6px 8px;
+  }
+
   .kcard-word-kanji {
     font-size: 22px;
+  }
+
+  .kcard-word-hanviet {
+    font-size: 14.5px;
+  }
+
+  .kcard-word-reading {
+    font-size: 14px;
+  }
+
+  .kcard-word-meaning-text {
+    font-size: 14px;
+  }
+
+  .kcard-type-badge {
+    font-size: 11px;
+    padding: 3px 8px;
+  }
+
+  .kcard-audio-btn {
+    min-height: 36px;
+    padding: 4px 10px;
+    font-size: 11.5px;
   }
 
   .kcard-bottom-section {
@@ -7047,27 +7096,24 @@ body.focus-mode .app-layout {
 
 .kfc-hanviet-box {
   display: inline-flex;
-  flex-direction: column;
   align-items: center;
-  gap: 2px;
-  padding: 6px 18px;
+  justify-content: center;
+  padding: 6px 20px;
   background: rgba(224, 82, 68, 0.08);
   border: 1px solid rgba(224, 82, 68, 0.22);
   border-radius: 10px;
 }
 
 .kfc-hanviet-sub {
-  font-size: 10px;
-  font-weight: 700;
-  letter-spacing: 1px;
-  color: var(--accent-primary);
+  display: none;
 }
 
 .kfc-hanviet-main {
-  font-size: 19px;
+  font-size: 20px;
   font-weight: 800;
-  color: var(--text-primary);
-  letter-spacing: 0.5px;
+  color: var(--accent-primary);
+  letter-spacing: 0.6px;
+  text-transform: uppercase;
 }
 
 .kfc-chips-row {

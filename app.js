@@ -2532,33 +2532,23 @@ function renderKanjiSection(sectionId, forcedTab = null) {
             
             <!-- DÒNG TRÊN: TIÊU ĐỀ TỪ VỰNG CHỮ HÁN, ÂM HÁN VIỆT & NGHĨA -->
             <div class="kcard-top-section">
-              <div class="kcard-word-banner">
-                <div class="kcard-word-info">
-                  <div class="kcard-word-title-group">
-                    <h3 class="kcard-word-kanji">${item.word}</h3>
-                    ${item.reading ? `<span class="kcard-word-reading">${item.reading}</span>` : ''}
-                    <button type="button" class="kcard-audio-btn" onclick="speakJapanese('${(item.reading || item.word).replace(/\[.*?\]/g, '').replace(/\(.*?\)/g, '').trim()}', this, event)" title="Nghe phát âm từ: ${item.word}">
-                      <span class="audio-btn-icon">${SPEAKER_ICON_HTML}</span>
-                      <span>Nghe</span>
-                    </button>
-                  </div>
-                  <div class="kcard-word-meaning-line">
-                    <span class="kcard-word-meaning-text">${item.meaning}</span>
-                  </div>
+              <div class="kcard-header-bar">
+                <div class="kcard-title-group">
+                  <h3 class="kcard-word-kanji">${item.word}</h3>
+                  <strong class="kcard-word-hanviet">${item.hanViet}</strong>
                 </div>
-
-                <div class="kcard-word-badges">
-                  <div class="kcard-hv-badge-wrap">
-                    <span class="kcard-hv-tag">Hán Việt</span>
-                    <strong class="kcard-word-hanviet">${item.hanViet}</strong>
-                  </div>
-                  <div class="kcard-badge-row">
-                    <span class="badge ${item.kanjiCount > 1 ? 'badge-primary' : 'badge-sakura'}">
-                      ${item.kanjiCount > 1 ? `${item.kanjiCount} chữ ghép` : 'Chữ đơn'}
-                    </span>
-                    ${item.type ? `<span class="badge badge-subtle">${item.type}</span>` : ''}
-                  </div>
+                <div class="kcard-meta-group">
+                  ${item.type ? `<span class="badge badge-subtle kcard-type-badge">${item.type}</span>` : ''}
+                  <button type="button" class="kcard-audio-btn" onclick="speakJapanese('${(item.reading || item.word).replace(/\[.*?\]/g, '').replace(/\(.*?\)/g, '').trim()}', this, event)" title="Nghe phát âm từ: ${item.word}">
+                    <span class="audio-btn-icon">${SPEAKER_ICON_HTML}</span>
+                    <span>Nghe</span>
+                  </button>
                 </div>
+              </div>
+              <div class="kcard-body-bar">
+                ${item.reading ? `<span class="kcard-word-reading">${item.reading}</span>` : ''}
+                ${item.reading && item.meaning ? `<span class="kcard-reading-dot">•</span>` : ''}
+                <span class="kcard-word-meaning-text">${item.meaning}</span>
               </div>
             </div>
 
@@ -3003,7 +2993,7 @@ function renderKfcCard() {
 
       <div class="kfc-chips-row">
         <span class="badge badge-primary">Nghĩa: <strong>${item.meaning}</strong></span>
-        ${item.hanViet ? `<span class="badge badge-sakura">Âm Hán: <strong>${item.hanViet}</strong></span>` : ''}
+        ${item.hanViet ? `<span class="badge badge-sakura"><strong>${item.hanViet}</strong></span>` : ''}
       </div>
 
       <div class="kfc-flip-hint">
@@ -3020,7 +3010,6 @@ function renderKfcCard() {
       <div class="kfc-back-top">
         <div class="kfc-back-word-title">
           <span class="kfc-back-reading">${item.reading || ''}</span>
-          <span class="kfc-hanviet-sub">ÂM HÁN:</span>
           <strong class="kfc-back-kanji">${item.hanViet}</strong>
           <button type="button" class="kcard-audio-btn" onclick="speakJapanese('${(item.reading || item.word).replace(/\[.*?\]/g, '').replace(/\(.*?\)/g, '').trim()}', this, event)">
             ${SPEAKER_ICON_HTML} <span>Nghe</span>
@@ -3046,19 +3035,15 @@ function renderKfcCard() {
     // CHẾ ĐỘ 1: NHÌN CHỮ HÁN ➔ ĐOÁN MẸO NHỚ & NGHĨA (MẶC ĐỊNH)
     front.innerHTML = `
       ${statusPillHtml}
-      <span class="kfc-face-tag">CHỮ HÁN &amp; ÂM HÁN VIỆT</span>
+      <span class="kfc-face-tag">TỪ VỰNG CHỮ HÁN</span>
 
       <div class="kfc-main-kanji">${item.word}</div>
 
       <div class="kfc-hanviet-box">
-        <span class="kfc-hanviet-sub">ÂM HÁN VIỆT</span>
         <strong class="kfc-hanviet-main">${item.hanViet}</strong>
       </div>
 
       <div class="kfc-chips-row">
-        <span class="badge ${item.kanjiCount > 1 ? 'badge-primary' : 'badge-sakura'}">
-          ${item.kanjiCount > 1 ? `${item.kanjiCount} chữ ghép` : 'Chữ đơn'}
-        </span>
         ${item.strokes ? `<span class="badge badge-subtle">${item.strokes} nét</span>` : ''}
         ${item.type ? `<span class="badge badge-subtle">${item.type}</span>` : ''}
       </div>
@@ -3594,8 +3579,8 @@ function renderKfcQuizQuestion() {
             <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 12px; flex-wrap: wrap; padding-bottom: 10px; border-bottom: 1px dashed var(--border-color);">
               <span style="font-family: var(--font-mincho); font-size: 26px; font-weight: 800; color: var(--text-primary); letter-spacing: 1px;">${item.word}</span>
               ${item.reading ? `<span style="font-family: var(--font-japanese); font-size: 17px; font-weight: 700; color: var(--accent-primary);">${item.reading}</span>` : ''}
-              <span style="font-size: 13.5px; font-weight: 700; color: var(--text-secondary); background: var(--bg-tertiary); padding: 3px 10px; border-radius: 6px; border: 1px solid var(--border-color);">
-                Hán Việt: <strong>${item.hanViet}</strong>
+              <span style="font-size: 13.5px; font-weight: 700; color: var(--accent-primary); background: var(--bg-tertiary); padding: 3px 10px; border-radius: 6px; border: 1px solid var(--border-color); letter-spacing: 0.5px;">
+                ${item.hanViet}
               </span>
               <span style="font-size: 14px; font-weight: 600; color: var(--text-secondary);">
                 = <strong>${item.meaning}</strong>

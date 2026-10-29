@@ -1,4 +1,3 @@
-// Lessons 31 to 35: Minna no Nihongo Shokyuu II (N4 Standard Curriculum)
 const lessons_31_35 = [
   {
     "id": "bai-31",
@@ -251,6 +250,174 @@ const lessons_31_35 = [
         "meaning": "Lịch trình, kế hoạch định sẵn",
         "type": "Danh từ",
         "example": "明日の 予定を 確認します。(Kiểm tra lịch trình ngày mai.)"
+      },
+      {
+        "kanji": "<span class=\"furigana\"><ruby>続<rt>つづ</rt></ruby>ける</span>",
+        "hiragana": "つづける",
+        "meaning": "Tiếp tục",
+        "type": "Động từ",
+        "example": "続けるを べんきょうします。(Học từ 続ける.)"
+      },
+      {
+        "kanji": "<span class=\"furigana\"><ruby>受ける<rt>うける</rt></ruby></span>",
+        "hiragana": "うける",
+        "meaning": "Dự ( thi….)",
+        "type": "Động từ",
+        "example": "受けるを べんきょうします。(Học từ 受ける.)"
+      },
+      {
+        "kanji": "<span class=\"furigana\"><ruby>～式<rt>～しき</rt></ruby></span>",
+        "hiragana": "～しき",
+        "meaning": "Lễ….",
+        "type": "Danh từ",
+        "example": "～式を べんきょうします。(Học từ ～式.)"
+      },
+      {
+        "kanji": "<span class=\"furigana\"><ruby>閉じる<rt>とじる</rt></ruby></span>",
+        "hiragana": "とじる",
+        "meaning": "Nhắm ( mắt …) lại, đóng ( sách…) lại, khép lại",
+        "type": "Động từ",
+        "example": "閉じるを べんきょうします。(Học từ 閉じる.)"
+      },
+      {
+        "kanji": "<span class=\"furigana\"><ruby>気がつく<rt>きがつく</rt></ruby></span>",
+        "hiragana": "きがつく",
+        "meaning": "Nhận ra, nhớ ra",
+        "type": "Động từ",
+        "example": "気がつくを べんきょうします。(Học từ 気がつく.)"
+      },
+      {
+        "kanji": "<span class=\"furigana\"><ruby>始<rt>はじ</rt></ruby>まる</span>",
+        "hiragana": "はじまる",
+        "meaning": "Được bắt đầu",
+        "type": "Động từ",
+        "example": "始まるを べんきょうします。(Học từ 始まる.)"
+      },
+      {
+        "kanji": "<span class=\"furigana\"><ruby>式が始まる<rt>しきがはじまる</rt></ruby></span>",
+        "hiragana": "しきがはじまる",
+        "meaning": "Buổi lễ được bắt đầu",
+        "type": "Động từ",
+        "example": "式が始まるを べんきょうします。(Học từ 式が始まる.)"
+      },
+      {
+        "kanji": "<span class=\"furigana\"><ruby>見つける<rt>みつける</rt></ruby></span>",
+        "hiragana": "みつける",
+        "meaning": "Tìm thấy, tìm kiếm, bắt gặp",
+        "type": "Động từ",
+        "example": "見つけるを べんきょうします。(Học từ 見つける.)"
+      },
+      {
+        "kanji": "<span class=\"furigana\"><ruby>試験を受ける<rt>しけんをうける</rt></ruby></span>",
+        "hiragana": "しけんをうける",
+        "meaning": "Dự thi, kiểm tra",
+        "type": "Động từ",
+        "example": "試験を受けるを べんきょうします。(Học từ 試験を受ける.)"
+      },
+      {
+        "kanji": "<span class=\"furigana\"><ruby>入学する<rt>にゅうがくする</rt></ruby></span>",
+        "hiragana": "にゅうがくする",
+        "meaning": "Nhập học, vào ( đại học )",
+        "type": "Động từ",
+        "example": "入学するを べんきょうします。(Học từ 入学する.)"
+      },
+      {
+        "kanji": "<span class=\"furigana\"><ruby>大学に入学する<rt>だいがくににゅうがくする</rt></ruby></span>",
+        "hiragana": "だいがくににゅうがくする",
+        "meaning": "Vào Đại học",
+        "type": "Động từ",
+        "example": "大学に入学するを べんきょうします。(Học từ 大学に入学する.)"
+      },
+      {
+        "kanji": "<span class=\"furigana\"><ruby>出席する<rt>しゅっせきする</rt></ruby></span>",
+        "hiragana": "しゅっせきする",
+        "meaning": "Tham dự, có mặt",
+        "type": "Động từ",
+        "example": "出席するを べんきょうします。(Học từ 出席する.)"
+      },
+      {
+        "kanji": "<span class=\"furigana\"><ruby>会議に出席する<rt>かいぎにしゅっせきする</rt></ruby></span>",
+        "hiragana": "かいぎにしゅっせきする",
+        "meaning": "Tham dự cuộc họp",
+        "type": "Động từ",
+        "example": "会議に出席するを べんきょうします。(Học từ 会議に出席する.)"
+      },
+      {
+        "kanji": "<span class=\"furigana\"><ruby>休憩する<rt>きゅうけいする</rt></ruby></span>",
+        "hiragana": "きゅうけいする",
+        "meaning": "Giải lao, nghỉ giải lao",
+        "type": "Động từ",
+        "example": "休憩するを べんきょうします。(Học từ 休憩する.)"
+      },
+      {
+        "kanji": "<span class=\"furigana\"><ruby>お客さん<rt>おきゃくさん</rt></ruby></span>",
+        "hiragana": "おきゃくさん",
+        "meaning": "Khách, khách hàng, khách khứa",
+        "type": "Danh từ",
+        "example": "お客さんを べんきょうします。(Học từ お客さん.)"
+      },
+      {
+        "kanji": "<span class=\"furigana\"><ruby>誰が<rt>だれが</rt></ruby></span>",
+        "hiragana": "だれが",
+        "meaning": "Ái đó",
+        "type": "Danh từ",
+        "example": "誰がを べんきょうします。(Học từ 誰が.)"
+      },
+      {
+        "kanji": "<span class=\"furigana\"><ruby>～の方<rt>～のほう</rt></ruby></span>",
+        "hiragana": "～のほう",
+        "meaning": "Phía, đằng….",
+        "type": "Danh từ",
+        "example": "～の方を べんきょうします。(Học từ ～の方.)"
+      },
+      {
+        "kanji": "<span class=\"furigana\"><ruby>上野公園<rt>うえのこうえん</rt></ruby></span>",
+        "hiragana": "うえのこうえん",
+        "meaning": "Công viên UENO",
+        "type": "Danh từ",
+        "example": "上野公園を べんきょうします。(Học từ 上野公園.)"
+      },
+      {
+        "kanji": "<span class=\"furigana\"><ruby>集まる<rt>あつまる</rt></ruby></span>",
+        "hiragana": "あつまる",
+        "meaning": "Tập trung lại",
+        "type": "Động từ",
+        "example": "集まるを べんきょうします。(Học từ 集まる.)"
+      },
+      {
+        "kanji": "<span class=\"furigana\"><ruby>続<rt>つづ</rt></ruby>く</span>",
+        "hiragana": "つづく",
+        "meaning": "Được tiếp tục",
+        "type": "Động từ",
+        "example": "続くを べんきょうします。(Học từ 続く.)"
+      },
+      {
+        "kanji": "<span class=\"furigana\"><ruby>集<rt>あつ</rt></ruby>める</span>",
+        "hiragana": "あつめる",
+        "meaning": "Tập hợp, sưu tầm",
+        "type": "Động từ",
+        "example": "集めるを べんきょうします。(Học từ 集める.)"
+      },
+      {
+        "kanji": "<span class=\"furigana\"><ruby>残る<rt>のこる</rt></ruby></span>",
+        "hiragana": "のこる",
+        "meaning": "Còn thừa, bị dư",
+        "type": "Động từ",
+        "example": "残るを べんきょうします。(Học từ 残る.)"
+      },
+      {
+        "kanji": "<span class=\"furigana\"><ruby>残す<rt>のこす</rt></ruby></span>",
+        "hiragana": "のこす",
+        "meaning": "Chừa lại, để lại",
+        "type": "Danh từ",
+        "example": "残すを べんきょうします。(Học từ 残す.)"
+      },
+      {
+        "kanji": "<span class=\"furigana\"><ruby>始<rt>はじ</rt></ruby>める</span>",
+        "hiragana": "はじめる",
+        "meaning": "Bắt đầu",
+        "type": "Động từ",
+        "example": "始めるを べんきょうします。(Học từ 始める.)"
       }
     ],
     "grammar": [
@@ -578,6 +745,279 @@ const lessons_31_35 = [
         "meaning": "Biết đâu chừng, có thể là",
         "type": "Phó từ",
         "example": "もしかしたら 雨が 降るかもしれません。(Biết đâu chừng trời lại mưa.)"
+      },
+      {
+        "kanji": "<span class=\"furigana\"><ruby>止む<rt>やむ</rt></ruby></span>",
+        "hiragana": "やむ",
+        "meaning": "Tạnh",
+        "type": "Động từ",
+        "example": "止むを べんきょうします。(Học từ 止む.)"
+      },
+      {
+        "kanji": "<span class=\"furigana\"><ruby>晴れる<rt>はれる</rt></ruby></span>",
+        "hiragana": "はれる",
+        "meaning": "Trời quang đãng, trời nắng",
+        "type": "Động từ",
+        "example": "晴れるを べんきょうします。(Học từ 晴れる.)"
+      },
+      {
+        "kanji": "<span class=\"furigana\"><ruby>吹く<rt>ふく</rt></ruby></span>",
+        "hiragana": "ふく",
+        "meaning": "Thổi",
+        "type": "Động từ",
+        "example": "吹くを べんきょうします。(Học từ 吹く.)"
+      },
+      {
+        "kanji": "<span class=\"furigana\"><ruby>冷やす<rt>ひやす</rt></ruby></span>",
+        "hiragana": "ひやす",
+        "meaning": "Ướp lạnh, làm lạnh",
+        "type": "Danh từ",
+        "example": "冷やすを べんきょうします。(Học từ 冷やす.)"
+      },
+      {
+        "kanji": "<span class=\"furigana\"><ruby>火傷<rt>やけど</rt></ruby></span>",
+        "hiragana": "やけど",
+        "meaning": "Vết thương, phỏng",
+        "type": "Danh từ",
+        "example": "火傷を べんきょうします。(Học từ 火傷.)"
+      },
+      {
+        "kanji": "<span class=\"furigana\"><ruby>怪我<rt>けが</rt></ruby></span>",
+        "hiragana": "けが",
+        "meaning": "Vết thương",
+        "type": "Danh từ",
+        "example": "怪我を べんきょうします。(Học từ 怪我.)"
+      },
+      {
+        "kanji": "<span class=\"furigana\"><ruby>運動する<rt>うんどうする</rt></ruby></span>",
+        "hiragana": "うんどうする",
+        "meaning": "Vận động",
+        "type": "Động từ",
+        "example": "運動するを べんきょうします。(Học từ 運動する.)"
+      },
+      {
+        "kanji": "<span class=\"furigana\"><ruby>成功する<rt>せいこうする</rt></ruby></span>",
+        "hiragana": "せいこうする",
+        "meaning": "Thành công",
+        "type": "Động từ",
+        "example": "成功するを べんきょうします。(Học từ 成功する.)"
+      },
+      {
+        "kanji": "<span class=\"furigana\"><ruby>失敗する<rt>しっぱいする</rt></ruby></span>",
+        "hiragana": "しっぱいする",
+        "meaning": "Thất bại",
+        "type": "Động từ",
+        "example": "失敗するを べんきょうします。(Học từ 失敗する.)"
+      },
+      {
+        "kanji": "<span class=\"furigana\"><ruby>試験に失敗する<rt>しけんにしっぱいする</rt></ruby></span>",
+        "hiragana": "しけんにしっぱいする",
+        "meaning": "Thi rớt",
+        "type": "Động từ",
+        "example": "試験に失敗するを べんきょうします。(Học từ 試験に失敗する.)"
+      },
+      {
+        "kanji": "<span class=\"furigana\"><ruby>合格する<rt>ごうかくする</rt></ruby></span>",
+        "hiragana": "ごうかくする",
+        "meaning": "Đậu ( thi cử, phỏng vấn )",
+        "type": "Động từ",
+        "example": "合格するを べんきょうします。(Học từ 合格する.)"
+      },
+      {
+        "kanji": "<span class=\"furigana\"><ruby>試験に合格する<rt>しけんにごうかくする</rt></ruby></span>",
+        "hiragana": "しけんにごうかくする",
+        "meaning": "Thi đậu",
+        "type": "Động từ",
+        "example": "試験に合格するを べんきょうします。(Học từ 試験に合格する.)"
+      },
+      {
+        "kanji": "<span class=\"furigana\"><ruby>戻<rt>もど</rt></ruby>る</span>",
+        "hiragana": "もどる",
+        "meaning": "Quay lại, quay trở lại",
+        "type": "Động từ",
+        "example": "戻るを べんきょうします。(Học từ 戻る.)"
+      },
+      {
+        "kanji": "<span class=\"furigana\"><ruby>雨が止む<rt>あめがやむ</rt></ruby></span>",
+        "hiragana": "あめがやむ",
+        "meaning": "Tạnh mưa",
+        "type": "Động từ",
+        "example": "雨が止むを べんきょうします。(Học từ 雨が止む.)"
+      },
+      {
+        "kanji": "<span class=\"furigana\"><ruby>曇る<rt>くもる</rt></ruby></span>",
+        "hiragana": "くもる",
+        "meaning": "Trời âm u, trời có mây",
+        "type": "Động từ",
+        "example": "曇るを べんきょうします。(Học từ 曇る.)"
+      },
+      {
+        "kanji": "<span class=\"furigana\"><ruby>風が吹く<rt>かぜがふく</rt></ruby></span>",
+        "hiragana": "かぜがふく",
+        "meaning": "Gió thổi",
+        "type": "Động từ",
+        "example": "風が吹くを べんきょうします。(Học từ 風が吹く.)"
+      },
+      {
+        "kanji": "<span class=\"furigana\"><ruby>治る<rt>なおる</rt></ruby></span>",
+        "hiragana": "なおる",
+        "meaning": "Khỏi, Hết ( bệnh )",
+        "type": "Động từ",
+        "example": "治るを べんきょうします。(Học từ 治る.)"
+      },
+      {
+        "kanji": "<span class=\"furigana\"><ruby>病気が治る<rt>びょうきがなる</rt></ruby></span>",
+        "hiragana": "びょうきがなる",
+        "meaning": "Khỏi bệnh, hết bệnh",
+        "type": "Động từ",
+        "example": "病気が治るを べんきょうします。(Học từ 病気が治る.)"
+      },
+      {
+        "kanji": "<span class=\"furigana\"><ruby>直る<rt>なおる</rt></ruby></span>",
+        "hiragana": "なおる",
+        "meaning": "Được sửa chữa",
+        "type": "Động từ",
+        "example": "直るを べんきょうします。(Học từ 直る.)"
+      },
+      {
+        "kanji": "<span class=\"furigana\"><ruby>故障が直る<rt>こしょうがなおる</rt></ruby></span>",
+        "hiragana": "こしょうがなおる",
+        "meaning": "Trục trặc được sửa chữa",
+        "type": "Động từ",
+        "example": "故障が直るを べんきょうします。(Học từ 故障が直る.)"
+      },
+      {
+        "kanji": "<span class=\"furigana\"><ruby>続<rt>つづ</rt></ruby>く</span>",
+        "hiragana": "つづく",
+        "meaning": "Tiếp tục, kéo dài",
+        "type": "Động từ",
+        "example": "続くを べんきょうします。(Học từ 続く.)"
+      },
+      {
+        "kanji": "<span class=\"furigana\"><ruby>熱が続く<rt>ねつがつづく</rt></ruby></span>",
+        "hiragana": "ねつがつづく",
+        "meaning": "Sốt kéo dài",
+        "type": "Động từ",
+        "example": "熱が続くを べんきょうします。(Học từ 熱が続く.)"
+      },
+      {
+        "kanji": "<span class=\"furigana\"><ruby>風邪を引く<rt>かぜをひく</rt></ruby></span>",
+        "hiragana": "かぜをひく",
+        "meaning": "Bị cảm, bị trúng gió",
+        "type": "Động từ",
+        "example": "風邪を引くを べんきょうします。(Học từ 風邪を引く.)"
+      },
+      {
+        "kanji": "<span class=\"furigana\"><ruby>心配<rt>しんぱい</rt></ruby></span>",
+        "hiragana": "しんぱい",
+        "meaning": "Lo lắng",
+        "type": "Danh từ",
+        "example": "心配を べんきょうします。(Học từ 心配.)"
+      },
+      {
+        "kanji": "<span class=\"furigana\"><ruby>十分<rt>じゅうぶん</rt></ruby></span>",
+        "hiragana": "じゅうぶん",
+        "meaning": "Nhiều, đủ, dư…",
+        "type": "Danh từ",
+        "example": "十分を べんきょうします。(Học từ 十分.)"
+      },
+      {
+        "kanji": "<span class=\"furigana\"><ruby>咳が出る<rt>せきがでる</rt></ruby></span>",
+        "hiragana": "せきがでる",
+        "meaning": "Bị ho",
+        "type": "Động từ",
+        "example": "咳が出るを べんきょうします。(Học từ 咳が出る.)"
+      },
+      {
+        "kanji": "<span class=\"furigana\"><ruby>空<rt>そら</rt></ruby></span>",
+        "hiragana": "そら",
+        "meaning": "Bầu trời",
+        "type": "Danh từ",
+        "example": "空を べんきょうします。(Học từ 空.)"
+      },
+      {
+        "kanji": "<span class=\"furigana\"><ruby>月<rt>がつ</rt></ruby></span>",
+        "hiragana": "つき",
+        "meaning": "Mặt trăng",
+        "type": "Danh từ",
+        "example": "月を べんきょうします。(Học từ 月.)"
+      },
+      {
+        "kanji": "<span class=\"furigana\"><ruby>前から<rt>まえから</rt></ruby></span>",
+        "hiragana": "まえから",
+        "meaning": "Từ trước đến giờ",
+        "type": "Danh từ",
+        "example": "前からを べんきょうします。(Học từ 前から.)"
+      },
+      {
+        "kanji": "<span class=\"furigana\"><ruby>遅<rt>おそ</rt></ruby>く</span>",
+        "hiragana": "おそく",
+        "meaning": "Trễ, muộn, chậm trễ",
+        "type": "Động từ",
+        "example": "遅くを べんきょうします。(Học từ 遅く.)"
+      },
+      {
+        "kanji": "<span class=\"furigana\"><ruby>胃<rt>い</rt></ruby></span>",
+        "hiragana": "い",
+        "meaning": "Bao tử",
+        "type": "Danh từ",
+        "example": "胃を べんきょうします。(Học từ 胃.)"
+      },
+      {
+        "kanji": "<span class=\"furigana\"><ruby>働きすぎ<rt>はたらきすぎ</rt></ruby></span>",
+        "hiragana": "はたらきすぎ",
+        "meaning": "Làm việc quá sức, quá nhiều",
+        "type": "Động từ",
+        "example": "働きすぎを べんきょうします。(Học từ 働きすぎ.)"
+      },
+      {
+        "kanji": "<span class=\"furigana\"><ruby>星占い<rt>ほしうらない</rt></ruby></span>",
+        "hiragana": "ほしうらない",
+        "meaning": "Bói sao",
+        "type": "Tính từ",
+        "example": "星占いを べんきょうします。(Học từ 星占い.)"
+      },
+      {
+        "kanji": "<span class=\"furigana\"><ruby>当たる<rt>あたる</rt></ruby></span>",
+        "hiragana": "あたる",
+        "meaning": "Trúng",
+        "type": "Động từ",
+        "example": "当たるを べんきょうします。(Học từ 当たる.)"
+      },
+      {
+        "kanji": "<span class=\"furigana\"><ruby>恋愛<rt>れんあい</rt></ruby></span>",
+        "hiragana": "れんあい",
+        "meaning": "Tình yêu",
+        "type": "Danh từ",
+        "example": "恋愛を べんきょうします。(Học từ 恋愛.)"
+      },
+      {
+        "kanji": "<span class=\"furigana\"><ruby>お金持ち<rt>おかねもち</rt></ruby></span>",
+        "hiragana": "おかねもち",
+        "meaning": "Giàu có",
+        "type": "Danh từ",
+        "example": "お金持ちを べんきょうします。(Học từ お金持ち.)"
+      },
+      {
+        "kanji": "<span class=\"furigana\"><ruby>無理をする<rt>さぎょうば</rt></ruby></span>",
+        "hiragana": "さぎょうば",
+        "meaning": "Làm việc quá sức",
+        "type": "Động từ",
+        "example": "無理をするを べんきょうします。(Học từ 無理をする.)"
+      },
+      {
+        "kanji": "<span class=\"furigana\"><ruby>宝くじ<rt>たからくじ</rt></ruby></span>",
+        "hiragana": "たからくじ",
+        "meaning": "Vé số",
+        "type": "Danh từ",
+        "example": "宝くじを べんきょうします。(Học từ 宝くじ.)"
+      },
+      {
+        "kanji": "<span class=\"furigana\"><ruby>健康<rt>けんこう</rt></ruby></span>",
+        "hiragana": "けんこう",
+        "meaning": "Sức khỏe",
+        "type": "Danh từ",
+        "example": "健康の ために 走ります。(Chạy bộ vì sức khỏe.)"
       }
     ],
     "grammar": [
@@ -848,6 +1288,251 @@ const lessons_31_35 = [
         "meaning": "Vi phạm đỗ xe trái quy định",
         "type": "Danh từ",
         "example": "駐車違反で 罰金を 払いました。(Bị phạt tiền do đỗ xe sai quy định.)"
+      },
+      {
+        "kanji": "<span class=\"furigana\"><ruby>逃<rt>に</rt></ruby>げる</span>",
+        "hiragana": "にげる",
+        "meaning": "Chạy trốn, chạy khỏi",
+        "type": "Động từ",
+        "example": "逃げるを べんきょうします。(Học từ 逃げる.)"
+      },
+      {
+        "kanji": "<span class=\"furigana\"><ruby>諦める<rt>あきらめる</rt></ruby></span>",
+        "hiragana": "あきらめる",
+        "meaning": "Từ bỏ, bỏ cuộc, chào thua",
+        "type": "Động từ",
+        "example": "諦めるを べんきょうします。(Học từ 諦める.)"
+      },
+      {
+        "kanji": "<span class=\"furigana\"><ruby>投げる<rt>なげる</rt></ruby></span>",
+        "hiragana": "なげる",
+        "meaning": "Ném",
+        "type": "Động từ",
+        "example": "投げるを べんきょうします。(Học từ 投げる.)"
+      },
+      {
+        "kanji": "<span class=\"furigana\"><ruby>上げる<rt>あげる</rt></ruby></span>",
+        "hiragana": "あげる",
+        "meaning": "Tăng lên, nâng lên",
+        "type": "Động từ",
+        "example": "上げるを べんきょうします。(Học từ 上げる.)"
+      },
+      {
+        "kanji": "<span class=\"furigana\"><ruby>下<rt>さ</rt></ruby>げる</span>",
+        "hiragana": "さげる",
+        "meaning": "Giảm xuống, hạ xuống",
+        "type": "Động từ",
+        "example": "下げるを べんきょうします。(Học từ 下げる.)"
+      },
+      {
+        "kanji": "<span class=\"furigana\"><ruby>伝える<rt>つたえる</rt></ruby></span>",
+        "hiragana": "つたえる",
+        "meaning": "Nhắn lại, chuyển lời, truyền đạt lại",
+        "type": "Động từ",
+        "example": "伝えるを べんきょうします。(Học từ 伝える.)"
+      },
+      {
+        "kanji": "<span class=\"furigana\"><ruby>外す<rt>はずす</rt></ruby></span>",
+        "hiragana": "はずす",
+        "meaning": "Rời khỏi",
+        "type": "Danh từ",
+        "example": "外すを べんきょうします。(Học từ 外す.)"
+      },
+      {
+        "kanji": "<span class=\"furigana\"><ruby>立ち入り禁止<rt>たちいりきんし</rt></ruby></span>",
+        "hiragana": "たちいりきんし",
+        "meaning": "Không phận sự miễn vào, Cấm vào",
+        "type": "Danh từ",
+        "example": "立ち入り禁止を べんきょうします。(Học từ 立ち入り禁止.)"
+      },
+      {
+        "kanji": "<span class=\"furigana\"><ruby>騒る<rt>さわる</rt></ruby></span>",
+        "hiragana": "さわる",
+        "meaning": "Sờ, chạm",
+        "type": "Động từ",
+        "example": "騒るを べんきょうします。(Học từ 騒る.)"
+      },
+      {
+        "kanji": "<span class=\"furigana\"><ruby>守<rt>まも</rt></ruby>る</span>",
+        "hiragana": "まもる",
+        "meaning": "Bảo vệ, giữ gìn, tuân thủ",
+        "type": "Động từ",
+        "example": "守るを べんきょうします。(Học từ 守る.)"
+      },
+      {
+        "kanji": "<span class=\"furigana\"><ruby>注意する<rt>ちゅういする</rt></ruby></span>",
+        "hiragana": "ちゅういする",
+        "meaning": "Chú ý, Nhắc nhở",
+        "type": "Động từ",
+        "example": "注意するを べんきょうします。(Học từ 注意する.)"
+      },
+      {
+        "kanji": "<span class=\"furigana\"><ruby>車に注意する<rt>くるまにちゅういする</rt></ruby></span>",
+        "hiragana": "くるまにちゅういする",
+        "meaning": "Chú ý xe cộ",
+        "type": "Động từ",
+        "example": "車に注意するを べんきょうします。(Học từ 車に注意する.)"
+      },
+      {
+        "kanji": "<span class=\"furigana\"><ruby>席を外す<rt>せきをはずす</rt></ruby></span>",
+        "hiragana": "せきをはずす",
+        "meaning": "Rời khỏi chỗ ngồi, Đi ra ngoài, Đi khỏi",
+        "type": "Danh từ",
+        "example": "席を外すを べんきょうします。(Học từ 席を外す.)"
+      },
+      {
+        "kanji": "<span class=\"furigana\"><ruby>～機<rt>～き</rt></ruby></span>",
+        "hiragana": "～き",
+        "meaning": "Máy~",
+        "type": "Danh từ",
+        "example": "～機を べんきょうします。(Học từ ～機.)"
+      },
+      {
+        "kanji": "<span class=\"furigana\"><ruby>入口<rt>いりぐち</rt></ruby></span>",
+        "hiragana": "いりぐち",
+        "meaning": "Lối vào, cửa vào",
+        "type": "Danh từ",
+        "example": "入口を べんきょうします。(Học từ 入口.)"
+      },
+      {
+        "kanji": "<span class=\"furigana\"><ruby>出口<rt>でぐち</rt></ruby></span>",
+        "hiragana": "でぐち",
+        "meaning": "Lối ra, cửa ra",
+        "type": "Danh từ",
+        "example": "出口を べんきょうします。(Học từ 出口.)"
+      },
+      {
+        "kanji": "<span class=\"furigana\"><ruby>本日休業<rt>ほんじつきゅうぎょう</rt></ruby></span>",
+        "hiragana": "ほんじつきゅうぎょう",
+        "meaning": "Hôm nay là ngày nghỉ làm",
+        "type": "Danh từ",
+        "example": "本日休業を べんきょうします。(Học từ 本日休業.)"
+      },
+      {
+        "kanji": "<span class=\"furigana\"><ruby>～中<rt>～ちゅう</rt></ruby></span>",
+        "hiragana": "～ちゅう",
+        "meaning": "Đang ~, Trong lúc ~",
+        "type": "Danh từ",
+        "example": "～中を べんきょうします。(Học từ ～中.)"
+      },
+      {
+        "kanji": "<span class=\"furigana\"><ruby>どういう意味ですか<rt>どういういみですか</rt></ruby></span>",
+        "hiragana": "どういういみですか",
+        "meaning": "Nghĩa là gì ?",
+        "type": "Danh từ",
+        "example": "どういう意味ですかを べんきょうします。(Học từ どういう意味ですか.)"
+      },
+      {
+        "kanji": "<span class=\"furigana\"><ruby>～以内<rt>～いない</rt></ruby></span>",
+        "hiragana": "～いない",
+        "meaning": "Trong vòng ~, Trong phạm vi",
+        "type": "Danh từ",
+        "example": "～以内を べんきょうします。(Học từ ～以内.)"
+      },
+      {
+        "kanji": "<span class=\"furigana\"><ruby>警察<rt>けいさつ</rt></ruby></span>",
+        "hiragana": "けいさつ",
+        "meaning": "Cảnh sát",
+        "type": "Danh từ",
+        "example": "警察を べんきょうします。(Học từ 警察.)"
+      },
+      {
+        "kanji": "<span class=\"furigana\"><ruby>罰金<rt>ばっきん</rt></ruby></span>",
+        "hiragana": "ばっきん",
+        "meaning": "Tiền phạt",
+        "type": "Danh từ",
+        "example": "罰金を べんきょうします。(Học từ 罰金.)"
+      },
+      {
+        "kanji": "<span class=\"furigana\"><ruby>電報<rt>でんぽう</rt></ruby></span>",
+        "hiragana": "でんぽう",
+        "meaning": "Điện báo, điện tín",
+        "type": "Động từ",
+        "example": "電報を べんきょうします。(Học từ 電報.)"
+      },
+      {
+        "kanji": "<span class=\"furigana\"><ruby>急用<rt>きゅうよう</rt></ruby></span>",
+        "hiragana": "きゅうよう",
+        "meaning": "Việc gấp, việc khẩn cấp",
+        "type": "Danh từ",
+        "example": "急用を べんきょうします。(Học từ 急用.)"
+      },
+      {
+        "kanji": "<span class=\"furigana\"><ruby>打つ<rt>うつ</rt></ruby></span>",
+        "hiragana": "うつ",
+        "meaning": "Đánh",
+        "type": "Động từ",
+        "example": "打つを べんきょうします。(Học từ 打つ.)"
+      },
+      {
+        "kanji": "<span class=\"furigana\"><ruby>電報を打つ<rt>でんぽうをうつ</rt></ruby></span>",
+        "hiragana": "でんぽうをうつ",
+        "meaning": "Đánh điện báo",
+        "type": "Động từ",
+        "example": "電報を打つを べんきょうします。(Học từ 電報を打つ.)"
+      },
+      {
+        "kanji": "<span class=\"furigana\"><ruby>電報代<rt>でんぽうだい</rt></ruby></span>",
+        "hiragana": "でんぽうだい",
+        "meaning": "Tiền điện thoại",
+        "type": "Danh từ",
+        "example": "電報代を べんきょうします。(Học từ 電報代.)"
+      },
+      {
+        "kanji": "<span class=\"furigana\"><ruby>危篤<rt>きとく</rt></ruby></span>",
+        "hiragana": "きとく",
+        "meaning": "Hấp hối, cơn nguy kịch",
+        "type": "Danh từ",
+        "example": "危篤を べんきょうします。(Học từ 危篤.)"
+      },
+      {
+        "kanji": "<span class=\"furigana\"><ruby>重い病気<rt>おもいびょうき</rt></ruby></span>",
+        "hiragana": "おもいびょうき",
+        "meaning": "Bệnh nặng",
+        "type": "Danh từ",
+        "example": "重い病気を べんきょうします。(Học từ 重い病気.)"
+      },
+      {
+        "kanji": "<span class=\"furigana\"><ruby>明日<rt>あした</rt></ruby></span>",
+        "hiragana": "あす",
+        "meaning": "Ngày mai",
+        "type": "Danh từ",
+        "example": "明日を べんきょうします。(Học từ 明日.)"
+      },
+      {
+        "kanji": "<span class=\"furigana\"><ruby>留守<rt>るす</rt></ruby></span>",
+        "hiragana": "るす",
+        "meaning": "Vắng nhà",
+        "type": "Danh từ",
+        "example": "留守の 間に 荷物が 来ました。(Hàng đến trong lúc vắng nhà.)"
+      },
+      {
+        "kanji": "<span class=\"furigana\"><ruby>留守番<rt>るすばん</rt></ruby></span>",
+        "hiragana": "るすばん",
+        "meaning": "Người coi nhà, trông nhà",
+        "type": "Danh từ",
+        "example": "留守番を べんきょうします。(Học từ 留守番.)"
+      },
+      {
+        "kanji": "<span class=\"furigana\">お<ruby>祝<rt>いわ</rt></ruby>い</span>",
+        "hiragana": "おいわい",
+        "meaning": "Sự chúc mừng",
+        "type": "Tính từ",
+        "example": "結婚の お祝いを 送ります。(Gửi quà mừng đám cưới.)"
+      },
+      {
+        "kanji": "<span class=\"furigana\"><ruby>亡くなる<rt>なくなる</rt></ruby></span>",
+        "hiragana": "なくなる",
+        "meaning": "Mất, qua đời",
+        "type": "Động từ",
+        "example": "亡くなるを べんきょうします。(Học từ 亡くなる.)"
+      },
+      {
+        "kanji": "<span class=\"furigana\"><ruby>利用する<rt>りようする</rt></ruby></span>",
+        "hiragana": "りようする",
+        "meaning": "Sử dụng",
+        "type": "Động từ",
+        "example": "利用するを べんきょうします。(Học từ 利用する.)"
       }
     ],
     "grammar": [
@@ -1118,6 +1803,195 @@ const lessons_31_35 = [
         "meaning": "Nấu, kho, hầm thức ăn",
         "type": "Động từ nhóm 2",
         "example": "野菜を 柔らかく 煮ます。(Hầm mềm rau củ.)"
+      },
+      {
+        "kanji": "<span class=\"furigana\"><ruby>磨く<rt>みがく</rt></ruby></span>",
+        "hiragana": "みがく",
+        "meaning": "Đánh, Chải ( răng )",
+        "type": "Động từ",
+        "example": "磨くを べんきょうします。(Học từ 磨く.)"
+      },
+      {
+        "kanji": "<span class=\"furigana\"><ruby>組み立てる<rt>くみたてる</rt></ruby></span>",
+        "hiragana": "くみたてる",
+        "meaning": "Lắp ráp",
+        "type": "Động từ",
+        "example": "組み立てるを べんきょうします。(Học từ 組み立てる.)"
+      },
+      {
+        "kanji": "<span class=\"furigana\"><ruby>気がつく<rt>きがつく</rt></ruby></span>",
+        "hiragana": "きがつく",
+        "meaning": "Nhận ra, nhớ ra",
+        "type": "Động từ",
+        "example": "気がつくを べんきょうします。(Học từ 気がつく.)"
+      },
+      {
+        "kanji": "<span class=\"furigana\"><ruby>醤油<rt>しょうゆ</rt></ruby></span>",
+        "hiragana": "しょうゆ",
+        "meaning": "Nước tương",
+        "type": "Danh từ",
+        "example": "醤油を べんきょうします。(Học từ 醤油.)"
+      },
+      {
+        "kanji": "<span class=\"furigana\"><ruby>お茶をたてる<rt>おちゃをたてる</rt></ruby></span>",
+        "hiragana": "おちゃをたてる",
+        "meaning": "Pha trà",
+        "type": "Động từ",
+        "example": "お茶をたてるを べんきょうします。(Học từ お茶をたてる.)"
+      },
+      {
+        "kanji": "<span class=\"furigana\"><ruby>載せる<rt>のせる</rt></ruby></span>",
+        "hiragana": "のせる",
+        "meaning": "Đặt lên, chất lên",
+        "type": "Động từ",
+        "example": "載せるを べんきょうします。(Học từ 載せる.)"
+      },
+      {
+        "kanji": "<span class=\"furigana\"><ruby>火にかける<rt>ひにかける</rt></ruby></span>",
+        "hiragana": "ひにかける",
+        "meaning": "Bắt lên bếp",
+        "type": "Động từ",
+        "example": "火にかけるを べんきょうします。(Học từ 火にかける.)"
+      },
+      {
+        "kanji": "<span class=\"furigana\"><ruby>煮る<rt>にる</rt></ruby></span>",
+        "hiragana": "にる",
+        "meaning": "Hầm, ninh",
+        "type": "Động từ",
+        "example": "煮るを べんきょうします。(Học từ 煮る.)"
+      },
+      {
+        "kanji": "<span class=\"furigana\"><ruby>歯を磨く<rt>はをみがく</rt></ruby></span>",
+        "hiragana": "はをみがく",
+        "meaning": "Đánh răng, chải răng",
+        "type": "Động từ",
+        "example": "歯を磨くを べんきょうします。(Học từ 歯を磨く.)"
+      },
+      {
+        "kanji": "<span class=\"furigana\"><ruby>折る<rt>おる</rt></ruby></span>",
+        "hiragana": "おる",
+        "meaning": "Làm gãy, bẻ gãy",
+        "type": "Động từ",
+        "example": "折るを べんきょうします。(Học từ 折る.)"
+      },
+      {
+        "kanji": "<span class=\"furigana\"><ruby>忘れ物に気がつく<rt>わすれものにきがつく</rt></ruby></span>",
+        "hiragana": "わすれものにきがつく",
+        "meaning": "Nhớ ra đồ bỏ quên",
+        "type": "Động từ",
+        "example": "忘れ物に気がつくを べんきょうします。(Học từ 忘れ物に気がつく.)"
+      },
+      {
+        "kanji": "<span class=\"furigana\"><ruby>見つかる<rt>みつかる</rt></ruby></span>",
+        "hiragana": "みつかる",
+        "meaning": "Tìm thấy",
+        "type": "Động từ",
+        "example": "見つかるを べんきょうします。(Học từ 見つかる.)"
+      },
+      {
+        "kanji": "<span class=\"furigana\"><ruby>鍵が見つかる<rt>かぎがみつかる</rt></ruby></span>",
+        "hiragana": "かぎがみつかる",
+        "meaning": "Tìm thấy chìa khóa",
+        "type": "Động từ",
+        "example": "鍵が見つかるを べんきょうします。(Học từ 鍵が見つかる.)"
+      },
+      {
+        "kanji": "<span class=\"furigana\"><ruby>質問<rt>しつもん</rt></ruby></span>",
+        "hiragana": "しつもん",
+        "meaning": "Câu hỏi",
+        "type": "Danh từ",
+        "example": "質問を べんきょうします。(Học từ 質問.)"
+      },
+      {
+        "kanji": "<span class=\"furigana\"><ruby>細<rt>ほそ</rt></ruby>い</span>",
+        "hiragana": "ほそい",
+        "meaning": "Ốm, gầy, thon",
+        "type": "Tính từ",
+        "example": "細いを べんきょうします。(Học từ 細い.)"
+      },
+      {
+        "kanji": "<span class=\"furigana\"><ruby>太<rt>ふと</rt></ruby>い</span>",
+        "hiragana": "ふとい",
+        "meaning": "Mập, béo",
+        "type": "Tính từ",
+        "example": "太いを べんきょうします。(Học từ 太い.)"
+      },
+      {
+        "kanji": "<span class=\"furigana\"><ruby>盆踊り<rt>ぼんおどり</rt></ruby></span>",
+        "hiragana": "ぼんおどり",
+        "meaning": "Điệu múa BON của Nhật",
+        "type": "Động từ",
+        "example": "夏祭りで 盆踊りを 踊ります。(Múa điệu Bon trong lễ hội mùa hè.)"
+      },
+      {
+        "kanji": "<span class=\"furigana\"><ruby>家具<rt>かぐ</rt></ruby></span>",
+        "hiragana": "かぐ",
+        "meaning": "Đồ dùng trong nhà",
+        "type": "Danh từ",
+        "example": "家具を べんきょうします。(Học từ 家具.)"
+      },
+      {
+        "kanji": "<span class=\"furigana\"><ruby>黒<rt>くろ</rt></ruby></span>",
+        "hiragana": "くろ",
+        "meaning": "Màu đen",
+        "type": "Danh từ",
+        "example": "黒を べんきょうします。(Học từ 黒.)"
+      },
+      {
+        "kanji": "<span class=\"furigana\"><ruby>白<rt>しろ</rt></ruby></span>",
+        "hiragana": "しろ",
+        "meaning": "Màu trắng",
+        "type": "Danh từ",
+        "example": "白を べんきょうします。(Học từ 白.)"
+      },
+      {
+        "kanji": "<span class=\"furigana\"><ruby>赤<rt>あか</rt></ruby></span>",
+        "hiragana": "あか",
+        "meaning": "Màu đỏ",
+        "type": "Danh từ",
+        "example": "赤を べんきょうします。(Học từ 赤.)"
+      },
+      {
+        "kanji": "<span class=\"furigana\"><ruby>青<rt>あお</rt></ruby></span>",
+        "hiragana": "あお",
+        "meaning": "Màu xanh",
+        "type": "Danh từ",
+        "example": "青を べんきょうします。(Học từ 青.)"
+      },
+      {
+        "kanji": "<span class=\"furigana\"><ruby>茶色<rt>ちゃいろ</rt></ruby></span>",
+        "hiragana": "ちゃいろ",
+        "meaning": "Màu nâu",
+        "type": "Danh từ",
+        "example": "茶色を べんきょうします。(Học từ 茶色.)"
+      },
+      {
+        "kanji": "<span class=\"furigana\"><ruby>夕べ<rt>ゆうべ</rt></ruby></span>",
+        "hiragana": "ゆうべ",
+        "meaning": "Đêm qua, tối hôm qua",
+        "type": "Danh từ",
+        "example": "夕べを べんきょうします。(Học từ 夕べ.)"
+      },
+      {
+        "kanji": "<span class=\"furigana\"><ruby>火<rt>ひ</rt></ruby></span>",
+        "hiragana": "ひ",
+        "meaning": "Lửa",
+        "type": "Danh từ",
+        "example": "火を 消します。(Dập tắt ngọn lửa.)"
+      },
+      {
+        "kanji": "<span class=\"furigana\"><ruby>煮える<rt>にえる</rt></ruby></span>",
+        "hiragana": "にえる",
+        "meaning": "Được hầm kỹ",
+        "type": "Động từ",
+        "example": "煮えるを べんきょうします。(Học từ 煮える.)"
+      },
+      {
+        "kanji": "<span class=\"furigana\"><ruby>玉ねぎ<rt>たまねぎ</rt></ruby></span>",
+        "hiragana": "たまねぎ",
+        "meaning": "Hành tây",
+        "type": "Danh từ",
+        "example": "玉ねぎを べんきょうします。(Học từ 玉ねぎ.)"
       }
     ],
     "grammar": [
@@ -1395,6 +2269,230 @@ const lessons_31_35 = [
         "meaning": "Nếu thế thì, vậy thì",
         "type": "Liên từ",
         "example": "それなら、この 店が おすすめです。(Nếu vậy thì tôi gợi ý quán này.)"
+      },
+      {
+        "kanji": "<span class=\"furigana\"><ruby>咲<rt>さ</rt></ruby>く</span>",
+        "hiragana": "さく",
+        "meaning": "Nở",
+        "type": "Động từ",
+        "example": "咲くを べんきょうします。(Học từ 咲く.)"
+      },
+      {
+        "kanji": "<span class=\"furigana\"><ruby>付ける<rt>つける</rt></ruby></span>",
+        "hiragana": "つける",
+        "meaning": "Khoanh, đánh dấu",
+        "type": "Động từ",
+        "example": "付けるを べんきょうします。(Học từ 付ける.)"
+      },
+      {
+        "kanji": "<span class=\"furigana\"><ruby>拾う<rt>ひろう</rt></ruby></span>",
+        "hiragana": "ひろう",
+        "meaning": "Nhặt, lượm",
+        "type": "Động từ",
+        "example": "拾うを べんきょうします。(Học từ 拾う.)"
+      },
+      {
+        "kanji": "<span class=\"furigana\"><ruby>紐<rt>ひも</rt></ruby></span>",
+        "hiragana": "ひも",
+        "meaning": "Sợi dây",
+        "type": "Danh từ",
+        "example": "紐を べんきょうします。(Học từ 紐.)"
+      },
+      {
+        "kanji": "<span class=\"furigana\"><ruby>花が咲く<rt>はながさく</rt></ruby></span>",
+        "hiragana": "はながさく",
+        "meaning": "Hoa nở",
+        "type": "Động từ",
+        "example": "花が咲くを べんきょうします。(Học từ 花が咲く.)"
+      },
+      {
+        "kanji": "<span class=\"furigana\"><ruby>変わる<rt>かわる</rt></ruby></span>",
+        "hiragana": "かわる",
+        "meaning": "( Bị ) thay đổi",
+        "type": "Động từ",
+        "example": "変わるを べんきょうします。(Học từ 変わる.)"
+      },
+      {
+        "kanji": "<span class=\"furigana\"><ruby>色が変わる<rt>いろがかわる</rt></ruby></span>",
+        "hiragana": "いろがかわる",
+        "meaning": "Màu sắc thay đổi",
+        "type": "Động từ",
+        "example": "色が変わるを べんきょうします。(Học từ 色が変わる.)"
+      },
+      {
+        "kanji": "<span class=\"furigana\"><ruby>困る<rt>こまる</rt></ruby></span>",
+        "hiragana": "こまる",
+        "meaning": "Gặp khó khăn",
+        "type": "Động từ",
+        "example": "困るを べんきょうします。(Học từ 困る.)"
+      },
+      {
+        "kanji": "<span class=\"furigana\"><ruby>丸を付ける<rt>まるをつける</rt></ruby></span>",
+        "hiragana": "まるをつける",
+        "meaning": "Đánh dấu tròn, khoanh tròn",
+        "type": "Động từ",
+        "example": "丸を付けるを べんきょうします。(Học từ 丸を付ける.)"
+      },
+      {
+        "kanji": "<span class=\"furigana\"><ruby>楽<rt>たの</rt></ruby></span>",
+        "hiragana": "らく",
+        "meaning": "Nhẹ nhàng, không vất vả, nhàn hạ",
+        "type": "Danh từ",
+        "example": "楽を べんきょうします。(Học từ 楽.)"
+      },
+      {
+        "kanji": "<span class=\"furigana\"><ruby>方<rt>かた</rt></ruby></span>",
+        "hiragana": "かた",
+        "meaning": "Ngài, ông…",
+        "type": "Danh từ",
+        "example": "あの 方は どなたですか。(Vị đằng kia là ai thế ạ?)"
+      },
+      {
+        "kanji": "<span class=\"furigana\"><ruby>向こう<rt>むこう</rt></ruby></span>",
+        "hiragana": "むこう",
+        "meaning": "Bên kia, đối diện",
+        "type": "Động từ",
+        "example": "向こうを べんきょうします。(Học từ 向こう.)"
+      },
+      {
+        "kanji": "<span class=\"furigana\"><ruby>村<rt>そん</rt></ruby></span>",
+        "hiragana": "むら",
+        "meaning": "Làng, ngôi làng",
+        "type": "Danh từ",
+        "example": "静かな 村で 暮らします。(Sống ở một ngôi làng yên bình.)"
+      },
+      {
+        "kanji": "<span class=\"furigana\"><ruby>操作<rt>そうさ</rt></ruby></span>",
+        "hiragana": "そうさ",
+        "meaning": "Thao tác, sự điều khiển, vận hành",
+        "type": "Danh từ",
+        "example": "操作を べんきょうします。(Học từ 操作.)"
+      },
+      {
+        "kanji": "<span class=\"furigana\"><ruby>方法<rt>ほうほう</rt></ruby></span>",
+        "hiragana": "ほうほう",
+        "meaning": "Phương pháp",
+        "type": "Danh từ",
+        "example": "方法を べんきょうします。(Học từ 方法.)"
+      },
+      {
+        "kanji": "<span class=\"furigana\"><ruby>蓋<rt>ふた</rt></ruby></span>",
+        "hiragana": "ふた",
+        "meaning": "Cái nắp",
+        "type": "Danh từ",
+        "example": "蓋を べんきょうします。(Học từ 蓋.)"
+      },
+      {
+        "kanji": "<span class=\"furigana\"><ruby>曲<rt>きょく</rt></ruby></span>",
+        "hiragana": "きょく",
+        "meaning": "Ca khúc, khúc nhạc",
+        "type": "Danh từ",
+        "example": "曲を べんきょうします。(Học từ 曲.)"
+      },
+      {
+        "kanji": "<span class=\"furigana\"><ruby>楽しみ<rt>たのしみ</rt></ruby></span>",
+        "hiragana": "たのしみ",
+        "meaning": "Vui mừng, niềm vui",
+        "type": "Danh từ",
+        "example": "楽しみを べんきょうします。(Học từ 楽しみ.)"
+      },
+      {
+        "kanji": "<span class=\"furigana\"><ruby>初めに<rt>はじめに</rt></ruby></span>",
+        "hiragana": "はじめに",
+        "meaning": "Trước tiên là…, đầu tiên là…",
+        "type": "Danh từ",
+        "example": "初めにを べんきょうします。(Học từ 初めに.)"
+      },
+      {
+        "kanji": "<span class=\"furigana\"><ruby>日光<rt>にっこう</rt></ruby></span>",
+        "hiragana": "にっこう",
+        "meaning": "Tp Nikko thuộc tỉnh Tochigi",
+        "type": "Danh từ",
+        "example": "日光を べんきょうします。(Học từ 日光.)"
+      },
+      {
+        "kanji": "<span class=\"furigana\"><ruby>白馬<rt>はくば</rt></ruby></span>",
+        "hiragana": "はくば",
+        "meaning": "Hakuba thuộc tỉnh Nagano",
+        "type": "Danh từ",
+        "example": "白馬を べんきょうします。(Học từ 白馬.)"
+      },
+      {
+        "kanji": "<span class=\"furigana\"><ruby>夜行バス<rt>やこうバス</rt></ruby></span>",
+        "hiragana": "やこうバス",
+        "meaning": "Xe bus chạy về đêm",
+        "type": "Danh từ",
+        "example": "夜行バスを べんきょうします。(Học từ 夜行バス.)"
+      },
+      {
+        "kanji": "<span class=\"furigana\"><ruby>旅行会社<rt>りょこうがいしゃ</rt></ruby></span>",
+        "hiragana": "りょこうがいしゃ",
+        "meaning": "Công ty du lịch",
+        "type": "Danh từ",
+        "example": "旅行会社を べんきょうします。(Học từ 旅行会社.)"
+      },
+      {
+        "kanji": "<span class=\"furigana\"><ruby>詳しい<rt>くわしい</rt></ruby></span>",
+        "hiragana": "くわしい",
+        "meaning": "Tỉ mỉ, chi tiết, cụ thể",
+        "type": "Tính từ",
+        "example": "詳しいを べんきょうします。(Học từ 詳しい.)"
+      },
+      {
+        "kanji": "<span class=\"furigana\">スキー<ruby>場<rt>じょう</rt></ruby></span>",
+        "hiragana": "スキーじょう",
+        "meaning": "Bãi trượt tuyết, sân trượt tuyết",
+        "type": "Danh từ",
+        "example": "スキー場を べんきょうします。(Học từ スキー場.)"
+      },
+      {
+        "kanji": "<span class=\"furigana\"><ruby>諺<rt>ことわざ</rt></ruby></span>",
+        "hiragana": "ことわざ",
+        "meaning": "Tục ngữ, thành ngữ",
+        "type": "Danh từ",
+        "example": "諺を べんきょうします。(Học từ 諺.)"
+      },
+      {
+        "kanji": "<span class=\"furigana\"><ruby>仲良くする<rt>なかよくする</rt></ruby></span>",
+        "hiragana": "なかよくする",
+        "meaning": "Hòa thuận, quan hệ tốt với…",
+        "type": "Động từ",
+        "example": "仲良くするを べんきょうします。(Học từ 仲良くする.)"
+      },
+      {
+        "kanji": "<span class=\"furigana\"><ruby>必要<rt>ひつよう</rt></ruby></span>",
+        "hiragana": "ひつよう",
+        "meaning": "Cần thiết",
+        "type": "Danh từ",
+        "example": "必要を べんきょうします。(Học từ 必要.)"
+      },
+      {
+        "kanji": "<span class=\"furigana\"><ruby>変<rt>か</rt></ruby>える</span>",
+        "hiragana": "かえる",
+        "meaning": "( Làm ) thay đổi",
+        "type": "Động từ",
+        "example": "変えるを べんきょうします。(Học từ 変える.)"
+      },
+      {
+        "kanji": "<span class=\"furigana\"><ruby>楽しみにする<rt>たのしみにする</rt></ruby></span>",
+        "hiragana": "たのしみにする",
+        "meaning": "Mong chờ đến….",
+        "type": "Động từ",
+        "example": "楽しみにするを べんきょうします。(Học từ 楽しみにする.)"
+      },
+      {
+        "kanji": "<span class=\"furigana\"><ruby>箱根<rt>はこね</rt></ruby></span>",
+        "hiragana": "はこね",
+        "meaning": "Danh thắng Hakone ở tỉnh Kanagawa",
+        "type": "Danh từ",
+        "example": "箱根を べんきょうします。(Học từ 箱根.)"
+      },
+      {
+        "kanji": "<span class=\"furigana\"><ruby>夜行<rt>やこう</rt></ruby></span>",
+        "hiragana": "やこう",
+        "meaning": "Xe / tàu chạy về đêm",
+        "type": "Danh từ",
+        "example": "夜行を べんきょうします。(Học từ 夜行.)"
       }
     ],
     "grammar": [
@@ -1482,3 +2580,7 @@ const lessons_31_35 = [
     ]
   }
 ];
+
+if (typeof module !== 'undefined' && module.exports) {
+  module.exports = lessons_31_35;
+}

@@ -5,7 +5,7 @@
  * - Không thêm bớt bất kỳ từ nào so với danh mục từ vựng chữ Hán của từng bài
  * - Chiết tự chuẩn xác theo các bộ thủ & hình tượng nhận diện
  * - Mẹo nhớ trực quan, sinh động, dễ hiểu, tương thích 100% với kanji-hanzi-mnemonics SKILL.md
- * Tổng cộng: 1806 từ vựng chữ Hán trải dài qua 50 bài học.
+ * Tổng cộng: 1825 từ vựng chữ Hán trải dài qua 50 bài học.
  */
 const kanjiLessonsData = [
   {
@@ -5364,7 +5364,7 @@ const kanjiLessonsData = [
     "title": "Bài 5: Mẹo Nhớ Từ Vựng Chữ Hán",
     "level": "Minna N5 (Bài 5)",
     "description": "Toàn bộ 33 từ vựng chữ Hán trọng tâm Bài 5 theo tài liệu Từ Vựng 50 Bài Minna no Nihongo. 100% kèm chiết tự, giải nghĩa bộ thủ và mẹo nhớ cụ thể, dễ hiểu.",
-    "totalKanji": 33,
+    "totalKanji": 34,
     "items": [
       {
         "id": "v-5-1",
@@ -6665,6 +6665,46 @@ const kanjiLessonsData = [
         ],
         "mnemonic": "【Cấu thành】: 工 (CÔNG: Công trường [Hình chiếc thước góc vuông của thợ mộc]) + 場 (TRƯỜNG: Quảng trường [Thổ (土: khu đất rộng)])\n【Mẹo nhớ từ】: BÃI ĐẤT KHUÔN VIÊN (場) quy tụ các CÔNG NHÂN CÔNG TRÌNH (工) chế tạo máy móc: NHÀ MÁY.",
         "example": "自動車の 工場で 働きます。(Làm việc ở nhà máy ô tô.)"
+      },
+      {
+        "word": "何日ですか",
+        "kanji": "何日ですか",
+        "reading": "なんにちですか",
+        "hanViet": "HÀ NHẬT",
+        "meaning": "Ngày mấy? / Ngày bao nhiêu?",
+        "type": "Cụm từ",
+        "kanjiCount": 2,
+        "kanjis": [
+          "何",
+          "日"
+        ],
+        "strokes": 11,
+        "radicals": "nhân 人 (+5 nét)",
+        "onyomi": "カ ニチ",
+        "kunyomi": "なに ひ",
+        "components": [
+          {
+            "kanji": "何",
+            "hanViet": "HÀ",
+            "meaning": "Mấy, cái gì",
+            "strokes": 7,
+            "radical": "nhân 亻 (+5 nét)",
+            "onyomi": "カ",
+            "kunyomi": "なに なん"
+          },
+          {
+            "kanji": "日",
+            "hanViet": "NHẬT",
+            "meaning": "Ngày, mặt trời",
+            "strokes": 4,
+            "radical": "nhật 日",
+            "onyomi": "ニチ ジツ",
+            "kunyomi": "ひ -び -か"
+          }
+        ],
+        "mnemonic": "【Cấu thành】: 何 (HÀ: Mấy [Nhân (亻: người)]) + 日 (NHẬT: Ngày [Nhật (日: mặt trời)])\n【Mẹo nhớ từ】: Hỏi người (亻) xem hôm nay là ngày (日) nào, mùng MẤY (何) trong tháng: NGÀY MẤY?",
+        "example": "きょうは 何日ですか。(Hôm nay là ngày mấy?)",
+        "id": "v-5-34"
       }
     ]
   },
@@ -8804,7 +8844,7 @@ const kanjiLessonsData = [
     "title": "Bài 8: Mẹo Nhớ Từ Vựng Chữ Hán",
     "level": "Minna N5 (Bài 8)",
     "description": "Toàn bộ 47 từ vựng chữ Hán trọng tâm Bài 8 theo tài liệu Từ Vựng 50 Bài Minna no Nihongo. 100% kèm chiết tự, giải nghĩa bộ thủ và mẹo nhớ cụ thể, dễ hiểu.",
-    "totalKanji": 47,
+    "totalKanji": 49,
     "items": [
       {
         "id": "v-8-1",
@@ -10445,6 +10485,86 @@ const kanjiLessonsData = [
         ],
         "mnemonic": "【Cấu thành】: 日 (NHẬT: Mặt trời [Hình tượng vầng thái dương chiếu sáng]) + 本 (BẢN: Gốc rễ [Mộc (木: cây cối)]) + 生 (SINH: Sống [Mầm cây nảy chồi từ mặt đất (土)]) + 活 (HOẠT: Hoạt động [Thủy (氵: dòng nước mát)])\n【Mẹo nhớ từ】: Hình ảnh thực tế sinh động: thông qua 日 (NHẬT: Mặt trời), 本 (BẢN: Gốc rễ), 生 (SINH: Sống), 活 (HOẠT: Hoạt động), hành động được khắc họa rõ nét tạo nên ý nghĩa Đã quen với cuộc sống ở Nhật chưa ? もういっぱいいかがです ➔ 日本の生活になれ (にほんのせいかつにならましたか).",
         "example": "日本の生活になれを べんきょうします。(Học từ 日本の生活になれ.)"
+      },
+      {
+        "word": "そろそろ、失礼します",
+        "kanji": "そろそろ、失礼します",
+        "reading": "そろそろ、しつれいします",
+        "hanViet": "THẤT LỄ",
+        "meaning": "Đã đến lúc tôi phải xin phép về",
+        "type": "Cụm từ",
+        "kanjiCount": 2,
+        "kanjis": [
+          "失",
+          "礼"
+        ],
+        "strokes": 10,
+        "radicals": "đại 大 (+2 nét)",
+        "onyomi": "シツ レイ",
+        "kunyomi": "うしな-う",
+        "components": [
+          {
+            "kanji": "失",
+            "hanViet": "THẤT",
+            "meaning": "Mất, thất",
+            "strokes": 5,
+            "radical": "đại 大 (+2 nét)",
+            "onyomi": "シツ",
+            "kunyomi": "うしな-う"
+          },
+          {
+            "kanji": "礼",
+            "hanViet": "LỄ",
+            "meaning": "Lễ nghi, phép tắc",
+            "strokes": 5,
+            "radical": "thị 示 (+1 nét)",
+            "onyomi": "レイ ライ",
+            "kunyomi": ""
+          }
+        ],
+        "mnemonic": "【Cấu thành】: 失 (THẤT: Mất) + 礼 (LỄ: Lễ nghi)\n【Mẹo nhớ từ】: Trời đã muộn, sợ THẤT LỄ (失礼) với chủ nhà nên xin phép ra về: ĐÃ ĐẾN LÚC TÔI PHẢI VỀ.",
+        "example": "そろそろ、失礼します。(Đã đến lúc tôi xin phép phải về rồi ạ.)",
+        "id": "v-8-48"
+      },
+      {
+        "word": "飲み物",
+        "kanji": "飲み物",
+        "reading": "のみもの",
+        "hanViet": "ẨM VẬT",
+        "meaning": "Đồ uống, thức uống",
+        "type": "Danh từ",
+        "kanjiCount": 2,
+        "kanjis": [
+          "飲",
+          "物"
+        ],
+        "strokes": 20,
+        "radicals": "thực 食 (+4 nét)",
+        "onyomi": "イン ブツ",
+        "kunyomi": "の-む もの",
+        "components": [
+          {
+            "kanji": "飲",
+            "hanViet": "ẨM",
+            "meaning": "Uống",
+            "strokes": 12,
+            "radical": "thực 飠 (+4 nét)",
+            "onyomi": "イン",
+            "kunyomi": "の-む"
+          },
+          {
+            "kanji": "物",
+            "hanViet": "VẬT",
+            "meaning": "Đồ vật",
+            "strokes": 8,
+            "radical": "ngưu 牛 (+4 nét)",
+            "onyomi": "ブツ モツ",
+            "kunyomi": "もの"
+          }
+        ],
+        "mnemonic": "【Cấu thành】: 飲 (ẨM: Uống) + 物 (VẬT: Đồ vật)\n【Mẹo nhớ từ】: ĐỒ VẬT (物) dùng để UỐNG (飲) giải khát: ĐỒ UỐNG.",
+        "example": "冷たい 飲み物を 飲みます。(Uống đồ uống lạnh.)",
+        "id": "v-8-49"
       }
     ]
   },
@@ -10454,7 +10574,7 @@ const kanjiLessonsData = [
     "title": "Bài 9: Mẹo Nhớ Từ Vựng Chữ Hán",
     "level": "Minna N5 (Bài 9)",
     "description": "Toàn bộ 52 từ vựng chữ Hán trọng tâm Bài 9 theo tài liệu Từ Vựng 50 Bài Minna no Nihongo. 100% kèm chiết tự, giải nghĩa bộ thủ và mẹo nhớ cụ thể, dễ hiểu.",
-    "totalKanji": 52,
+    "totalKanji": 53,
     "items": [
       {
         "id": "v-9-1",
@@ -12405,6 +12525,56 @@ const kanjiLessonsData = [
         ],
         "mnemonic": "【Cấu thành】: 風 (PHONG: Cơn gió [Khung luồng gió lốc thổi mạnh cuốn lấy chiếc lá xoay vòng]) + 邪 (TÀ: Cản trở [Chữ Nha (răng nanh cắn quấy)]) + 引 (DẪN: Kéo [Cung (弓: cây cung gỗ)])\n【Mẹo nhớ từ】: Hình ảnh thực tế sinh động: thông qua 風 (PHONG: Cơn gió), 邪 (TÀ: Cản trở), 引 (DẪN: Kéo), hành động được khắc họa rõ nét tạo nên ý nghĩa Bị cảm, bị trúng gió ➔ 風邪を引きま (かぜをひきました).",
         "example": "風邪を引きまを べんきょうします。(Học từ 風邪を引きま.)"
+      },
+      {
+        "word": "会社を休みます",
+        "kanji": "会社を休みます",
+        "reading": "かいしゃをやすみます",
+        "hanViet": "HỘI XÃ HƯU",
+        "meaning": "Nghỉ làm việc ở công ty",
+        "type": "Cụm động từ",
+        "kanjiCount": 3,
+        "kanjis": [
+          "会",
+          "社",
+          "休"
+        ],
+        "strokes": 19,
+        "radicals": "nhân 人 (+4 nét)",
+        "onyomi": "カイ シャ キュウ",
+        "kunyomi": "あ-う やす-む",
+        "components": [
+          {
+            "kanji": "会",
+            "hanViet": "HỘI",
+            "meaning": "Gặp gỡ",
+            "strokes": 6,
+            "radical": "nhân 人 (+4 nét)",
+            "onyomi": "カイ",
+            "kunyomi": "あ-う"
+          },
+          {
+            "kanji": "社",
+            "hanViet": "XÃ",
+            "meaning": "Xã hội, đền",
+            "strokes": 7,
+            "radical": "thị 礻 (+3 nét)",
+            "onyomi": "シャ",
+            "kunyomi": "やしろ"
+          },
+          {
+            "kanji": "休",
+            "hanViet": "HƯU",
+            "meaning": "Nghỉ ngơi",
+            "strokes": 6,
+            "radical": "nhân 亻 (+4 nét)",
+            "onyomi": "キュウ",
+            "kunyomi": "やす-む"
+          }
+        ],
+        "mnemonic": "【Cấu thành】: 会社 (HỘI XÃ: Công ty) + 休 (HƯU: Nghỉ ngơi)\n【Mẹo nhớ từ】: Con người (亻) tựa lưng vào gốc cây (木) để NGHỈ NGƠI (休) không đến CÔNG TY (会社): NGHỈ LÀM Ở CÔNG TY.",
+        "example": "きょうは 会社を 休みます。(Hôm nay tôi xin nghỉ làm ở công ty.)",
+        "id": "v-9-53"
       }
     ]
   },
@@ -12414,7 +12584,7 @@ const kanjiLessonsData = [
     "title": "Bài 10: Mẹo Nhớ Từ Vựng Chữ Hán",
     "level": "Minna N5 (Bài 10)",
     "description": "Toàn bộ 34 từ vựng chữ Hán trọng tâm Bài 10 theo tài liệu Từ Vựng 50 Bài Minna no Nihongo. 100% kèm chiết tự, giải nghĩa bộ thủ và mẹo nhớ cụ thể, dễ hiểu.",
-    "totalKanji": 34,
+    "totalKanji": 35,
     "items": [
       {
         "id": "v-10-1",
@@ -13585,6 +13755,36 @@ const kanjiLessonsData = [
         ],
         "mnemonic": "【Chiết tự】: Gồm Bộ Miên (宀: mái nhà) kết hợp với Biến thể kết hợp với Đại (大: to lớn)\n【Mẹo nhớ】: Nơi sâu kín nhất bên trong mái nhà lớn (宀 Đại): SÂU THẲM, NƠI TẬN CÙNG (trong 奥: bên trong, 奥さん: vợ người khác).",
         "example": "奥を べんきょうします。(Học từ 奥.)"
+      },
+      {
+        "word": "行っていらっしゃい",
+        "kanji": "行っていらっしゃい",
+        "reading": "いっていらっしゃい",
+        "hanViet": "HÀNH",
+        "meaning": "Anh/chị đi nhé / Đi cẩn thận nhé",
+        "type": "Cụm từ",
+        "kanjiCount": 1,
+        "kanjis": [
+          "行"
+        ],
+        "strokes": 6,
+        "radicals": "hành 行",
+        "onyomi": "コウ ギョウ",
+        "kunyomi": "い-く おこな-う",
+        "components": [
+          {
+            "kanji": "行",
+            "hanViet": "HÀNH",
+            "meaning": "Đi, tiến hành",
+            "strokes": 6,
+            "radical": "hành 行",
+            "onyomi": "コウ ギョウ",
+            "kunyomi": "い-く"
+          }
+        ],
+        "mnemonic": "【Chiết tự】: Gồm Bộ Hành (行: bước đi, ngã tư đường)\n【Mẹo nhớ từ】: Lời chúc người thân bước ĐI (行) bình an ngoài đường: ĐI NHÉ / ĐI CẨN THẬN NHÉ.",
+        "example": "行って いらっしゃい。(Anh đi cẩn thận nhé!)",
+        "id": "v-10-35"
       }
     ]
   },
@@ -15174,7 +15374,7 @@ const kanjiLessonsData = [
     "title": "Bài 12: Mẹo Nhớ Từ Vựng Chữ Hán",
     "level": "Minna N5 (Bài 12)",
     "description": "Toàn bộ 38 từ vựng chữ Hán trọng tâm Bài 12 theo tài liệu Từ Vựng 50 Bài Minna no Nihongo. 100% kèm chiết tự, giải nghĩa bộ thủ và mẹo nhớ cụ thể, dễ hiểu.",
-    "totalKanji": 38,
+    "totalKanji": 39,
     "items": [
       {
         "id": "v-12-1",
@@ -16455,6 +16655,36 @@ const kanjiLessonsData = [
         ],
         "mnemonic": "【Cấu thành】: 紅 (HỒNG: Màu đỏ [Mịch (糸: sợi tơ chỉ)]) + 葉 (DIỆP: Chiếc lá [Thảo (艹: mầm xanh)])\n【Mẹo nhớ từ】: Hồng (紅: sắc đỏ thắm) + Diệp (葉: chiếc lá phong). Rừng lá phong chuyển sang sắc đỏ rực rỡ vào mùa thu Nhật Bản ➔ MÙA LÁ ĐỎ MOMIJI.",
         "example": "紅葉を べんきょうします。(Học từ 紅葉.)"
+      },
+      {
+        "word": "少ない",
+        "kanji": "少ない",
+        "reading": "すくない",
+        "hanViet": "THIỂU",
+        "meaning": "Ít, hiếm",
+        "type": "Tính từ đuôi い",
+        "kanjiCount": 1,
+        "kanjis": [
+          "少"
+        ],
+        "strokes": 4,
+        "radicals": "tiểu 小 (+1 nét)",
+        "onyomi": "ショウ",
+        "kunyomi": "すく-ない すこ-し",
+        "components": [
+          {
+            "kanji": "少",
+            "hanViet": "THIỂU",
+            "meaning": "Ít",
+            "strokes": 4,
+            "radical": "tiểu 小 (+1 nét)",
+            "onyomi": "ショウ",
+            "kunyomi": "すく-ない"
+          }
+        ],
+        "mnemonic": "【Chiết tự】: Gồm Bộ Tiểu (小: nhỏ bé) thêm một nét phẩy (丿) cắt bớt đi\n【Mẹo nhớ】: Đã nhỏ bé (小) lại còn bị cắt bớt đi một nét nữa thì số lượng càng thêm ÍT (少).",
+        "example": "人が 少ないです。(Ít người.)",
+        "id": "v-12-39"
       }
     ]
   },
@@ -18004,7 +18234,7 @@ const kanjiLessonsData = [
     "title": "Bài 14: Mẹo Nhớ Từ Vựng Chữ Hán",
     "level": "Minna N5 (Bài 14)",
     "description": "Toàn bộ 41 từ vựng chữ Hán trọng tâm Bài 14 theo tài liệu Từ Vựng 50 Bài Minna no Nihongo. 100% kèm chiết tự, giải nghĩa bộ thủ và mẹo nhớ cụ thể, dễ hiểu.",
-    "totalKanji": 41,
+    "totalKanji": 42,
     "items": [
       {
         "id": "v-14-1",
@@ -19435,6 +19665,36 @@ const kanjiLessonsData = [
         ],
         "mnemonic": "【Chiết tự】: Gồm Bộ Xích (彳: bước chân đi) kết hợp với Bộ Yêu (幺: sợi dây xích nhỏ) kết hợp với Chữ Trĩ (夊: bước chân chậm trễ)\n【Mẹo nhớ】: Bước chân đi (彳) bị sợi dây (幺) níu kéo bước đi chậm chạp (夊) tụt lại ở mãi TẬN PHÍA SAU (後).",
         "example": "後でを べんきょうします。(Học từ 後で.)"
+      },
+      {
+        "word": "もう少し",
+        "kanji": "もう少し",
+        "reading": "もうすこし",
+        "hanViet": "THIỂU",
+        "meaning": "Thêm một chút nữa",
+        "type": "Phó từ",
+        "kanjiCount": 1,
+        "kanjis": [
+          "少"
+        ],
+        "strokes": 4,
+        "radicals": "tiểu 小 (+1 nét)",
+        "onyomi": "ショウ",
+        "kunyomi": "すこ-し",
+        "components": [
+          {
+            "kanji": "少",
+            "hanViet": "THIỂU",
+            "meaning": "Ít, chút",
+            "strokes": 4,
+            "radical": "tiểu 小 (+1 nét)",
+            "onyomi": "ショウ",
+            "kunyomi": "すこ-し"
+          }
+        ],
+        "mnemonic": "【Cấu thành】: もう (Thêm) + 少し (THIỂU: Một chút)\n【Mẹo nhớ từ】: Xin thêm MỘT CHÚT ÍT (少し) nữa: THÊM MỘT CHÚT.",
+        "example": "もう少し ゆっくり 話して ください。(Xin hãy nói chậm lại thêm một chút.)",
+        "id": "v-14-42"
       }
     ]
   },
@@ -24424,7 +24684,7 @@ const kanjiLessonsData = [
     "title": "Bài 19: Mẹo Nhớ Từ Vựng Chữ Hán",
     "level": "Minna N5 (Bài 19)",
     "description": "Toàn bộ 27 từ vựng chữ Hán trọng tâm Bài 19 theo tài liệu Từ Vựng 50 Bài Minna no Nihongo. 100% kèm chiết tự, giải nghĩa bộ thủ và mẹo nhớ cụ thể, dễ hiểu.",
-    "totalKanji": 27,
+    "totalKanji": 28,
     "items": [
       {
         "id": "v-19-1",
@@ -25395,6 +25655,56 @@ const kanjiLessonsData = [
         ],
         "mnemonic": "【Cấu thành】: 失 (THẤT: Mất mát [Bàn tay đánh rơi chiếc gậy]) + 礼 (LỄ: Cảm ơn [Thị (礻: bàn thờ thần linh)])\n【Mẹo nhớ từ】: そろそろ (đã đến lúc) + Thất lễ (失礼: xin cáo từ). Lời chào lịch sự khi chuẩn bị xin phép ra về: 'Đã muộn rồi, xin phép cho tôi được cáo từ' ➔ ĐÃ ĐẾN LÚC TÔI XIN PHÉP VỀ.",
         "example": "そろそろ失礼しますを べんきょうします。(Học từ そろそろ失礼します.)"
+      },
+      {
+        "word": "調子が悪い",
+        "kanji": "調子が悪い",
+        "reading": "ちょうしがわるい",
+        "hanViet": "ĐIỀU TỬ ÁC",
+        "meaning": "Tình trạng sức khỏe kém, trục trặc",
+        "type": "Cụm từ",
+        "kanjiCount": 3,
+        "kanjis": [
+          "調",
+          "子",
+          "悪"
+        ],
+        "strokes": 29,
+        "radicals": "ngôn 言 (+8 nét)",
+        "onyomi": "チョウ シ アク",
+        "kunyomi": "しら-べる こ わる-い",
+        "components": [
+          {
+            "kanji": "調",
+            "hanViet": "ĐIỀU",
+            "meaning": "Điều phối, kiểm tra",
+            "strokes": 15,
+            "radical": "ngôn 言 (+8 nét)",
+            "onyomi": "チョウ",
+            "kunyomi": "しら-べる"
+          },
+          {
+            "kanji": "子",
+            "hanViet": "TỬ",
+            "meaning": "Con cái, hạt",
+            "strokes": 3,
+            "radical": "tử 子",
+            "onyomi": "シ",
+            "kunyomi": "こ"
+          },
+          {
+            "kanji": "悪",
+            "hanViet": "ÁC",
+            "meaning": "Xấu, ác",
+            "strokes": 11,
+            "radical": "tâm 心 (+7 nét)",
+            "onyomi": "アク",
+            "kunyomi": "わる-い"
+          }
+        ],
+        "mnemonic": "【Cấu thành】: 調子 (ĐIỀU TỬ: Tình trạng) + 悪い (ÁC: Xấu, kém)\n【Mẹo nhớ từ】: Tình trạng điều hòa trong người chuyển biến XẤU (悪): SỨC KHỎE KÉM, TRỤC TRẶC.",
+        "example": "きのうから 体の 調子が 悪いです。(Từ hôm qua tình trạng sức khỏe trong người không tốt.)",
+        "id": "v-19-28"
       }
     ]
   },
@@ -26044,7 +26354,7 @@ const kanjiLessonsData = [
     "title": "Bài 21: Mẹo Nhớ Từ Vựng Chữ Hán",
     "level": "Minna N5 (Bài 21)",
     "description": "Toàn bộ 24 từ vựng chữ Hán trọng tâm Bài 21 theo tài liệu Từ Vựng 50 Bài Minna no Nihongo. 100% kèm chiết tự, giải nghĩa bộ thủ và mẹo nhớ cụ thể, dễ hiểu.",
-    "totalKanji": 24,
+    "totalKanji": 25,
     "items": [
       {
         "id": "v-21-1",
@@ -26955,6 +27265,36 @@ const kanjiLessonsData = [
         ],
         "mnemonic": "【Cấu thành】: 質 (CHẤT: Chất lượng [Hai chiếc rìu (斤]) + 問 (VẤN: Hỏi han [Môn (門: cánh cổng)])\n【Mẹo nhớ từ】: Nét nghĩa của 質 (CHẤT: Chất lượng) khéo léo kết duyên cùng 問 (VẤN: Hỏi han) mở ra hình ảnh biểu trưng cho Câu hỏi ➔ 質問 (しつもん).",
         "example": "質問を べんきょうします。(Học từ 質問.)"
+      },
+      {
+        "word": "他の",
+        "kanji": "他の",
+        "reading": "ほかの",
+        "hanViet": "THA",
+        "meaning": "Khác, ngoài ra",
+        "type": "Liên từ / Định từ",
+        "kanjiCount": 1,
+        "kanjis": [
+          "他"
+        ],
+        "strokes": 5,
+        "radicals": "nhân 亻 (+3 nét)",
+        "onyomi": "タ",
+        "kunyomi": "ほか",
+        "components": [
+          {
+            "kanji": "他",
+            "hanViet": "THA",
+            "meaning": "Khác",
+            "strokes": 5,
+            "radical": "nhân 亻 (+3 nét)",
+            "onyomi": "タ",
+            "kunyomi": "ほか"
+          }
+        ],
+        "mnemonic": "【Chiết tự】: Gồm Bộ Nhân (亻: người) kết hợp với chữ Dã (也: cũng)\n【Mẹo nhớ】: Người này (亻) cũng (也) giống như những người KHÁC (他) mà thôi.",
+        "example": "他の 意見は ありますか。(Có ý kiến nào khác nữa không?)",
+        "id": "v-21-25"
       }
     ]
   },
@@ -27934,7 +28274,7 @@ const kanjiLessonsData = [
     "title": "Bài 23: Mẹo Nhớ Từ Vựng Chữ Hán",
     "level": "Minna N5 (Bài 23)",
     "description": "Toàn bộ 42 từ vựng chữ Hán trọng tâm Bài 23 theo tài liệu Từ Vựng 50 Bài Minna no Nihongo. 100% kèm chiết tự, giải nghĩa bộ thủ và mẹo nhớ cụ thể, dễ hiểu.",
-    "totalKanji": 42,
+    "totalKanji": 43,
     "items": [
       {
         "id": "v-23-1",
@@ -29555,6 +29895,56 @@ const kanjiLessonsData = [
         ],
         "mnemonic": "【Cấu thành】: 駐 (TRÚ: Đỗ xe [Mã (馬: con ngựa cưỡi)]) + 輪 (LUÂN: Chiếc nhẫn [Xa (車: cỗ xe)]) + 場 (TRƯỜNG: Quảng trường [Thổ (土: khu đất rộng)])\n【Mẹo nhớ từ】: Khuôn viên, tòa cơ sở chuyên trách phục vụ cho mục đích [駐輪]: Bãi đậu xe 2 bánh (駐輪場: ちゅうりんじょう).",
         "example": "駐輪場を べんきょうします。(Học từ 駐輪場.)"
+      },
+      {
+        "word": "車に気を付ける",
+        "kanji": "車に気を付ける",
+        "reading": "くるまにきをつける",
+        "hanViet": "XA KHÍ PHÓ",
+        "meaning": "Cẩn thận với xe cộ",
+        "type": "Cụm động từ",
+        "kanjiCount": 3,
+        "kanjis": [
+          "車",
+          "気",
+          "付"
+        ],
+        "strokes": 18,
+        "radicals": "xa 車",
+        "onyomi": "シャ キ フ",
+        "kunyomi": "くるま つ-ける",
+        "components": [
+          {
+            "kanji": "車",
+            "hanViet": "XA",
+            "meaning": "Xe cộ",
+            "strokes": 7,
+            "radical": "xa 車",
+            "onyomi": "シャ",
+            "kunyomi": "くるま"
+          },
+          {
+            "kanji": "気",
+            "hanViet": "KHÍ",
+            "meaning": "Khí lực, tâm trí",
+            "strokes": 6,
+            "radical": "khí 气 (+2 nét)",
+            "onyomi": "キ",
+            "kunyomi": "いき"
+          },
+          {
+            "kanji": "付",
+            "hanViet": "PHÓ",
+            "meaning": "Gắn vào, dính",
+            "strokes": 5,
+            "radical": "nhân 亻 (+3 nét)",
+            "onyomi": "フ",
+            "kunyomi": "つ-ける"
+          }
+        ],
+        "mnemonic": "【Cấu thành】: 車 (XA: Xe cộ) + 気を付ける (KHÍ PHÓ: Chú ý, cẩn thận)\n【Mẹo nhớ từ】: Đặt tâm KHÍ (気) gắn (付) vào việc quan sát XE CỘ (車) khi qua đường: CẨN THẬN VỚI XE CỘ.",
+        "example": "道を 渡る とき、車に 気を 付けます。(Khi qua đường hãy cẩn thận với xe cộ.)",
+        "id": "v-23-43"
       }
     ]
   },
@@ -30304,7 +30694,7 @@ const kanjiLessonsData = [
     "title": "Bài 25: Mẹo Nhớ Từ Vựng Chữ Hán",
     "level": "Minna N5 (Bài 25)",
     "description": "Toàn bộ 21 từ vựng chữ Hán trọng tâm Bài 25 theo tài liệu Từ Vựng 50 Bài Minna no Nihongo. 100% kèm chiết tự, giải nghĩa bộ thủ và mẹo nhớ cụ thể, dễ hiểu.",
-    "totalKanji": 21,
+    "totalKanji": 22,
     "items": [
       {
         "id": "v-25-1",
@@ -31135,6 +31525,36 @@ const kanjiLessonsData = [
         ],
         "mnemonic": "【Cấu thành】: 色 (SẮC: Màu sắc [Hình người cúi đầu e ấp làm gương mặt ửng hồng sắc thái]) + 世 (THẾ: Thế giới [Ba chữ Thập (十]) + 話 (THOẠI: Nói chuyện [Ngôn (言: lời nói)])\n【Mẹo nhớ từ】: Hình ảnh thực tế sinh động: thông qua 色 (SẮC: Màu sắc), 世 (THẾ: Thế giới), 話 (THOẠI: Nói chuyện), hành động được khắc họa rõ nét tạo nên ý nghĩa Cám ơn vì đã giúp đỡ tôi rất nhiều trong thời gian qua ➔ 色々お世話に (いろいろおせわになりました).",
         "example": "色々お世話にを べんきょうします。(Học từ 色々お世話に.)"
+      },
+      {
+        "word": "億",
+        "kanji": "億",
+        "reading": "おく",
+        "hanViet": "ỨC",
+        "meaning": "Một trăm triệu (100.000.000)",
+        "type": "Số từ",
+        "kanjiCount": 1,
+        "kanjis": [
+          "億"
+        ],
+        "strokes": 15,
+        "radicals": "nhân 亻 (+13 nét)",
+        "onyomi": "オク",
+        "kunyomi": "",
+        "components": [
+          {
+            "kanji": "億",
+            "hanViet": "ỨC",
+            "meaning": "Một trăm triệu",
+            "strokes": 15,
+            "radical": "nhân 亻 (+13 nét)",
+            "onyomi": "オク",
+            "kunyomi": ""
+          }
+        ],
+        "mnemonic": "【Chiết tự】: Gồm Bộ Nhân (亻: người) đứng cạnh chữ Ý (意: ý nghĩ)\n【Mẹo nhớ】: Con người (亻) luôn ôm trong ý nghĩ (意) giấc mơ sở hữu hàng TRĂM TRIỆU (億) tiền tài.",
+        "example": "1億円 当たりました。(Trúng số 100 triệu yên.)",
+        "id": "v-25-22"
       }
     ]
   },
@@ -48514,7 +48934,7 @@ const kanjiLessonsData = [
     "title": "Bài 37: Mẹo Nhớ Từ Vựng Chữ Hán",
     "level": "Minna N4 (Bài 37)",
     "description": "Toàn bộ 38 từ vựng chữ Hán trọng tâm Bài 37 theo tài liệu Từ Vựng 50 Bài Minna no Nihongo. 100% kèm chiết tự, giải nghĩa bộ thủ và mẹo nhớ cụ thể, dễ hiểu.",
-    "totalKanji": 38,
+    "totalKanji": 41,
     "items": [
       {
         "id": "v-37-1",
@@ -49925,6 +50345,116 @@ const kanjiLessonsData = [
         ],
         "mnemonic": "【Cấu thành】: 彫 (ĐIÊU: Điêu khắc [Chu (周: bao quanh tỉ mỉ)]) + 刻 (KHẮC: Khắc sâu [Chữ Hợi (亥: con lợn tế cúng)])\n【Mẹo nhớ từ】: Nét nghĩa của 彫 (ĐIÊU: Điêu khắc) khéo léo kết duyên cùng 刻 (KHẮC: Khắc sâu) mở ra hình ảnh biểu trưng cho Nghệ thuật điêu khắc ➔ 彫刻 (ちょうこく).",
         "example": "彫刻を べんきょうします。(Học từ 彫刻.)"
+      },
+      {
+        "word": "注意する",
+        "kanji": "注意する",
+        "reading": "ちゅういする",
+        "hanViet": "CHÚ Ý",
+        "meaning": "Chú ý, nhắc nhở",
+        "type": "Động từ nhóm 3",
+        "kanjiCount": 2,
+        "kanjis": [
+          "注",
+          "意"
+        ],
+        "strokes": 21,
+        "radicals": "thủy 氵 (+5 nét)",
+        "onyomi": "チュウ イ",
+        "kunyomi": "そそ-ぐ",
+        "components": [
+          {
+            "kanji": "注",
+            "hanViet": "CHÚ",
+            "meaning": "Rót vào, chú tâm",
+            "strokes": 8,
+            "radical": "thủy 氵 (+5 nét)",
+            "onyomi": "チュウ",
+            "kunyomi": "そそ-ぐ"
+          },
+          {
+            "kanji": "意",
+            "hanViet": "Ý",
+            "meaning": "Ý thức, tâm ý",
+            "strokes": 13,
+            "radical": "tâm 心 (+9 nét)",
+            "onyomi": "イ",
+            "kunyomi": ""
+          }
+        ],
+        "mnemonic": "【Cấu thành】: 注 (CHÚ: Rót vào) + 意 (Ý: Tâm ý)\n【Mẹo nhớ từ】: Rót (注) toàn bộ tâm Ý (意) vào việc đang làm: CHÚ Ý, NHẮC NHỞ.",
+        "example": "先生に 注意されました。(Bị giáo viên nhắc nhở.)",
+        "id": "v-37-39"
+      },
+      {
+        "word": "石油",
+        "kanji": "石油",
+        "reading": "せきゆ",
+        "hanViet": "THẠCH DU",
+        "meaning": "Dầu mỏ, dầu hỏa",
+        "type": "Danh từ",
+        "kanjiCount": 2,
+        "kanjis": [
+          "石",
+          "油"
+        ],
+        "strokes": 13,
+        "radicals": "thạch 石",
+        "onyomi": "セキ ユ",
+        "kunyomi": "いし あぶら",
+        "components": [
+          {
+            "kanji": "石",
+            "hanViet": "THẠCH",
+            "meaning": "Hòn đá",
+            "strokes": 5,
+            "radical": "thạch 石",
+            "onyomi": "セキ",
+            "kunyomi": "いし"
+          },
+          {
+            "kanji": "油",
+            "hanViet": "DU",
+            "meaning": "Dầu",
+            "strokes": 8,
+            "radical": "thủy 氵 (+5 nét)",
+            "onyomi": "ユ",
+            "kunyomi": "あぶら"
+          }
+        ],
+        "mnemonic": "【Cấu thành】: 石 (THẠCH: Đá) + 油 (DU: Dầu)\n【Mẹo nhớ từ】: DÒNG DẦU (油) quý giá khai thác từ trong lòng các tầng ĐÁ (石): DẦU MỎ.",
+        "example": "日本は 石油を 輸入します。(Nhật Bản nhập khẩu dầu mỏ.)",
+        "id": "v-37-40"
+      },
+      {
+        "word": "眠る",
+        "kanji": "眠る",
+        "reading": "ねむる",
+        "hanViet": "MIÊN",
+        "meaning": "Ngủ say, chìm vào giấc ngủ",
+        "type": "Động từ nhóm 1",
+        "kanjiCount": 1,
+        "kanjis": [
+          "眠"
+        ],
+        "strokes": 10,
+        "radicals": "mục 目 (+5 nét)",
+        "onyomi": "ミン",
+        "kunyomi": "ねむ-る ねむ-い",
+        "components": [
+          {
+            "kanji": "眠",
+            "hanViet": "MIÊN",
+            "meaning": "Ngủ",
+            "strokes": 10,
+            "radical": "mục 目 (+5 nét)",
+            "onyomi": "ミン",
+            "kunyomi": "ねむ-る"
+          }
+        ],
+        "mnemonic": "【Chiết tự】: Gồm Bộ Mục (目: con mắt) kết hợp với chữ Dân (民: dân chúng)\n【Mẹo nhớ】: Dân chúng (民) sau một ngày lao động vất vả khép đôi MẮT (目) lại để NGỦ SAY (眠).",
+        "example": "ぐっすり 眠りました。(Đã ngủ một giấc thật say.)",
+        "id": "v-37-41"
       }
     ]
   },
@@ -57554,7 +58084,7 @@ const kanjiLessonsData = [
     "title": "Bài 43: Mẹo Nhớ Từ Vựng Chữ Hán",
     "level": "Minna N4 (Bài 43)",
     "description": "Toàn bộ 40 từ vựng chữ Hán trọng tâm Bài 43 theo tài liệu Từ Vựng 50 Bài Minna no Nihongo. 100% kèm chiết tự, giải nghĩa bộ thủ và mẹo nhớ cụ thể, dễ hiểu.",
-    "totalKanji": 40,
+    "totalKanji": 41,
     "items": [
       {
         "id": "v-43-1",
@@ -59015,6 +59545,46 @@ const kanjiLessonsData = [
         ],
         "mnemonic": "【Chiết tự】: Gồm Bộ Thảo (艹: cành hoa cỏ) kết hợp với Bộ Thuỷ (氵: giọt sương) kết hợp với Chữ Các (rơi rụng)\n【Mẹo nhớ】: Cành lá khô (艹) cùng những giọt sương mai (氵) nhẹ nhàng rơi rụng xuống đất: RƠI XUỐNG, LẠC (落).",
         "example": "落とすを べんきょうします。(Học từ 落とす.)"
+      },
+      {
+        "word": "幸福",
+        "kanji": "幸福",
+        "reading": "こうふく",
+        "hanViet": "HẠNH PHÚC",
+        "meaning": "Hạnh phúc",
+        "type": "Danh từ / Tính từ đuôi な",
+        "kanjiCount": 2,
+        "kanjis": [
+          "幸",
+          "福"
+        ],
+        "strokes": 21,
+        "radicals": "can 干 (+5 nét)",
+        "onyomi": "コウ フク",
+        "kunyomi": "さいわ-い しあわ-せ",
+        "components": [
+          {
+            "kanji": "幸",
+            "hanViet": "HẠNH",
+            "meaning": "May mắn, hạnh phúc",
+            "strokes": 8,
+            "radical": "can 干 (+5 nét)",
+            "onyomi": "コウ",
+            "kunyomi": "しあわ-せ"
+          },
+          {
+            "kanji": "福",
+            "hanViet": "PHÚC",
+            "meaning": "Phước lành",
+            "strokes": 13,
+            "radical": "thị 礻 (+9 nét)",
+            "onyomi": "フク",
+            "kunyomi": ""
+          }
+        ],
+        "mnemonic": "【Cấu thành】: 幸 (HẠNH: May mắn) + 福 (PHÚC: Phước lành)\n【Mẹo nhớ từ】: Đón nhận MAY MẮN (幸) và tràn đầy PHƯỚC LÀNH (福): HẠNH PHÚC.",
+        "example": "幸福な 人生を 送ります。(Sống một cuộc đời hạnh phúc.)",
+        "id": "v-43-41"
       }
     ]
   },
@@ -59024,7 +59594,7 @@ const kanjiLessonsData = [
     "title": "Bài 44: Mẹo Nhớ Từ Vựng Chữ Hán",
     "level": "Minna N4 (Bài 44)",
     "description": "Toàn bộ 29 từ vựng chữ Hán trọng tâm Bài 44 theo tài liệu Từ Vựng 50 Bài Minna no Nihongo. 100% kèm chiết tự, giải nghĩa bộ thủ và mẹo nhớ cụ thể, dễ hiểu.",
-    "totalKanji": 29,
+    "totalKanji": 30,
     "items": [
       {
         "id": "v-44-1",
@@ -60035,6 +60605,46 @@ const kanjiLessonsData = [
         ],
         "mnemonic": "【Chiết tự】: Gồm Bộ Thủy (氵: nước) kết hợp với Nhu (需: hạt mưa rơi cần thiết)\n【Mẹo nhớ】: Mưa rơi tầm tã (需) ngấm đầy nước (氵) làm ướt sũng cả vạt áo: ƯỚT ĐẪM (trong 濡れる).",
         "example": "濡らすを べんきょうします。(Học từ 濡らす.)"
+      },
+      {
+        "word": "調節する",
+        "kanji": "調節する",
+        "reading": "ちょうせつする",
+        "hanViet": "ĐIỀU TIẾT",
+        "meaning": "Điều chỉnh, điều tiết",
+        "type": "Động từ nhóm 3",
+        "kanjiCount": 2,
+        "kanjis": [
+          "調",
+          "節"
+        ],
+        "strokes": 28,
+        "radicals": "ngôn 言 (+8 nét)",
+        "onyomi": "チョウ セツ",
+        "kunyomi": "しら-べる ふし",
+        "components": [
+          {
+            "kanji": "調",
+            "hanViet": "ĐIỀU",
+            "meaning": "Điều hòa, chỉnh",
+            "strokes": 15,
+            "radical": "ngôn 言 (+8 nét)",
+            "onyomi": "チョウ",
+            "kunyomi": "しら-べる"
+          },
+          {
+            "kanji": "節",
+            "hanViet": "TIẾT",
+            "meaning": "Tiết chế, đốt tre",
+            "strokes": 13,
+            "radical": "trúc 竹 (+7 nét)",
+            "onyomi": "セツ",
+            "kunyomi": "ふし"
+          }
+        ],
+        "mnemonic": "【Cấu thành】: 調 (ĐIỀU: Điều chỉnh) + 節 (TIẾT: Tiết chế)\n【Mẹo nhớ từ】: ĐIỀU CHỈNH (調) cho đúng mực TIẾT CHẾ (節) nhịp nhàng: ĐIỀU TIẾT, ĐIỀU CHỈNH.",
+        "example": "エアコンの 温度を 調節します。(Điều chỉnh nhiệt độ máy lạnh.)",
+        "id": "v-44-30"
       }
     ]
   },
@@ -62174,7 +62784,7 @@ const kanjiLessonsData = [
     "title": "Bài 47: Mẹo Nhớ Từ Vựng Chữ Hán",
     "level": "Minna N4 (Bài 47)",
     "description": "Toàn bộ 33 từ vựng chữ Hán trọng tâm Bài 47 theo tài liệu Từ Vựng 50 Bài Minna no Nihongo. 100% kèm chiết tự, giải nghĩa bộ thủ và mẹo nhớ cụ thể, dễ hiểu.",
-    "totalKanji": 33,
+    "totalKanji": 34,
     "items": [
       {
         "id": "v-47-1",
@@ -63415,6 +64025,66 @@ const kanjiLessonsData = [
         ],
         "mnemonic": "【Chiết tự】: Gồm Bộ Ba chú chim non (隹) cùng bay về đậu tụ lại trên một cành cây (木)\n【Mẹo nhớ】: Đàn chim ríu rít rủ nhau cùng bay về tụ họp đông đủ trên chạc cây lớn (木): TẬP HỢP, THU GOM (集).",
         "example": "集めるを べんきょうします。(Học từ 集める.)"
+      },
+      {
+        "word": "天気予報",
+        "kanji": "天気予報",
+        "reading": "てんきよほう",
+        "hanViet": "THIÊN KHÍ DỰ BÁO",
+        "meaning": "Dự báo thời tiết",
+        "type": "Danh từ",
+        "kanjiCount": 4,
+        "kanjis": [
+          "天",
+          "気",
+          "予",
+          "報"
+        ],
+        "strokes": 25,
+        "radicals": "đại 大 (+1 nét)",
+        "onyomi": "テン キ ヨ ホウ",
+        "kunyomi": "あめ いき あらかじ-め むく-いる",
+        "components": [
+          {
+            "kanji": "天",
+            "hanViet": "THIÊN",
+            "meaning": "Trời",
+            "strokes": 4,
+            "radical": "đại 大 (+1 nét)",
+            "onyomi": "テン",
+            "kunyomi": "あめ"
+          },
+          {
+            "kanji": "気",
+            "hanViet": "KHÍ",
+            "meaning": "Khí trời",
+            "strokes": 6,
+            "radical": "khí 气 (+2 nét)",
+            "onyomi": "キ",
+            "kunyomi": "いき"
+          },
+          {
+            "kanji": "予",
+            "hanViet": "DỰ",
+            "meaning": "Trước, dự định",
+            "strokes": 4,
+            "radical": "phiệt 丿 (+3 nét)",
+            "onyomi": "ヨ",
+            "kunyomi": "あらかじ-め"
+          },
+          {
+            "kanji": "報",
+            "hanViet": "BÁO",
+            "meaning": "Thông báo",
+            "strokes": 12,
+            "radical": "thổ 土 (+9 nét)",
+            "onyomi": "ホウ",
+            "kunyomi": "むく-いる"
+          }
+        ],
+        "mnemonic": "【Cấu thành】: 天気 (THIÊN KHÍ: Thời tiết) + 予報 (DỰ BÁO: Báo trước)\n【Mẹo nhớ từ】: THÔNG BÁO TRƯỚC (予報) về sự biến đổi của THỜI TIẾT (天気): DỰ BÁO THỜI TIẾT.",
+        "example": "天気予報に よると、明日は 雨です。(Theo dự báo thời tiết thì ngày mai trời mưa.)",
+        "id": "v-47-34"
       }
     ]
   },
@@ -63424,7 +64094,7 @@ const kanjiLessonsData = [
     "title": "Bài 48: Mẹo Nhớ Từ Vựng Chữ Hán",
     "level": "Minna N4 (Bài 48)",
     "description": "Toàn bộ 28 từ vựng chữ Hán trọng tâm Bài 48 theo tài liệu Từ Vựng 50 Bài Minna no Nihongo. 100% kèm chiết tự, giải nghĩa bộ thủ và mẹo nhớ cụ thể, dễ hiểu.",
-    "totalKanji": 28,
+    "totalKanji": 29,
     "items": [
       {
         "id": "v-48-1",
@@ -64405,6 +65075,46 @@ const kanjiLessonsData = [
         ],
         "mnemonic": "【Chiết tự】: Gồm Bộ Xa (車: cỗ xe) kết hợp với Cây kích bảo vệ kết hợp với Năm tháng\n【Mẹo nhớ】: Xếp toàn bộ hàng hóa và thông tin lên cỗ xe (車) để vận chuyển: ĐĂNG TẢI, CHỞ ĐI (載).",
         "example": "載せるを べんきょうします。(Học từ 載せる.)"
+      },
+      {
+        "word": "世話をする",
+        "kanji": "世話をする",
+        "reading": "せわをする",
+        "hanViet": "THẾ THOẠI",
+        "meaning": "Chăm sóc, giúp đỡ",
+        "type": "Cụm động từ",
+        "kanjiCount": 2,
+        "kanjis": [
+          "世",
+          "話"
+        ],
+        "strokes": 18,
+        "radicals": "nhất 一 (+4 nét)",
+        "onyomi": "セイ ワ",
+        "kunyomi": "よ はな-す",
+        "components": [
+          {
+            "kanji": "世",
+            "hanViet": "THẾ",
+            "meaning": "Đời, thế gian",
+            "strokes": 5,
+            "radical": "nhất 一 (+4 nét)",
+            "onyomi": "セイ セ",
+            "kunyomi": "よ"
+          },
+          {
+            "kanji": "話",
+            "hanViet": "THOẠI",
+            "meaning": "Nói chuyện",
+            "strokes": 13,
+            "radical": "ngôn 言 (+6 nét)",
+            "onyomi": "ワ",
+            "kunyomi": "はな-す はなし"
+          }
+        ],
+        "mnemonic": "【Cấu thành】: 世話 (THẾ THOẠI: Chăm sóc, giúp đỡ)\n【Mẹo nhớ từ】: Giữa THẾ GIAN (世) luôn ân cần HỎI HAN NÓI CHUYỆN (話) giúp đỡ người khác: CHĂM SÓC, GIÚP ĐỠ.",
+        "example": "犬の 世話を します。(Chăm sóc chú chó.)",
+        "id": "v-48-29"
       }
     ]
   },
@@ -65784,7 +66494,7 @@ const kanjiLessonsData = [
     "title": "Bài 50: Mẹo Nhớ Từ Vựng Chữ Hán",
     "level": "Minna N4 (Bài 50)",
     "description": "Toàn bộ 35 từ vựng chữ Hán trọng tâm Bài 50 theo tài liệu Từ Vựng 50 Bài Minna no Nihongo. 100% kèm chiết tự, giải nghĩa bộ thủ và mẹo nhớ cụ thể, dễ hiểu.",
-    "totalKanji": 35,
+    "totalKanji": 36,
     "items": [
       {
         "id": "v-50-1",
@@ -67135,7 +67845,41 @@ const kanjiLessonsData = [
         ],
         "mnemonic": "【Cấu thành】: 博 (BÁC: Bảo tàng [Thập (mười phần hiểu biết)]) + 物 (VẬT: Đồ vật [Ngưu (牛: con bò)]) + 館 (QUÁN: Tòa nhà lớn [Thực (飠: đồ ăn, nuôi dưỡng)])\n【Mẹo nhớ từ】: Khuôn viên, tòa cơ sở chuyên trách phục vụ cho mục đích [博物]: Nửa tháng (博物館: はんつき).",
         "example": "博物館を べんきょうします。(Học từ 博物館.)"
+      },
+      {
+        "word": "叶う",
+        "kanji": "叶う",
+        "reading": "かなう",
+        "hanViet": "DIỆP",
+        "meaning": "Thành hiện thực, toại nguyện (ước mơ)",
+        "type": "Động từ nhóm 1",
+        "kanjiCount": 1,
+        "kanjis": [
+          "叶"
+        ],
+        "strokes": 5,
+        "radicals": "khẩu 口 (+2 nét)",
+        "onyomi": "キョウ",
+        "kunyomi": "かな-う",
+        "components": [
+          {
+            "kanji": "叶",
+            "hanViet": "DIỆP",
+            "meaning": "Hòa hợp, toại nguyện",
+            "strokes": 5,
+            "radical": "khẩu 口 (+2 nét)",
+            "onyomi": "キョウ",
+            "kunyomi": "かな-う"
+          }
+        ],
+        "mnemonic": "【Chiết tự】: Gồm Bộ Khẩu (口: miệng) kết hợp với chữ Thập (十: mười)\n【Mẹo nhớ】: Mười (十) điều thốt ra từ miệng (口) đều trở nên hòa hợp, thành toàn: THÀNH HIỆN THỰC, TOẠI NGUYỆN.",
+        "example": "夢が 叶いました。(Ước mơ đã trở thành hiện thực.)",
+        "id": "v-50-36"
       }
     ]
   }
 ];
+
+if (typeof module !== 'undefined' && module.exports) {
+  module.exports = kanjiLessonsData;
+}
