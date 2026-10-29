@@ -8141,8 +8141,10 @@ body.focus-mode .app-layout {
 
 .mazii-voice-pulse {
   position: relative;
-  width: 36px;
-  height: 36px;
+  width: 44px;
+  height: 44px;
+  min-width: 44px;
+  min-height: 44px;
   border-radius: 50%;
   background: #e05244;
   color: #ffffff;
@@ -8150,6 +8152,24 @@ body.focus-mode .app-layout {
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
+  border: none;
+  cursor: pointer;
+  touch-action: manipulation;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 8px rgba(224, 82, 68, 0.35);
+}
+
+.mazii-voice-pulse:hover {
+  transform: scale(1.05);
+}
+
+.mazii-voice-pulse.paused {
+  background: var(--text-muted, #64748b);
+  box-shadow: none;
+}
+
+.mazii-voice-pulse.paused .voice-wave {
+  display: none !important;
 }
 
 .voice-wave {
@@ -8161,6 +8181,7 @@ body.focus-mode .app-layout {
   border-radius: 50%;
   border: 2px solid rgba(224, 82, 68, 0.4);
   animation: wavePulse 1.8s infinite ease-out;
+  pointer-events: none;
 }
 
 .voice-wave.wave-2 {
@@ -8204,6 +8225,27 @@ body.focus-mode .app-layout {
   font-weight: 600;
 }
 
+.mazii-voice-retry-perm-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px;
+  margin-top: 6px;
+  background: #e05244;
+  color: #ffffff;
+  font-weight: 700;
+  font-size: 12.5px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  touch-action: manipulation;
+  min-height: 44px;
+}
+
+.mazii-voice-retry-perm-btn:hover {
+  background: #c93b2e;
+}
+
 .mazii-voice-actions {
   display: flex;
   align-items: center;
@@ -8224,17 +8266,20 @@ body.focus-mode .app-layout {
 .mazii-voice-lang-btn {
   border: none;
   background: transparent;
-  padding: 5px 10px;
-  border-radius: 7px;
-  font-size: 12px;
+  padding: 6px 12px;
+  border-radius: 8px;
+  font-size: 13px;
   font-weight: 600;
   color: var(--text-secondary);
   cursor: pointer;
   transition: all 0.18s ease;
-  min-height: 32px;
+  min-height: 44px;
+  min-width: 44px;
   display: inline-flex;
   align-items: center;
+  justify-content: center;
   gap: 4px;
+  touch-action: manipulation;
 }
 
 .mazii-voice-lang-btn.active {
@@ -8245,16 +8290,21 @@ body.focus-mode .app-layout {
 }
 
 .mazii-voice-stop-btn {
-  min-height: 36px;
+  min-height: 44px;
+  min-width: 44px;
   padding: 6px 14px;
   border-radius: 10px;
   border: 1px solid var(--border-color);
   background: var(--bg-tertiary);
   color: var(--text-secondary);
-  font-size: 12.5px;
+  font-size: 13px;
   font-weight: 600;
   cursor: pointer;
   transition: all 0.18s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  touch-action: manipulation;
 }
 
 .mazii-voice-stop-btn:hover {

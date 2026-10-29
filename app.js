@@ -7450,7 +7450,12 @@ let maziiCurrentQuery = '';
 let maziiIsHwOpen = false;
 let maziiVoiceRecognition = null;
 let maziiIsVoiceListening = false;
+let maziiShouldKeepListening = false;
 let maziiVoiceLang = 'ja-JP';
+let maziiVoiceRestartTimer = null;
+let maziiFinalizeTimer = null;
+let maziiSilenceHintTimer = null;
+let maziiLastVoiceText = '';
 const maziiCache = new Map();
 
 // Trạng thái Canvas viết tay
@@ -8683,16 +8688,143 @@ function switchMaziiTab(tab) {
 /**
  * Bật / Tắt chế độ tìm kiếm bằng giọng nói
  */
+/**
+ * Cập nhật trạng thái hiển thị giao diện Micro (Đang nghe / Tạm dừng)
+ */
+function setVoiceMicActiveVisual(isActive) {
+  const modalMic = document.getElementById('mazii-voice-modal-mic');
+  const voiceBtn = document.getElementById('mazii-btn-voice');
+  if (modalMic) {
+    modalMic.classList.toggle('paused', !isActive);
+    modalMic.setAttribute('title', isActive ? 'Đang nghe... Chạm để tạm dừng' : 'Đã tạm dừng. Chạm vào Micro để nói');
+  }
+  if (voiceBtn) {
+    voiceBtn.classList.toggle('listening', isActive);
+    voiceBtn.setAttribute('title', isActive ? 'Đang nghe... Bấm để dừng' : 'Tìm kiếm bằng giọng nói');
+  }
+}
+
+/**
+ * Lên lịch tự động khởi động lại phiên nhận diện trên trình duyệt di động
+ * (Khắc phục hiện tượng Chrome Android tự động ngắt kết nối sau 1-2s im lặng)
+ */
+function scheduleVoiceRestart(lang) {
+  if (!maziiShouldKeepListening) return;
+  clearTimeout(maziiVoiceRestartTimer);
+  maziiVoiceRestartTimer = setTimeout(() => {
+    if (maziiShouldKeepListening && !maziiIsVoiceListening) {
+      try {
+        if (maziiVoiceRecognition) {
+          maziiVoiceRecognition.start();
+        } else {
+          startMaziiVoiceSearch(lang || maziiVoiceLang);
+        }
+      } catch (err) {
+        try {
+          startMaziiVoiceSearch(lang || maziiVoiceLang);
+        } catch (e) {
+          console.warn('[VoiceSearch] Không thể tự khởi động lại:', e);
+        }
+      }
+    }
+  }, 120);
+}
+
+/**
+ * Chốt kết quả nhận diện giọng nói và tự động kích hoạt tra cứu
+ */
+function commitVoiceSearchResult(transcript, alternatives) {
+  if (!transcript) return;
+  maziiShouldKeepListening = false;
+  clearTimeout(maziiVoiceRestartTimer);
+  clearTimeout(maziiFinalizeTimer);
+  clearTimeout(maziiSilenceHintTimer);
+
+  stopMaziiVoiceSearch(false);
+
+  const titleEl = document.getElementById('mazii-voice-title');
+  const transcriptEl = document.getElementById('mazii-voice-transcript');
+  if (titleEl) titleEl.textContent = `✅ Đã nhận diện: "${transcript}"`;
+  if (transcriptEl) {
+    transcriptEl.textContent = 'Đang tra cứu từ điển Mazii...';
+    transcriptEl.classList.remove('has-text');
+  }
+
+  const input = document.getElementById('mazii-search-input');
+  if (input) {
+    input.value = transcript;
+    const clearBtn = document.getElementById('mazii-btn-clear');
+    if (clearBtn) clearBtn.style.display = 'flex';
+  }
+
+  renderVoiceCandidates(alternatives, transcript);
+  setTimeout(() => {
+    executeMaziiSearch(transcript);
+  }, 250);
+}
+
+/**
+ * Bật / Tắt chế độ tìm kiếm bằng giọng nói từ thanh tra cứu
+ */
 function toggleMaziiVoiceSearch() {
-  if (maziiIsVoiceListening) {
-    stopMaziiVoiceSearch();
+  if (maziiIsVoiceListening || maziiShouldKeepListening) {
+    stopMaziiVoiceSearch(true);
   } else {
     startMaziiVoiceSearch(maziiVoiceLang);
   }
 }
 
 /**
+ * Chạm vào Micro lớn trong khung Voice Search để bắt đầu / tạm dừng nói
+ */
+function toggleMaziiVoiceModalMic() {
+  if (maziiIsVoiceListening || maziiShouldKeepListening) {
+    // Tạm dừng nghe nhưng giữ nguyên khung
+    maziiShouldKeepListening = false;
+    clearTimeout(maziiVoiceRestartTimer);
+    clearTimeout(maziiFinalizeTimer);
+    clearTimeout(maziiSilenceHintTimer);
+    if (maziiVoiceRecognition) {
+      try { maziiVoiceRecognition.abort(); } catch (e) {}
+    }
+    maziiIsVoiceListening = false;
+    setVoiceMicActiveVisual(false);
+
+    const titleEl = document.getElementById('mazii-voice-title');
+    const transcriptEl = document.getElementById('mazii-voice-transcript');
+    if (titleEl) titleEl.textContent = 'Đã tạm dừng nghe';
+    if (transcriptEl) transcriptEl.textContent = 'Chạm vào biểu tượng Micro khi bạn sẵn sàng nói tiếp.';
+  } else {
+    // Bắt đầu nói lại trực tiếp bằng User Gesture
+    startMaziiVoiceSearch(maziiVoiceLang);
+  }
+}
+
+/**
+ * Cấp quyền Micro qua getUserMedia khi Chrome yêu cầu xác nhận
+ */
+async function retryMicrophonePermission() {
+  const transcriptEl = document.getElementById('mazii-voice-transcript');
+  if (transcriptEl) transcriptEl.textContent = 'Đang yêu cầu cấp quyền Micro... Vui lòng bấm [Cho phép] trên thông báo trình duyệt.';
+  if (typeof navigator !== 'undefined' && navigator.mediaDevices && typeof navigator.mediaDevices.getUserMedia === 'function') {
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      stream.getTracks().forEach(track => track.stop());
+      startMaziiVoiceSearch(maziiVoiceLang);
+    } catch (err) {
+      console.warn('[VoiceSearch] getUserMedia bị từ chối:', err);
+      if (transcriptEl) {
+        transcriptEl.innerHTML = 'Micro vẫn đang bị chặn. Vui lòng bấm vào <b>biểu tượng Cài đặt trang web / Khóa</b> trên thanh địa chỉ của Chrome > <b>Quyền</b> > <b>Micro: Cho phép</b>, sau đó tải lại trang.';
+      }
+    }
+  } else {
+    alert('Vui lòng mở Cài đặt trình duyệt Chrome trên điện thoại > Quyền riêng tư > Micro > Cho phép.');
+  }
+}
+
+/**
  * Thay đổi ngôn ngữ nhận diện giọng nói (ja-JP hoặc vi-VN)
+ * Khởi động lại ngay lập tức với User Gesture đồng bộ
  */
 function setMaziiVoiceLang(lang) {
   maziiVoiceLang = lang || 'ja-JP';
@@ -8704,22 +8836,74 @@ function setMaziiVoiceLang(lang) {
                         (lang === 'vi-VN' && b.innerText.includes('Việt'));
       b.classList.toggle('active', isCurrent);
     });
+    const titleEl = document.getElementById('mazii-voice-title');
+    if (titleEl) {
+      titleEl.textContent = (lang === 'ja-JP')
+        ? 'Đang lắng nghe tiếng Nhật (日本語)...'
+        : 'Đang lắng nghe tiếng Việt...';
+    }
+    const transcriptEl = document.getElementById('mazii-voice-transcript');
+    if (transcriptEl) {
+      transcriptEl.textContent = 'Hãy nói từ vựng hoặc câu bạn muốn tra...';
+      transcriptEl.classList.remove('has-text');
+    }
   }
-  // Nếu đang nghe thì chuyển sang nghe với ngôn ngữ mới
-  if (maziiIsVoiceListening) {
-    stopMaziiVoiceSearch(false);
-    setTimeout(() => startMaziiVoiceSearch(maziiVoiceLang), 150);
-  }
+
+  // Khởi động phiên nhận diện với ngôn ngữ mới ngay trong sự kiện chạm của người dùng
+  startMaziiVoiceSearch(maziiVoiceLang);
 }
 
 /**
- * Bắt đầu nhận diện giọng nói
+ * Bắt đầu nhận diện giọng nói (Khả năng chịu lỗi cao trên di động)
  */
 function startMaziiVoiceSearch(lang = 'ja-JP') {
+  maziiVoiceLang = lang || 'ja-JP';
+  maziiShouldKeepListening = true;
+  maziiLastVoiceText = '';
+  clearTimeout(maziiVoiceRestartTimer);
+  clearTimeout(maziiFinalizeTimer);
+  clearTimeout(maziiSilenceHintTimer);
+
   const panel = document.getElementById('mazii-voice-panel');
-  const voiceBtn = document.getElementById('mazii-btn-voice');
   const titleEl = document.getElementById('mazii-voice-title');
   const transcriptEl = document.getElementById('mazii-voice-transcript');
+
+  // Đóng bảng viết tay nếu đang mở để tránh chồng chéo giao diện
+  if (maziiIsHwOpen) {
+    toggleHandwritingPanel(false);
+  }
+
+  if (panel) {
+    panel.style.display = 'flex';
+  }
+  if (titleEl) {
+    titleEl.textContent = (maziiVoiceLang === 'ja-JP')
+      ? 'Đang lắng nghe tiếng Nhật (日本語)...'
+      : 'Đang lắng nghe tiếng Việt...';
+  }
+  if (transcriptEl) {
+    transcriptEl.textContent = 'Hãy nói từ vựng hoặc câu bạn muốn tra...';
+    transcriptEl.classList.remove('has-text');
+  }
+
+  // Cập nhật giao diện nút bấm active
+  if (panel) {
+    const btns = panel.querySelectorAll('.mazii-voice-lang-btn');
+    btns.forEach(b => {
+      const isCurrent = (maziiVoiceLang === 'ja-JP' && b.innerText.includes('Nhật')) ||
+                        (maziiVoiceLang === 'vi-VN' && b.innerText.includes('Việt'));
+      b.classList.toggle('active', isCurrent);
+    });
+  }
+
+  setVoiceMicActiveVisual(true);
+
+  // Bộ hẹn giờ nhắc nhở nếu người dùng im lặng sau 6 giây
+  maziiSilenceHintTimer = setTimeout(() => {
+    if (maziiShouldKeepListening && !maziiLastVoiceText && transcriptEl) {
+      transcriptEl.textContent = 'Chưa nghe thấy giọng nói. Hãy nói to hơn vào Micro hoặc chạm vào nút Micro để nói lại.';
+    }
+  }, 6000);
 
   // Kiểm tra hỗ trợ Web Speech API
   const isSupported = (typeof DictionaryEngine !== 'undefined' && typeof DictionaryEngine.isVoiceSearchSupported === 'function')
@@ -8727,49 +8911,41 @@ function startMaziiVoiceSearch(lang = 'ja-JP') {
     : Boolean(typeof window !== 'undefined' && (window.SpeechRecognition || window.webkitSpeechRecognition));
 
   if (!isSupported) {
-    if (panel) {
-      panel.style.display = 'flex';
-      if (titleEl) titleEl.textContent = 'Trình duyệt chưa hỗ trợ';
-      if (transcriptEl) transcriptEl.textContent = 'Trình duyệt của bạn chưa hỗ trợ nhận diện giọng nói Web Speech. Vui lòng sử dụng Chrome, Edge hoặc Safari.';
+    maziiShouldKeepListening = false;
+    setVoiceMicActiveVisual(false);
+    if (titleEl) titleEl.textContent = 'Trình duyệt chưa hỗ trợ';
+    if (transcriptEl) {
+      transcriptEl.innerHTML = 'Trình duyệt của bạn chưa hỗ trợ Web Speech API. Bạn có thể sử dụng biểu tượng Micro 🎙️ trên bàn phím ảo của điện thoại hoặc mở <a href="https://translate.google.com/?sl=auto&tl=vi&op=translate" target="_blank" rel="noopener" style="color:#e05244;font-weight:700;">Google Dịch</a>.';
     }
     return;
   }
 
-  // Đóng bảng viết tay nếu đang mở để tránh chồng chéo giao diện
-  if (maziiIsHwOpen) {
-    toggleHandwritingPanel(false);
-  }
-
   try {
     if (maziiVoiceRecognition) {
-      try { maziiVoiceRecognition.abort(); } catch(e) {}
+      try {
+        maziiVoiceRecognition.onend = null;
+        maziiVoiceRecognition.onerror = null;
+        maziiVoiceRecognition.onresult = null;
+        maziiVoiceRecognition.abort();
+      } catch (e) {}
       maziiVoiceRecognition = null;
     }
 
     const callbacks = {
       onStart: () => {
         maziiIsVoiceListening = true;
-        if (voiceBtn) {
-          voiceBtn.classList.add('listening');
-          voiceBtn.setAttribute('title', 'Đang nghe... Bấm để dừng');
-        }
-        if (panel) panel.style.display = 'flex';
-        if (titleEl) {
-          titleEl.textContent = lang === 'ja-JP'
-            ? 'Đang lắng nghe tiếng Nhật (日本語)...'
-            : 'Đang lắng nghe tiếng Việt...';
-        }
-        if (transcriptEl) {
-          transcriptEl.textContent = 'Hãy nói từ vựng hoặc câu bạn muốn tra...';
-          transcriptEl.classList.remove('has-text');
-        }
+        setVoiceMicActiveVisual(true);
       },
       onResult: ({ transcript, isFinal, alternatives }) => {
         if (!transcript) return;
+        maziiLastVoiceText = transcript;
+        clearTimeout(maziiSilenceHintTimer);
+
         if (transcriptEl) {
           transcriptEl.textContent = `"${transcript}"`;
           transcriptEl.classList.add('has-text');
         }
+
         const input = document.getElementById('mazii-search-input');
         if (input) {
           input.value = transcript;
@@ -8779,44 +8955,71 @@ function startMaziiVoiceSearch(lang = 'ja-JP') {
 
         // Tự động kích hoạt tìm kiếm khi phát hiện dứt câu
         if (isFinal) {
-          stopMaziiVoiceSearch(false);
-          renderVoiceCandidates(alternatives, transcript);
-          setTimeout(() => {
-            executeMaziiSearch(transcript);
-          }, 300);
+          commitVoiceSearchResult(transcript, alternatives);
+        } else {
+          // Cơ chế phòng vệ cho Android Mobile: Tự động hoàn tất sau 1.4 giây ngừng nói
+          // nếu trình duyệt không tự gửi cờ isFinal = true
+          clearTimeout(maziiFinalizeTimer);
+          maziiFinalizeTimer = setTimeout(() => {
+            if (maziiShouldKeepListening && maziiLastVoiceText) {
+              commitVoiceSearchResult(maziiLastVoiceText, alternatives);
+            }
+          }, 1400);
         }
       },
       onError: (err) => {
-        console.warn('[VoiceSearch] Thông báo:', err);
-        if (panel) panel.style.display = 'flex';
-        if (titleEl) {
-          titleEl.textContent = (err.code === 'not-allowed') ? 'Micrô đang bị chặn' : 'Lỗi nhận diện giọng nói';
-        }
-        if (transcriptEl) {
-          if (err.code === 'not-allowed') {
-            const isFile = typeof window !== 'undefined' && window.location && window.location.protocol === 'file:';
-            transcriptEl.textContent = isFile
-              ? 'Chrome chặn Micro do bạn mở file trực tiếp (file://). Bấm vào icon Micro có dấu gạch chéo trên thanh địa chỉ để "Cho phép", hoặc chạy qua Live Server/localhost.'
-              : 'Trang web chưa được cấp quyền Micro. Vui lòng nhấp vào biểu tượng ổ khóa/micro trên thanh địa chỉ để cấp quyền.';
-          } else {
-            transcriptEl.textContent = err.message || 'Không thể nhận diện giọng nói. Vui lòng thử lại.';
+        console.warn('[VoiceSearch] Thông báo:', err && err.code ? err.code : err);
+        // Lỗi 'no-speech' trên Android thường xảy ra khi người dùng ngập ngừng hoặc yên lặng
+        if (err && err.code === 'no-speech') {
+          if (maziiShouldKeepListening && !maziiIsVoiceListening) {
+            scheduleVoiceRestart(maziiVoiceLang);
+            return;
           }
         }
-        if (voiceBtn) voiceBtn.classList.remove('listening');
-        maziiIsVoiceListening = false;
+        if (err && err.code === 'aborted') {
+          return;
+        }
+
+        if (err && err.code === 'not-allowed') {
+          maziiShouldKeepListening = false;
+          maziiIsVoiceListening = false;
+          setVoiceMicActiveVisual(false);
+          if (titleEl) titleEl.textContent = 'Micrô đang bị chặn';
+          if (transcriptEl) {
+            const isFile = typeof window !== 'undefined' && window.location && window.location.protocol === 'file:';
+            transcriptEl.innerHTML = isFile
+              ? 'Chrome chặn Micro do mở file trực tiếp (file://). Hãy mở qua HTTP/HTTPS (Live Server, Cloudflare).'
+              : 'Trang web chưa được cấp quyền Micro. <button type="button" class="mazii-voice-retry-perm-btn" onclick="retryMicrophonePermission()">🔓 Cấp quyền Micro ngay</button>';
+          }
+          return;
+        }
+
+        if (transcriptEl) {
+          transcriptEl.textContent = (err && err.message) || 'Không thể nhận diện giọng nói. Vui lòng chạm vào Micro để thử lại.';
+        }
+        if (maziiShouldKeepListening) {
+          scheduleVoiceRestart(maziiVoiceLang);
+        } else {
+          setVoiceMicActiveVisual(false);
+        }
       },
       onEnd: () => {
         maziiIsVoiceListening = false;
-        if (voiceBtn) voiceBtn.classList.remove('listening');
+        // Cơ chế giữ nhịp kết nối (Keep-Alive Watchdog): Tự khởi động lại nếu người dùng chưa bấm Dừng
+        if (maziiShouldKeepListening) {
+          scheduleVoiceRestart(maziiVoiceLang);
+        } else {
+          setVoiceMicActiveVisual(false);
+        }
       }
     };
 
     if (typeof DictionaryEngine !== 'undefined' && typeof DictionaryEngine.createVoiceRecognition === 'function') {
-      maziiVoiceRecognition = DictionaryEngine.createVoiceRecognition(callbacks, lang, { maxAlternatives: 5 });
+      maziiVoiceRecognition = DictionaryEngine.createVoiceRecognition(callbacks, maziiVoiceLang, { maxAlternatives: 5 });
     } else {
       const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
       const rec = new SpeechRecognition();
-      rec.lang = lang || 'ja-JP';
+      rec.lang = maziiVoiceLang || 'ja-JP';
       rec.continuous = false;
       rec.interimResults = true;
       rec.maxAlternatives = 5;
@@ -8845,7 +9048,7 @@ function startMaziiVoiceSearch(lang = 'ja-JP') {
           alternatives: alts
         });
       };
-      rec.onerror = (e) => callbacks.onError(new Error(e.error === 'not-allowed' ? 'Chưa cấp quyền Micro.' : 'Không nghe thấy giọng nói.'));
+      rec.onerror = (e) => callbacks.onError(new Error(e.error === 'not-allowed' ? 'Chưa cấp quyền Micro.' : (e.error || 'Lỗi giọng nói')));
       rec.onend = callbacks.onEnd;
       maziiVoiceRecognition = rec;
     }
@@ -8855,7 +9058,11 @@ function startMaziiVoiceSearch(lang = 'ja-JP') {
     }
   } catch (err) {
     console.error('[VoiceSearch] Lỗi khởi động:', err);
-    if (transcriptEl) transcriptEl.textContent = 'Không thể mở Micro. Vui lòng cấp quyền Micro cho trình duyệt.';
+    maziiShouldKeepListening = false;
+    setVoiceMicActiveVisual(false);
+    if (transcriptEl) {
+      transcriptEl.innerHTML = 'Không thể mở Micro. <button type="button" class="mazii-voice-retry-perm-btn" onclick="retryMicrophonePermission()">🔓 Cấp quyền Micro ngay</button>';
+    }
   }
 }
 
@@ -8863,16 +9070,24 @@ function startMaziiVoiceSearch(lang = 'ja-JP') {
  * Dừng nhận diện giọng nói
  */
 function stopMaziiVoiceSearch(hidePanel = true) {
+  maziiShouldKeepListening = false;
   maziiIsVoiceListening = false;
+  clearTimeout(maziiVoiceRestartTimer);
+  clearTimeout(maziiFinalizeTimer);
+  clearTimeout(maziiSilenceHintTimer);
+
   if (maziiVoiceRecognition) {
-    try { maziiVoiceRecognition.abort(); } catch(e) {}
+    try {
+      maziiVoiceRecognition.onend = null;
+      maziiVoiceRecognition.onerror = null;
+      maziiVoiceRecognition.onresult = null;
+      maziiVoiceRecognition.abort();
+    } catch (e) {}
     maziiVoiceRecognition = null;
   }
-  const voiceBtn = document.getElementById('mazii-btn-voice');
-  if (voiceBtn) {
-    voiceBtn.classList.remove('listening');
-    voiceBtn.setAttribute('title', 'Tìm kiếm bằng giọng nói');
-  }
+
+  setVoiceMicActiveVisual(false);
+
   const panel = document.getElementById('mazii-voice-panel');
   if (panel && hidePanel) {
     panel.style.display = 'none';
@@ -9048,12 +9263,12 @@ function renderMaziiDictSection(initialQuery = '', initialType = 'word') {
         <div id="mazii-voice-panel" class="mazii-voice-panel" style="display:${maziiIsVoiceListening ? 'flex' : 'none'};">
           <div class="mazii-voice-top-row">
             <div class="mazii-voice-status">
-              <div class="mazii-voice-pulse">
+              <button type="button" class="mazii-voice-pulse ${maziiIsVoiceListening ? '' : 'paused'}" id="mazii-voice-modal-mic" onclick="toggleMaziiVoiceModalMic()" title="Chạm để bắt đầu hoặc tạm dừng nghe" aria-label="Micro giọng nói">
                 <span class="voice-wave wave-1"></span>
                 <span class="voice-wave wave-2"></span>
                 <span class="voice-wave wave-3"></span>
                 <span class="voice-mic-icon">${APP_ICONS.mic}</span>
-              </div>
+              </button>
               <div class="mazii-voice-info">
                 <div class="mazii-voice-title" id="mazii-voice-title">${maziiVoiceLang === 'ja-JP' ? 'Đang lắng nghe tiếng Nhật (日本語)...' : 'Đang lắng nghe tiếng Việt...'}</div>
                 <div class="mazii-voice-transcript" id="mazii-voice-transcript">Hãy nói từ vựng hoặc câu bạn muốn tra...</div>
@@ -9069,8 +9284,8 @@ function renderMaziiDictSection(initialQuery = '', initialType = 'word') {
                   <span>🇻🇳 Tiếng Việt</span>
                 </button>
               </div>
-              <button type="button" class="mazii-voice-stop-btn" onclick="stopMaziiVoiceSearch()" title="Dừng nhận diện">
-                ✕ Dừng
+              <button type="button" class="mazii-voice-stop-btn" onclick="stopMaziiVoiceSearch(true)" title="Đóng bảng giọng nói">
+                ✕ Đóng
               </button>
             </div>
           </div>
@@ -9178,4 +9393,6 @@ window.stopMaziiVoiceSearch = stopMaziiVoiceSearch;
 window.setMaziiVoiceLang = setMaziiVoiceLang;
 window.renderVoiceCandidates = renderVoiceCandidates;
 window.selectVoiceCandidate = selectVoiceCandidate;
+window.toggleMaziiVoiceModalMic = toggleMaziiVoiceModalMic;
+window.retryMicrophonePermission = retryMicrophonePermission;
 
