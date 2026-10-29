@@ -2539,9 +2539,8 @@ function renderKanjiSection(sectionId, forcedTab = null) {
                 </div>
                 <div class="kcard-meta-group">
                   ${item.type ? `<span class="badge badge-subtle kcard-type-badge">${item.type}</span>` : ''}
-                  <button type="button" class="kcard-audio-btn" onclick="speakJapanese('${(item.reading || item.word).replace(/\[.*?\]/g, '').replace(/\(.*?\)/g, '').trim()}', this, event)" title="Nghe phát âm từ: ${item.word}">
+                  <button type="button" class="kcard-audio-btn btn-icon-only" onclick="speakJapanese('${(item.reading || item.word).replace(/\[.*?\]/g, '').replace(/\(.*?\)/g, '').trim()}', this, event)" title="Nghe phát âm từ: ${item.word}" aria-label="Nghe phát âm từ: ${item.word}">
                     <span class="audio-btn-icon">${SPEAKER_ICON_HTML}</span>
-                    <span>Nghe</span>
                   </button>
                 </div>
               </div>
@@ -3011,8 +3010,8 @@ function renderKfcCard() {
         <div class="kfc-back-word-title">
           <span class="kfc-back-reading">${item.reading || ''}</span>
           <strong class="kfc-back-kanji">${item.hanViet}</strong>
-          <button type="button" class="kcard-audio-btn" onclick="speakJapanese('${(item.reading || item.word).replace(/\[.*?\]/g, '').replace(/\(.*?\)/g, '').trim()}', this, event)">
-            ${SPEAKER_ICON_HTML} <span>Nghe</span>
+          <button type="button" class="kcard-audio-btn btn-icon-only" onclick="speakJapanese('${(item.reading || item.word).replace(/\[.*?\]/g, '').replace(/\(.*?\)/g, '').trim()}', this, event)" title="Nghe phát âm: ${item.word}" aria-label="Nghe phát âm: ${item.word}">
+            <span class="audio-btn-icon">${SPEAKER_ICON_HTML}</span>
           </button>
         </div>
         <div class="kfc-back-meaning">
@@ -3061,8 +3060,8 @@ function renderKfcCard() {
         <div class="kfc-back-word-title">
           <strong class="kfc-back-kanji">${item.word}</strong>
           ${item.reading ? `<span class="kfc-back-reading">${item.reading}</span>` : ''}
-          <button type="button" class="kcard-audio-btn" onclick="speakJapanese('${(item.reading || item.word).replace(/\[.*?\]/g, '').replace(/\(.*?\)/g, '').trim()}', this, event)">
-            ${SPEAKER_ICON_HTML} <span>Nghe</span>
+          <button type="button" class="kcard-audio-btn btn-icon-only" onclick="speakJapanese('${(item.reading || item.word).replace(/\[.*?\]/g, '').replace(/\(.*?\)/g, '').trim()}', this, event)" title="Nghe phát âm: ${item.word}" aria-label="Nghe phát âm: ${item.word}">
+            <span class="audio-btn-icon">${SPEAKER_ICON_HTML}</span>
           </button>
         </div>
         <div class="kfc-back-meaning">

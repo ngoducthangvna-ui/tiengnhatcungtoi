@@ -5693,14 +5693,14 @@ body.hide-furigana #btn-toggle-furigana {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  gap: 12px;
+  gap: 8px 12px;
   flex-wrap: wrap;
 }
 
 .kcard-title-group {
-  display: flex;
+  display: inline-flex;
   align-items: baseline;
-  gap: 12px;
+  gap: 8px 12px;
   flex-wrap: wrap;
   min-width: 0;
 }
@@ -5719,10 +5719,10 @@ body.hide-furigana #btn-toggle-furigana {
 
 .kcard-word-hanviet {
   font-family: var(--font-vietnamese, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif);
-  font-size: 16.5px;
+  font-size: 16px;
   font-weight: 700;
   color: var(--accent-primary);
-  letter-spacing: 0.6px;
+  letter-spacing: 0.5px;
   white-space: nowrap;
   text-transform: uppercase;
   line-height: 1.2;
@@ -5731,29 +5731,31 @@ body.hide-furigana #btn-toggle-furigana {
 .kcard-meta-group {
   display: inline-flex;
   align-items: center;
-  gap: 8px;
+  gap: 6px;
   flex-shrink: 0;
   margin-left: auto;
 }
 
 .kcard-type-badge {
-  font-size: 12px;
+  font-size: 11.5px;
   font-weight: 600;
-  padding: 4px 10px;
+  padding: 3px 8px;
   border-radius: 6px;
   background: var(--bg-tertiary);
   color: var(--text-secondary);
   border: 1px solid var(--border-subtle);
   white-space: nowrap;
+  line-height: 1.2;
 }
 
 .kcard-audio-btn {
   display: inline-flex;
   align-items: center;
+  justify-content: center;
   gap: 5px;
-  padding: 5px 12px;
-  min-height: 36px;
-  border-radius: 18px;
+  min-height: 32px;
+  padding: 4px 10px;
+  border-radius: 16px;
   background: var(--bg-tertiary);
   border: 1px solid var(--border-subtle);
   font-size: 12px;
@@ -5774,7 +5776,33 @@ body.hide-furigana #btn-toggle-furigana {
 }
 
 .kcard-audio-btn:active {
-  transform: scale(0.97);
+  transform: scale(0.95);
+}
+
+/* Biến thể chỉ chứa icon loa: tròn, siêu gọn, giải phóng diện tích tối đa */
+.kcard-audio-btn.btn-icon-only {
+  width: 32px;
+  height: 32px;
+  min-width: 32px;
+  min-height: 32px;
+  padding: 0;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.kcard-audio-btn.btn-icon-only:hover {
+  transform: scale(1.08);
+}
+
+.kcard-audio-btn.btn-icon-only:active {
+  transform: scale(0.92);
+}
+
+.kcard-audio-btn.btn-icon-only .audio-btn-icon {
+  font-size: 13px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .audio-btn-icon {
@@ -5946,16 +5974,16 @@ body.hide-furigana #btn-toggle-furigana {
 
   /* DÒNG TRÊN: Tiêu đề từ vựng & Âm Hán */
   .kcard-top-section {
-    padding: 14px 16px 12px;
-    gap: 10px;
+    padding: 12px 14px 10px;
+    gap: 8px;
   }
 
   .kcard-header-bar {
-    gap: 8px 10px;
+    gap: 6px 10px;
   }
 
   .kcard-title-group {
-    gap: 8px 10px;
+    gap: 6px 10px;
   }
 
   .kcard-word-kanji {
@@ -5963,7 +5991,7 @@ body.hide-furigana #btn-toggle-furigana {
   }
 
   .kcard-word-hanviet {
-    font-size: 15.5px;
+    font-size: 15px;
   }
 
   .kcard-word-reading {
@@ -5974,9 +6002,22 @@ body.hide-furigana #btn-toggle-furigana {
     font-size: 14.5px;
   }
 
+  .kcard-type-badge {
+    font-size: 11px;
+    padding: 2.5px 7px;
+  }
+
   .kcard-audio-btn {
-    min-height: 38px;
-    padding: 5px 12px;
+    min-height: 32px;
+    padding: 4px 10px;
+  }
+
+  .kcard-audio-btn.btn-icon-only {
+    width: 32px;
+    height: 32px;
+    min-width: 32px;
+    min-height: 32px;
+    padding: 0;
   }
 
   /* DÒNG BÊN DƯỚI: Mẹo nhớ bên dưới */
@@ -5997,16 +6038,16 @@ body.hide-furigana #btn-toggle-furigana {
 
 @media (max-width: 480px) {
   .kcard-top-section {
-    padding: 12px 14px 10px;
-    gap: 8px;
+    padding: 10px 12px 8px;
+    gap: 6px;
   }
 
   .kcard-header-bar {
-    gap: 6px 8px;
+    gap: 4px 8px;
   }
 
   .kcard-title-group {
-    gap: 6px 8px;
+    gap: 4px 8px;
   }
 
   .kcard-word-kanji {
@@ -6014,26 +6055,34 @@ body.hide-furigana #btn-toggle-furigana {
   }
 
   .kcard-word-hanviet {
-    font-size: 14.5px;
+    font-size: 14px;
   }
 
   .kcard-word-reading {
-    font-size: 14px;
+    font-size: 13.5px;
   }
 
   .kcard-word-meaning-text {
-    font-size: 14px;
+    font-size: 13.5px;
   }
 
   .kcard-type-badge {
-    font-size: 11px;
-    padding: 3px 8px;
+    font-size: 10.5px;
+    padding: 2px 6px;
   }
 
   .kcard-audio-btn {
-    min-height: 36px;
-    padding: 4px 10px;
-    font-size: 11.5px;
+    min-height: 30px;
+    padding: 3px 8px;
+    font-size: 11px;
+  }
+
+  .kcard-audio-btn.btn-icon-only {
+    width: 30px;
+    height: 30px;
+    min-width: 30px;
+    min-height: 30px;
+    padding: 0;
   }
 
   .kcard-bottom-section {
