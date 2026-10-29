@@ -8108,13 +8108,13 @@ body.focus-mode .app-layout {
 .mazii-voice-panel {
   display: flex;
   flex-direction: column;
-  gap: 10px;
-  padding: 12px 16px;
-  margin-top: 10px;
+  gap: 8px;
+  padding: 8px 14px;
+  margin-top: 8px;
   background: var(--bg-card-inner, rgba(224, 82, 68, 0.04));
-  border: 1.5px solid rgba(224, 82, 68, 0.3);
-  border-radius: 14px;
-  animation: voiceSlideIn 0.25s ease-out;
+  border: 1px solid rgba(224, 82, 68, 0.22);
+  border-radius: 12px;
+  animation: voiceSlideIn 0.2s ease-out;
 }
 
 .mazii-voice-top-row {
@@ -8249,7 +8249,7 @@ body.focus-mode .app-layout {
 .mazii-voice-actions {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 6px;
   flex-shrink: 0;
 }
 
@@ -8257,18 +8257,18 @@ body.focus-mode .app-layout {
   display: flex;
   align-items: center;
   background: var(--bg-tertiary);
-  padding: 3px;
-  border-radius: 10px;
+  padding: 2px;
+  border-radius: 8px;
   border: 1px solid var(--border-color);
-  gap: 3px;
+  gap: 2px;
 }
 
 .mazii-voice-lang-btn {
   border: none;
   background: transparent;
-  padding: 6px 12px;
-  border-radius: 8px;
-  font-size: 13px;
+  padding: 5px 10px;
+  border-radius: 6px;
+  font-size: 12.5px;
   font-weight: 600;
   color: var(--text-secondary);
   cursor: pointer;
@@ -8278,7 +8278,7 @@ body.focus-mode .app-layout {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 4px;
+  gap: 3px;
   touch-action: manipulation;
 }
 
@@ -8289,25 +8289,30 @@ body.focus-mode .app-layout {
   box-shadow: 0 1px 4px rgba(224, 82, 68, 0.3);
 }
 
-.mazii-voice-stop-btn {
+.mazii-voice-stop-btn,
+.mazii-voice-close-btn,
+.mazii-voice-close-mini {
   min-height: 44px;
   min-width: 44px;
-  padding: 6px 14px;
-  border-radius: 10px;
+  padding: 6px 12px;
+  border-radius: 50%;
   border: 1px solid var(--border-color);
   background: var(--bg-tertiary);
   color: var(--text-secondary);
-  font-size: 13px;
-  font-weight: 600;
+  font-size: 14px;
+  font-weight: 700;
   cursor: pointer;
   transition: all 0.18s ease;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   touch-action: manipulation;
+  flex-shrink: 0;
 }
 
-.mazii-voice-stop-btn:hover {
+.mazii-voice-stop-btn:hover,
+.mazii-voice-close-btn:hover,
+.mazii-voice-close-mini:hover {
   background: rgba(224, 82, 68, 0.1);
   color: #e05244;
   border-color: rgba(224, 82, 68, 0.3);
@@ -8316,11 +8321,26 @@ body.focus-mode .app-layout {
 .mazii-voice-candidates {
   display: flex;
   flex-direction: column;
-  gap: 8px;
   width: 100%;
-  padding-top: 10px;
-  border-top: 1px dashed rgba(224, 82, 68, 0.25);
-  margin-top: 4px;
+}
+
+.mazii-voice-minimal-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  width: 100%;
+  flex-wrap: wrap;
+}
+
+.mazii-voice-minimal-label {
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--text-secondary);
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  flex-shrink: 0;
 }
 
 .mazii-voice-candidates-header {
@@ -8361,10 +8381,11 @@ body.focus-mode .app-layout {
   align-items: center;
   gap: 6px;
   flex-wrap: wrap;
+  flex: 1;
 }
 
 .mazii-voice-candidate-chip {
-  min-height: 34px;
+  min-height: 36px;
   padding: 4px 12px;
   border-radius: 999px;
   border: 1px solid var(--border-color);
@@ -8374,6 +8395,11 @@ body.focus-mode .app-layout {
   font-weight: 600;
   cursor: pointer;
   transition: all 0.18s ease;
+  touch-action: manipulation;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .mazii-voice-candidate-chip:hover {
@@ -8387,6 +8413,20 @@ body.focus-mode .app-layout {
   background: #e05244;
   color: #ffffff;
   border-color: #e05244;
+}
+
+.mazii-voice-candidate-chip.gt-chip {
+  color: #3b82f6;
+  border-color: rgba(59, 130, 246, 0.3);
+  background: rgba(59, 130, 246, 0.05);
+  font-weight: 600;
+  font-size: 12px;
+}
+
+.mazii-voice-candidate-chip.gt-chip:hover {
+  background: rgba(59, 130, 246, 0.12);
+  border-color: #3b82f6;
+  color: #1d4ed8;
 }
 
 /* ================== KHU VỰC HIỂN THỊ KẾT QUẢ ================== */

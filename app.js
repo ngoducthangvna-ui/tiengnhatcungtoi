@@ -8742,14 +8742,6 @@ function commitVoiceSearchResult(transcript, alternatives) {
 
   stopMaziiVoiceSearch(false);
 
-  const titleEl = document.getElementById('mazii-voice-title');
-  const transcriptEl = document.getElementById('mazii-voice-transcript');
-  if (titleEl) titleEl.textContent = `✅ Đã nhận diện: "${transcript}"`;
-  if (transcriptEl) {
-    transcriptEl.textContent = 'Đang tra cứu từ điển Mazii...';
-    transcriptEl.classList.remove('has-text');
-  }
-
   const input = document.getElementById('mazii-search-input');
   if (input) {
     input.value = transcript;
@@ -8760,7 +8752,7 @@ function commitVoiceSearchResult(transcript, alternatives) {
   renderVoiceCandidates(alternatives, transcript);
   setTimeout(() => {
     executeMaziiSearch(transcript);
-  }, 250);
+  }, 200);
 }
 
 /**
@@ -8839,12 +8831,12 @@ function setMaziiVoiceLang(lang) {
     const titleEl = document.getElementById('mazii-voice-title');
     if (titleEl) {
       titleEl.textContent = (lang === 'ja-JP')
-        ? 'Đang lắng nghe tiếng Nhật (日本語)...'
-        : 'Đang lắng nghe tiếng Việt...';
+        ? 'Đang nghe tiếng Nhật...'
+        : 'Đang nghe tiếng Việt...';
     }
     const transcriptEl = document.getElementById('mazii-voice-transcript');
     if (transcriptEl) {
-      transcriptEl.textContent = 'Hãy nói từ vựng hoặc câu bạn muốn tra...';
+      transcriptEl.textContent = 'Hãy nói từ muốn tra...';
       transcriptEl.classList.remove('has-text');
     }
   }
@@ -8875,14 +8867,22 @@ function startMaziiVoiceSearch(lang = 'ja-JP') {
 
   if (panel) {
     panel.style.display = 'flex';
+    const topRow = panel.querySelector('.mazii-voice-top-row');
+    if (topRow) topRow.style.display = 'flex';
   }
+  const candContainer = document.getElementById('mazii-voice-candidates');
+  if (candContainer) {
+    candContainer.innerHTML = '';
+    candContainer.style.display = 'none';
+  }
+
   if (titleEl) {
     titleEl.textContent = (maziiVoiceLang === 'ja-JP')
-      ? 'Đang lắng nghe tiếng Nhật (日本語)...'
-      : 'Đang lắng nghe tiếng Việt...';
+      ? 'Đang nghe tiếng Nhật...'
+      : 'Đang nghe tiếng Việt...';
   }
   if (transcriptEl) {
-    transcriptEl.textContent = 'Hãy nói từ vựng hoặc câu bạn muốn tra...';
+    transcriptEl.textContent = 'Hãy nói từ muốn tra...';
     transcriptEl.classList.remove('has-text');
   }
 
@@ -9095,19 +9095,39 @@ function stopMaziiVoiceSearch(hidePanel = true) {
 }
 
 /**
- * Hiển thị danh sách ứng viên nhận diện AI từ Google Translate
+ * Hiển thị danh sách ứng viên nhận diện AI tối giản
  */
 function renderVoiceCandidates(alternatives, currentQuery) {
   const container = document.getElementById('mazii-voice-candidates');
-  if (!container) return;
-  const list = Array.isArray(alternatives) ? alternatives : [];
-  if (list.length <= 1 && (!currentQuery || currentQuery.length < 5)) {
+  const panel = document.getElementById('mazii-voice-panel');
+  if (!container || !panel) return;
+
+  const topRow = panel.querySelector('.mazii-voice-top-row');
+
+  // Lọc danh sách ứng viên hợp lệ và loại bỏ trùng lặp
+  const rawList = Array.isArray(alternatives) ? alternatives : [];
+  const uniqueList = [];
+  rawList.forEach(item => {
+    const trimmed = (item || '').trim();
+    if (trimmed && !uniqueList.some(u => u.toLowerCase() === trimmed.toLowerCase())) {
+      uniqueList.push(trimmed);
+    }
+  });
+
+  // Nếu không có từ 2 ứng viên trở lên, đóng panel để nhường chỗ cho kết quả tra cứu
+  if (uniqueList.length <= 1) {
     container.innerHTML = '';
     container.style.display = 'none';
+    panel.style.display = 'none';
     return;
   }
 
-  const chipsHtml = list.map(alt => {
+  // Ẩn hàng điều khiển nghe, chỉ hiển thị dải gợi ý tối giản
+  if (topRow) {
+    topRow.style.display = 'none';
+  }
+
+  const chipsHtml = uniqueList.map(alt => {
     const isSelected = alt.toLowerCase() === (currentQuery || '').toLowerCase();
     return `
       <button type="button" class="mazii-voice-candidate-chip ${isSelected ? 'active' : ''}" onclick="selectVoiceCandidate('${escapeHtml(alt)}')">
@@ -9116,18 +9136,22 @@ function renderVoiceCandidates(alternatives, currentQuery) {
     `;
   }).join('');
 
+  const gtUrl = `https://translate.google.com/?sl=auto&tl=vi&text=${encodeURIComponent(currentQuery || '')}&op=translate`;
+
   container.innerHTML = `
-    <div class="mazii-voice-candidates-header">
-      <span class="mazii-voice-candidates-label">✨ Gợi ý từ Google Translate AI (${list.length} phương án):</span>
-      <a href="https://translate.google.com/?sl=auto&tl=vi&text=${encodeURIComponent(currentQuery || '')}&op=translate" target="_blank" rel="noopener" class="mazii-gt-link" title="Xem bản dịch câu đầy đủ trên Google Translate">
-        🌐 Mở Google Dịch ↗
-      </a>
-    </div>
-    <div class="mazii-voice-candidates-chips">
-      ${chipsHtml}
+    <div class="mazii-voice-minimal-bar">
+      <span class="mazii-voice-minimal-label">✨ Gợi ý:</span>
+      <div class="mazii-voice-candidates-chips">
+        ${chipsHtml}
+        <a href="${gtUrl}" target="_blank" rel="noopener" class="mazii-voice-candidate-chip gt-chip" title="Mở trên Google Dịch">
+          <span>🌐 Google Dịch ↗</span>
+        </a>
+      </div>
+      <button type="button" class="mazii-voice-close-mini" onclick="stopMaziiVoiceSearch(true)" title="Đóng gợi ý" aria-label="Đóng">✕</button>
     </div>
   `;
-  container.style.display = 'flex';
+  container.style.display = 'block';
+  panel.style.display = 'flex';
 }
 
 /**
@@ -9263,29 +9287,28 @@ function renderMaziiDictSection(initialQuery = '', initialType = 'word') {
         <div id="mazii-voice-panel" class="mazii-voice-panel" style="display:${maziiIsVoiceListening ? 'flex' : 'none'};">
           <div class="mazii-voice-top-row">
             <div class="mazii-voice-status">
-              <button type="button" class="mazii-voice-pulse ${maziiIsVoiceListening ? '' : 'paused'}" id="mazii-voice-modal-mic" onclick="toggleMaziiVoiceModalMic()" title="Chạm để bắt đầu hoặc tạm dừng nghe" aria-label="Micro giọng nói">
+              <button type="button" class="mazii-voice-pulse ${maziiIsVoiceListening ? '' : 'paused'}" id="mazii-voice-modal-mic" onclick="toggleMaziiVoiceModalMic()" title="Chạm để tạm dừng hoặc nói tiếp" aria-label="Micro giọng nói">
                 <span class="voice-wave wave-1"></span>
                 <span class="voice-wave wave-2"></span>
-                <span class="voice-wave wave-3"></span>
                 <span class="voice-mic-icon">${APP_ICONS.mic}</span>
               </button>
               <div class="mazii-voice-info">
-                <div class="mazii-voice-title" id="mazii-voice-title">${maziiVoiceLang === 'ja-JP' ? 'Đang lắng nghe tiếng Nhật (日本語)...' : 'Đang lắng nghe tiếng Việt...'}</div>
-                <div class="mazii-voice-transcript" id="mazii-voice-transcript">Hãy nói từ vựng hoặc câu bạn muốn tra...</div>
+                <div class="mazii-voice-title" id="mazii-voice-title">${maziiVoiceLang === 'ja-JP' ? 'Đang nghe tiếng Nhật...' : 'Đang nghe tiếng Việt...'}</div>
+                <div class="mazii-voice-transcript" id="mazii-voice-transcript">Hãy nói từ muốn tra...</div>
               </div>
             </div>
 
             <div class="mazii-voice-actions">
               <div class="mazii-voice-lang-group" role="radiogroup" aria-label="Chọn ngôn ngữ giọng nói">
                 <button type="button" class="mazii-voice-lang-btn ${maziiVoiceLang === 'ja-JP' ? 'active' : ''}" onclick="setMaziiVoiceLang('ja-JP')" title="Nói bằng tiếng Nhật">
-                  <span>🇯🇵 Tiếng Nhật</span>
+                  <span>🇯🇵 Nhật</span>
                 </button>
                 <button type="button" class="mazii-voice-lang-btn ${maziiVoiceLang === 'vi-VN' ? 'active' : ''}" onclick="setMaziiVoiceLang('vi-VN')" title="Nói bằng tiếng Việt">
-                  <span>🇻🇳 Tiếng Việt</span>
+                  <span>🇻🇳 Việt</span>
                 </button>
               </div>
-              <button type="button" class="mazii-voice-stop-btn" onclick="stopMaziiVoiceSearch(true)" title="Đóng bảng giọng nói">
-                ✕ Đóng
+              <button type="button" class="mazii-voice-close-btn" onclick="stopMaziiVoiceSearch(true)" title="Đóng bảng giọng nói" aria-label="Đóng">
+                ✕
               </button>
             </div>
           </div>
