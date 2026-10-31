@@ -1,0 +1,53 @@
+# ==============================================================================
+# DOCKER COMPOSE - PRODUCTION HIGH AVAILABILITY DEPLOYMENT
+# Multi-tier Security Architecture: Nginx WAF / SSL -> Node.js Security Server
+# ==============================================================================
+
+version: '3.8'
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: tiengnhat_app
+    restart: always
+    environment:
+      - NODE_ENV=production
+      - PORT=3000
+      - HOST=0.0.0.0
+      - CANONICAL_DOMAIN=tiengnhat.edu.vn
+      - SPEECHGEN_TOKEN=${SPEECHGEN_TOKEN:-}
+      - SPEECHGEN_EMAIL=${SPEECHGEN_EMAIL:-}
+      - ATTESTATION_SECRET=${ATTESTATION_SECRET:-minna_production_cluster_secret_2026}
+    ports:
+      - "3000:3000"
+    deploy:
+      resources:
+        limits:
+          cpus: '1.0'
+          memory: 512M
+    security_opt:
+      - no-new-privileges:true
+    networks:
+      - internal_net
+
+  nginx:
+    image: nginx:alpine
+    container_name: tiengnhat_nginx
+    restart: always
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx.conf:/etc/nginx/conf.d/default.conf:ro
+      - ./:/var/www/tiengnhat:ro
+      - /etc/letsencrypt:/etc/letsencrypt:ro
+    depends_on:
+      - app
+    networks:
+      - internal_net
+
+networks:
+  internal_net:
+    driver: bridge

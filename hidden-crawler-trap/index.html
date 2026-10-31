@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex, nofollow, noarchive, nosnippet">
+  <title>403 Forbidden - Honeypot Crawler Trap</title>
+  <style>
+    body {
+      background-color: #0b0f19;
+      color: #f1f5f9;
+      font-family: system-ui, -apple-system, sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      margin: 0;
+      padding: 20px;
+      text-align: center;
+      box-sizing: border-box;
+    }
+    .trap-card {
+      background: rgba(30, 41, 59, 0.7);
+      border: 1px solid #ef4444;
+      border-radius: 12px;
+      padding: 32px 24px;
+      max-width: 600px;
+      box-shadow: 0 10px 25px -5px rgba(239, 68, 68, 0.2);
+    }
+    .badge {
+      display: inline-block;
+      background: #7f1d1d;
+      color: #fca5a5;
+      font-weight: 700;
+      font-size: 13px;
+      padding: 6px 14px;
+      border-radius: 9999px;
+      margin-bottom: 16px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    h1 {
+      font-size: 26px;
+      margin: 0 0 12px 0;
+      color: #f87171;
+    }
+    p {
+      color: #94a3b8;
+      font-size: 15px;
+      line-height: 1.6;
+      margin: 0 0 20px 0;
+    }
+    .code-box {
+      background: #020617;
+      border: 1px solid #334155;
+      padding: 12px;
+      border-radius: 8px;
+      font-family: monospace;
+      font-size: 13px;
+      color: #38bdf8;
+      word-break: break-all;
+    }
+  </style>
+</head>
+<body>
+  <div class="trap-card">
+    <div class="badge">Security Honeypot Trap Activated</div>
+    <h1>403 Forbidden</h1>
+    <p>Endpoint này là bẫy Honeypot an ninh dành riêng cho việc nhận diện và đối kháng bot cào dữ liệu tự động. Hành vi truy cập bất thường của bạn đã được ghi nhận vào nhật ký an ninh hệ thống và địa chỉ IP của bạn đã được đưa vào danh sách theo dõi giảm thiểu rủi ro.</p>
+    <div class="code-box" id="incident-ref">TRAP_INCIDENT_HASH: GENERATING...</div>
+  </div>
+
+  <!-- Tarpit Script cho Bot độc hại & Tự động ghi nhận Beacon -->
+  <script>
+    (function() {
+      'use strict';
+      var incidentId = 'TRAP-' + Math.random().toString(36).substring(2, 10).toUpperCase() + '-' + Date.now();
+      var refEl = document.getElementById('incident-ref');
+      if (refEl) refEl.textContent = 'TRAP_INCIDENT_HASH: ' + incidentId;
+
+      // Gửi tín hiệu Beacon về máy chủ an ninh
+      try {
+        if (navigator.sendBeacon) {
+          navigator.sendBeacon('/api/security/incident', JSON.stringify({
+            event: 'HONEYPOT_TRAP_TRIGGERED',
+            incidentId: incidentId,
+            referrer: document.referrer,
+            userAgent: navigator.userAgent,
+            timestamp: new Date().toISOString()
+          }));
+        }
+      } catch (e) {}
+
+      // Tarpit delay loop: Gây trễ và tiêu hao chu kỳ CPU của scraper tự động
+      var start = Date.now();
+      while (Date.now() - start < 150) {
+        Math.sin(Math.random());
+      }
+    })();
+  </script>
+</body>
+</html>

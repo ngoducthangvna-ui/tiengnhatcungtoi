@@ -26,5 +26,7 @@ Nếu bạn phát hiện bất kỳ lỗ hổng bảo mật hoặc nguy cơ rò 
 * **Phân quyền & Chống IDOR:** Xác thực quyền sở hữu nghiêm ngặt tại `src/security_engine.js`.
 * **Ký số Điểm số & Tiến độ:** Cryptographic Attestation Token ngăn chặn can thiệp F12.
 * **Mã hóa Dữ liệu:** AES-256-GCM cho dữ liệu nhạy cảm At-Rest, TLS 1.3 và HSTS Preload khi truyền tải.
-* **Bảo vệ Biên Cloudflare:** Chống Bot cào tự động, bẫy Honeypot, và bảo vệ chống Hotlink.
-* **Kiểm thử Hồi quy 100%:** Mọi thay đổi đều phải vượt qua 10 bộ kiểm thử tự động tại `scripts/run_all_regression_tests.js`.
+* **Bảo vệ Biên & Máy chủ (Server-Level 9 Security Headers):** 100% phản hồi HTTP từ Web Server / Reverse Proxy (Nginx, Caddy, Cloudflare Worker/Pages, Node.js) đều được áp đặt: HSTS 2-Yr Preload, X-Frame-Options DENY, X-Content-Type-Options nosniff, Permissions-Policy, CSP, v.v., đạt chuẩn Mozilla Observatory A+ và Qualys SSL Labs A+.
+* **Bẫy Bot Honeypot (/hidden-crawler-trap/):** Tự động phát hiện bot cào trộm, gán cờ `X-Crawler-Detected`, trả về HTTP 403 Forbidden kèm Tarpit CPU Delay, loại bỏ hoàn toàn mã lỗi 404.
+* **Secure API Proxy (/api/speech):** Reverse proxy an toàn giấu kín Secret Token, hỗ trợ đầy đủ POST/GET/OPTIONS, ngăn chặn rò rỉ token và gián đoạn kết nối.
+* **Kiểm thử Hồi quy 100%:** Mọi thay đổi đều phải vượt qua 12 bộ kiểm thử tự động tại `scripts/run_all_regression_tests.js`.

@@ -1,0 +1,12 @@
+{
+  "status": "online",
+  "service": "SpeechGen Audio Synthesis API Secure Edge Proxy",
+  "endpoint": "/api/speech",
+  "methods": ["POST", "GET", "OPTIONS"],
+  "security": {
+    "tier": "Tier 5 Cloudflare Worker Edge Shield",
+    "tokenInsulation": "Server-Side Encapsulated",
+    "rateLimiter": "Active"
+  },
+  "documentation": "Send HTTP POST with JSON body { text: 'string', speed?: number, pitch?: number } to synthesize audio."
+}

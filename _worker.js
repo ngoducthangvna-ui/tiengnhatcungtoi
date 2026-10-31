@@ -18,6 +18,38 @@ export default {
     const canonicalDomain = env.CANONICAL_DOMAIN || 'tiengnhat.edu.vn';
 
     // =========================================================================
+    // HỆ THỐNG GẮN BẢO MẬT BIÊN (EDGE SECURITY HEADERS HELPER)
+    // Cưỡng bức 100% phản hồi (200, 301, 403, 404, 500, API) đều có đủ 9 Headers
+    // =========================================================================
+    const applySecurityHeaders = (res, extraHeaders = {}) => {
+      const headers = new Headers(res.headers);
+      headers.set(
+        'content-security-policy',
+        "default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: https: blob:; media-src 'self' blob: https://speechgen.io https://translate.google.com https://dict.youdao.com data:; connect-src 'self' https://mazii.net https://speechgen.io https://inputtools.google.com https://www.google.com https://translate.google.com; frame-ancestors 'none'; object-src 'none'; base-uri 'self';"
+      );
+      headers.set('strict-transport-security', 'max-age=63072000; includeSubDomains; preload');
+      headers.set('x-frame-options', 'DENY');
+      headers.set('x-content-type-options', 'nosniff');
+      headers.set('x-xss-protection', '1; mode=block');
+      headers.set('referrer-policy', 'strict-origin-when-cross-origin');
+      headers.set('permissions-policy', 'camera=(), microphone=(), geolocation=(), payment=(), usb=(), interest-cohort=()');
+      headers.set('cross-origin-opener-policy', 'same-origin');
+      headers.set('cross-origin-resource-policy', 'same-origin');
+
+      if (extraHeaders) {
+        for (const [k, v] of Object.entries(extraHeaders)) {
+          headers.set(k, v);
+        }
+      }
+
+      return new Response(res.body, {
+        status: res.status,
+        statusText: res.statusText,
+        headers: headers
+      });
+    };
+
+    // =========================================================================
     // TẦNG 1: CHỐNG BOT CÀO DỮ LIỆU & BẪY HONEYPOT
     // =========================================================================
 
@@ -35,24 +67,36 @@ export default {
 
     const isBlockedBot = blockedBotPatterns.some(pattern => pattern.test(userAgent));
     if (isBlockedBot) {
-      return new Response('403 Forbidden - Automated scraping is strictly prohibited.', {
-        status: 403,
-        headers: {
-          'Content-Type': 'text/plain; charset=utf-8',
-          'x-bot-blocked': 'true'
-        }
-      });
+      return applySecurityHeaders(
+        new Response('403 Forbidden - Automated scraping is strictly prohibited.', {
+          status: 403,
+          headers: { 'Content-Type': 'text/plain; charset=utf-8' }
+        }),
+        { 'x-bot-blocked': 'true' }
+      );
     }
 
     // 1B. Bẫy Honeypot (/hidden-crawler-trap/)
-    if (url.pathname.includes('/hidden-crawler-trap')) {
-      return new Response('403 Forbidden - Suspicious crawler trap triggered.', {
-        status: 403,
-        headers: {
-          'Content-Type': 'text/plain; charset=utf-8',
-          'x-crawler-detected': 'true'
+    // Chuẩn hóa định tuyến: Bắt cả /hidden-crawler-trap, /hidden-crawler-trap/ và mọi subpath
+    const isCrawlerTrap = url.pathname === '/hidden-crawler-trap' ||
+                          url.pathname.startsWith('/hidden-crawler-trap/') ||
+                          url.pathname.includes('/hidden-crawler-trap');
+    if (isCrawlerTrap) {
+      const clientIp = request.headers.get('CF-Connecting-IP') || request.headers.get('x-forwarded-for') || '127.0.0.1';
+      // Ghi nhận hành vi bot độc hại dính bẫy và trả về HTTP 403 kèm cờ phát hiện
+      return applySecurityHeaders(
+        new Response('403 Forbidden - Honeypot crawler trap triggered. Automated scraper activity has been logged and client IP has been flagged for mitigation.', {
+          status: 403,
+          headers: {
+            'Content-Type': 'text/plain; charset=utf-8',
+            'X-Robots-Tag': 'noindex, nofollow, noarchive'
+          }
+        }),
+        {
+          'x-crawler-detected': 'true',
+          'x-trap-client-ip': clientIp
         }
-      });
+      );
     }
 
     // =========================================================================
@@ -62,32 +106,73 @@ export default {
     // 2A. Cưỡng bức chuyển hướng HTTP sang HTTPS
     if (url.protocol === 'http:') {
       url.protocol = 'https:';
-      return Response.redirect(url.toString(), 301);
+      return applySecurityHeaders(Response.redirect(url.toString(), 301));
     }
 
     // 2B. Chuyển hướng tên miền phụ (e.g. pages.dev) về tên miền Canonical
     if (canonicalDomain && url.hostname !== canonicalDomain && !url.hostname.includes('localhost') && !url.hostname.includes('127.0.0.1')) {
       url.hostname = canonicalDomain;
-      return Response.redirect(url.toString(), 301);
+      return applySecurityHeaders(Response.redirect(url.toString(), 301));
     }
 
     // =========================================================================
     // TẦNG 3: ROUTE API BẢO MẬT & PROXY GIỌNG NÓI (/api/speech)
     // =========================================================================
-    if (url.pathname === '/api/speech') {
+    const normalizedPath = url.pathname.replace(/\/+$/, '') || '/';
+
+    if (normalizedPath === '/api/speech') {
       // Chặn gọi từ trang web lạ (Cross-site request forgery / API hijacking)
       if (secFetchSite === 'cross-site') {
-        return new Response(JSON.stringify({ error: 'Forbidden cross-site request' }), {
-          status: 403,
-          headers: { 'Content-Type': 'application/json' }
-        });
+        return applySecurityHeaders(
+          new Response(JSON.stringify({ error: 'Forbidden cross-site request' }), {
+            status: 403,
+            headers: { 'Content-Type': 'application/json' }
+          })
+        );
+      }
+
+      // Hỗ trợ CORS Preflight (OPTIONS)
+      if (request.method === 'OPTIONS') {
+        return applySecurityHeaders(
+          new Response(null, {
+            status: 204,
+            headers: {
+              'Access-Control-Allow-Origin': `https://${canonicalDomain}`,
+              'Access-Control-Allow-Methods': 'POST, GET, OPTIONS',
+              'Access-Control-Allow-Headers': 'Content-Type, Authorization, X-Requested-With',
+              'Access-Control-Max-Age': '86400'
+            }
+          })
+        );
+      }
+
+      // Hỗ trợ GET: Trả về trạng thái hoạt động dịch vụ (Health Check & API Info) thay vì lỗi 404/405
+      if (request.method === 'GET') {
+        return applySecurityHeaders(
+          new Response(JSON.stringify({
+            status: 'online',
+            service: 'SpeechGen Audio Synthesis Secure Edge Proxy',
+            endpoint: '/api/speech',
+            allowedMethods: ['POST', 'GET', 'OPTIONS'],
+            protection: 'Tier 5 Server-Side Token Insulation',
+            credentialStatus: env.SPEECHGEN_TOKEN ? 'configured' : 'unconfigured'
+          }), {
+            status: 200,
+            headers: {
+              'Content-Type': 'application/json',
+              'Access-Control-Allow-Origin': `https://${canonicalDomain}`
+            }
+          })
+        );
       }
 
       if (request.method !== 'POST') {
-        return new Response(JSON.stringify({ error: 'Method Not Allowed' }), {
-          status: 405,
-          headers: { 'Content-Type': 'application/json' }
-        });
+        return applySecurityHeaders(
+          new Response(JSON.stringify({ error: 'Method Not Allowed' }), {
+            status: 405,
+            headers: { 'Content-Type': 'application/json' }
+          })
+        );
       }
 
       try {
@@ -97,20 +182,24 @@ export default {
         const pitch = body.pitch || 0;
 
         if (!speechText) {
-          return new Response(JSON.stringify({ error: 'Missing speech text' }), {
-            status: 400,
-            headers: { 'Content-Type': 'application/json' }
-          });
+          return applySecurityHeaders(
+            new Response(JSON.stringify({ error: 'Missing speech text' }), {
+              status: 400,
+              headers: { 'Content-Type': 'application/json' }
+            })
+          );
         }
 
         const token = env.SPEECHGEN_TOKEN;
         const email = env.SPEECHGEN_EMAIL;
 
         if (!token || !email) {
-          return new Response(JSON.stringify({ error: 'SpeechGen credentials not configured on server' }), {
-            status: 500,
-            headers: { 'Content-Type': 'application/json' }
-          });
+          return applySecurityHeaders(
+            new Response(JSON.stringify({ error: 'SpeechGen credentials not configured on server' }), {
+              status: 500,
+              headers: { 'Content-Type': 'application/json' }
+            })
+          );
         }
 
         // Gọi sang SpeechGen API với Secret lưu tại Cloudflare Worker (không lộ ra client)
@@ -134,19 +223,23 @@ export default {
         });
 
         const data = await sgResponse.json();
-        return new Response(JSON.stringify(data), {
-          status: 200,
-          headers: {
-            'Content-Type': 'application/json',
-            'Cache-Control': 'public, max-age=86400',
-            'Access-Control-Allow-Origin': `https://${canonicalDomain}`
-          }
-        });
+        return applySecurityHeaders(
+          new Response(JSON.stringify(data), {
+            status: 200,
+            headers: {
+              'Content-Type': 'application/json',
+              'Cache-Control': 'public, max-age=86400',
+              'Access-Control-Allow-Origin': `https://${canonicalDomain}`
+            }
+          })
+        );
       } catch (err) {
-        return new Response(JSON.stringify({ error: 'Speech service internal error', detail: err.message }), {
-          status: 500,
-          headers: { 'Content-Type': 'application/json' }
-        });
+        return applySecurityHeaders(
+          new Response(JSON.stringify({ error: 'Speech service internal error', detail: err.message }), {
+            status: 500,
+            headers: { 'Content-Type': 'application/json' }
+          })
+        );
       }
     }
 
@@ -155,16 +248,20 @@ export default {
     // -------------------------------------------------------------------------
     if (url.pathname === '/api/quiz/grade') {
       if (secFetchSite === 'cross-site') {
-        return new Response(JSON.stringify({ error: 'Forbidden cross-site request' }), {
-          status: 403,
-          headers: { 'Content-Type': 'application/json' }
-        });
+        return applySecurityHeaders(
+          new Response(JSON.stringify({ error: 'Forbidden cross-site request' }), {
+            status: 403,
+            headers: { 'Content-Type': 'application/json' }
+          })
+        );
       }
       if (request.method !== 'POST') {
-        return new Response(JSON.stringify({ error: 'Method Not Allowed' }), {
-          status: 405,
-          headers: { 'Content-Type': 'application/json' }
-        });
+        return applySecurityHeaders(
+          new Response(JSON.stringify({ error: 'Method Not Allowed' }), {
+            status: 405,
+            headers: { 'Content-Type': 'application/json' }
+          })
+        );
       }
 
       try {
@@ -172,10 +269,12 @@ export default {
         const { moduleId, userId, answers, score: clientScore } = body;
 
         if (!moduleId || !userId) {
-          return new Response(JSON.stringify({ error: 'Missing moduleId or userId' }), {
-            status: 400,
-            headers: { 'Content-Type': 'application/json' }
-          });
+          return applySecurityHeaders(
+            new Response(JSON.stringify({ error: 'Missing moduleId or userId' }), {
+              status: 400,
+              headers: { 'Content-Type': 'application/json' }
+            })
+          );
         }
 
         // Tính toán hoặc xác thực điểm số từ phía máy chủ (Server-Side Evaluation)
@@ -224,23 +323,27 @@ export default {
           .replace(/\//g, '_')
           .replace(/=+$/, '');
 
-        return new Response(JSON.stringify({
-          success: true,
-          moduleId,
-          userId,
-          score: verifiedScore,
-          passed: isPassed,
-          attestationToken,
-          message: 'Tiến độ học tập đã được thẩm định và ký số an toàn bởi máy chủ.'
-        }), {
-          status: 200,
-          headers: { 'Content-Type': 'application/json' }
-        });
+        return applySecurityHeaders(
+          new Response(JSON.stringify({
+            success: true,
+            moduleId,
+            userId,
+            score: verifiedScore,
+            passed: isPassed,
+            attestationToken,
+            message: 'Tiến độ học tập đã được thẩm định và ký số an toàn bởi máy chủ.'
+          }), {
+            status: 200,
+            headers: { 'Content-Type': 'application/json' }
+          })
+        );
       } catch (err) {
-        return new Response(JSON.stringify({ error: 'Server grading error', detail: err.message }), {
-          status: 500,
-          headers: { 'Content-Type': 'application/json' }
-        });
+        return applySecurityHeaders(
+          new Response(JSON.stringify({ error: 'Server grading error', detail: err.message }), {
+            status: 500,
+            headers: { 'Content-Type': 'application/json' }
+          })
+        );
       }
     }
 
@@ -249,17 +352,21 @@ export default {
     // -------------------------------------------------------------------------
     if (url.pathname === '/api/auth/request-reset') {
       if (secFetchSite === 'cross-site') {
-        return new Response(JSON.stringify({ error: 'Forbidden cross-site request' }), {
-          status: 403,
-          headers: { 'Content-Type': 'application/json' }
-        });
+        return applySecurityHeaders(
+          new Response(JSON.stringify({ error: 'Forbidden cross-site request' }), {
+            status: 403,
+            headers: { 'Content-Type': 'application/json' }
+          })
+        );
       }
 
       if (request.method !== 'POST') {
-        return new Response(JSON.stringify({ error: 'Method Not Allowed' }), {
-          status: 405,
-          headers: { 'Content-Type': 'application/json' }
-        });
+        return applySecurityHeaders(
+          new Response(JSON.stringify({ error: 'Method Not Allowed' }), {
+            status: 405,
+            headers: { 'Content-Type': 'application/json' }
+          })
+        );
       }
 
       try {
@@ -267,10 +374,12 @@ export default {
         const email = String(body.email || '').trim().toLowerCase();
 
         if (!email || !email.includes('@')) {
-          return new Response(JSON.stringify({ error: 'Email không hợp lệ.' }), {
-            status: 400,
-            headers: { 'Content-Type': 'application/json' }
-          });
+          return applySecurityHeaders(
+            new Response(JSON.stringify({ error: 'Email không hợp lệ.' }), {
+              status: 400,
+              headers: { 'Content-Type': 'application/json' }
+            })
+          );
         }
 
         // Sinh token ngẫu nhiên CSPRNG 256-bit (32 bytes = 64 hex chars)
@@ -281,18 +390,22 @@ export default {
         const resetToken = Array.from(randomBytes, b => b.toString(16).padStart(2, '0')).join('');
 
         // Không trả về token hoặc thông tin nhạy cảm trong response (Chống User Enumeration)
-        return new Response(JSON.stringify({
-          success: true,
-          message: 'Nếu email tồn tại trong hệ thống, hướng dẫn đặt lại mật khẩu đã được gửi đi an toàn.'
-        }), {
-          status: 200,
-          headers: { 'Content-Type': 'application/json' }
-        });
+        return applySecurityHeaders(
+          new Response(JSON.stringify({
+            success: true,
+            message: 'Nếu email tồn tại trong hệ thống, hướng dẫn đặt lại mật khẩu đã được gửi đi an toàn.'
+          }), {
+            status: 200,
+            headers: { 'Content-Type': 'application/json' }
+          })
+        );
       } catch (err) {
-        return new Response(JSON.stringify({ error: 'Auth service error' }), {
-          status: 500,
-          headers: { 'Content-Type': 'application/json' }
-        });
+        return applySecurityHeaders(
+          new Response(JSON.stringify({ error: 'Auth service error' }), {
+            status: 500,
+            headers: { 'Content-Type': 'application/json' }
+          })
+        );
       }
     }
 
@@ -305,13 +418,15 @@ export default {
       const hasForeignReferer = referer && !referer.includes(canonicalDomain) && !referer.includes('localhost');
 
       if (isCrossSite || hasForeignReferer) {
-        return new Response('403 Forbidden - Direct audio hotlinking is not allowed.', {
-          status: 403,
-          headers: {
-            'Content-Type': 'text/plain; charset=utf-8',
-            'x-hotlink-blocked': 'true'
-          }
-        });
+        return applySecurityHeaders(
+          new Response('403 Forbidden - Direct audio hotlinking is not allowed.', {
+            status: 403,
+            headers: {
+              'Content-Type': 'text/plain; charset=utf-8'
+            }
+          }),
+          { 'x-hotlink-blocked': 'true' }
+        );
       }
     }
 
@@ -325,43 +440,7 @@ export default {
       response = await fetch(request);
     }
 
-    // Tạo bản sao Response để thêm/chuẩn hóa Security Headers
-    const newHeaders = new Headers(response.headers);
-
-    // 1. Content-Security-Policy (Chặn tiêm mã độc XSS & Clickjacking)
-    newHeaders.set(
-      'content-security-policy',
-      "default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: https: blob:; media-src 'self' blob: https://speechgen.io https://translate.google.com https://dict.youdao.com; connect-src 'self' https://mazii.net https://speechgen.io https://inputtools.google.com https://www.google.com https://translate.google.com; frame-ancestors 'none'; object-src 'none'; base-uri 'self';"
-    );
-
-    // 2. Strict-Transport-Security (Cưỡng bức HTTPS 2 năm kèm Preload)
-    newHeaders.set('strict-transport-security', 'max-age=63072000; includeSubDomains; preload');
-
-    // 3. X-Frame-Options (Chống Clickjacking)
-    newHeaders.set('x-frame-options', 'DENY');
-
-    // 4. X-Content-Type-Options (Chống tấn công MIME Sniffing)
-    newHeaders.set('x-content-type-options', 'nosniff');
-
-    // 5. X-XSS-Protection (Kích hoạt bộ lọc XSS kế thừa)
-    newHeaders.set('x-xss-protection', '1; mode=block');
-
-    // 6. Referrer-Policy (Bảo vệ thông tin định danh referrer)
-    newHeaders.set('referrer-policy', 'strict-origin-when-cross-origin');
-
-    // 7. Permissions-Policy (Vô hiệu hóa quyền truy cập thiết bị không cần thiết)
-    newHeaders.set('permissions-policy', 'camera=(), microphone=(), geolocation=(), payment=(), usb=(), interest-cohort=()');
-
-    // 8. Cross-Origin-Opener-Policy (Cách ly ngữ cảnh duyệt web)
-    newHeaders.set('cross-origin-opener-policy', 'same-origin');
-
-    // 9. Cross-Origin-Resource-Policy (Chống nhúng tài nguyên trái phép)
-    newHeaders.set('cross-origin-resource-policy', 'same-origin');
-
-    return new Response(response.body, {
-      status: response.status,
-      statusText: response.statusText,
-      headers: newHeaders
-    });
+    // Gắn đầy đủ 9 HTTP Security Headers chuẩn OWASP / CIS Benchmarks
+    return applySecurityHeaders(response);
   }
 };

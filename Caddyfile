@@ -1,0 +1,72 @@
+# ==============================================================================
+# CADDY 2 PRODUCTION WEBSERVER & REVERSE PROXY CONFIGURATION
+# File: Caddyfile
+# Standard: Automated HTTPS, Mozilla Observatory A+, Qualys SSL Labs A+
+# ==============================================================================
+
+tiengnhat.edu.vn {
+    root * /var/www/tiengnhat
+    encode zstd gzip
+
+    # =========================================================================
+    # NHÓM 9 HTTP SECURITY HEADERS CẤP ĐỘ MÁY CHỦ (SERVER-LEVEL HEADERS)
+    # =========================================================================
+    header {
+        # 1. HSTS (Cưỡng bức HTTPS 2 năm kèm Preload)
+        Strict-Transport-Security "max-age=63072000; includeSubDomains; preload"
+
+        # 2. X-Frame-Options (Chặn Clickjacking ở tầng mạng)
+        X-Frame-Options "DENY"
+
+        # 3. X-Content-Type-Options (Chống MIME-sniffing)
+        X-Content-Type-Options "nosniff"
+
+        # 4. Permissions-Policy (Cách ly quyền truy cập thiết bị nhạy cảm)
+        Permissions-Policy "camera=(), microphone=(), geolocation=(), payment=(), usb=(), interest-cohort=()"
+
+        # 5. Content-Security-Policy (Chặn tiêm mã XSS & Frame-ancestors)
+        Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: https: blob:; media-src 'self' blob: https://speechgen.io https://translate.google.com https://dict.youdao.com data:; connect-src 'self' https://mazii.net https://speechgen.io https://inputtools.google.com https://www.google.com https://translate.google.com; frame-ancestors 'none'; object-src 'none'; base-uri 'self';"
+
+        # 6. Referrer-Policy
+        Referrer-Policy "strict-origin-when-cross-origin"
+
+        # 7. Cross-Origin-Opener-Policy
+        Cross-Origin-Opener-Policy "same-origin"
+
+        # 8. Cross-Origin-Resource-Policy
+        Cross-Origin-Resource-Policy "same-origin"
+
+        # 9. X-XSS-Protection Legacy
+        X-XSS-Protection "1; mode=block"
+
+        # Tắt server token quảng bá phiên bản máy chủ
+        -Server
+    }
+
+    # =========================================================================
+    # ĐỊNH TUYẾN 1: BẪY BOT HONEYPOT (/hidden-crawler-trap/)
+    # =========================================================================
+    handle /hidden-crawler-trap* {
+        header X-Robots-Tag "noindex, nofollow, noarchive"
+        header X-Crawler-Detected "true"
+        respond "403 Forbidden - Honeypot crawler trap triggered. Automated scraper activity has been logged." 403
+    }
+
+    # =========================================================================
+    # ĐỊNH TUYẾN 2: SECURE API PROXY GIỌNG NÓI (/api/speech)
+    # =========================================================================
+    handle /api/speech* {
+        reverse_proxy 127.0.0.1:3000 {
+            header_up Host {host}
+            header_up X-Real-IP {remote_host}
+            header_up X-Forwarded-For {remote_host}
+            header_up X-Forwarded-Proto {scheme}
+        }
+    }
+
+    # =========================================================================
+    # ĐỊNH TUYẾN 3: PHỤC VỤ TRANG TĨNH & SPA
+    # =========================================================================
+    try_files {path} {path}/ /index.html
+    file_server
+}

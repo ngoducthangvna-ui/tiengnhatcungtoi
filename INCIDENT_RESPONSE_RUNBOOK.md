@@ -38,7 +38,7 @@ flowchart LR
 ### Bước 3: Triệt tiêu Nguyên nhân (Eradication)
 - Xoay vòng khóa bí mật (Rotate Secrets): Sinh lại toàn bộ `SPEECHGEN_TOKEN`, `ATTESTATION_SECRET`, và `SESSION_SIGNING_KEY`.
 - Triển khai bản vá mã nguồn khẩn cấp qua nhánh `hotfix/*`.
-- Chạy toàn bộ 11 bộ kiểm thử tự động tại `scripts/run_all_regression_tests.js` để xác nhận 100% All Green.
+- Chạy toàn bộ 12 bộ kiểm thử tự động tại `scripts/run_all_regression_tests.js` để xác nhận 100% All Green.
 
 ### Bước 4: Khục hồi Dịch vụ & Giám sát Tăng cường (Recovery)
 - Mở lại dịch vụ theo từng phân vùng (Staged Rollout).
