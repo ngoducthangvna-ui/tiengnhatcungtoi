@@ -32,7 +32,7 @@ export default {
       headers.set('x-content-type-options', 'nosniff');
       headers.set('x-xss-protection', '1; mode=block');
       headers.set('referrer-policy', 'strict-origin-when-cross-origin');
-      headers.set('permissions-policy', 'camera=(), microphone=(), geolocation=(), payment=(), usb=(), interest-cohort=()');
+      headers.set('permissions-policy', 'camera=(), microphone=(self), geolocation=(), payment=(), usb=(), interest-cohort=()');
       headers.set('cross-origin-opener-policy', 'same-origin');
       headers.set('cross-origin-resource-policy', 'same-origin');
 

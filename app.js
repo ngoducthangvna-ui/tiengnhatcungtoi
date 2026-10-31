@@ -9021,21 +9021,42 @@ function toggleMaziiVoiceModalMic() {
  * Cấp quyền Micro qua getUserMedia khi Chrome yêu cầu xác nhận
  */
 async function retryMicrophonePermission() {
+  const titleEl = document.getElementById('mazii-voice-title');
   const transcriptEl = document.getElementById('mazii-voice-transcript');
   if (transcriptEl) transcriptEl.textContent = 'Đang yêu cầu cấp quyền Micro... Vui lòng bấm [Cho phép] trên thông báo trình duyệt.';
+
+  const isFile = typeof window !== 'undefined' && window.location && window.location.protocol === 'file:';
+  const isInsecure = typeof window !== 'undefined' && window.isSecureContext === false && window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1';
+
+  if (isFile) {
+    if (transcriptEl) transcriptEl.innerHTML = 'Chrome chặn Micro khi mở file://. Vui lòng chạy qua web server cục bộ (Live Server, Node.js) hoặc Cloudflare.';
+    return;
+  }
+
+  if (isInsecure) {
+    if (transcriptEl) transcriptEl.innerHTML = 'Micro yêu cầu kết nối bảo mật HTTPS (trình duyệt chặn Micro trên HTTP mạng LAN). Vui lòng truy cập qua tên miền HTTPS.';
+    return;
+  }
+
   if (typeof navigator !== 'undefined' && navigator.mediaDevices && typeof navigator.mediaDevices.getUserMedia === 'function') {
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
       stream.getTracks().forEach(track => track.stop());
+      if (titleEl) titleEl.textContent = maziiVoiceLang === 'ja-JP' ? 'Đang nghe tiếng Nhật...' : 'Đang nghe tiếng Việt...';
       startMaziiVoiceSearch(maziiVoiceLang);
     } catch (err) {
       console.warn('[VoiceSearch] getUserMedia bị từ chối:', err);
+      if (titleEl) titleEl.textContent = 'Micrô đang bị chặn';
       if (transcriptEl) {
-        transcriptEl.innerHTML = 'Micro vẫn đang bị chặn. Vui lòng bấm vào <b>biểu tượng Cài đặt trang web / Khóa</b> trên thanh địa chỉ của Chrome > <b>Quyền</b> > <b>Micro: Cho phép</b>, sau đó tải lại trang.';
+        transcriptEl.innerHTML = 'Micro vẫn đang bị chặn. Vui lòng bấm vào <b>biểu tượng Cài đặt trang web / Khóa 🔒</b> trên thanh địa chỉ của trình duyệt &gt; <b>Quyền</b> &gt; <b>Micro: Cho phép</b>, sau đó tải lại trang.<br><button type="button" class="mazii-voice-retry-perm-btn" onclick="retryMicrophonePermission()">🔄 Thử lại quyền Micro</button>';
       }
     }
   } else {
-    alert('Vui lòng mở Cài đặt trình duyệt Chrome trên điện thoại > Quyền riêng tư > Micro > Cho phép.');
+    try {
+      startMaziiVoiceSearch(maziiVoiceLang);
+    } catch (e) {
+      alert('Vui lòng mở Cài đặt trình duyệt trên điện thoại/máy tính > Quyền riêng tư > Micro > Cho phép.');
+    }
   }
 }
 
@@ -9205,16 +9226,21 @@ function startMaziiVoiceSearch(lang = 'ja-JP') {
           return;
         }
 
-        if (err && err.code === 'not-allowed') {
+        if (err && (err.code === 'not-allowed' || (err.message && (err.message.includes('not-allowed') || err.message.includes('quyền Micro'))))) {
           maziiShouldKeepListening = false;
           maziiIsVoiceListening = false;
           setVoiceMicActiveVisual(false);
           if (titleEl) titleEl.textContent = 'Micrô đang bị chặn';
           if (transcriptEl) {
             const isFile = typeof window !== 'undefined' && window.location && window.location.protocol === 'file:';
-            transcriptEl.innerHTML = isFile
-              ? 'Chrome chặn Micro do mở file trực tiếp (file://). Hãy mở qua HTTP/HTTPS (Live Server, Cloudflare).'
-              : 'Trang web chưa được cấp quyền Micro. <button type="button" class="mazii-voice-retry-perm-btn" onclick="retryMicrophonePermission()">🔓 Cấp quyền Micro ngay</button>';
+            const isInsecure = typeof window !== 'undefined' && window.isSecureContext === false && window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1';
+            if (isFile) {
+              transcriptEl.innerHTML = 'Chrome chặn Micro khi mở file trực tiếp (file://). Hãy mở qua HTTP/HTTPS (Live Server, Cloudflare).';
+            } else if (isInsecure) {
+              transcriptEl.innerHTML = 'Micro yêu cầu kết nối bảo mật HTTPS. Trình duyệt chặn Micro trên HTTP mạng nội bộ LAN.';
+            } else {
+              transcriptEl.innerHTML = 'Trang web chưa được cấp quyền Micro. <button type="button" class="mazii-voice-retry-perm-btn" onclick="retryMicrophonePermission()">🔓 Yêu cầu cấp quyền Micro</button>';
+            }
           }
           return;
         }
@@ -9273,7 +9299,11 @@ function startMaziiVoiceSearch(lang = 'ja-JP') {
           alternatives: alts
         });
       };
-      rec.onerror = (e) => callbacks.onError(new Error(e.error === 'not-allowed' ? 'Chưa cấp quyền Micro.' : (e.error || 'Lỗi giọng nói')));
+      rec.onerror = (e) => {
+        const err = new Error(e.error === 'not-allowed' ? 'Chưa cấp quyền Micro.' : (e.error || 'Lỗi giọng nói'));
+        err.code = e.error;
+        callbacks.onError(err);
+      };
       rec.onend = callbacks.onEnd;
       maziiVoiceRecognition = rec;
     }
