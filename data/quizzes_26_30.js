@@ -1157,15 +1157,15 @@ const quizzes_26_30 = {
     },
     {
       "id": "pq27-47",
-      "question": "Từ「クリーニング」có nghĩa là gì?",
+      "question": "A:「<ruby>漢字<rt>かんじ</rt></ruby>が もう <ruby>書<rt>か</rt></ruby>けますか」 - B:「いいえ、まだ ........。」Chọn câu trả lời ĐÚNG ngữ pháp:",
       "options": [
-        "Giặt khô ủi là (tiệm giặt là)",
-        "Dọn vệ sinh phòng",
-        "Nấu ăn",
-        "Sửa xe"
+        "<ruby>書<rt>か</rt></ruby>けません",
+        "<ruby>書<rt>か</rt></ruby>きませんでした",
+        "<ruby>書<rt>か</rt></ruby>いて いません",
+        "<ruby>書<rt>か</rt></ruby>きません"
       ],
       "correctIdx": 0,
-      "explanation": "[Độ khó: DỄ | Từ mượn] クリーニング là dịch vụ giặt là hấp sấy quần áo."
+      "explanation": "[Độ khó: TRUNG BÌNH | Chưa làm được: まだ + V-khả năng phủ định] Để diễn đạt hiện tại chưa đủ năng lực để làm việc gì đó, dùng「まだ + V-khả năng phủ định」(いいえ、まだ 書けません - Chưa, tôi vẫn chưa thể viết được)."
     },
     {
       "id": "pq27-48",

@@ -1747,15 +1747,15 @@ const quizzes_31_35 = {
     },
     {
       "id": "pq33-46",
-      "question": "「<ruby>席<rt>せき</rt></ruby>を <ruby>外<rt>そと</rt></ruby>して います」nghĩa là gì?",
+      "question": "Khi muốn nhờ đối phương chuyển lời nhắn đến anh Tanaka:「Cuộc họp ngày mai bắt đầu lúc 10 giờ」, câu nói chuẩn xác và lịch sự nhất là:",
       "options": [
-        "Người đó hiện đang rời khỏi chỗ ngồi một lát",
-        "Người đó đã nghỉ việc",
-        "Người đó đang ngồi làm việc",
-        "Không có chỗ ngồi"
+        "<ruby>明日<rt>あした</rt></ruby>の <ruby>会議<rt>かいぎ</rt></ruby>は 10<ruby>時<rt>じ</rt></ruby>からだと <ruby>伝<rt>つた</rt></ruby>えて いただけませんか。",
+        "<ruby>明日<rt>あした</rt></ruby>の <ruby>会議<rt>かいぎ</rt></ruby>は 10<ruby>時<rt>じ</rt></ruby>からだと <ruby>言<rt>い</rt></ruby>いなさい。",
+        "<ruby>明日<rt>あした</rt></ruby>の <ruby>会議<rt>かいぎ</rt></ruby>は 10<ruby>時<rt>じ</rt></ruby>からだと <ruby>聞<rt>き</rt></ruby>いて ください。",
+        "<ruby>明日<rt>あした</rt></ruby>の <ruby>会議<rt>かいぎ</rt></ruby>は 10<ruby>時<rt>じ</rt></ruby>からだと <ruby>思<rt>おも</rt></ruby>って いただけませんか。"
       ],
       "correctIdx": 0,
-      "explanation": "[Độ khó: DỄ | Cụm từ công sở] Đang vắng mặt tại bàn làm việc."
+      "explanation": "[Độ khó: TRUNG BÌNH | Nhờ truyền đạt lời nhắn 〜と 伝えて いただけませんか] Cấu trúc chuẩn để nhờ người khác nhắn lại cho bên thứ ba một cách lịch sự trong công sở là: [Nội dung lời nhắn] + と 伝えて いただけませんか."
     },
     {
       "id": "pq33-47",

@@ -69,6 +69,13 @@
       }
       if (id.startsWith('dokkai')) return 'data/dokkai.js';
       if (id.startsWith('radicals')) return 'data/radicals_data.js';
+      const kanjiMatch = id.match(/^(?:kanji)[^\d]*(\d+)/i);
+      if (kanjiMatch) {
+        const num = parseInt(kanjiMatch[1], 10);
+        const start = Math.floor((num - 1) / 5) * 5 + 1;
+        const end = start + 4;
+        return `data/kanji_${start}_${end}.js`;
+      }
       if (id.startsWith('kanji')) return 'data/kanji_data.js';
       return null;
     }

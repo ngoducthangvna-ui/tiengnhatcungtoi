@@ -20,6 +20,7 @@ const STORAGE_ENTERED_KEY = 'minna_has_entered';
 const STORAGE_LAST_ACTIVE_KEY = 'minna_last_active_id';
 const STORAGE_FURIGANA_KEY = 'minna_show_furigana';
 const STORAGE_DEVICE_SETTINGS_KEY = 'minna_device_settings';
+const STORAGE_AUTO_ADVANCE_KEY = 'minna_quiz_auto_advance';
 
 // --------------------------------------------------------------------------
 // 1-ROOT. KHỞI TẠO BIẾN TOÀN CỤC CHỐNG LỖI THAM CHIẾU (GLOBAL SCOPE GUARDS)
@@ -740,9 +741,33 @@ function syncLoadedData() {
     root.radicalsData = radicalsData;
   }
 
-  // Đồng bộ Kanji Mẹo nhớ
-  if (typeof kanjiLessonsData !== 'undefined' && Array.isArray(kanjiLessonsData) && kanjiLessonsData.length) {
-    root.kanjiLessonsData = kanjiLessonsData;
+  // Đồng bộ Kanji Mẹo nhớ (Hỗ trợ cả kanji_data.js nguyên khối lẫn 10 chunks kanji_1_5 đến kanji_46_50)
+  const kanjiChunks = [
+    typeof kanji_1_5 !== 'undefined' ? kanji_1_5 : null,
+    typeof kanji_6_10 !== 'undefined' ? kanji_6_10 : null,
+    typeof kanji_11_15 !== 'undefined' ? kanji_11_15 : null,
+    typeof kanji_16_20 !== 'undefined' ? kanji_16_20 : null,
+    typeof kanji_21_25 !== 'undefined' ? kanji_21_25 : null,
+    typeof kanji_26_30 !== 'undefined' ? kanji_26_30 : null,
+    typeof kanji_31_35 !== 'undefined' ? kanji_31_35 : null,
+    typeof kanji_36_40 !== 'undefined' ? kanji_36_40 : null,
+    typeof kanji_41_45 !== 'undefined' ? kanji_41_45 : null,
+    typeof kanji_46_50 !== 'undefined' ? kanji_46_50 : null
+  ];
+  const kanjiMap = new Map();
+  const existingK = Array.isArray(root.kanjiLessonsData) ? root.kanjiLessonsData : [];
+  existingK.forEach(k => { if (k && (k.id || k.lesson)) kanjiMap.set(k.id || `kanji-${k.lesson}`, k); });
+  if (typeof kanjiLessonsData !== 'undefined' && Array.isArray(kanjiLessonsData)) {
+    kanjiLessonsData.forEach(k => { if (k && (k.id || k.lesson)) kanjiMap.set(k.id || `kanji-${k.lesson}`, k); });
+  }
+  kanjiChunks.forEach(chunk => {
+    if (Array.isArray(chunk)) {
+      chunk.forEach(k => { if (k && (k.id || k.lesson)) kanjiMap.set(k.id || `kanji-${k.lesson}`, k); });
+    }
+  });
+  if (kanjiMap.size > 0) {
+    root.kanjiLessonsData = Array.from(kanjiMap.values()).sort((a, b) => (a.lesson || 0) - (b.lesson || 0));
+    if (typeof window !== 'undefined') window.kanjiLessonsData = root.kanjiLessonsData;
   }
 }
 
@@ -777,6 +802,13 @@ function getScriptUrlForModule(id) {
   }
   if (id.startsWith('radicals')) {
     return 'data/radicals_data.js';
+  }
+  const kanjiMatch = id.match(/^(?:kanji)[^\d]*(\d+)/i);
+  if (kanjiMatch) {
+    const num = parseInt(kanjiMatch[1], 10);
+    const start = Math.floor((num - 1) / 5) * 5 + 1;
+    const end = start + 4;
+    return `data/kanji_${start}_${end}.js`;
   }
   if (id.startsWith('kanji')) {
     return 'data/kanji_data.js';
@@ -854,6 +886,11 @@ function isModuleDataReady(id) {
   }
   if (id.startsWith('kanji')) {
     const kList = (typeof kanjiLessonsData !== 'undefined' && Array.isArray(kanjiLessonsData)) ? kanjiLessonsData : (root.kanjiLessonsData || []);
+    const km = id.match(/^(?:kanji)[^\d]*(\d+)/i);
+    if (km) {
+      const num = parseInt(km[1], 10);
+      return kList.some(k => k && (k.lesson === num || k.id === id || k.id === `kanji-${num}`));
+    }
     return kList.length > 0;
   }
   return true;
@@ -1677,6 +1714,34 @@ function renderSidebar() {
   const sidebarMenu = document.getElementById('sidebar-menu');
   if (!sidebarMenu) return;
 
+  // DOM PATCHING: Nếu thanh bên đã được dựng trước đó, chỉ cập nhật trạng thái completed và active
+  // Tránh innerHTML wipe gây Forced Reflow và mất vị trí cuộn trên di động
+  const isInitialLoad = !sidebarMenu.children || sidebarMenu.children.length === 0;
+  if (!isInitialLoad && sidebarMenu.querySelector && sidebarMenu.querySelector('.accordion-group')) {
+    const allItemBtns = sidebarMenu.querySelectorAll ? sidebarMenu.querySelectorAll('.menu-item-btn') : [];
+    if (allItemBtns && allItemBtns.length > 0) {
+      allItemBtns.forEach(btn => {
+        const id = btn.getAttribute('data-id');
+        if (!id) return;
+        const isComp = isModuleCompleted(id);
+        const isCur = (id === currentActiveId);
+        btn.classList.toggle('active', isCur);
+        const tag = btn.querySelector ? btn.querySelector('.item-tag') : null;
+        if (tag) {
+          tag.className = isComp ? 'item-tag completed' : (isCur ? 'item-tag current' : 'item-tag');
+          if (isComp) {
+            tag.textContent = 'Đã xong';
+          }
+        }
+      });
+      const maziiBtn = sidebarMenu.querySelector ? sidebarMenu.querySelector('.sidebar-mazii-btn') : null;
+      if (maziiBtn && maziiBtn.classList) {
+        maziiBtn.classList.toggle('active', currentActiveId === 'mazii-dict');
+      }
+      return;
+    }
+  }
+
   const openGroupIds = new Set();
   try {
     if (sidebarMenu.querySelectorAll) {
@@ -1689,8 +1754,8 @@ function renderSidebar() {
     }
   } catch (e) {}
 
-  const isInitialLoad = !sidebarMenu.children || sidebarMenu.children.length === 0;
   sidebarMenu.innerHTML = '';
+  const fragment = (typeof document !== 'undefined' && document.createDocumentFragment) ? document.createDocumentFragment() : null;
 
   // Nút truy cập nhanh Từ Điển trên Sidebar
   const maziiQuickEl = document.createElement('div');
@@ -1704,7 +1769,11 @@ function renderSidebar() {
       <span class="mazii-badge">Tra từ</span>
     </button>
   `;
-  sidebarMenu.appendChild(maziiQuickEl);
+  if (fragment) {
+    fragment.appendChild(maziiQuickEl);
+  } else {
+    sidebarMenu.appendChild(maziiQuickEl);
+  }
 
   const root = (typeof window !== 'undefined' ? window : (typeof global !== 'undefined' ? global : {}));
   const loadedLessons = Array.isArray(root.lessonsData) ? root.lessonsData : (typeof lessonsData !== 'undefined' && Array.isArray(lessonsData) ? lessonsData : []);
@@ -1876,8 +1945,16 @@ function renderSidebar() {
       }
     });
 
-    sidebarMenu.appendChild(groupEl);
+    if (fragment) {
+      fragment.appendChild(groupEl);
+    } else {
+      sidebarMenu.appendChild(groupEl);
+    }
   });
+
+  if (fragment) {
+    sidebarMenu.appendChild(fragment);
+  }
 }
 
 // --------------------------------------------------------------------------
@@ -2258,6 +2335,8 @@ function renderContent(id) {
     const lessonTitle = `Bài Tập - Bài ${lessonNum} Minna`;
     const lessonDesc = `Bộ 50 câu trắc nghiệm trọng tâm Bài ${lessonNum}. Hãy chọn đáp án cho từng câu và bấm "Nộp Bài" ở cuối trang để xem kết quả và giải thích!`;
 
+    const isAutoAdvanceActive = typeof window.isQuizAutoAdvanceEnabled === 'function' ? window.isQuizAutoAdvanceEnabled() : true;
+
     content.innerHTML = `
       ${renderModuleSyncBar(lessonNum, 'quiz')}
 
@@ -2276,16 +2355,26 @@ function renderContent(id) {
       <!-- THANH ĐIỀU HƯỚNG CÂU HỎI & ĐỒNG HỒ ĐẾM NGƯỢC 30 PHÚT -->
       <div class="quiz-top-bar">
         <div class="quiz-timer-wrap">
-          <span style="display:inline-flex;align-items:center;gap:4px;">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
-            <span>Thời gian:</span>
-          </span>
-          <span class="quiz-timer-display" id="quiz-timer-clock">30:00</span>
+          <div class="quiz-timer-pill" title="Thời gian làm bài còn lại">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+            <span class="quiz-timer-display" id="quiz-timer-clock">30:00</span>
+          </div>
           <button id="btn-pause-timer" class="quiz-palette-toggle-btn" onclick="toggleQuizTimer()">Tạm dừng</button>
         </div>
-        <button class="quiz-palette-toggle-btn" onclick="togglePaletteView()">
-          <span>Ẩn/Hiện Bảng câu hỏi (1-${quizList.length})</span>
-        </button>
+        <div class="quiz-controls-wrap">
+          <button id="btn-toggle-autoadvance" 
+                  class="quiz-palette-toggle-btn btn-autoadvance ${isAutoAdvanceActive ? 'active' : ''}" 
+                  onclick="toggleQuizAutoAdvance()" 
+                  title="Bật/Tắt tự động cuộn sang câu tiếp theo khi chọn đáp án">
+            <span class="autoadvance-icon"><svg class="icon-svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg></span>
+            <span>Tự chuyển:</span>
+            <strong class="autoadvance-status" id="autoadvance-status-label">${isAutoAdvanceActive ? 'BẬT' : 'TẮT'}</strong>
+          </button>
+          <button class="quiz-palette-toggle-btn" onclick="togglePaletteView()" title="Ẩn/Hiện Bảng câu hỏi (1-${quizList.length})">
+            <svg class="icon-svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+            <span>Bảng câu hỏi</span>
+          </button>
+        </div>
       </div>
 
       <!-- BẢNG MA TRẬN 50 CÂU HỎI ĐỂ NHẢY NHANH -->
@@ -2349,6 +2438,14 @@ function renderContent(id) {
     const state = getPracticeQuizState(id);
     if (!state.submitted) {
       initQuizTimer();
+    } else {
+      const clockEl = document.getElementById('quiz-timer-clock');
+      const pauseBtn = document.getElementById('btn-pause-timer');
+      if (clockEl) {
+        clockEl.textContent = 'Đã hoàn thành';
+        clockEl.classList.add('timer-finished');
+      }
+      if (pauseBtn) pauseBtn.style.display = 'none';
     }
     restorePracticeAnswers(id);
     initScrollReveal();
@@ -5047,6 +5144,7 @@ function renderDokkaiRoom(dokkaiId) {
   const dokkai = dokkaiData.find(d => d.id === dokkaiId);
   if (!dokkai) return;
   const lessonNum = dokkaiId.replace('dokkai-', '');
+  const isAutoAdvanceActive = typeof window.isQuizAutoAdvanceEnabled === 'function' ? window.isQuizAutoAdvanceEnabled() : true;
 
   content.innerHTML = `
     ${renderModuleSyncBar(lessonNum, 'dokkai')}
@@ -5092,8 +5190,16 @@ function renderDokkaiRoom(dokkaiId) {
       <!-- CỘT PHẢI: 5 CÂU HỎI ĐỌC HIỂU ĐI KÈM -->
       <div class="dokkai-questions-col">
         <section class="section-card">
-          <div class="section-header">
+          <div class="section-header" style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;">
             <h3 class="section-title">Câu Hỏi Đọc Hiểu (5 Câu)</h3>
+            <button id="btn-dokkai-toggle-autoadvance" 
+                    class="quiz-palette-toggle-btn btn-autoadvance ${isAutoAdvanceActive ? 'active' : ''}" 
+                    onclick="toggleQuizAutoAdvance()" 
+                    title="Bật/Tắt tự động cuộn sang câu tiếp theo khi chọn đáp án">
+              <span class="autoadvance-icon"><svg class="icon-svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg></span>
+              <span>Tự chuyển:</span>
+              <strong class="autoadvance-status" id="dokkai-autoadvance-status-label">${isAutoAdvanceActive ? 'BẬT' : 'TẮT'}</strong>
+            </button>
           </div>
           <div class="quiz-wrapper">
             ${dokkai.questions.map((q, qIdx) => `
@@ -5218,8 +5324,8 @@ window.initQuizTimer = function() {
     quizTimerInterval = null;
   }
 
-  if (typeof stopMaziiVoiceSearch === 'function' && targetId !== 'mazii-dict') {
-    stopMaziiVoiceSearch(true);
+  if (typeof stopMaziiVoiceSearch === 'function') {
+    try { stopMaziiVoiceSearch(true); } catch (e) {}
   }
   quizSecondsLeft = 30 * 60;
   isQuizTimerPaused = false;
@@ -5229,8 +5335,12 @@ window.initQuizTimer = function() {
   if (clockEl) {
     clockEl.textContent = '30:00';
     clockEl.classList.remove('timer-warning');
+    clockEl.classList.remove('timer-finished');
   }
-  if (pauseBtn) pauseBtn.textContent = 'Tạm dừng';
+  if (pauseBtn) {
+    pauseBtn.textContent = 'Tạm dừng';
+    pauseBtn.style.display = 'inline-flex';
+  }
 
   quizTimerInterval = setInterval(() => {
     if (isQuizTimerPaused) return;
@@ -5289,6 +5399,89 @@ window.scrollToQuestion = function(qId) {
   }
 };
 
+let quizAutoAdvanceTimeout = null;
+
+window.isQuizAutoAdvanceEnabled = function() {
+  const saved = safeGetStorage(STORAGE_AUTO_ADVANCE_KEY, 'true');
+  return saved !== 'false';
+};
+
+window.toggleQuizAutoAdvance = function() {
+  const current = window.isQuizAutoAdvanceEnabled();
+  const next = !current;
+  safeSetStorage(STORAGE_AUTO_ADVANCE_KEY, String(next));
+
+  const allBtns = document.querySelectorAll('.btn-autoadvance');
+  const allLabels = document.querySelectorAll('.autoadvance-status');
+  allBtns.forEach(btn => btn.classList.toggle('active', next));
+  allLabels.forEach(lbl => {
+    lbl.textContent = next ? 'BẬT' : 'TẮT';
+  });
+
+  showToast(next ? 'Đã BẬT tự chuyển câu' : 'Đã TẮT tự chuyển câu');
+};
+
+window.triggerQuizAutoAdvance = function(moduleId, questionId, isDokkai = false) {
+  let questions = [];
+  if (isDokkai) {
+    const dokkai = (typeof dokkaiData !== 'undefined' && Array.isArray(dokkaiData)) 
+      ? dokkaiData.find(d => d.id === moduleId) 
+      : null;
+    if (dokkai) questions = dokkai.questions || [];
+  } else {
+    questions = (typeof practiceQuizData !== 'undefined') ? (practiceQuizData[moduleId] || []) : [];
+  }
+
+  if (!Array.isArray(questions) || questions.length === 0) return;
+
+  const currentIdx = questions.findIndex(q => q.id === questionId);
+  if (currentIdx === -1) return;
+
+  const state = isDokkai ? getDokkaiState(moduleId) : getPracticeQuizState(moduleId);
+  if (state && state.submitted) return;
+
+  const selections = (state && state.selections) || {};
+
+  let nextTargetQuestion = null;
+
+  // 1. Ưu tiên: Câu kế tiếp ngay sau câu hiện tại nếu chưa làm
+  if (currentIdx + 1 < questions.length) {
+    const nextQ = questions[currentIdx + 1];
+    if (selections[nextQ.id] === undefined) {
+      nextTargetQuestion = nextQ;
+    } else {
+      // Tìm xuôi từ currentIdx + 2 đến hết danh sách câu chưa làm
+      for (let i = currentIdx + 2; i < questions.length; i++) {
+        if (selections[questions[i].id] === undefined) {
+          nextTargetQuestion = questions[i];
+          break;
+        }
+      }
+    }
+  }
+
+  // 2. Nếu từ vị trí hiện tại đến cuối đã làm hết, vòng lại tìm câu bị bỏ sót phía trước
+  if (!nextTargetQuestion) {
+    for (let i = 0; i < currentIdx; i++) {
+      if (selections[questions[i].id] === undefined) {
+        nextTargetQuestion = questions[i];
+        break;
+      }
+    }
+  }
+
+  // 3. Thực hiện chuyển câu hoặc cuộn tới khung Nộp bài nếu đã làm hết 100%
+  if (nextTargetQuestion) {
+    window.scrollToQuestion(nextTargetQuestion.id);
+  } else {
+    const submitSection = document.getElementById('quiz-bottom-panel') || document.getElementById('quiz-submit-section');
+    if (submitSection && submitSection.scrollIntoView) {
+      submitSection.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      showToast('🎉 Bạn đã chọn đủ tất cả câu hỏi! Hãy nhấn Nộp Bài để xem kết quả.');
+    }
+  }
+};
+
 window.speakQuizQuestion = function(quizId, qId, btn, ev) {
   const list = practiceQuizData[quizId] || [];
   const q = list.find(item => item.id === qId);
@@ -5320,6 +5513,10 @@ window.handleSelectOption = function(moduleId, questionId, optIdx, isDokkai = fa
       btn.classList.toggle('selected', idx === optIdx);
     });
     card.classList.remove('unanswered-pulse');
+    card.classList.add('card-just-answered');
+    setTimeout(() => {
+      if (card) card.classList.remove('card-just-answered');
+    }, 400);
   }
 
   if (!isDokkai) {
@@ -5330,6 +5527,20 @@ window.handleSelectOption = function(moduleId, questionId, optIdx, isDokkai = fa
   }
 
   updateSubmitBarProgress(moduleId, isDokkai);
+
+  // CƠ CHẾ SMART AUTO-ADVANCE (TỰ ĐỘNG CHUYỂN CÂU 1-CHẠM)
+  if (quizAutoAdvanceTimeout) {
+    clearTimeout(quizAutoAdvanceTimeout);
+    quizAutoAdvanceTimeout = null;
+  }
+
+  if (typeof window.isQuizAutoAdvanceEnabled === 'function' && window.isQuizAutoAdvanceEnabled()) {
+    quizAutoAdvanceTimeout = setTimeout(() => {
+      if (typeof window.triggerQuizAutoAdvance === 'function') {
+        window.triggerQuizAutoAdvance(moduleId, questionId, isDokkai);
+      }
+    }, 350);
+  }
 };
 
 function updateSubmitBarProgress(moduleId, isDokkai = false) {
@@ -5896,6 +6107,28 @@ function searchEverything(keyword) {
     });
   }
 
+  // Bổ sung kết quả từ SEARCH_INDEX cho các bài học chưa nạp vào RAM
+  if (typeof SEARCH_INDEX !== 'undefined' && Array.isArray(SEARCH_INDEX)) {
+    const loadedLessonIds = new Set((Array.isArray(lessonsData) ? lessonsData : []).map(l => l.id));
+    SEARCH_INDEX.forEach(([type, lessonId, text1, text2, meaning]) => {
+      if (loadedLessonIds.has(lessonId)) return;
+      const lessonNum = lessonId.replace('bai-', '');
+      if (type === 'v') {
+        const matchMean = normalizeSearch(meaning).includes(query);
+        const matchHira = text2.toLowerCase().includes(raw);
+        const matchKanji = text1.toLowerCase().includes(raw);
+        if (matchMean || matchHira || matchKanji) {
+          const displayTitle = text1 ? `${text1} (${text2})` : text2;
+          results.push({ category: "Từ Vựng", title: displayTitle, sub: `${meaning} • Bài ${lessonNum}`, targetId: lessonId, highlight: raw });
+        }
+      } else if (type === 'g') {
+        if (normalizeSearch(text1).includes(query) || normalizeSearch(meaning).includes(query)) {
+          results.push({ category: "Ngữ Pháp", title: text1, sub: `${meaning.slice(0, 45)}... • Bài ${lessonNum}`, targetId: lessonId, highlight: raw });
+        }
+      }
+    });
+  }
+
   return results;
 }
 
@@ -5905,6 +6138,14 @@ function initQuickSearch() {
   const list = document.getElementById('search-results-list');
   const label = document.getElementById('search-count-label');
   if (!input || !dropdown || !list) return;
+
+  if (input.addEventListener) {
+    input.addEventListener('focus', () => {
+      if (typeof SEARCH_INDEX === 'undefined' && typeof NavigationEngine !== 'undefined') {
+        NavigationEngine.loadScriptAsync('data/search_index.js');
+      }
+    });
+  }
 
   let searchTimer = null;
   let selectedIndex = -1;

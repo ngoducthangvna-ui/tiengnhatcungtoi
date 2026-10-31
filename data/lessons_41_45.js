@@ -429,79 +429,128 @@ const lessons_41_45 = [
     ],
     "grammar": [
       {
-        "structure": "1. Kính ngữ Cho - Nhận: いただきます / くださいます / やります",
-        "explanation": "• いただきます: Là thể khiêm nhường của もらいます. Dùng khi bản thân nhận đồ vật từ người có địa vị cao hơn (thầy cô, sếp, đối tác: 社長に/から いただきました).\n• くださいます: Là thể tôn kính của くれます. Dùng khi người bề trên tặng/cho bản thân mình hoặc gia đình mình đồ vật (先生が くだいました).\n• やります: Dùng khi người nói cho con cái, cấp dưới, người ít tuổi hơn nhiều, hoặc cho động vật ăn, tưới nước cho cây cỏ (犬に えさを やります).",
-        "caution": "Với người ngang hàng hoặc người thân lớn tuổi hơn trong nhà (như tặng mẹ) thì dùng あげます chứ không dùng やります.",
+        "structure": "1. Hệ thống động từ cho - nhận kính ngữ",
+        "explanation": "Hệ thống động từ cho nhận: やります (cho người dưới/động vật), いただきます (khiêm nhường của もらいます), くださいます (tôn kính của くれます).",
+        "caution": "BẪY THI KINH ĐIỂN: Khi người trên cho TÔI thì dùng くださいます (hoặc 形式 tôn kính). Khi TÔI nhận từ người trên thì dùng いただきます. Cho thú cưng/cây cối dùng やります.",
         "examples": [
           {
             "type": "sentence",
-            "context": "Nhận quà từ giám đốc",
-            "jp": "<span class=\"furigana\"><ruby>私<rt>わたし</rt></ruby></span>は <span class=\"furigana\"><ruby>社長<rt>しゃちょう</rt></ruby></span>に 時計を <span class=\"furigana\">いただきました</span>。",
-            "rawJp": "私は社長に時計をいただきました。",
-            "vi": "Tôi đã nhận được chiếc đồng hồ từ ngài giám đốc."
+            "context": "Nhận quà từ thầy cô khiêm nhường",
+            "jp": "わたしは せんせいに ほんを いただきました。",
+            "rawJp": "わたしは せんせいに ほんを いただきました。",
+            "vi": "Tôi đã khiêm tốn nhận được cuốn sách từ thầy giáo."
           },
           {
             "type": "sentence",
-            "context": "Trưởng phòng tặng sách cho tôi",
-            "jp": "<span class=\"furigana\"><ruby>部長<rt>ぶちょう</rt></ruby></span>が <span class=\"furigana\"><ruby>私<rt>わたし</rt></ruby></span>に この <span class=\"furigana\"><ruby>本<rt>ほん</rt></ruby></span>を <span class=\"furigana\">くださいました</span>。",
-            "rawJp": "部長が私にこの本をくださいました。",
-            "vi": "Trưởng phòng đã tặng cho tôi cuốn sách này."
+            "context": "Giám đốc cho tôi quà tôn kính",
+            "jp": "しゃちょうが わたしに とけいを くださいました。",
+            "rawJp": "しゃちょうが わたしに とけいを くださいました。",
+            "vi": "Giám đốc đã ban tặng cho tôi chiếc đồng hồ."
+          },
+          {
+            "type": "sentence",
+            "context": "Cho chim ăn",
+            "jp": "わたしは とりに えさを やりました。",
+            "rawJp": "わたしは とりに えさを やりました。",
+            "vi": "Tôi cho chim ăn thức ăn."
+          },
+          {
+            "type": "sentence",
+            "context": "Tưới nước cho hoa",
+            "jp": "はなに みずを やります。",
+            "rawJp": "はなに みずを やります。",
+            "vi": "Tôi tưới nước cho hoa."
+          },
+          {
+            "type": "sentence",
+            "context": "Trưởng phòng cho tôi vé xem kịch",
+            "jp": "ぶちょうが チケットを くださいました。",
+            "rawJp": "ぶちょうが チケットを くださいました。",
+            "vi": "Trưởng phòng đã tặng cho tôi chiếc vé xem kịch."
           }
         ]
       },
       {
-        "structure": "2. V-て いただきます (Được người bề trên làm giúp cho việc gì)",
-        "explanation": "Là thể khiêm nhường của V-てもらいます. Biểu thị lòng biết ơn sâu sắc khi được người có vai vế cao hơn làm giúp cho một hành động có lợi.",
-        "caution": "Người thực hiện hành động đi với trợ từ に (hoặc から).",
+        "structure": "2. V-て やります / V-て いただきます / V-て くださいます",
+        "explanation": "Làm giúp người dưới (V-て やります); Được người trên làm giúp việc gì (V-て いただきます); Người trên làm giúp việc gì cho mình (V-て くださいます).",
+        "caution": "Phân biệt chủ ngữ: V-て いただきます có chủ ngữ là TÔI (được bề trên làm giúp); V-て くださいます có chủ ngữ là BỀ TRÊN (chủ động làm giúp tôi).",
         "examples": [
           {
             "type": "sentence",
-            "context": "Được thầy giáo sửa bài văn",
-            "jp": "<span class=\"furigana\"><ruby>私<rt>わたし</rt></ruby></span>は <span class=\"furigana\"><ruby>先生<rt>せんせい</rt></ruby></span>に <span class=\"furigana\"><ruby>作文<rt>さくぶん</rt></ruby></span>を <span class=\"furigana\"><ruby>直<rt>なお</rt></ruby>して</span> <span class=\"furigana\">いただきました</span>。",
-            "rawJp": "私は先生に作文を直していただきました。",
-            "vi": "Tôi đã được thầy giáo sửa giúp bài văn."
+            "context": "Được thầy sửa bài báo cáo giúp",
+            "jp": "わたしは せんせいに レポートを なおして いただきました。",
+            "rawJp": "わたしは せんせいに レポートを なおして いただきました。",
+            "vi": "Tôi đã được thầy giáo sửa bài báo cáo giúp cho."
+          },
+          {
+            "type": "sentence",
+            "context": "Trưởng phòng giải thích cho tôi",
+            "jp": "ぶちょうの おくさんが おちゃを おしえて くださいました。",
+            "rawJp": "ぶちょうの おくさんが おちゃを おしえて くださいました。",
+            "vi": "Phu nhân của trưởng phòng đã dạy trà đạo cho tôi."
+          },
+          {
+            "type": "sentence",
+            "context": "Dắt chó đi dạo",
+            "jp": "わたしは いぬを さんぽに つれて いって やりました。",
+            "rawJp": "わたしは いぬを さんぽに つれて いって やりました。",
+            "vi": "Tôi dắt chó đi dạo."
+          },
+          {
+            "type": "sentence",
+            "context": "Được thầy giải thích chữ Hán",
+            "jp": "せんせいに かんじを せつめいして いただきました。",
+            "rawJp": "せんせいに かんじを せつめいして いただきました。",
+            "vi": "Tôi đã được thầy giáo giảng giải chữ Hán cho."
+          },
+          {
+            "type": "sentence",
+            "context": "Giám đốc chở tôi về",
+            "jp": "しゃちょうが えきまで くるまで おくって くださいました。",
+            "rawJp": "しゃちょうが えきまで くるまで おくって くださいました。",
+            "vi": "Giám đốc đã chở tôi ra ga bằng ô tô."
           }
         ]
       },
       {
-        "structure": "3. V-て くださいます (Người bề trên làm giúp cho mình/người nhà)",
-        "explanation": "Là thể tôn kính của V-てくれます. Chủ ngữ là người bề trên (đi với trợ từ が) thực hiện hành động giúp đỡ mình.",
-        "caution": "Chủ ngữ luôn là người bề trên.",
+        "structure": "3. V-て くださいませんか",
+        "explanation": "Làm ơn làm V giúp tôi có được không ạ? (Cách yêu cầu, nhờ vả lịch sự trang trọng hơn V-てください, thấp hơn V-ていただけませんか).",
+        "caution": "Cấp độ nhờ vả lịch sự: V-て いただけませんか > V-て くださいませんか > V-て ください.",
         "examples": [
           {
             "type": "sentence",
-            "context": "Trưởng phòng dạy chơi golf cho tôi",
-            "jp": "<span class=\"furigana\"><ruby>課長<rt>かちょう</rt></ruby></span>が <span class=\"furigana\"><ruby>私<rt>わたし</rt></ruby></span>に ゴルフを <span class=\"furigana\"><ruby>教<rt>おし</rt></ruby>えて</span> <span class=\"furigana\">くださいました</span>。",
-            "rawJp": "課長が私にゴルフを教えてくださいました。",
-            "vi": "Trưởng phòng đã chỉ dạy môn golf cho tôi."
-          }
-        ]
-      },
-      {
-        "structure": "4. V-て やります (Làm giúp gì cho con cái / người dưới / thú cưng)",
-        "explanation": "Dùng khi người nói thực hiện một hành động mang lại lợi ích cho con nhỏ, em út, cấp dưới hoặc chăm sóc thú nuôi.",
-        "caution": "Không dùng mẫu này với người ngoài hoặc bạn bè cùng trang lứa.",
-        "examples": [
+            "context": "Nhờ giải thích một lần nữa",
+            "jp": "もう いちど せつめいして くださいませんか。",
+            "rawJp": "もう いちど せつめいして くださいませんか。",
+            "vi": "Làm ơn giải thích lại một lần nữa giúp tôi có được không ạ?"
+          },
           {
             "type": "sentence",
-            "context": "Mua xe đạp cho con trai",
-            "jp": "<span class=\"furigana\"><ruby>私<rt>わたし</rt></ruby></span>は <span class=\"furigana\"><ruby>息子<rt>むすこ</rt></ruby></span>に <span class=\"furigana\"><ruby>自転車<rt>じてんしゃ</rt></ruby></span>を <span class=\"furigana\"><ruby>買<rt>か</rt></ruby>って</span> <span class=\"furigana\">やりました</span>。",
-            "rawJp": "私は息子に自転車を買ってやりました。",
-            "vi": "Tôi đã mua xe đạp cho con trai."
-          }
-        ]
-      },
-      {
-        "structure": "5. V-て いただけませんか (Yêu cầu nhờ vả trang trọng lịch sự nhất)",
-        "explanation": "Mẫu câu nhờ cậy có mức độ lịch sự cao nhất, dùng khi nhờ người bề trên, thầy cô giáo, cấp trên hoặc đối tác giúp mình việc gì.",
-        "caution": "So sánh mức độ lịch sự: V-てください < V-てくれませんか < V-てもらえませんか < V-ていただけませんか (cao nhất).",
-        "examples": [
+            "context": "Nhờ chỉ đường đến nhà ga",
+            "jp": "えきまでの みちを おしえて くださいませんか。",
+            "rawJp": "えきまでの みちを おしえて くださいませんか。",
+            "vi": "Làm ơn chỉ giúp tôi đường ra ga có được không ạ?"
+          },
           {
             "type": "sentence",
-            "context": "Nhờ sếp xem lại bản báo cáo",
-            "jp": "この レポートを <span class=\"furigana\"><ruby>見<rt>み</rt></ruby>て</span> いただけませんか。",
-            "rawJp": "このレポートを見ていただけませんか。",
-            "vi": "Thầy/Sếp làm ơn xem giúp em bản báo cáo này được không ạ?"
+            "context": "Nhờ sửa bài văn",
+            "jp": "この ぶんしょうを なおして くださいませんか。",
+            "rawJp": "この ぶんしょうを なおして くださいませんか。",
+            "vi": "Làm ơn sửa giúp tôi đoạn văn này có được không ạ?"
+          },
+          {
+            "type": "sentence",
+            "context": "Nhờ nói chậm lại",
+            "jp": "すこし ゆっくり はなして くださいませんか。",
+            "rawJp": "すこし ゆっくり はなして くださいませんか。",
+            "vi": "Làm ơn nói chậm lại một chút có được không ạ?"
+          },
+          {
+            "type": "sentence",
+            "context": "Nhờ cho mượn từ điển",
+            "jp": "じしょを かして くださいませんか。",
+            "rawJp": "じしょを かして くださいませんか。",
+            "vi": "Làm ơn cho tôi mượn cuốn từ điển có được không ạ?"
           }
         ]
       }
@@ -839,58 +888,128 @@ const lessons_41_45 = [
     ],
     "grammar": [
       {
-        "structure": "1. V-る / N の + ために (Mục đích có ý chí)",
-        "explanation": "Dùng để diễn tả mục đích mà chủ thể có ý thức, quyết tâm thực hiện hành động ở vế sau để đạt được.\n• V đi trước ために bắt buộc phải là ĐỘNG TỪ CÓ Ý CHÍ (買う、建てる、行く、なる).\n• Nếu là Danh từ thì thêm の (家族の ために、健康の ために).",
-        "caution": "Phân biệt với 〜ように: ように đi với động từ không ý chí hoặc thể phủ định; ために đi với động từ ý chí.",
+        "structure": "1. {V-る / N の} + ために、～",
+        "explanation": "Để làm V / Vì mục đích N (Biểu thị mục đích có ý chí rõ rệt của con người; Động từ thể từ điển V-る hoặc Danh từ + の + ために).",
+        "caution": "BẪY THI: Động từ trước ために BẮT BUỘC là ĐỘNG TỪ Ý CHÍ (家を買うために). Danh từ BẮT BUỘC PHẢI THÊM の (健康【の】ために).",
         "examples": [
           {
             "type": "sentence",
             "context": "Tiết kiệm tiền để mua nhà",
-            "jp": "<span class=\"furigana\"><ruby>自分<rt>じぶん</rt></ruby></span>の <span class=\"furigana\"><ruby>家<rt>いえ</rt></ruby></span>を <span class=\"furigana\"><ruby>買<rt>か</rt></ruby>う</span> <span class=\"furigana\">ために</span>、<span class=\"furigana\"><ruby>貯金<rt>ちょきん</rt></ruby>して</span> います。",
-            "rawJp": "自分の家を買うために、貯金しています。",
-            "vi": "Để mua nhà riêng, tôi đang tiết kiệm tiền."
+            "jp": "いえを かう ために、ちょきんして います。",
+            "rawJp": "いえを かう ために、ちょきんして います。",
+            "vi": "Tôi đang tiết kiệm tiền để mua nhà (mục đích có ý chí rõ ràng)."
           },
           {
             "type": "sentence",
-            "context": "Làm việc vì gia đình thân yêu",
-            "jp": "<span class=\"furigana\"><ruby>家族<rt>かぞく</rt></ruby></span>の <span class=\"furigana\">ために</span>、<span class=\"furigana\"><ruby>一生懸命<rt>いっしょうけんめい</rt></ruby></span> <span class=\"furigana\"><ruby>働<rt>はたら</rt></ruby>きます</span>。",
-            "rawJp": "家族のために、一生懸命働きます。",
-            "vi": "Tôi làm việc chăm chỉ vì gia đình."
+            "context": "Tập thể dục vì sức khỏe danh từ có no",
+            "jp": "けんこうの ために、まいにち はしって います。",
+            "rawJp": "けんこうの ために、まいにち はしって います。",
+            "vi": "Vì sức khỏe, mỗi ngày tôi đều chạy bộ."
+          },
+          {
+            "type": "sentence",
+            "context": "Học tập để thi đỗ đại học",
+            "jp": "だいがくに ごうかくする ために、いっしょうけんめい べんきょうします。",
+            "rawJp": "だいがくに ごうかくする ために、いっしょうけんめい べんきょうします。",
+            "vi": "Để thi đỗ đại học, tôi học hành hết sức chăm chỉ."
+          },
+          {
+            "type": "sentence",
+            "context": "Tiết kiệm tiền vì gia đình",
+            "jp": "かぞくの ために、いっしょうけんめい はたらきます。",
+            "rawJp": "かぞくの ために、いっしょうけんめい はたらきます。",
+            "vi": "Vì gia đình, tôi làm việc hết mình."
+          },
+          {
+            "type": "sentence",
+            "context": "Học ngoại ngữ để đi du học",
+            "jp": "りゅうがくする ために、にほんごを ならって います。",
+            "rawJp": "りゅうがくする ために、にほんごを ならって います。",
+            "vi": "Để đi du học, tôi đang học tiếng Nhật."
           }
         ]
       },
       {
-        "structure": "2. V-る + のに + 使います / 便利です (Công dụng của đồ vật)",
-        "explanation": "Dùng để biểu thị mục đích công dụng của một đồ vật hoặc đánh giá mức độ tiện lợi, hữu ích trong một trường hợp cụ thể.",
-        "caution": "Thường đi kèm với các vị ngữ như: 使います (dùng vào việc...), 便利です (tiện cho việc...), 役に立ちます (có ích cho...).",
+        "structure": "2. Phân biệt ために vs ように",
+        "explanation": "Phân biệt: ために đi với ĐỘNG TỪ Ý CHÍ (2 vế cùng chủ ngữ, hành động có thể tự quyết định: 買うために); ように đi với ĐỘNG TỪ KHẢ NĂNG hoặc PHỦ ĐỊNH (ngoài ý chí: 話せるように / 忘れないように).",
+        "caution": "BẪY THI SỐ 1 TRONG JLPT: Động từ khả năng hoặc phủ định (V-ない, V-khả năng) BẮT BUỘC đi với ように. Động từ ý chí chủ động BẮT BUỘC đi với ために.",
         "examples": [
           {
             "type": "sentence",
-            "context": "Công dụng của cái ấm đun nước",
-            "jp": "やかんは お<span class=\"furigana\"><ruby>湯<rt>ゆ</rt></ruby></span>を <span class=\"furigana\"><ruby>沸<rt>わ</rt></ruby>かす</span><span class=\"furigana\">のに</span> <span class=\"furigana\"><ruby>使<rt>つか</rt></ruby>います</span>。",
-            "rawJp": "やかんはお湯を沸かすのに使います。",
-            "vi": "Cái ấm đun nước dùng để đun nước sôi."
+            "context": "Động từ khả năng đi với youni",
+            "jp": "にほんごが はなせる ように、まいにち れんしゅうします。",
+            "rawJp": "にほんごが はなせる ように、まいにち れんしゅうします。",
+            "vi": "Để CÓ THỂ nói được tiếng Nhật (thể khả năng), tôi luyện tập mỗi ngày."
           },
           {
             "type": "sentence",
-            "context": "Đánh giá chiếc túi tiện cho đi du lịch",
-            "jp": "この かばんは <span class=\"furigana\"><ruby>旅行<rt>りょこう</rt></ruby></span>に <span class=\"furigana\"><ruby>行<rt>い</rt></ruby>く</span><span class=\"furigana\">のに</span> <span class=\"furigana\"><ruby>便利<rt>べんり</rt></ruby>です</span>。",
-            "rawJp": "このかばんは旅行に行くのに便利です。",
-            "vi": "Chiếc túi này rất tiện lợi cho việc đi du lịch."
+            "context": "Động từ ý chí đi với tameni",
+            "jp": "じぶんの みせを もつ ために、はたらいて います。",
+            "rawJp": "じぶんの みせを もつ ために、はたらいて います。",
+            "vi": "Để mở cửa hàng riêng của mình (ý chí chủ động), tôi đang đi làm kiếm tiền."
+          },
+          {
+            "type": "sentence",
+            "context": "Phủ định đi với youni",
+            "jp": "かぜを ひかない ように、マスクを します。",
+            "rawJp": "かぜを ひかない ように、マスクを します。",
+            "vi": "Để không bị cảm lạnh, tôi đeo khẩu trang."
+          },
+          {
+            "type": "sentence",
+            "context": "Mua sách để nghiên cứu ý chí",
+            "jp": "けんきゅうする ために、ほんを １０さつ かいました。",
+            "rawJp": "けんきゅうする ために、ほんを １０さつ かいました。",
+            "vi": "Để nghiên cứu đề tài, tôi đã mua 10 cuốn sách."
+          },
+          {
+            "type": "sentence",
+            "context": "Nhìn thấy rõ đi với youni",
+            "jp": "うしろの ひとにも よく みえる ように、おおきく かきました。",
+            "rawJp": "うしろの ひとにも よく みえる ように、おおきく かきました。",
+            "vi": "Để người phía sau cũng nhìn thấy rõ, tôi đã viết chữ to."
           }
         ]
       },
       {
-        "structure": "3. V-る + のに + [Thời gian / Tiền bạc] が かかります (Tiêu tốn)",
-        "explanation": "Dùng để diễn tả việc tiêu tốn bao nhiêu thời gian hoặc chi phí tiền bạc để hoàn thành một mục đích cụ thể nào đó.",
-        "caution": "Đi cùng động từ かかります.",
+        "structure": "3. {V-る / N} + に つかいます / いいです / かかります",
+        "explanation": "Dùng vào việc V / Tốt cho việc V / Mất bao nhiêu tiền bạc vào việc V (Chỉ mục đích công dụng của đồ vật hoặc tiêu hao tài nguyên; dùng V-る + のに hoặc N + に).",
+        "caution": "BẪY THI: Động từ đứng trước に つかいます / いいです / かかります BẮT BUỘC PHẢI THÊM の (V-る【のに】使います / V-る【のに】時間がかかる).",
         "examples": [
           {
             "type": "sentence",
-            "context": "Thời gian đi đến nhà ga",
-            "jp": "<span class=\"furigana\"><ruby>東京<rt>とうきょう</rt></ruby><ruby>駅<rt>えき</rt></ruby></span>へ <span class=\"furigana\"><ruby>行<rt>い</rt></ruby>く</span><span class=\"furigana\">のに</span> 1<span class=\"furigana\"><ruby>時間<rt>じかん</rt></ruby></span> かかります。",
-            "rawJp": "東京駅へ行くのに1時間かかります。",
-            "vi": "Mất 1 tiếng đồng hồ để đi đến ga Tokyo."
+            "context": "Công dụng của chiếc kéo",
+            "jp": "この はさみは はなを きるのに つかいます。",
+            "rawJp": "この はさみは はなを きるのに つかいます。",
+            "vi": "Chiếc kéo này dùng vào việc cắt hoa."
+          },
+          {
+            "type": "sentence",
+            "context": "Tốt cho việc học tập",
+            "jp": "この じしょは かんじを しらべるのに べんりです。",
+            "rawJp": "この じしょは かんじを しらべるのに べんりです。",
+            "vi": "Cuốn từ điển này rất tiện cho việc tra cứu chữ Hán."
+          },
+          {
+            "type": "sentence",
+            "context": "Tiêu tốn thời gian vào việc sửa chữa",
+            "jp": "いえを なおすのに ２しゅうかん かかります。",
+            "rawJp": "いえを なおすのに ２しゅうかん かかります。",
+            "vi": "Mất 2 tuần vào việc sửa chữa ngôi nhà."
+          },
+          {
+            "type": "sentence",
+            "context": "Chi phí mua máy tính",
+            "jp": "あたらしい パソコンを かうのに １０まんえん かかりました。",
+            "rawJp": "あたらしい パソコンを かうのに １０まんえん かかりました。",
+            "vi": "Mất 10 vạn yên cho việc mua chiếc máy tính mới."
+          },
+          {
+            "type": "sentence",
+            "context": "Tốt cho sức khỏe",
+            "jp": "この おちゃは からだに いいです。",
+            "rawJp": "この おちゃは からだに いいです。",
+            "vi": "Loại trà này rất tốt cho sức khỏe."
           }
         ]
       }
@@ -1319,65 +1438,86 @@ const lessons_41_45 = [
     ],
     "grammar": [
       {
-        "structure": "1. V-ます(bỏ ます) + そうです (Trông sắp sửa xảy ra)",
-        "explanation": "Dùng để dự đoán một sự biến đổi hoặc hiện tượng sắp sửa xảy ra ngay trước mắt dựa trên những dấu hiệu thị giác quan sát được.\n• Thường đi kèm phó từ「今にも」(sắp sửa đến nơi).",
-        "caution": "Chỉ dùng cho tự động từ chỉ biến đổi (rơi, đổ, rách, mưa, tuột...).",
+        "structure": "1. {V-bỏ ます / A-bỏ い / Na-bỏ な} + そうです",
+        "explanation": "Trông có vẻ sắp sửa ~ / Trông có vẻ ~ (Phán đoán hiện tượng sắp xảy ra dựa trên thị giác quan sát trực tiếp; V bỏ ます, Tính từ đuôi い bỏ い, Tính từ đuôi な bỏ な). Ngoại lệ: いい -> よさそうです, ない -> なさそうです.",
+        "caution": "BẪY THI CỰC NGUY HIỂM: 1) Ngoại lệ: いい đổi thành よさそうです (trông có vẻ tốt); 2) Phủ định ない đổi thành なさそうです; 3) Phân biệt với Thể thông thường + そうです (nghe nói là - Bài 47).",
         "examples": [
           {
             "type": "sentence",
-            "context": "Trời đầy mây đen xám xịt",
-            "jp": "<span class=\"furigana\"><ruby>今<rt>いま</rt></ruby>にも</span> <span class=\"furigana\"><ruby>雨<rt>あめ</rt></ruby></span>が <span class=\"furigana\"><ruby>降<rt>ふ</rt></ruby>りそうです</span>。",
-            "rawJp": "今にも雨が降りそうです。",
-            "vi": "Trông trời có vẻ sắp mưa đến nơi rồi."
+            "context": "Trông trời sắp mưa",
+            "jp": "いまにも あめが ふりそうです。",
+            "rawJp": "いまにも あめが ふりそうです。",
+            "vi": "Trông trời có vẻ như sắp sửa đổ mưa đến nơi rồi."
           },
           {
             "type": "sentence",
-            "context": "Cúc áo lung lay sắp đứt",
-            "jp": "ボタンが <span class=\"furigana\"><ruby>外<rt>はず</rt></ruby>れそうです</span>よ。",
-            "rawJp": "ボタンが外れそうですよ。",
-            "vi": "Cúc áo của bạn trông sắp tuột ra rồi kìa."
+            "context": "Trông món ăn có vẻ ngon tính từ bỏ i",
+            "jp": "この ケーキは とても おいしそうです。",
+            "rawJp": "この ケーキは とても おいしそうです。",
+            "vi": "Chiếc bánh kem này trông có vẻ rất ngon."
+          },
+          {
+            "type": "sentence",
+            "context": "Ngoại lệ tốt -> trông có vẻ tốt",
+            "jp": "この ほんは よさそうですね。",
+            "rawJp": "この ほんは よさそうですね。",
+            "vi": "Quyển sách này trông có vẻ hay/tốt đấy nhỉ."
+          },
+          {
+            "type": "sentence",
+            "context": "Cái túi có vẻ sắp rách",
+            "jp": "ふくろが やぶれそうです。",
+            "rawJp": "ふくろが やぶれそうです。",
+            "vi": "Chiếc túi trông có vẻ sắp rách ra rồi."
+          },
+          {
+            "type": "sentence",
+            "context": "Trông anh Tanaka có vẻ rảnh rỗi",
+            "jp": "たなかさんは ひまそうです。",
+            "rawJp": "たなかさんは ひまそうです。",
+            "vi": "Anh Tanaka trông có vẻ đang rảnh rỗi."
           }
         ]
       },
       {
-        "structure": "2. A-い (bỏ い) / A-な (bỏ な) + そうです (Trông có vẻ...)",
-        "explanation": "Dùng để phán đoán tính chất, mùi vị hoặc tâm trạng của người/vật qua ánh nhìn bề ngoài.\n• Tính từ đuôi い: Bỏ い + そうです (おいしそうです, 寒そうです).\n• Tính từ đuôi な: Bỏ な + そうです (元気そうです, 親切そうです).\n• Ngoại lệ: いい -> よさそうです, ない -> なさそうです.",
-        "caution": "Không dùng そうです cho những màu sắc hoặc vẻ đẹp hiển nhiên đập vào mắt (không nói: 赤いです -> 赤そうです SAI; きれいです -> きれいそうです SAI).",
+        "structure": "2. V-て 来（き）ます",
+        "explanation": "Đi làm việc V rồi quay lại đây (Di chuyển đến một nơi khác thực hiện hành động V rồi quay trở về điểm xuất phát).",
+        "caution": "Đi làm việc gì rồi quay trở về chỗ cũ. Khi ra ngoài thường nói: 'ちょっと ～へ 行って来ます' (Tôi đi một chút rồi về).",
         "examples": [
           {
             "type": "sentence",
-            "context": "Chiếc bánh trông ngon mắt",
-            "jp": "この ケーキは とても <span class=\"furigana\">おいしそうです</span>ね。",
-            "rawJp": "このケーキはとてもおいしそうですね。",
-            "vi": "Chiếc bánh này trông có vẻ ngon quá nhỉ."
-          }
-        ]
-      },
-      {
-        "structure": "3. 〜そうな + N / 〜そうに + V (Bổ ngữ của そう)",
-        "explanation": "Khi cụm phỏng đoán そう bổ nghĩa cho danh từ thì thêm な (おいしそうな ケーキ); khi bổ nghĩa cho động từ thì thêm に (おいしそうに 食べています).",
-        "caution": "Chia đuôi như một tính từ đuôi な.",
-        "examples": [
-          {
-            "type": "sentence",
-            "context": "Bọn trẻ ăn uống ngon lành",
-            "jp": "<span class=\"furigana\"><ruby>子<rt>こ</rt></ruby>どもたち</span>が <span class=\"furigana\">おいしそうに</span> パンを <span class=\"furigana\"><ruby>食<rt>た</rt></ruby>べて</span> います。",
-            "rawJp": "子どもたちがおいしそうにパンを食べています。",
-            "vi": "Bọn trẻ đang ăn bánh mì một cách ngon lành."
-          }
-        ]
-      },
-      {
-        "structure": "4. V-て 来ます (Đi làm việc gì rồi quay lại)",
-        "explanation": "Diễn tả hành động người nói tạm rời vị trí hiện tại để đi làm một việc cần thiết, sau đó sẽ quay trở lại vị trí ban đầu.",
-        "caution": "Câu chào quen thuộc「行って来ます」(Tôi đi rồi sẽ về) bắt nguồn từ cấu trúc này.",
-        "examples": [
-          {
-            "type": "sentence",
-            "context": "Đi mua gói thuốc rồi về ngay",
-            "jp": "ちょっと たばこを <span class=\"furigana\"><ruby>買<rt>か</rt></ruby>って</span> <span class=\"furigana\"><ruby>来<rt>き</rt></ruby>ます</span>。",
-            "rawJp": "ちょっとたばこを買って来ます。",
+            "context": "Đi mua bao thuốc rồi về",
+            "jp": "ちょっと たばこを かって きます。",
+            "rawJp": "ちょっと たばこを かって きます。",
             "vi": "Tôi đi mua bao thuốc một lát rồi quay lại ngay."
+          },
+          {
+            "type": "sentence",
+            "context": "Đi rửa tay rồi về",
+            "jp": "てを あらって きます。",
+            "rawJp": "てを あらって きます。",
+            "vi": "Tôi đi rửa tay một lát rồi quay lại."
+          },
+          {
+            "type": "sentence",
+            "context": "Đi lấy tài liệu ở văn phòng rồi về",
+            "jp": "じむしょから しりょうを とって きます。",
+            "rawJp": "じむしょから しりょうを とって きます。",
+            "vi": "Tôi đi lấy tài liệu từ văn phòng về đây."
+          },
+          {
+            "type": "sentence",
+            "context": "Chào khi đi làm rồi tối về",
+            "jp": "いって きます！",
+            "rawJp": "いって きます！",
+            "vi": "Tôi đi đây (rồi chiều tối tôi sẽ về)!"
+          },
+          {
+            "type": "sentence",
+            "context": "Đi uống nước rồi quay lại",
+            "jp": "みずを のんで きます。",
+            "rawJp": "みずを のんで きます。",
+            "vi": "Tôi đi uống nước một chút rồi vào."
           }
         ]
       }
@@ -1701,83 +1841,181 @@ const lessons_41_45 = [
     ],
     "grammar": [
       {
-        "structure": "1. V-ます(bỏ ます) / A-い(bỏ い) / A-な(bỏ な) + すぎます (Quá mức)",
-        "explanation": "Biểu thị hành động hoặc trạng thái vượt quá giới hạn bình thường, mang lại hệ quả xấu hoặc tiêu cực.\n• Động từ: 飲みすぎます (uống quá nhiều), 食べすぎます (ăn quá nhiều).\n• Tính từ đuôi い: 長すぎます (dài quá), 高すぎます (đắt quá).\n• Tính từ đuôi な: 静かすぎます (yên ắng quá mức).",
-        "caution": "Chia đuôi すぎます như ĐỘNG TỪ NHÓM 2 (すぎない、すぎた...).",
+        "structure": "1. {V-bỏ ます / A-bỏ い / Na-bỏ な} + すぎます",
+        "explanation": "Làm V quá mức / Quá ~ (Biểu thị mức độ vượt quá giới hạn bình thường, thường mang sắc thái tiêu cực hoặc bất lợi; chia động từ nhóm 2).",
+        "caution": "BẪY THI: Động từ bỏ ます (飲みすぎます), Tính từ đuôi い bỏ い (高すぎます), Tính từ đuôi な bỏ な (暇すぎます). すぎます chia như động từ nhóm 2.",
         "examples": [
           {
             "type": "sentence",
-            "context": "Uống say vì uống quá nhiều rượu",
-            "jp": "きのう お<span class=\"furigana\"><ruby>酒<rt>さけ</rt></ruby></span>を <span class=\"furigana\"><ruby>飲<rt>の</rt></ruby>みすぎました</span>。",
-            "rawJp": "きのうお酒を飲みすぎました。",
-            "vi": "Hôm qua tôi đã uống quá nhiều rượu."
+            "context": "Uống rượu quá chén",
+            "jp": "ゆうべ おさけを のみすぎました。",
+            "rawJp": "ゆうべ おさけを のみすぎました。",
+            "vi": "Tối qua tôi đã lỡ uống quá nhiều rượu bia."
+          },
+          {
+            "type": "sentence",
+            "context": "Ăn quá nhiều đau bụng",
+            "jp": "ごはんを たべすぎて、おなかが いたいです。",
+            "rawJp": "ごはんを たべすぎて、おなかが いたいです。",
+            "vi": "Vì ăn quá nhiều nên tôi bị đau bụng."
+          },
+          {
+            "type": "sentence",
+            "context": "Áo quá rộng",
+            "jp": "この シャツは おおきすぎます。",
+            "rawJp": "この シャツは おおきすぎます。",
+            "vi": "Chiếc áo sơ mi này rộng quá mức."
+          },
+          {
+            "type": "sentence",
+            "context": "Bài tập quá khó",
+            "jp": "この もんだいは むずかしすぎます。",
+            "rawJp": "この もんだいは むずかしすぎます。",
+            "vi": "Bài tập này quá khó."
+          },
+          {
+            "type": "sentence",
+            "context": "Quá phức tạp tính từ na",
+            "jp": "この きかいの つかいかたは ふくざつすぎます。",
+            "rawJp": "この きかいの つかいかたは ふくざつすぎます。",
+            "vi": "Cách sử dụng cỗ máy này quá phức tạp."
           }
         ]
       },
       {
-        "structure": "2. V-ます(bỏ ます) + やすいです (Dễ làm gì / Dễ xảy ra)",
-        "explanation": "Biểu thị tính chất làm việc gì đó rất dễ dàng, thuận lợi, hoặc một vật/hiện tượng rất dễ xảy ra sự cố (dễ bẩn, dễ trơn trượt).\n• Bút dễ viết: 書きやすいです.\n• Áo trắng dễ bẩn: 汚れやすいです.",
-        "caution": "Chia đuôi như một TÍNH TỪ ĐUÔI い (やすかった、やすくない).",
+        "structure": "2. V-bỏ ます + やすいです / にくいです",
+        "explanation": "Dễ làm V / Khó làm V (1. Tính chất của sự vật khiến hành động dễ/khó thực hiện; 2. Khuynh hướng dễ/khó xảy ra sự cố; chia như tính từ đuôi い).",
+        "caution": "BẪY THI: Động từ BẮT BUỘC BỎ ます rồi thêm やすいです (dễ làm) hoặc にくいです (khó làm). Cả hai đều biến đổi đuôi như tính từ đuôi い (やすい -> やすくない).",
         "examples": [
           {
             "type": "sentence",
-            "context": "Cây bút viết rất êm tay",
-            "jp": "この ペンは とても <span class=\"furigana\"><ruby>書<rt>か</rt></ruby>きやすいです</span>。",
-            "rawJp": "このペンはとても書きやすいです。",
-            "vi": "Cây bút này viết rất êm và dễ viết."
+            "context": "Thuốc này dễ uống",
+            "jp": "この くすりは あまくて、のみやすいです。",
+            "rawJp": "この くすりは あまくて、のみやすいです。",
+            "vi": "Loại thuốc này ngọt nên rất dễ uống."
+          },
+          {
+            "type": "sentence",
+            "context": "Thành phố này khó sống",
+            "jp": "とうきょうは ぶっかが たかくて、すみにくいです。",
+            "rawJp": "とうきょうは ぶっかが たかくて、すみにくいです。",
+            "vi": "Tokyo vật giá đắt đỏ nên khó sống."
+          },
+          {
+            "type": "sentence",
+            "context": "Đôi giày này dễ đi",
+            "jp": "この くつは かるくて、あるきやすいです。",
+            "rawJp": "この くつは かるくて、あるきやすいです。",
+            "vi": "Đôi giày này nhẹ nên rất dễ đi bộ."
+          },
+          {
+            "type": "sentence",
+            "context": "Chữ này khó đọc",
+            "jp": "この かんじは ちいさくて、よみにくいです。",
+            "rawJp": "この かんじは ちいさくて、よみにくいです。",
+            "vi": "Chữ Hán này nhỏ nên khó đọc."
+          },
+          {
+            "type": "sentence",
+            "context": "Áo trắng dễ bị bẩn",
+            "jp": "しろい ふくは よごれやすいです。",
+            "rawJp": "しろい ふくは よごれやすいです。",
+            "vi": "Quần áo màu trắng rất dễ bị dính bẩn."
           }
         ]
       },
       {
-        "structure": "3. V-ます(bỏ ます) + にくいです (Khó làm gì / Khó xảy ra)",
-        "explanation": "Biểu thị sự khó khăn, trở ngại khi thực hiện hành động, hoặc một sự việc khó lòng xảy ra.\n• Thuốc đắng khó uống: 飲みにくいです.\n• Thành phố đông đúc khó sống: 住みにくいです.",
-        "caution": "Chia đuôi như một TÍNH TỪ ĐUÔI い (にくかった、にくくない).",
+        "structure": "3. {A-く / Na-に / N-に} します",
+        "explanation": "Làm cho trở thành ~ (Biểu thị sự tác động có chủ ý của con người làm biến đổi trạng thái của đối tượng; Tính từ い đổi く, Tính từ な và N thêm に).",
+        "caution": "Khác với なります (biến đổi tự nhiên), します là TÁC ĐỘNG CHỦ Ý CỦA CON NGƯỜI (Ví dụ: Chỉnh âm thanh to lên: 音を大きくします).",
         "examples": [
           {
             "type": "sentence",
-            "context": "Thuốc đắng quá khó nuốt",
-            "jp": "この <span class=\"furigana\"><ruby>薬<rt>くすり</rt></ruby></span>は <span class=\"furigana\"><ruby>苦<rt>にが</rt></ruby>くて</span>、<span class=\"furigana\"><ruby>飲<rt>の</rt></ruby>みにくいです</span>。",
-            "rawJp": "この薬は苦くて、飲みにくいです。",
-            "vi": "Thuốc này đắng quá rất khó uống."
+            "context": "Vặn âm thanh nhỏ bớt",
+            "jp": "おとを ちいさく します。",
+            "rawJp": "おとを ちいさく します。",
+            "vi": "Tôi chỉnh cho âm thanh nhỏ bớt lại."
+          },
+          {
+            "type": "sentence",
+            "context": "Dọn dẹp phòng sạch sẽ",
+            "jp": "へやを きれいに します。",
+            "rawJp": "へやを きれいに します。",
+            "vi": "Tôi dọn dẹp cho căn phòng trở nên sạch sẽ."
+          },
+          {
+            "type": "sentence",
+            "context": "Cắt tóc ngắn bớt",
+            "jp": "かみを みじかく します。",
+            "rawJp": "かみを みじかく します。",
+            "vi": "Tôi cắt cho mái tóc ngắn lại."
+          },
+          {
+            "type": "sentence",
+            "context": "Làm nóng thức ăn",
+            "jp": "スープを あつく します。",
+            "rawJp": "スープを あつく します。",
+            "vi": "Tôi hâm cho món súp nóng lên."
+          },
+          {
+            "type": "sentence",
+            "context": "Tăng lượng lên gấp đôi danh từ thêm ni",
+            "jp": "りょうを ２ばいに します。",
+            "rawJp": "りょうを ２ばいに します。",
+            "vi": "Tôi tăng khối lượng lên gấp đôi."
           }
         ]
       },
       {
-        "structure": "4. N + に します (Quyết định chọn lựa)",
-        "explanation": "Dùng để biểu thị sự lựa chọn, quyết định của bản thân trong số các phương án (thường dùng khi gọi món ăn ở nhà hàng, chọn phòng khách sạn).",
-        "caution": "Phân biệt với N に なります (tự nó biến đổi thành).",
+        "structure": "4. N に します",
+        "explanation": "Tôi chọn N / Quyết định chọn N (Dùng khi gọi món ăn, mua sắm hoặc đưa ra sự lựa chọn dứt khoát từ các phương án).",
+        "caution": "Dùng khi ĐƯA RA LỰA CHỌN hoặc GỌI MÓN trong nhà hàng (Ví dụ: Cho tôi cà phê: コーヒーに します). Trợ từ BẮT BUỘC là に.",
         "examples": [
           {
             "type": "dialogue",
-            "context": "Gọi món ở quán cà phê",
+            "context": "Gọi món trong quán ăn",
             "lines": [
               {
                 "speaker": "A",
-                "jp": "<span class=\"furigana\"><ruby>何<rt>なに</rt></ruby></span>に なさいますか。",
-                "rawJp": "何になさいますか。",
-                "vi": "Quý khách chọn dùng gì ạ?"
+                "jp": "なにに しますか。",
+                "rawJp": "なにに しますか。",
+                "vi": "Bạn chọn món gì?"
               },
               {
                 "speaker": "B",
-                "jp": "<span class=\"furigana\"><ruby>私<rt>わたし</rt></ruby></span>は コーヒー<span class=\"furigana\">に します</span>。",
-                "rawJp": "私はコーヒーにします。",
-                "vi": "Tôi chọn cà phê."
+                "jp": "わたしは カレーに します。",
+                "rawJp": "わたしは カレーに します。",
+                "vi": "Tôi chọn món cà ri."
               }
             ]
-          }
-        ]
-      },
-      {
-        "structure": "5. A-く / A-に します (Tác động làm biến đổi trạng thái)",
-        "explanation": "Biểu thị sự tác động chủ quan của con người làm thay đổi trạng thái của sự vật.\n• Tính từ đuôi い: Bỏ い + く します (短く します - cắt ngắn đi, 大きく します - vặn to lên).\n• Tính từ đuôi な: Bỏ な + に します (きれいに します - dọn sạch sẽ).",
-        "caution": "Phân biệt với A-く / A-に なります (trạng thái tự nó biến đổi khách quan).",
-        "examples": [
+          },
           {
             "type": "sentence",
-            "context": "Yêu cầu thợ cắt tóc cắt ngắn bớt",
-            "jp": "<span class=\"furigana\"><ruby>髪<rt>かみ</rt></ruby></span>を <span class=\"furigana\"><ruby>短<rt>みじか</rt></ruby>く</span> して ください。",
-            "rawJp": "髪を短くしてください。",
-            "vi": "Xin hãy cắt tóc ngắn bớt cho tôi."
+            "context": "Chọn phòng đơn khách sạn",
+            "jp": "シングルルームに します。",
+            "rawJp": "シングルルームに します。",
+            "vi": "Tôi quyết định chọn phòng đơn."
+          },
+          {
+            "type": "sentence",
+            "context": "Chọn cà phê uống",
+            "jp": "わたしは コーヒーに します。",
+            "rawJp": "わたしは コーヒーに します。",
+            "vi": "Cho tôi một ly cà phê."
+          },
+          {
+            "type": "sentence",
+            "context": "Chọn chiếc áo sơ mi màu xanh",
+            "jp": "あおい シャツに します。",
+            "rawJp": "あおい シャツに します。",
+            "vi": "Tôi quyết định chọn chiếc áo sơ mi màu xanh."
+          },
+          {
+            "type": "sentence",
+            "context": "Quyết định giờ họp lúc 3 giờ",
+            "jp": "かいぎの じかんは ３じに します。",
+            "rawJp": "かいぎの じかんは ３じに します。",
+            "vi": "Thời gian cuộc họp tôi quyết định chọn lúc 3 giờ."
           }
         ]
       }
@@ -2101,44 +2339,86 @@ const lessons_41_45 = [
     ],
     "grammar": [
       {
-        "structure": "1. Thể thông thường + 場合は (Trong trường hợp...)",
-        "explanation": "Dùng để giả định một tình huống khẩn cấp, sự cố hoặc trường hợp giả định có thể xảy ra, và vế sau đưa ra cách thức xử lý, ứng phó tương ứng.\n• Động từ/Tính từ đuôi い: Thể thông thường + 場合は\n• Tính từ đuôi な: Thêm な trước 場合は (必要な 場合は)\n• Danh từ: Thêm の trước 場合は (火事の 場合は、地震の 場合は).",
-        "caution": "Rất hay gặp trong các bản nội quy thoát hiểm, bảo hiểm, hợp đồng giao dịch.",
+        "structure": "1. [Thể thông thường / Na-な / N-の] + 場合は、～",
+        "explanation": "Trong trường hợp ~ thì... (Nêu giả định về một tình huống, sự cố khẩn cấp có thể xảy ra và cách xử lý tương ứng; Danh từ + の, Tính từ đuôi な + な).",
+        "caution": "BẪY THI KINH ĐIỂN: Danh từ đứng trước 場合は BẮT BUỘC THÊM の (火事【の】場合は). Tính từ đuôi な BẮT BUỘC GIỮ な (必要【な】場合は).",
         "examples": [
           {
             "type": "sentence",
-            "context": "Chỉ dẫn thoát hiểm khi có hỏa hoạn",
-            "jp": "<span class=\"furigana\"><ruby>火事<rt>かじ</rt></ruby></span>の <span class=\"furigana\"><ruby>場合<rt>ばあい</rt></ruby>は</span>、エレベーターを <span class=\"furigana\"><ruby>使<rt>つか</rt></ruby>わないで</span> ください。",
-            "rawJp": "火事の場合は、エレベーターを使わないでください。",
-            "vi": "Trong trường hợp xảy ra hỏa hoạn, tuyệt đối không sử dụng thang máy."
+            "context": "Trong trường hợp hỏa hoạn danh từ có no",
+            "jp": "かじや じしんの ばあいは、エレベーターを つかわないで ください。",
+            "rawJp": "かじや じしんの ばあいは、エレベーターを つかわないで ください。",
+            "vi": "Trong trường hợp hỏa hoạn hoặc động đất, xin vui lòng không sử dụng thang máy."
           },
           {
             "type": "sentence",
-            "context": "Xử lý khi bị chậm trễ giờ hẹn",
-            "jp": "<span class=\"furigana\"><ruby>時間<rt>じかん</rt></ruby></span>に <span class=\"furigana\"><ruby>遅<rt>おく</rt></ruby>れる</span> <span class=\"furigana\"><ruby>場合<rt>ばあい</rt></ruby>は</span>、<span class=\"furigana\"><ruby>必<rt>かなら</rt></ruby>ず</span> <span class=\"furigana\"><ruby>連絡<rt>れんらく</rt></ruby>して</span> ください。",
-            "rawJp": "時間に遅れる場合は、必ず連絡してください。",
-            "vi": "Trong trường hợp bị muộn giờ, nhất định hãy liên lạc thông báo nhé."
+            "context": "Trong trường hợp cần thiết tính từ na có na",
+            "jp": "りょうしゅうしょが ひつような ばあいは、かかりいんに いって ください。",
+            "rawJp": "りょうしゅうしょが ひつような ばあいは、かかりいんに いって ください。",
+            "vi": "Trong trường hợp cần hóa đơn, xin hãy báo với nhân viên."
+          },
+          {
+            "type": "sentence",
+            "context": "Trong trường hợp bị trễ giờ",
+            "jp": "じかんに おくれる ばあいは、れんらくして ください。",
+            "rawJp": "じかんに おくれる ばあいは、れんらくして ください。",
+            "vi": "Trong trường hợp bị trễ giờ, xin hãy liên lạc trước."
+          },
+          {
+            "type": "sentence",
+            "context": "Trong trường hợp máy bị hỏng",
+            "jp": "パソコンが こしょうした ばあいは、ここへ でんわして ください。",
+            "rawJp": "パソコンが こしょうした ばあいは、ここへ でんわして ください。",
+            "vi": "Trong trường hợp máy tính bị hỏng, xin hãy gọi đến số này."
+          },
+          {
+            "type": "sentence",
+            "context": "Trong trường hợp trời mưa bão",
+            "jp": "たいふうの ばあいは、しあいは ちゅうしに なります。",
+            "rawJp": "たいふうの ばあいは、しあいは ちゅうしに なります。",
+            "vi": "Trong trường hợp có bão lớn, trận đấu sẽ bị hủy bỏ."
           }
         ]
       },
       {
-        "structure": "2. Thể thông thường + のに (Thế mà, vậy mà - Bất mãn / Nuối tiếc)",
-        "explanation": "Dùng để diễn tả một kết quả thực tế diễn ra hoàn toàn trái ngược với lẽ thông thường hoặc kỳ vọng của người nói. Chứa đựng cảm xúc ngạc nhiên, bất mãn, trách móc hoặc nuối tiếc.\n• Động từ/Tính từ đuôi い: Thể thông thường + のに\n• Tính từ đuôi な / Danh từ: Thêm な trước のに (日曜日なのに、好きなのに).",
-        "caution": "Phân biệt với 〜ても: 〜ても dùng cho cả giả định chưa xảy ra (dù trời mưa tôi vẫn đi); còn 〜のに bắt buộc phải dùng cho việc ĐÃ XẢY RA thực tế ngoài mong đợi.",
+        "structure": "2. [Thể thông thường / Na-な / N-な] + のに、～",
+        "explanation": "Thế mà / Vậy mà ~ (Biểu thị sự bất mãn, tiếc nuối, ngạc nhiên khi kết quả xảy ra trái ngược hoàn toàn với mong đợi; Danh từ & Tính từ đuôi な thêm な trước のに).",
+        "caution": "BẪY THI: Danh từ và Tính từ đuôi な đứng trước のに BẮT BUỘC PHẢI THÊM な (日曜日【な】のに / 嫌い【な】のに). Luôn mang sắc thái bất mãn, tiếc nuối.",
         "examples": [
           {
             "type": "sentence",
-            "context": "Hẹn mà không đến",
-            "jp": "<span class=\"furigana\"><ruby>約束<rt>やくそく</rt></ruby>した</span><span class=\"furigana\">のに</span>、<span class=\"furigana\"><ruby>彼<rt>かれ</rt></ruby></span>は <span class=\"furigana\"><ruby>来<rt>き</rt></ruby>ませんでした</span>。",
-            "rawJp": "約束したのに、彼は来ませんでした。",
-            "vi": "Đã hẹn trước rồi thế mà anh ấy lại không đến."
+            "context": "Đã hẹn thế mà không đến",
+            "jp": "やくそくしたのに、かれは きませんでした。",
+            "rawJp": "やくそくしたのに、かれは きませんでした。",
+            "vi": "Đã hẹn trước thế mà anh ấy lại không đến (bất mãn, thất vọng)."
           },
           {
             "type": "sentence",
-            "context": "Học hết sức mà vẫn thi trượt",
-            "jp": "<span class=\"furigana\"><ruby>一生懸命<rt>いっしょうけんめい</rt></ruby></span> <span class=\"furigana\"><ruby>勉強<rt>べんきょう</rt></ruby>した</span><span class=\"furigana\">のに</span>、テストで いい <span class=\"furigana\"><ruby>点<rt>てん</rt></ruby></span>が 取れませんでした。",
-            "rawJp": "一生懸命勉強したのに、テストでいい点が取れませんでした。",
-            "vi": "Tôi đã học hành cật lực thế mà lại không đạt điểm cao trong bài thi."
+            "context": "Đã uống thuốc thế mà cơn sốt không hạ",
+            "jp": "くすりを のんだのに、ねつが さがりません。",
+            "rawJp": "くすりを のんだのに、ねつが さがりません。",
+            "vi": "Đã uống thuốc thế mà cơn sốt vẫn không chịu hạ."
+          },
+          {
+            "type": "sentence",
+            "context": "Chủ Nhật danh từ có na thế mà phải làm việc",
+            "jp": "きょうは にちようびなのに、はたらかなければ なりません。",
+            "rawJp": "きょうは にちようびなのに、はたらかなければ なりません。",
+            "vi": "Hôm nay là Chủ Nhật vậy mà tôi vẫn phải đi làm."
+          },
+          {
+            "type": "sentence",
+            "context": "Đã học rất chăm chỉ thế mà thi trượt",
+            "jp": "いっしょうけんめい べんきょうしたのに、しけんに おちました。",
+            "rawJp": "いっしょうけんめい べんきょうしたのに、しけんに おちました。",
+            "vi": "Đã học hết sức chăm chỉ vậy mà tôi vẫn thi trượt."
+          },
+          {
+            "type": "sentence",
+            "context": "Giá đắt vậy mà chất lượng kém",
+            "jp": "ねだんが たかいのに、あまり おいしくないです。",
+            "rawJp": "ねだんが たかいのに、あまり おいしくないです。",
+            "vi": "Giá tiền đắt thế mà món ăn lại không ngon lắm."
           }
         ]
       }

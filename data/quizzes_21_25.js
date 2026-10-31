@@ -555,27 +555,27 @@ const quizzes_21_25 = {
     },
     {
       "id": "pq21-47",
-      "question": "「ラッシュ」 trong giao thông Nhật Bản nghĩa là gì?",
+      "question": "ちょっと <ruby>休<rt>やす</rt></ruby>みましょう。<ruby>冷<rt>つめ</rt></ruby>たい お<ruby>茶<rt>ちゃ</rt></ruby> ........ <ruby>飲<rt>の</rt></ruby>みませんか。",
       "options": [
-        "Giờ cao điểm đông đúc, tắc nghẽn",
-        "Tàu hỏa chạy ban đêm",
-        "Đường phố vắng tanh không bóng người",
-        "Cuộc đua xe đạp"
+        "でも",
+        "も",
+        "しか",
+        "さえ"
       ],
       "correctIdx": 0,
-      "explanation": "[Độ khó: DỄ | Văn hóa giao thông Nhật] ラッシュ (rush hour) là giờ cao điểm buổi sáng/chiều khi lượng người đi tàu chen chúc nghẹt thở."
+      "explanation": "[Độ khó: TRUNG BÌNH | Cấu trúc N でも V] Trợ từ「でも」đi sau danh từ dùng để đưa ra một gợi ý tiêu biểu nhẹ nhàng khi rủ rê, đề xuất (như trà hoặc thứ gì đó tương tự): お茶でも 飲みませんか."
     },
     {
       "id": "pq21-48",
-      "question": "「<ruby>不便<rt>ふべん</rt></ruby>」の <ruby>意味<rt>いみ</rt></ruby>は どれですか。",
+      "question": "Câu「ちょっと <ruby>映画<rt>えいが</rt></ruby>でも <ruby>見<rt>み</rt></ruby>に <ruby>行<rt>い</rt></ruby>きませんか」thể hiện sắc thái gì?",
       "options": [
-        "Bất tiện",
-        "Thuận lợi",
-        "Yên tĩnh",
-        "Phức tạp"
+        "Đưa ra một gợi ý tiêu biểu nhẹ nhàng (như xem phim hay làm gì đó)",
+        "Bắt buộc đối phương phải đi xem phim cùng mình",
+        "Nhấn mạnh chỉ muốn xem phim chứ không làm bất cứ việc gì khác",
+        "Chê bộ phim dở nhưng vẫn miễn cưỡng rủ đi xem"
       ],
       "correctIdx": 0,
-      "explanation": "[Độ khó: DỄ | Từ vựng] 不便 (ふべん) có nghĩa là bất tiện."
+      "explanation": "[Độ khó: TRUNG BÌNH | Sắc thái cấu trúc N でも V]「N でも V」được dùng trong lời mời/rủ rê để đưa ra một đề xuất mang tính đại diện, giúp đối phương không cảm thấy bị áp đặt gượng ép."
     },
     {
       "id": "pq21-49",
@@ -591,15 +591,15 @@ const quizzes_21_25 = {
     },
     {
       "id": "pq21-50",
-      "question": "「<ruby>留学<rt>りゅうがく</rt></ruby>します」の <ruby>意味<rt>いみ</rt></ruby>は どれですか。",
+      "question": "Chọn câu sử dụng ĐÚNG cấu trúc gợi ý「N でも V」:",
       "options": [
-        "Đi du học",
-        "Đi làm thêm",
-        "Đi xuất khẩu lao động",
-        "Đi thực tập ngắn hạn"
+        "ロビーで コーヒーでも <ruby>飲<rt>の</rt></ruby>みましょうか。",
+        "きのう ロビーで コーヒーでも <ruby>飲<rt>の</rt></ruby>みました。",
+        "わたしは コーヒーでも <ruby>飲<rt>の</rt></ruby>みたいです。",
+        "どうぞ コーヒーでも <ruby>飲<rt>の</rt></ruby>んで ください。"
       ],
       "correctIdx": 0,
-      "explanation": "[Độ khó: DỄ | Từ vựng] 留学します (りゅうがくします) có nghĩa là đi du học."
+      "explanation": "[Độ khó: KHÁ | Lưu ý tránh bẫy N でも V]「N でも」dùng để đưa ra ví dụ mang tính đại diện khi rủ rê hoặc đề xuất (~ましょうか, ~ませんか). Tránh dùng trong câu kể sự việc đã hoàn tất trong quá khứ (~ました) hoặc câu khẳng định nguyện vọng cá nhân."
     }
   ],
   "quiz-22": [

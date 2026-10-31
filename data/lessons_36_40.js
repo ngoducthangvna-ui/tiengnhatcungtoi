@@ -394,65 +394,128 @@ const lessons_36_40 = [
     ],
     "grammar": [
       {
-        "structure": "1. V1-る / V1-ない + ように、V2 (Mục đích hướng tới trạng thái)",
-        "explanation": "Dùng để diễn tả hành động V2 được thực hiện nhằm đạt được mục đích hoặc phòng tránh trạng thái ở V1.\n• V1 là ĐỘNG TỪ KHÔNG CÓ Ý CHÍ (tự động từ, động từ khả năng) hoặc ĐỘNG TỪ THỂ PHỦ ĐỊNH (V-ない ように).\n• Khác với 〜ために (chỉ đi với động từ ý chí: 買うために).",
-        "caution": "Để không quên dùng: 忘れないように (V-ない + ように). Để nhìn rõ dùng: 見えるように (thể khả năng + ように).",
+        "structure": "1. {V1-る / V1-ない} + ように、V2",
+        "explanation": "Để làm V1 / Để không bị V1 thì làm V2 (V1 là mục tiêu mang tính khả năng hoặc ngoài ý chí; V2 là hành động nỗ lực có ý chí).",
+        "caution": "BẪY THI KINH ĐIỂN: V1 đứng trước ように KHÔNG PHẢI là động từ ý chí, mà là ĐỘNG TỪ THỂ KHẢ NĂNG (話せるように) hoặc THỂ PHỦ ĐỊNH (忘れないように). Khác với ために (Bài 42).",
         "examples": [
           {
             "type": "sentence",
-            "context": "Ghi chép vào sổ tay để khỏi quên",
-            "jp": "<span class=\"furigana\"><ruby>忘<rt>わす</rt></ruby>れないように</span>、手帳に メモして おきます。",
-            "rawJp": "忘れないように、手帳にメモしておきます。",
-            "vi": "Để không bị quên, tôi ghi chú sẵn vào sổ tay."
+            "context": "Học để nói được tiếng Nhật",
+            "jp": "にほんごが はなせる ように、まいにち れんしゅうして います。",
+            "rawJp": "にほんごが はなせる ように、まいにち れんしゅうして います。",
+            "vi": "Để có thể nói được tiếng Nhật, mỗi ngày tôi đều luyện tập."
           },
           {
             "type": "sentence",
-            "context": "Nói to để người phía sau cũng nghe được",
-            "jp": "<span class=\"furigana\"><ruby>後<rt>うし</rt></ruby>ろの</span> <span class=\"furigana\"><ruby>人<rt>ひと</rt></ruby>にも</span> <span class=\"furigana\"><ruby>聞<rt>き</rt></ruby>こえるように</span>、<span class=\"furigana\"><ruby>大<rt>おお</rt></ruby>きな</span> <span class=\"furigana\"><ruby>声<rt>こえ</rt></ruby>で</span> <span class=\"furigana\"><ruby>話<rt>はな</rt></ruby>します</span>。",
-            "rawJp": "後ろの人にも聞こえるように、大きな声で話します。",
-            "vi": "Tôi nói to để người ngồi phía sau cũng có thể nghe thấy."
+            "context": "Ghi chú để không bị quên",
+            "jp": "わすれない ように、メモを して おきます。",
+            "rawJp": "わすれない ように、メモを して おきます。",
+            "vi": "Để không bị quên, tôi ghi chú lại sẵn."
+          },
+          {
+            "type": "sentence",
+            "context": "Để kịp giờ tàu",
+            "jp": "でんしゃに まに あう ように、はやく いえを でました。",
+            "rawJp": "でんしゃに まに あう ように、はやく いえを でました。",
+            "vi": "Để kịp chuyến tàu, tôi đã ra khỏi nhà sớm."
+          },
+          {
+            "type": "sentence",
+            "context": "Để mọi người nhìn rõ chữ",
+            "jp": "みんなに みえる ように、おおきく かいて ください。",
+            "rawJp": "みんなに みえる ように、おおきく かいて ください。",
+            "vi": "Để mọi người nhìn thấy rõ, xin hãy viết chữ to lên."
+          },
+          {
+            "type": "sentence",
+            "context": "Để không bị cảm lạnh",
+            "jp": "かぜを ひかない ように、あたたかい ふくを きます。",
+            "rawJp": "かぜを ひかない ように、あたたかい ふくを きます。",
+            "vi": "Để không bị cảm lạnh, tôi mặc quần áo ấm."
           }
         ]
       },
       {
-        "structure": "2. V-る / V-ない + ように なりました (Biến đổi năng lực & thói quen)",
-        "explanation": "Biểu thị sự biến đổi trạng thái: từ chỗ trước đây không thể làm được, nay đã trở nên có thể làm được việc gì, hoặc bắt đầu hình thành một thói quen mới.",
-        "caution": "Đi với thể khả năng (話せるように なりました) hoặc tự động từ.",
+        "structure": "2. V-る ように なります",
+        "explanation": "Đã có thể làm V / Trở nên biết làm V (Biểu thị sự biến đổi năng lực từ chỗ không làm được sang chỗ đã làm được một cách tự nhiên).",
+        "caution": "Chỉ sự BIẾN ĐỔI NĂNG LỰC: Từ trạng thái trước đây chưa biết làm, nay đã biết làm (Ví dụ: Đã có thể bơi: 泳げるように なりました).",
         "examples": [
           {
             "type": "sentence",
-            "context": "Khả năng nói tiếng Nhật tiến bộ",
-            "jp": "<span class=\"furigana\"><ruby>日本語<rt>にほんご</rt></ruby></span>の <span class=\"furigana\"><ruby>新聞<rt>しんぶん</rt></ruby></span>が <span class=\"furigana\"><ruby>読<rt>よ</rt></ruby>めるように</span> なりました。",
-            "rawJp": "日本語の新聞が読めるようになりました。",
-            "vi": "Tôi đã trở nên có thể đọc được báo tiếng Nhật."
+            "context": "Đã biết nói tiếng Nhật",
+            "jp": "にほんごが はなせる ように なりました。",
+            "rawJp": "にほんごが はなせる ように なりました。",
+            "vi": "Tôi đã trở nên có thể nói được tiếng Nhật."
+          },
+          {
+            "type": "sentence",
+            "context": "Đã biết bơi sau khi tập",
+            "jp": "れんしゅうして、およげる ように なりました。",
+            "rawJp": "れんしゅうして、およげる ように なりました。",
+            "vi": "Sau khi luyện tập, tôi đã biết bơi."
+          },
+          {
+            "type": "sentence",
+            "context": "Đã đọc được nhiều chữ Hán",
+            "jp": "かんじが たくさん よめる ように なりました。",
+            "rawJp": "かんじが たくさん よめる ように なりました。",
+            "vi": "Tôi đã có thể đọc được nhiều chữ Hán."
+          },
+          {
+            "type": "sentence",
+            "context": "Đã ăn được món cá sống",
+            "jp": "さしみが たべられる ように なりました。",
+            "rawJp": "さしみが たべられる ように なりました。",
+            "vi": "Tôi đã ăn được món Sashimi rồi."
+          },
+          {
+            "type": "sentence",
+            "context": "Đã tự mình nấu ăn được",
+            "jp": "じぶんで りょうりが つくれる ように なりました。",
+            "rawJp": "じぶんで りょうりが つくれる ように なりました。",
+            "vi": "Tôi đã có thể tự mình nấu ăn được."
           }
         ]
       },
       {
-        "structure": "3. V-る / V-ない + ように して います (Cố gắng duy trì thói quen tốt)",
-        "explanation": "Biểu thị sự nỗ lực, quyết tâm của người nói trong việc cố gắng duy trì một thói quen có lợi hoặc kiêng cữ một điều có hại một cách đều đặn mỗi ngày.",
-        "caution": "Khác với 習慣, cấu trúc này nhấn mạnh vào Ý THỨC NỖ LỰC rèn luyện của bản thân.",
+        "structure": "3. {V-る / V-ない} + ように します",
+        "explanation": "Cố gắng làm V / Cố gắng không làm V (Biểu thị sự nỗ lực, quyết tâm tạo lập một thói quen sinh hoạt tốt cho bản thân).",
+        "caution": "Khác với ように なります (biến đổi tự nhiên), ように します là NỖ LỰC CHỦ QUAN tạo lập thói quen (Ví dụ: Cố gắng tập thể dục mỗi ngày: 毎日運動するようにしています).",
         "examples": [
           {
             "type": "sentence",
-            "context": "Cố gắng ăn nhiều rau vì sức khỏe",
-            "jp": "<span class=\"furigana\"><ruby>毎日<rt>まいにち</rt></ruby></span> <span class=\"furigana\"><ruby>野菜<rt>やさい</rt></ruby></span>を たくさん <span class=\"furigana\"><ruby>食<rt>た</rt></ruby>べるように</span> して います。",
-            "rawJp": "毎日野菜をたくさん食べるようにしています。",
-            "vi": "Tôi luôn cố gắng ăn nhiều rau củ mỗi ngày."
-          }
-        ]
-      },
-      {
-        "structure": "4. V-る / V-ない + ように して ください (Lời khuyên nhủ ân cần / Kiêng cữ)",
-        "explanation": "Dùng để đưa ra lời nhắc nhở, khuyên nhủ người nghe hãy cố gắng thực hiện hoặc tránh làm điều gì một cách mềm mỏng, gián tiếp hơn so với 〜てください.",
-        "caution": "Không dùng để yêu cầu thực hiện ngay hành động tức thời trước mắt.",
-        "examples": [
+            "context": "Cố gắng vận động mỗi ngày",
+            "jp": "まいにち うんどうする ように して います。",
+            "rawJp": "まいにち うんどうする ように して います。",
+            "vi": "Tôi luôn cố gắng vận động tập thể dục mỗi ngày."
+          },
           {
             "type": "sentence",
-            "context": "Bác sĩ dặn dò uống thuốc đúng giờ",
-            "jp": "<span class=\"furigana\"><ruby>時間<rt>じかん</rt></ruby></span>どおりに <span class=\"furigana\"><ruby>薬<rt>くすり</rt></ruby></span>を <span class=\"furigana\"><ruby>飲<rt>の</rt></ruby>むように</span> して ください。",
-            "rawJp": "時間どおりに薬を飲むようにしてください。",
-            "vi": "Xin bác hãy cố gắng uống thuốc đúng giờ nhé."
+            "context": "Cố gắng không ăn đồ ngọt",
+            "jp": "あまい ものを たべない ように して います。",
+            "rawJp": "あまい ものを たべない ように して います。",
+            "vi": "Tôi luôn cố gắng không ăn đồ ngọt."
+          },
+          {
+            "type": "sentence",
+            "context": "Cố gắng ngủ trước 11 giờ",
+            "jp": "１１じまでに ねる ように して います。",
+            "rawJp": "１１じまでに ねる ように して います。",
+            "vi": "Tôi luôn cố gắng đi ngủ trước 11 giờ."
+          },
+          {
+            "type": "sentence",
+            "context": "Cố gắng không quên hộ chiếu",
+            "jp": "パスポートを わすれない ように して ください。",
+            "rawJp": "パスポートを わすれない ように して ください。",
+            "vi": "Xin hãy cố gắng đừng quên hộ chiếu nhé."
+          },
+          {
+            "type": "sentence",
+            "context": "Cố gắng uống nhiều nước mỗi ngày",
+            "jp": "みずを たくさん のむ ように して います。",
+            "rawJp": "みずを たくさん のむ ように して います。",
+            "vi": "Tôi luôn cố gắng uống nhiều nước mỗi ngày."
           }
         ]
       }
@@ -860,72 +923,212 @@ const lessons_36_40 = [
     ],
     "grammar": [
       {
-        "structure": "1. Thể bị động (受身形: うけみけい) - Quy tắc chia",
-        "explanation": "• Nhóm 1: Chuyển hàng [i] trước ます sang hàng [a] rồi thêm れます (書きます -> 書かれます, 褒めます -> 褒められます, 叱ります -> 叱られます).\n• Nhóm 2: Bỏ ます thêm られます (食べます -> 食べられます, 見ます -> 見られます).\n• Nhóm 3: します -> されます, 来ます(きます) -> 来られます(こられます).",
-        "caution": "Tất cả các động từ sau khi chia sang bị động đều biến thành ĐỘNG TỪ NHÓM 2.",
+        "structure": "1. Chia động từ thể bị động (受身形 - Ukemikei)",
+        "explanation": "Quy tắc chia thể bị động: Nhóm 1 đổi hàng い -> hàng あ + れる (kakareru); Nhóm 2 bỏ ます + られる (homerareru); Nhóm 3 (kimasu -> korareru, shimasu -> sareru).",
+        "caution": "BẪY THI: Động từ nhóm 1 có đuôi い (như 言います, 吸います) chia bị động đổi thành われる (言われる, 吸われる), KHÔNG đổi thành あれる.",
         "examples": [
           {
             "type": "sentence",
-            "context": "Được sếp khen ngợi",
-            "jp": "<span class=\"furigana\"><ruby>私<rt>わたし</rt></ruby></span>は <span class=\"furigana\"><ruby>部長<rt>ぶちょう</rt></ruby></span>に <span class=\"furigana\"><ruby>褒<rt>ほ</rt></ruby>められました</span>。",
-            "rawJp": "私は部長に褒められました。",
+            "context": "Chia nhóm 2 bị động khen ngợi",
+            "jp": "せんせいに ほめられました。",
+            "rawJp": "せんせいに ほめられました。",
+            "vi": "Tôi đã được thầy giáo khen ngợi."
+          },
+          {
+            "type": "sentence",
+            "context": "Chia nhóm 1 đuôi wa",
+            "jp": "ともだちに うそを いわれた。",
+            "rawJp": "ともだちに うそを いわれた。",
+            "vi": "Tôi bị bạn bè nói dối."
+          },
+          {
+            "type": "sentence",
+            "context": "Chia nhóm 3 shimasu thành sareru",
+            "jp": "しごとを たのまれました。",
+            "rawJp": "しごとを たのまれました。",
+            "vi": "Tôi được nhờ làm công việc."
+          },
+          {
+            "type": "sentence",
+            "context": "Chia nhóm 1 đạp chân",
+            "jp": "でんしゃの なかで あしを ふまれました。",
+            "rawJp": "でんしゃの なかで あしを ふまれました。",
+            "vi": "Tôi bị giẫm vào chân ở trên tàu điện."
+          },
+          {
+            "type": "sentence",
+            "context": "Chia nhóm 3 kimasu thành korareru",
+            "jp": "あめに ふられて、びしょぬれに なった。",
+            "rawJp": "あめに ふられて、びしょぬれに なった。",
+            "vi": "Bị dính mưa nên tôi ướt sũng."
+          }
+        ]
+      },
+      {
+        "structure": "2. N1 は N2 に V-bị động",
+        "explanation": "N1 bị / được N2 thực hiện hành động V lên mình (Chủ thể chịu tác động trực tiếp là N1 đi với は; tác nhân thực hiện hành vi N2 đi với trợ từ に).",
+        "caution": "Người gây ra hành động (tác nhân) BẮT BUỘC ĐI VỚI TRỢ TỪ に (Ví dụ: Thầy giáo khen: 先生【に】ほめられました).",
+        "examples": [
+          {
+            "type": "sentence",
+            "context": "Được sếp khen",
+            "jp": "わたしは ぶちょうに ほめられました。",
+            "rawJp": "わたしは ぶちょうに ほめられました。",
             "vi": "Tôi đã được trưởng phòng khen ngợi."
+          },
+          {
+            "type": "sentence",
+            "context": "Bị mẹ mắng",
+            "jp": "わたしは ははに しかられました。",
+            "rawJp": "わたしは ははに しかられました。",
+            "vi": "Tôi đã bị mẹ mắng."
+          },
+          {
+            "type": "sentence",
+            "context": "Bị chó cắn",
+            "jp": "いぬに かまれました。",
+            "rawJp": "いぬに かまれました。",
+            "vi": "Tôi bị chó cắn."
+          },
+          {
+            "type": "sentence",
+            "context": "Được bạn mời đi dự tiệc",
+            "jp": "ともだちに パーティーに しょうたいされました。",
+            "rawJp": "ともだちに パーティーに しょうたいされました。",
+            "vi": "Tôi đã được bạn bè mời tới dự tiệc."
+          },
+          {
+            "type": "sentence",
+            "context": "Bị người lạ hỏi đường",
+            "jp": "みちで しらない ひとに みちを きかれました。",
+            "rawJp": "みちで しらない ひとに みちを きかれました。",
+            "vi": "Tôi bị người lạ hỏi thăm đường ở ngoài phố."
           }
         ]
       },
       {
-        "structure": "2. Bị động trực tiếp: Người B は Người A に V-(bị động)",
-        "explanation": "Diễn tả việc người B nhận một hành vi tác động trực tiếp từ người A (A là chủ thể gây ra hành động, đi với trợ từ に).",
-        "caution": "Nếu mang hàm ý biết ơn vì được ai giúp việc gì thì dùng 〜てもらいました thay vì thể bị động.",
+        "structure": "3. N1 は N2 に N3 を V-bị động",
+        "explanation": "N1 bị N2 làm hành động V lên vật sở hữu N3 của mình gây phiền toái (Bị động phiền toái / Bị động gián tiếp; vật bị tác động đi với trợ từ を).",
+        "caution": "BẪY THI CỰC LỚN: Vật sở hữu bị tác động VẪN ĐI VỚI TRỢ TỪ を (Ví dụ: 私の足【を】踏まれました). Câu này luôn mang sắc thái phiền toái, bực mình.",
         "examples": [
           {
             "type": "sentence",
-            "context": "Được bạn rủ đi xem phim",
-            "jp": "<span class=\"furigana\"><ruby>私<rt>わたし</rt></ruby></span>は <span class=\"furigana\"><ruby>友達<rt>ともだち</rt></ruby></span>に パーティーに <span class=\"furigana\"><ruby>誘<rt>さそ</rt></ruby>われました</span>。",
-            "rawJp": "私は友達にパーティーに誘われました。",
-            "vi": "Tôi được bạn bè rủ đi dự tiệc."
+            "context": "Bị giẫm vào chân trên tàu",
+            "jp": "わたしは でんしゃの なかで だれかに あしを ふまれました。",
+            "rawJp": "わたしは でんしゃの なかで だれかに あしを ふまれました。",
+            "vi": "Tôi bị ai đó giẫm vào chân ở trên tàu điện."
+          },
+          {
+            "type": "sentence",
+            "context": "Bị trộm lấy mất xe đạp",
+            "jp": "どろぼうに じてんしゃを ぬすまれました。",
+            "rawJp": "どろぼうに じてんしゃを ぬすまれました。",
+            "vi": "Tôi đã bị kẻ trộm lấy cắp mất chiếc xe đạp."
+          },
+          {
+            "type": "sentence",
+            "context": "Bị em trai làm vỡ máy tính",
+            "jp": "おとうとに パソコンを こわされました。",
+            "rawJp": "おとうとに パソコンを こわされました。",
+            "vi": "Tôi bị em trai làm hỏng mất chiếc máy tính."
+          },
+          {
+            "type": "sentence",
+            "context": "Bị làm bẩn quần áo",
+            "jp": "ふくを よごされました。",
+            "rawJp": "ふくを よごされました。",
+            "vi": "Tôi bị người khác làm lấm bẩn quần áo."
+          },
+          {
+            "type": "sentence",
+            "context": "Bị lấy trộm ví tiền",
+            "jp": "さいふを すられました。",
+            "rawJp": "さいふを すられました。",
+            "vi": "Tôi đã bị móc túi mất chiếc ví tiền."
           }
         ]
       },
       {
-        "structure": "3. Bị động gián tiếp (Tổn hại): B は A に [Đồ vật] を V-(bị động)",
-        "explanation": "Diễn tả việc người A thực hiện hành vi lên đồ vật thuộc quyền sở hữu của người B, và hành vi đó gây phiền toái, thiệt hại, khó chịu cho người B.",
-        "caution": "Không được nói: 私の足は 踏まれました (SAI). Phải nói: 私は 足を 踏まれました (ĐÚNG).",
+        "structure": "4. N (vật/sự việc) が/は V-bị động",
+        "explanation": "Vật N được xây dựng, phát minh, tổ chức... (Chủ ngữ là đồ vật hoặc sự kiện xã hội không cần nhắc tới tác nhân cụ thể).",
+        "caution": "Khi chủ ngữ là công trình, sự kiện lịch sử thì dùng bị động (Ví dụ: Ngôi chùa này được xây dựng vào thế kỷ 16: この寺は 16世紀に 建てられました).",
         "examples": [
           {
             "type": "sentence",
-            "context": "Bị kẻ trộm móc mất ví",
-            "jp": "<span class=\"furigana\"><ruby>私<rt>わたし</rt></ruby></span>は <span class=\"furigana\"><ruby>泥棒<rt>どろぼう</rt></ruby></span>に <span class=\"furigana\"><ruby>財布<rt>さいふ</rt></ruby></span>を <span class=\"furigana\"><ruby>盗<rt>ぬす</rt></ruby>まれました</span>。",
-            "rawJp": "私は泥棒に財布を盗まれました。",
-            "vi": "Tôi bị kẻ trộm đánh cắp mất ví tiền."
-          }
-        ]
-      },
-      {
-        "structure": "4. Vật は / が V-(bị động) (Bị động vô nhân xưng)",
-        "explanation": "Dùng khi thông báo về một sự vật, sự kiện được phát minh, xây dựng, xuất khẩu, tổ chức mà không cần nêu rõ chủ thể hành động là ai.",
-        "caution": "Thường dùng trong các bản tin báo chí, tài liệu lịch sử.",
-        "examples": [
+            "context": "Sân vận động được xây dựng",
+            "jp": "あたらしい スタジアムが たてられました。",
+            "rawJp": "あたらしい スタジアムが たてられました。",
+            "vi": "Một sân vận động mới đã được xây dựng."
+          },
           {
             "type": "sentence",
-            "context": "Hội nghị quốc tế được tổ chức tại Tokyo",
-            "jp": "<span class=\"furigana\"><ruby>東京<rt>とうきょう</rt></ruby></span>で <span class=\"furigana\"><ruby>国際会議<rt>こくさいかいぎ</rt></ruby></span>が <span class=\"furigana\"><ruby>行<rt>おこな</rt></ruby>われました</span>。",
-            "rawJp": "東京で国際会議が行われました。",
+            "context": "Hội nghị được tổ chức tại Tokyo",
+            "jp": "とうきょうで こくさいかいぎが ひらかれました。",
+            "rawJp": "とうきょうで こくさいかいぎが ひらかれました。",
             "vi": "Hội nghị quốc tế đã được tổ chức tại Tokyo."
+          },
+          {
+            "type": "sentence",
+            "context": "Cuốn sách được dịch sang nhiều thứ tiếng",
+            "jp": "この ほんは せかいじゅうの ことばに ほんやくされました。",
+            "rawJp": "この ほんは せかいじゅうの ことばに ほんやくされました。",
+            "vi": "Quyển sách này đã được dịch ra nhiều thứ tiếng trên thế giới."
+          },
+          {
+            "type": "sentence",
+            "context": "Ô tô Nhật được xuất khẩu khắp nơi",
+            "jp": "にほんの くるまは せかいじゅうへ ゆしゅつされて います。",
+            "rawJp": "にほんの くるまは せかいじゅうへ ゆしゅつされて います。",
+            "vi": "Ô tô Nhật Bản đang được xuất khẩu ra khắp thế giới."
+          },
+          {
+            "type": "sentence",
+            "context": "Tác phẩm do nhà văn nổi tiếng sáng tác",
+            "jp": "この えは ゆうめいな がかに よって かかれました。",
+            "rawJp": "この えは ゆうめいな がかに よって かかれました。",
+            "vi": "Bức tranh này được vẽ bởi một họa sĩ danh tiếng (dùng によって)."
           }
         ]
       },
       {
-        "structure": "5. Vật は Người nổi tiếng + によって V-(bị động)",
-        "explanation": "Khi muốn nêu rõ danh tính tác giả, kiến trúc sư hoặc nhà khoa học đã tạo ra tác phẩm hoặc công trình vĩ đại, ta dùng cụm 〜によって.",
-        "caution": "Không dùng trợ từ に đơn thuần mà phải dùng によって.",
+        "structure": "5. N1 は N2 (nguyên liệu) から / (vật liệu) で つくられます",
+        "explanation": "N1 được làm từ nguyên liệu N2 (Dùng から khi nguyên liệu bị biến đổi chất hoàn toàn; dùng で khi vật liệu vẫn nhìn thấy rõ bằng mắt thường).",
+        "caution": "BẪY THI KINH ĐIỂN: Thấy rõ vật liệu bằng mắt (gỗ, giấy) dùng で (木【で】造る); Nguyên liệu biến chất hoàn toàn (rượu làm từ gạo, bia từ lúa mạch) dùng から (米【から】造る).",
         "examples": [
           {
             "type": "sentence",
-            "context": "Mì ăn liền được phát minh bởi Ando Momofuku",
-            "jp": "インスタントラーメンは <span class=\"furigana\"><ruby>安藤百福<rt>あんどうももふく</rt></ruby></span><span class=\"furigana\">によって</span> <span class=\"furigana\"><ruby>発明<rt>はつめい</rt></ruby>されました</span>。",
-            "rawJp": "インスタントラーメンは安藤百福によって発明されました。",
-            "vi": "Mì ăn liền được phát minh bởi ông Ando Momofuku."
+            "context": "Rượu làm từ gạo biến chất",
+            "jp": "おさけは こめから つくられます。",
+            "rawJp": "おさけは こめから つくられます。",
+            "vi": "Rượu sake được làm từ gạo (nguyên liệu lên men biến chất dùng から)."
+          },
+          {
+            "type": "sentence",
+            "context": "Bàn làm từ gỗ nhìn rõ vật liệu",
+            "jp": "この つくえは きで つくられて います。",
+            "rawJp": "この つくえは きで つくられて います。",
+            "vi": "Chiếc bàn này được làm bằng gỗ (vật liệu nhìn rõ dùng で)."
+          },
+          {
+            "type": "sentence",
+            "context": "Bia làm từ lúa mạch",
+            "jp": "ビールは むぎから つくられます。",
+            "rawJp": "ビールは むぎから つくられます。",
+            "vi": "Bia được sản xuất từ lúa mạch."
+          },
+          {
+            "type": "sentence",
+            "context": "Ngôi nhà làm bằng đá",
+            "jp": "この いえは いしで つくられました。",
+            "rawJp": "この いえは いしで つくられました。",
+            "vi": "Ngôi nhà này được xây bằng đá."
+          },
+          {
+            "type": "sentence",
+            "context": "Bơ làm từ sữa",
+            "jp": "バターは ぎゅうにゅうから つくられます。",
+            "rawJp": "バターは ぎゅうにゅうから つくられます。",
+            "vi": "Bơ được làm từ sữa bò."
           }
         ]
       }
@@ -1270,83 +1473,170 @@ const lessons_36_40 = [
     ],
     "grammar": [
       {
-        "structure": "1. V-る + のは + Tính từ です (Danh từ hóa làm chủ ngữ)",
-        "explanation": "Dùng để biến một cụm hành động thành chủ ngữ trong câu để nhận định hoặc đánh giá tính chất của việc đó.\n• Thường đi kèm các tính từ như: おもしろい、難しい、楽しい、大変だ...",
-        "caution": "Bắt buộc phải có trợ từ の đứng sau thể từ điển V-る để biến cụm động từ thành danh từ.",
+        "structure": "1. V-る のは [Tính từ] です",
+        "explanation": "Việc làm V thì mang tính chất A (Danh từ hóa động từ bằng の làm chủ ngữ của câu; trước の là thể từ điển V-る).",
+        "caution": "BẪY THI: Động từ đứng trước の BẮT BUỘC ở thể từ điển V-る (Ví dụ: テニスをする【のは】面白いです). Trợ từ chủ đề là は.",
         "examples": [
           {
             "type": "sentence",
-            "context": "Nhận định việc học chữ Hán là khó",
-            "jp": "<span class=\"furigana\"><ruby>漢字<rt>かんじ</rt></ruby></span>を <span class=\"furigana\"><ruby>覚<rt>おぼ</rt></ruby>える</span><span class=\"furigana\">のは</span> <span class=\"furigana\"><ruby>難<rt>むずか</rt></ruby>しいです</span>。",
-            "rawJp": "漢字を覚えるのは難しいです。",
-            "vi": "Việc ghi nhớ chữ Hán rất là khó."
+            "context": "Chơi quần vợt thì rất vui",
+            "jp": "テニスを するのは おもしろいです。",
+            "rawJp": "テニスを するのは おもしろいです。",
+            "vi": "Việc chơi quần vợt thì rất thú vị."
+          },
+          {
+            "type": "sentence",
+            "context": "Học chữ Hán thì khó",
+            "jp": "かんじを おぼえるのは むずかしいです。",
+            "rawJp": "かんじを おぼえるのは むずかしいです。",
+            "vi": "Việc ghi nhớ chữ Hán thì rất khó khăn."
+          },
+          {
+            "type": "sentence",
+            "context": "Thức dậy sớm thì tốt cho sức khỏe",
+            "jp": "あさ はやく おきるのは からだに いいです。",
+            "rawJp": "あさ はやく おきるのは からだに いいです。",
+            "vi": "Thức dậy sớm vào buổi sáng thì tốt cho cơ thể."
+          },
+          {
+            "type": "sentence",
+            "context": "Đi bộ một mình vào ban đêm thì nguy hiểm",
+            "jp": "よる ひとりで あるくのは きけんです。",
+            "rawJp": "よる ひとりで あるくのは きけんです。",
+            "vi": "Đi bộ một mình vào ban đêm thì nguy hiểm."
+          },
+          {
+            "type": "sentence",
+            "context": "Nấu ăn thì rất vui",
+            "jp": "りょうりを つくるのは たのしいです。",
+            "rawJp": "りょうりを つくるのは たのしいです。",
+            "vi": "Việc nấu ăn thì rất vui vẻ."
           }
         ]
       },
       {
-        "structure": "2. V-る + のが + Tính từ です (Sở thích / Năng khiếu)",
-        "explanation": "Dùng để diễn tả sở thích, năng khiếu, sự nhanh nhẹn hoặc vụng về đối với một hoạt động cụ thể.\n• Đi với các tính từ: 好き、嫌い、上手、下手、速い、遅い...",
-        "caution": "Tân ngữ sở thích đi với trợ từ が.",
+        "structure": "2. V-る のが [Tính từ] です",
+        "explanation": "Thích / Ghét / Giỏi / Kém việc làm V (Danh từ hóa hành động làm đối tượng của tính từ cảm xúc, năng lực 好き, 嫌い, 上手, 下手, 速い, 遅い bằng のが).",
+        "caution": "Đi với các tính từ năng lực, sở thích (好き, 嫌い, 上手, 下手, 早い, 遅い) BẮT BUỘC dùng trợ từ が (Ví dụ: 歌を歌う【のが】上手です).",
         "examples": [
           {
             "type": "sentence",
-            "context": "Sở thích chụp ảnh phong cảnh",
-            "jp": "<span class=\"furigana\"><ruby>私<rt>わたし</rt></ruby></span>は <span class=\"furigana\"><ruby>写真<rt>しゃしん</rt></ruby></span>を <span class=\"furigana\"><ruby>撮<rt>と</rt></ruby>る</span><span class=\"furigana\">のが</span> <span class=\"furigana\"><ruby>好<rt>す</rt></ruby>きです</span>。",
-            "rawJp": "私は写真を撮るのが好きです。",
-            "vi": "Tôi rất thích việc chụp ảnh."
+            "context": "Thích trồng hoa",
+            "jp": "わたしは はなを そだてるのが すきです。",
+            "rawJp": "わたしは はなを そだてるのが すきです。",
+            "vi": "Tôi thích việc chăm sóc và trồng hoa."
+          },
+          {
+            "type": "sentence",
+            "context": "Anh Miller đi bộ rất nhanh",
+            "jp": "ミラーさんは あるくのが はやいです。",
+            "rawJp": "ミラーさんは あるくのが はやいです。",
+            "vi": "Anh Miller đi bộ rất nhanh."
+          },
+          {
+            "type": "sentence",
+            "context": "Kém vẽ tranh",
+            "jp": "わたしは えを かくのが へたです。",
+            "rawJp": "わたしは えを かくのが へたです。",
+            "vi": "Tôi vẽ tranh rất kém."
+          },
+          {
+            "type": "sentence",
+            "context": "Giỏi nấu ăn",
+            "jp": "かのじょは りょうりを つくるのが じょうずです。",
+            "rawJp": "かのじょは りょうりを つくるのが じょうずです。",
+            "vi": "Cô ấy nấu ăn rất giỏi."
+          },
+          {
+            "type": "sentence",
+            "context": "Thao tác gõ máy tính chậm",
+            "jp": "パソコンを つかうのが おそいです。",
+            "rawJp": "パソコンを つかうのが おそいです。",
+            "vi": "Tôi thao tác máy tính rất chậm chạp."
           }
         ]
       },
       {
-        "structure": "3. V-る + のを 忘れました (Quên mất việc phải làm)",
-        "explanation": "Dùng khi người nói đã lơ đễnh quên không thực hiện một việc mà đáng lẽ ra mình phải làm.",
-        "caution": "Khác với「傘を 忘れました」(quên vật chất):「傘を 持って 来るのを 忘れました」(quên hành động mang theo ô).",
+        "structure": "3. V-る のを 忘れました / V [Thể thông thường] のを 知っていますか",
+        "explanation": "Quên mất việc làm V / Bạn có biết việc ~ hay không? (Danh từ hóa cụm hành động làm tân ngữ trực tiếp của động từ 忘れます hoặc 知っています).",
+        "caution": "BẪY THI: 'Quên làm gì' dùng V-る【のを】忘れました. Phân biệt với 忘れ物をしました (bỏ quên đồ đạc cụ thể).",
         "examples": [
           {
             "type": "sentence",
-            "context": "Quên mua sữa khi ghé siêu thị",
-            "jp": "<span class=\"furigana\"><ruby>牛乳<rt>ぎゅうにゅう</rt></ruby></span>を <span class=\"furigana\"><ruby>買<rt>か</rt></ruby>う</span><span class=\"furigana\">のを</span> <span class=\"furigana\"><ruby>忘<rt>わす</rt></ruby>れました</span>。",
-            "rawJp": "牛乳を買うのを忘れました。",
-            "vi": "Tôi quên mất việc phải mua sữa bò rồi."
+            "context": "Quên mua sữa",
+            "jp": "ぎゅうにゅうを かうのを わすれました。",
+            "rawJp": "ぎゅうにゅうを かうのを わすれました。",
+            "vi": "Tôi quên mất việc phải mua sữa."
+          },
+          {
+            "type": "sentence",
+            "context": "Bạn có biết anh Miller kết hôn chưa",
+            "jp": "ミラーさんが けっこんしたのを しって いますか。",
+            "rawJp": "ミラーさんが けっこんしたのを しって いますか。",
+            "vi": "Bạn có biết việc anh Miller đã kết hôn rồi không?"
+          },
+          {
+            "type": "sentence",
+            "context": "Quên khóa cửa phòng",
+            "jp": "へやの かぎを かけるのを わすれました。",
+            "rawJp": "へやの かぎを かけるのを わすれました。",
+            "vi": "Tôi quên mất việc khóa cửa phòng."
+          },
+          {
+            "type": "sentence",
+            "context": "Có biết chuyện dời giờ họp không",
+            "jp": "かいぎの じかんが かわったのを しって いますか。",
+            "rawJp": "かいぎの じかんが かわったのを しって いますか。",
+            "vi": "Bạn có biết chuyện giờ họp đã bị đổi không?"
+          },
+          {
+            "type": "sentence",
+            "context": "Quên gửi thư",
+            "jp": "てがみを だすのを わすれました。",
+            "rawJp": "てがみを だすのを わすれました。",
+            "vi": "Tôi quên mất việc gửi bức thư đi."
           }
         ]
       },
       {
-        "structure": "4. Thể thông thường + のを 知って いますか (Bạn có biết việc... hay không?)",
-        "explanation": "Dùng để hỏi xem đối phương đã biết về một sự thật hoặc tin tức nào đó hay chưa.",
-        "caution": "Nếu chưa biết, câu trả lời bắt buộc là:「いいえ、知りませんでした」(Dạ, tôi chưa từng biết chuyện đó).",
-        "examples": [
-          {
-            "type": "dialogue",
-            "context": "Hỏi về tin tức anh Tanaka sắp lấy vợ",
-            "lines": [
-              {
-                "speaker": "A",
-                "jp": "<span class=\"furigana\"><ruby>田中<rt>たなか</rt></ruby>さん</span>が <span class=\"furigana\"><ruby>結婚<rt>けっこん</rt></ruby>する</span><span class=\"furigana\">のを</span> <span class=\"furigana\"><ruby>知<rt>し</rt></ruby>って</span> いますか。",
-                "rawJp": "田中さんが結婚するのを知っていますか。",
-                "vi": "Bạn có biết việc anh Tanaka sắp kết hôn không?"
-              },
-              {
-                "speaker": "B",
-                "jp": "いいえ、<span class=\"furigana\"><ruby>知<rt>し</rt></ruby>りませんでした</span>。",
-                "rawJp": "いいえ、知りませんでした。",
-                "vi": "Chưa, tôi không biết chuyện đó."
-              }
-            ]
-          }
-        ]
-      },
-      {
-        "structure": "5. Thể thông thường + のは N です (Mẫu câu nhấn mạnh thông tin)",
-        "explanation": "Dùng để nhấn mạnh danh từ N ở cuối câu (về thời gian, địa điểm, con người, nguyên nhân).",
-        "caution": "Đưa thông tin phụ lên đầu câu danh từ hóa bằng のは, phần cần nhấn mạnh đặt ngay trước です.",
+        "structure": "4. [Thể thông thường] のは N です",
+        "explanation": "Nơi/Người/Lúc... mà làm việc đó chính là N (Cấu trúc câu nhấn mạnh vào danh từ N đặt ở cuối câu; thay thế danh từ bằng đại từ の).",
+        "caution": "Nhấn mạnh thông tin: Đưa đối tượng cần nhấn mạnh (người, nơi chốn, thời gian) ra cuối câu trước です (Ví dụ: Nơi sinh ra là Hà Nội: 生まれた【のは】ハノイです).",
         "examples": [
           {
             "type": "sentence",
-            "context": "Nhấn mạnh nơi mình được sinh ra",
-            "jp": "<span class=\"furigana\"><ruby>私<rt>わたし</rt></ruby></span>が <span class=\"furigana\"><ruby>生<rt>う</rt></ruby>まれた</span><span class=\"furigana\">のは</span> ベトナムの ハノイ<span class=\"furigana\">です</span>。",
-            "rawJp": "私が生まれたのはベトナムのハノイです。",
-            "vi": "Nơi tôi được sinh ra chính là thủ đô Hà Nội, Việt Nam."
+            "context": "Nơi sinh ra là Hokkaido",
+            "jp": "わたしが うまれたのは ほっかいどうです。",
+            "rawJp": "わたしが うまれたのは ほっかいどうです。",
+            "vi": "Nơi mà tôi sinh ra chính là Hokkaido."
+          },
+          {
+            "type": "sentence",
+            "context": "Thời điểm đến Nhật là năm ngoái",
+            "jp": "にほんへ きたのは きょねんの ４がつです。",
+            "rawJp": "にほんへ きたのは きょねんの ４がつです。",
+            "vi": "Thời điểm tôi đến Nhật Bản chính là tháng 4 năm ngoái."
+          },
+          {
+            "type": "sentence",
+            "context": "Người tặng hoa là anh Miller",
+            "jp": "はなを くれたのは ミラーさんです。",
+            "rawJp": "はなを くれたのは ミラーさんです。",
+            "vi": "Người đã tặng hoa cho tôi chính là anh Miller."
+          },
+          {
+            "type": "sentence",
+            "context": "Thứ muốn mua nhất là ô tô",
+            "jp": "いま いちばん ほしいのは くるまです。",
+            "rawJp": "いま いちばん ほしいのは くるまです。",
+            "vi": "Thứ mà tôi muốn có nhất bây giờ chính là một chiếc xe ô tô."
+          },
+          {
+            "type": "sentence",
+            "context": "Món thích nhất là Sushi",
+            "jp": "いちばん すきなのは すしです。",
+            "rawJp": "いちばん すきなのは すしです。",
+            "vi": "Món mà tôi thích nhất chính là Sushi."
           }
         ]
       }
@@ -1740,51 +2030,128 @@ const lessons_36_40 = [
     ],
     "grammar": [
       {
-        "structure": "1. V-て / V-なくて / A-くて / Na-で、〜 (Nguyên nhân khách quan)",
-        "explanation": "Dùng để diễn tả nguyên nhân, lý do của vế trước dẫn đến kết quả ở vế sau.\n• Vế sau KHÔNG ĐƯỢC CHỨA Ý CHÍ, nguyện vọng (〜たい), mệnh lệnh (〜てください), hay rủ rê (〜ましょう).\n• Thường là các động từ chỉ cảm xúc (びっくりした、安心した、がっかりした) hoặc tình huống bất khả kháng.",
-        "caution": "Nếu muốn đưa ra yêu cầu hoặc rủ rê ở vế sau, bắt buộc phải dùng から.",
+        "structure": "1. {V-て / V-なくて / A-くて / Na-で}、～",
+        "explanation": "Vì ~ nên... (Chỉ nguyên nhân, lý do tự nhiên mang tính tâm lý, năng lực hoặc sự cố bất khả kháng; vế sau KHÔNG dùng ý chí, mệnh lệnh hay nhờ vả).",
+        "caution": "BẪY THI CỰC LỚN: Vế sau của thể て nguyên nhân TUYỆT ĐỐI KHÔNG dùng câu chứa ý chí, mệnh lệnh, rủ rê hay nhờ vả (không dùng ください / ましょう). Chỉ diễn tả cảm xúc tâm lý hoặc khả năng.",
         "examples": [
           {
             "type": "sentence",
-            "context": "Nghe tin người thân bình an nên thấy yên lòng",
-            "jp": "<span class=\"furigana\"><ruby>家族<rt>かぞく</rt></ruby></span>の <span class=\"furigana\"><ruby>声<rt>こえ</rt></ruby></span>を <span class=\"furigana\"><ruby>聞<rt>き</rt></ruby>いて</span>、<span class=\"furigana\"><ruby>安心<rt>あんしん</rt></ruby>しました</span>。",
-            "rawJp": "家族の声を聞いて、安心しました。",
-            "vi": "Nghe được giọng nói của gia đình, tôi đã rất yên tâm."
+            "context": "Nghe tin giật mình cảm xúc tâm lý",
+            "jp": "ニュースを きいて、びっくりしました。",
+            "rawJp": "ニュースを きいて、びっくりしました。",
+            "vi": "Nghe tin tức đó, tôi đã vô cùng giật mình (nguyên nhân cảm xúc)."
           },
           {
             "type": "sentence",
-            "context": "Không hiểu tin tức báo chí vì từ ngữ quá phức tạp",
-            "jp": "<span class=\"furigana\"><ruby>言葉<rt>ことば</rt></ruby></span>が <span class=\"furigana\"><ruby>複雑<rt>ふくざつ</rt></ruby>で</span>、よく <span class=\"furigana\"><ruby>分<rt>わ</rt></ruby>かりませんでした</span>。",
-            "rawJp": "言葉が複雑で、よく分かりませんでした。",
-            "vi": "Vì từ ngữ quá phức tạp nên tôi không hiểu rõ lắm."
+            "context": "Gặp lại gia đình mừng vui",
+            "jp": "かぞくに あえて、うれしかったです。",
+            "rawJp": "かぞくに あえて、うれしかったです。",
+            "vi": "Được gặp lại gia đình, tôi đã rất vui mừng."
+          },
+          {
+            "type": "sentence",
+            "context": "Không hiểu chữ Hán nên gặp khó khăn",
+            "jp": "かんじが わからなくて、こまりました。",
+            "rawJp": "かんじが わからないで、こまりました。",
+            "vi": "Vì không hiểu chữ Hán nên tôi đã rất lúng túng gặp khó khăn."
+          },
+          {
+            "type": "sentence",
+            "context": "Vì đau bụng nên không ăn được cơm",
+            "jp": "おなかが いたくて、ごはんが たべられません。",
+            "rawJp": "おなかが いたくて、ごはんが たべられません。",
+            "vi": "Vì đau bụng nên tôi không thể ăn cơm được."
+          },
+          {
+            "type": "sentence",
+            "context": "Vì đường vắng vẻ nên đi lại an tâm",
+            "jp": "みちが しずかで、あんしんしました。",
+            "rawJp": "みちが しずかで、あんしんしました。",
+            "vi": "Đường phố thanh bình nên tôi đã thấy rất an tâm."
           }
         ]
       },
       {
-        "structure": "2. Danh từ (thiên tai, biến cố) + で (Nguyên nhân sự cố)",
-        "explanation": "Danh từ chỉ các hiện tượng thiên tai (地震、台風、大雨、大雪), hỏa hoạn (火事), tai nạn (事故), dịch bệnh (病気) đi với trợ từ で để biểu thị nguyên nhân gây ra thiệt hại.",
-        "caution": "Vế sau thường là các sự kiện tiêu cực như: nhà đổ, tàu ngừng chạy, người chết...",
+        "structure": "2. N (thiên tai / tai nạn / bệnh tật) で",
+        "explanation": "Do, vì thiên tai, hỏa hoạn, động đất, tai nạn giao thông, dịch bệnh N mà xảy ra hậu quả (Trợ từ で chỉ nguyên nhân khách quan).",
+        "caution": "Trợ từ đi với nguyên nhân thiên tai, tai nạn, dịch bệnh là で (Ví dụ: 事故【で】電車が止まった / 地震【で】ビルが倒れた).",
         "examples": [
           {
             "type": "sentence",
-            "context": "Tàu điện ngừng chạy do bão",
-            "jp": "<span class=\"furigana\"><ruby>台風<rt>たいふう</rt></ruby></span><span class=\"furigana\">で</span> <span class=\"furigana\"><ruby>電車<rt>でんしゃ</rt></ruby></span>が <span class=\"furigana\"><ruby>止<rt>と</rt></ruby>まりました</span>。",
-            "rawJp": "台風で電車が止まりました。",
-            "vi": "Tàu điện đã bị ngừng chạy do bão."
+            "context": "Vì động đất mà nhà bị đổ",
+            "jp": "じしんで ビルが たおれました。",
+            "rawJp": "じしんで ビルが たおれました。",
+            "vi": "Do trận động đất nên tòa nhà đã bị sụp đổ."
+          },
+          {
+            "type": "sentence",
+            "context": "Vì tai nạn nên tàu bị trễ giờ",
+            "jp": "じこで でんしゃが とまりました。",
+            "rawJp": "じこで でんしゃが とまりました。",
+            "vi": "Do xảy ra tai nạn nên tàu điện đã bị dừng lại."
+          },
+          {
+            "type": "sentence",
+            "context": "Vì hỏa hoạn mà cháy rụi",
+            "jp": "かじで いえが やけました。",
+            "rawJp": "かじで いえが やけました。",
+            "vi": "Do hỏa hoạn mà ngôi nhà đã bị thiêu rụi."
+          },
+          {
+            "type": "sentence",
+            "context": "Vì bão nên không đi học được",
+            "jp": "たいふうで がっこうが やすみに なりました。",
+            "rawJp": "たいふうで がっこうが やすみに なりました。",
+            "vi": "Do bão lớn nên trường học đã cho nghỉ."
+          },
+          {
+            "type": "sentence",
+            "context": "Nghỉ làm vì bị cảm cúm",
+            "jp": "かぜで かいしゃを やすみました。",
+            "rawJp": "かぜで かいしゃを やすみました。",
+            "vi": "Tôi đã nghỉ làm do bị cảm cúm."
           }
         ]
       },
       {
-        "structure": "3. Thể thông thường + ので、〜 (Bởi vì - Khách quan, lịch sự)",
-        "explanation": "Cấu trúc 〜ので diễn tả mối quan hệ nhân quả một cách tự nhiên, khách quan, giảm bớt tính chủ quan áp đặt của người nói so với から. Rất thích hợp khi xin phép hoặc từ chối lịch sự.\n• Tính từ đuôi な / Danh từ: Thêm な trước ので (病気なので、暇なので).",
-        "caution": "Khi xin nghỉ làm hoặc nhờ vả cấp trên, luôn ưu tiên dùng ので thay cho から.",
+        "structure": "3. [Thể thông thường / Na-な / N-な] + ので、～",
+        "explanation": "Bởi vì ~ nên... (Nêu lý do khách quan, nhẹ nhàng và lịch sự hơn から; Danh từ & Tính từ đuôi な chuyển だ thành な trước ので).",
+        "caution": "BẪY THI: Danh từ và Tính từ đuôi な khi đi với ので BẮT BUỘC PHẢI DÙNG な (暇【な】ので / 雨【な】ので, KHÔNG dùng だ). Mang sắc thái lịch sự, nhẹ nhàng.",
         "examples": [
           {
             "type": "sentence",
-            "context": "Xin phép về sớm vì trong người khó chịu",
-            "jp": "<span class=\"furigana\"><ruby>気分<rt>きぶん</rt></ruby></span>が <span class=\"furigana\"><ruby>悪<rt>わる</rt></ruby>いので</span>、<span class=\"furigana\"><ruby>早退<rt>そうたい</rt></ruby>させて</span> いただけませんか。",
-            "rawJp": "気分が悪いので、早退させていただけませんか。",
-            "vi": "Vì trong người thấy khó chịu nên tôi xin phép được về sớm có được không ạ?"
+            "context": "Vì có việc bận nên xin về trước",
+            "jp": "ようじが あるので、おさきに しつれいします。",
+            "rawJp": "ようじが あるので、おさきに しつれいします。",
+            "vi": "Bởi vì tôi có việc bận nên xin phép về trước ạ."
+          },
+          {
+            "type": "sentence",
+            "context": "Vì không hiểu tiếng Nhật nên nhờ nói tiếng Anh",
+            "jp": "にほんごが わからないので、えいごで はなして ください。",
+            "rawJp": "にほんごが わからないので、えいごで はなして ください。",
+            "vi": "Vì tôi không hiểu tiếng Nhật nên xin hãy nói bằng tiếng Anh giúp tôi."
+          },
+          {
+            "type": "sentence",
+            "context": "Danh từ có na trước node",
+            "jp": "きょうは あめなので、うちで ほんを よみます。",
+            "rawJp": "きょうは あめなので、うちで ほんを よみます。",
+            "vi": "Vì hôm nay trời mưa nên tôi ở nhà đọc sách."
+          },
+          {
+            "type": "sentence",
+            "context": "Tính từ đuôi na có na trước node",
+            "jp": "きょうは ひまなので、かいものに いきましょう。",
+            "rawJp": "きょうは ひまなので、かいものに いきましょう。",
+            "vi": "Vì hôm nay rảnh rỗi nên chúng ta cùng đi mua sắm nào."
+          },
+          {
+            "type": "sentence",
+            "context": "Vì xe buýt không tới nên đi muộn",
+            "jp": "バスが こなかったので、じかんに おくれました。",
+            "rawJp": "バスが こなかったので、じかんに おくれました。",
+            "vi": "Vì xe buýt không tới nên tôi đã bị trễ giờ."
           }
         ]
       }
@@ -2262,58 +2629,170 @@ const lessons_36_40 = [
     ],
     "grammar": [
       {
-        "structure": "1. Từ nghi vấn + Thể thông thường + か、〜 (Câu hỏi lồng gián tiếp)",
-        "explanation": "Dùng để lồng một câu hỏi có chứa từ nghi vấn (như だれ, 何, いつ, どこ, どう) vào trong một câu nói phức lớn hơn.\n• Tính từ đuôi な / Danh từ: Bỏ だ (何歳か、何時か).",
-        "caution": "Vế sau thường là các động từ nhận thức như: 分かりません、教えてください、確かめます、知っています.",
+        "structure": "1. [Nghi vấn từ] + [Thể thông thường] か、～",
+        "explanation": "Lồng câu hỏi có từ nghi vấn vào trong câu lớn (Ai / Cái gì / Ở đâu... thì không biết; trước か là thể thông thường, Danh từ & Tính từ đuôi な bỏ だ).",
+        "caution": "BẪY THI: Danh từ và Tính từ đuôi な đứng trước か BẮT BUỘC PHẢI BỎ だ (Ví dụ: だれが 親切【か】/ 何が 便利【か】).",
         "examples": [
           {
             "type": "sentence",
-            "context": "Kiểm tra giờ tàu chạy",
-            "jp": "<span class=\"furigana\"><ruby>電車<rt>でんしゃ</rt></ruby></span>が <span class=\"furigana\"><ruby>何時<rt>なんじ</rt></ruby>に</span> <span class=\"furigana\"><ruby>発車<rt>はっしゃ</rt></ruby>するか</span>、<span class=\"furigana\"><ruby>確<rt>たし</rt></ruby>かめて</span> ください。",
-            "rawJp": "電車が何時に発車するか、確かめてください。",
-            "vi": "Xin hãy kiểm tra xem mấy giờ thì tàu điện khởi hành."
+            "context": "Không biết chìa khóa ở đâu",
+            "jp": "かぎが どこに あるか、わかりません。",
+            "rawJp": "かぎが どこに あるか、わかりません。",
+            "vi": "Tôi không biết chiếc chìa khóa đang ở đâu."
+          },
+          {
+            "type": "sentence",
+            "context": "Không nhớ chuyến tàu mấy giờ khởi hành",
+            "jp": "でんしゃが なんじに しゅっぱつするか、わすれました。",
+            "rawJp": "でんしゃが なんじに しゅっぱつするか、わすれました。",
+            "vi": "Tôi quên mất chuyến tàu khởi hành lúc mấy giờ rồi."
+          },
+          {
+            "type": "sentence",
+            "context": "Hãy đếm xem có bao nhiêu người",
+            "jp": "ひとが なんにん いるか、かぞえて ください。",
+            "rawJp": "ひとが なんにん いるか、かぞえて ください。",
+            "vi": "Xin hãy đếm xem có bao nhiêu người."
+          },
+          {
+            "type": "sentence",
+            "context": "Không biết món này nấu bằng gì",
+            "jp": "この りょうりは なにで つくったか、しりません。",
+            "rawJp": "この りょうりは なにで つくったか、しりません。",
+            "vi": "Tôi không biết món này nấu bằng nguyên liệu gì."
+          },
+          {
+            "type": "sentence",
+            "context": "Hỏi ai là người làm vỡ cái chén",
+            "jp": "だれが コップを わったか、きいて みます。",
+            "rawJp": "だれが コップを わったか、きいて みます。",
+            "vi": "Tôi sẽ thử hỏi xem ai đã làm vỡ chiếc cốc."
           }
         ]
       },
       {
-        "structure": "2. Thể thông thường + かどうか、〜 (Câu hỏi Có/Không lồng trong câu)",
-        "explanation": "Dùng khi câu hỏi được lồng ghép là dạng câu hỏi Có hay Không (chọn giữa hai khả năng xảy ra hay không xảy ra).\n• Tính từ đuôi な / Danh từ: Bỏ だ (本当かどうか、暇かどうか).",
-        "caution": "Nghĩa là: ... hay không (ví dụ: Được hay không, đúng hay không).",
+        "structure": "2. [Thể thông thường] か どうか、～",
+        "explanation": "Liệu có ~ hay không thì... (Lồng câu hỏi không có từ nghi vấn vào câu lớn; biểu thị sự phân vân Có hoặc Không).",
+        "caution": "Câu hỏi Không có từ để hỏi lồng vào câu: Dùng [Thể thông thường] + か どうか. Tính từ đuôi な và Danh từ cũng BỎ だ.",
         "examples": [
           {
             "type": "sentence",
-            "context": "Hỏi xem bạn có đến dự tiệc được hay không",
-            "jp": "<span class=\"furigana\"><ruby>彼<rt>かれ</rt></ruby></span>が <span class=\"furigana\"><ruby>来<rt>こ</rt></ruby>られる</span><span class=\"furigana\">かどうか</span>、<span class=\"furigana\"><ruby>聞<rt>き</rt></ruby>いて</span> みます。",
-            "rawJp": "彼が来られるかどうか、聞いてみます。",
-            "vi": "Tôi sẽ thử hỏi xem anh ấy có đến được hay không."
+            "context": "Có đúng hay không thì chưa rõ",
+            "jp": "その はなしが ほんとうか どうか、わかりません。",
+            "rawJp": "その はなしが ほんとうか どうか、わかりません。",
+            "vi": "Tôi không rõ câu chuyện đó có phải là sự thật hay không."
+          },
+          {
+            "type": "sentence",
+            "context": "Kiểm tra xem có vừa vặn hay không",
+            "jp": "サイズが あうか どうか、きて みます。",
+            "rawJp": "サイズが あうか どうか、きて みます。",
+            "vi": "Tôi mặc thử xem kích cỡ có vừa hay không."
+          },
+          {
+            "type": "sentence",
+            "context": "Có mưa hay không chưa biết",
+            "jp": "あした あめが ふるか どうか、しりません。",
+            "rawJp": "あした あめが ふるか どうか、しりません。",
+            "vi": "Tôi không biết ngày mai trời có mưa hay không."
+          },
+          {
+            "type": "sentence",
+            "context": "Có đi được hay không sẽ trả lời sau",
+            "jp": "いけるか どうか、あとで でんわします。",
+            "rawJp": "いけるか どうか、あとで でんわします。",
+            "vi": "Liệu có đi được hay không lát nữa tôi sẽ gọi điện lại."
+          },
+          {
+            "type": "sentence",
+            "context": "Kiểm tra xem có lỗi sai hay không",
+            "jp": "まちがいが ないか どうか、みてください。",
+            "rawJp": "まちがいが ないか どうか、みてください。",
+            "vi": "Xin hãy kiểm tra xem có chỗ nào sai sót hay không."
           }
         ]
       },
       {
-        "structure": "3. V-て みます (Làm thử hành động để xem thế nào)",
-        "explanation": "Biểu thị hành động làm thử một việc gì đó chưa từng làm bao giờ để xem trải nghiệm hoặc kết quả thực tế ra sao.",
-        "caution": "Thường đi kèm dạng mời mọc: 〜てみてください (Hãy thử làm xem).",
+        "structure": "3. V-て みます",
+        "explanation": "Thử làm V (Thực hiện hành động lần đầu tiên để xem kết quả hay cảm nhận ra sao; Động từ chia thể て + みます).",
+        "caution": "Mang ý nghĩa 'THỬ LÀM LẦN ĐẦU' để trải nghiệm (Ví dụ: Mặc thử chiếc áo này: この服を 着てみます). Chữ みます viết bằng Hiragana.",
         "examples": [
           {
             "type": "sentence",
             "context": "Mặc thử quần áo trước khi mua",
-            "jp": "この ズボンを <span class=\"furigana\"><ruby>履<rt>は</rt></ruby>いて</span> <span class=\"furigana\">みても</span> いいですか。",
-            "rawJp": "このズボンを履いてみてもいいですか。",
-            "vi": "Tôi có thể mặc thử chiếc quần này được không ạ?"
+            "jp": "この ズボンを はいて みても いいですか。",
+            "rawJp": "この ズボンを はいて みても いいですか。",
+            "vi": "Tôi mặc thử chiếc quần này có được không?"
+          },
+          {
+            "type": "sentence",
+            "context": "Ăn thử món ăn Nhật",
+            "jp": "にほんの りょうりを たべて みました。",
+            "rawJp": "にほんの りょうりを たべて みました。",
+            "vi": "Tôi đã ăn thử món ăn Nhật Bản."
+          },
+          {
+            "type": "sentence",
+            "context": "Thử uống rượu Nhật",
+            "jp": "にほんしゅを のんで みます。",
+            "rawJp": "にほんしゅを のんで みます。",
+            "vi": "Tôi sẽ uống thử rượu Nhật Bản."
+          },
+          {
+            "type": "sentence",
+            "context": "Thử hỏi thầy giáo",
+            "jp": "もう いちど せんせいに きいて みます。",
+            "rawJp": "もう いちど せんせいに きいて みます。",
+            "vi": "Tôi sẽ thử hỏi lại thầy giáo một lần nữa."
+          },
+          {
+            "type": "sentence",
+            "context": "Đi thử đôi giày mới",
+            "jp": "あたらしい くつを はいで みました。",
+            "rawJp": "あたらしい くつを はいで みました。",
+            "vi": "Tôi đã đi thử đôi giày mới."
           }
         ]
       },
       {
-        "structure": "4. A-い (bỏ い) + さ (Danh từ hóa tính từ chỉ kích thước, độ đo)",
-        "explanation": "Biến một tính từ đuôi い thành một danh từ chỉ độ đo lường hoặc mức độ cụ thể.\n• 高い -> 高さ (chiều cao), 長い -> 長さ (chiều dài), 重い -> 重さ (trọng lượng), 広い -> 広さ (diện tích).",
-        "caution": "Ví dụ: 富士山の 高さは 3,776メートルです.",
+        "structure": "4. Tính từ đuôi い bỏ い + さ",
+        "explanation": "Hậu tố danh từ hóa tính từ chỉ mức độ, kích thước: Tính từ đuôi い bỏ い + さ (tạo thành danh từ: cao độ, độ dài, sức nặng, độ sâu...).",
+        "caution": "BẪY THI: Danh từ hóa tính từ đo lường bằng hậu tố さ: 高い -> 高さ (chiều cao), 長い -> 長さ (chiều dài), 重い -> 重さ (trọng lượng). ĐẶC BIỆT: いい -> よさ (điểm tốt).",
         "examples": [
           {
             "type": "sentence",
-            "context": "Đo chiều cao của cây cầu",
-            "jp": "この <span class=\"furigana\"><ruby>橋<rt>はし</rt></ruby></span>の <span class=\"furigana\"><ruby>高<rt>たか</rt></ruby>さ</span>は どのくらいですか。",
-            "rawJp": "この橋の高さはどのくらいですか。",
-            "vi": "Độ cao của cây cầu này khoảng bao nhiêu?"
+            "context": "Đo chiều cao ngọn núi",
+            "jp": "ふじさんの たかさは 3,776メートルです。",
+            "rawJp": "ふじさんの たかさは 3,776メートルです。",
+            "vi": "Độ cao của núi Phú Sĩ là 3.776 mét."
+          },
+          {
+            "type": "sentence",
+            "context": "Đo độ dài cây cầu",
+            "jp": "この はしの ながさは どのくらいですか。",
+            "rawJp": "この はしの ながさは どのくらいですか。",
+            "vi": "Chiều dài của cây cầu này là khoảng bao nhiêu?"
+          },
+          {
+            "type": "sentence",
+            "context": "Cân trọng lượng hành lý",
+            "jp": "にもつの おもさを はかります。",
+            "rawJp": "にもつの おもさを はかります。",
+            "vi": "Tôi cân trọng lượng của hành lý."
+          },
+          {
+            "type": "sentence",
+            "context": "Cảm nhận cái lạnh của mùa đông",
+            "jp": "きょうの さむさは きびしいです。",
+            "rawJp": "きょうの さむさは きびしいです。",
+            "vi": "Cái lạnh của ngày hôm nay thật là khắc nghiệt."
+          },
+          {
+            "type": "sentence",
+            "context": "Điểm tốt của sản phẩm ngoại lệ yosa",
+            "jp": "この くるまの よさは ねだんが やすい ことです。",
+            "rawJp": "この くるまの よさは ねだんが やすい ことです。",
+            "vi": "Điểm tốt của chiếc xe này là giá cả rất bình dân."
           }
         ]
       }
