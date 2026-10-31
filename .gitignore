@@ -1,0 +1,33 @@
+# ==============================================================================
+# GITIGNORE - DỰ ÁN HỌC TIẾNG NHẬT MINNA NO NIHONGO & JLPT LMS
+# ==============================================================================
+
+# 1. Thư mục nháp phát triển, OCR & file phân tích tạm (RẤT NẶNG - KHÔNG UP)
+scratch/
+
+# 2. Tệp rác hệ thống & tệp lỗi gõ phím
+T*
+*.tmp
+*.temp
+*.log
+.DS_Store
+Thumbs.db
+ehthumbs.db
+
+# 3. Môi trường & Secrets cục bộ (Nếu có)
+.env
+.env.local
+.env.*.local
+*.pem
+*.key
+
+# 4. Node.js & Dependencies (Nếu có cài đặt sau này)
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# 5. Build outputs & Cache
+dist/
+build/
+.cache/
