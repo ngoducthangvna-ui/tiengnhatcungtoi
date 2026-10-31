@@ -19,7 +19,7 @@ module.exports = {
         NODE_ENV: 'production',
         PORT: 3000,
         HOST: '0.0.0.0',
-        CANONICAL_DOMAIN: 'tiengnhat.edu.vn'
+        CANONICAL_DOMAIN: 'tiengnhat-minna.pages.dev'
       },
       log_date_format: 'YYYY-MM-DD HH:mm:ss Z',
       error_file: './logs/err.log',

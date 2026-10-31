@@ -4,7 +4,7 @@
 # Standard: Automated HTTPS, Mozilla Observatory A+, Qualys SSL Labs A+
 # ==============================================================================
 
-tiengnhat.edu.vn {
+tiengnhat-minna.pages.dev, tiengnhat.edu.vn {
     root * /var/www/tiengnhat
     encode zstd gzip
 

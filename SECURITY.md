@@ -15,7 +15,7 @@ Chúng tôi cung cấp các bản vá bảo mật khẩn cấp cho các phiên b
 
 Nếu bạn phát hiện bất kỳ lỗ hổng bảo mật hoặc nguy cơ rò rỉ dữ liệu nào trong hệ thống:
 1. **KHÔNG** tạo Issue công khai trên GitHub hoặc mạng xã hội.
-2. Vui lòng gửi email trực tiếp tới Ban Bảo Mật: **`security@tiengnhat.edu.vn`** kèm theo:
+2. Vui lòng gửi email trực tiếp tới Ban Bảo Mật: **`security@tiengnhat-minna.pages.dev`** kèm theo:
    - Mô tả chi tiết kịch bản tấn công (Proof-of-Concept an toàn).
    - Môi trường, endpoint hoặc tệp mã nguồn bị ảnh hưởng.
    - Đánh giá sơ bộ mức độ nghiêm trọng theo thang đo CVSS v3.1.

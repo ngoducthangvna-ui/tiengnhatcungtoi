@@ -16,7 +16,7 @@ services:
       - NODE_ENV=production
       - PORT=3000
       - HOST=0.0.0.0
-      - CANONICAL_DOMAIN=tiengnhat.edu.vn
+      - CANONICAL_DOMAIN=tiengnhat-minna.pages.dev
       - SPEECHGEN_TOKEN=${SPEECHGEN_TOKEN:-}
       - SPEECHGEN_EMAIL=${SPEECHGEN_EMAIL:-}
       - ATTESTATION_SECRET=${ATTESTATION_SECRET:-minna_production_cluster_secret_2026}

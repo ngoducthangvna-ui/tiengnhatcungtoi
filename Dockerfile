@@ -16,7 +16,7 @@ WORKDIR /app
 ENV NODE_ENV=production
 ENV PORT=3000
 ENV HOST=0.0.0.0
-ENV CANONICAL_DOMAIN=tiengnhat.edu.vn
+ENV CANONICAL_DOMAIN=tiengnhat-minna.pages.dev
 
 # Sao chép toàn bộ mã nguồn ứng dụng & cấu hình bảo mật
 COPY . /app

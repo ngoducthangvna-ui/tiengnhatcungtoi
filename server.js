@@ -21,7 +21,7 @@ const crypto = require('crypto');
 
 const PORT = parseInt(process.env.PORT || '3000', 10);
 const HOST = process.env.HOST || '0.0.0.0';
-const CANONICAL_DOMAIN = process.env.CANONICAL_DOMAIN || 'tiengnhat.edu.vn';
+const CANONICAL_DOMAIN = process.env.CANONICAL_DOMAIN || 'tiengnhat-minna.pages.dev';
 const ROOT_DIR = __dirname;
 
 // ------------------------------------------------------------------------------

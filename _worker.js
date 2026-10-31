@@ -15,7 +15,7 @@ export default {
     const userAgent = request.headers.get('User-Agent') || '';
     const secFetchSite = request.headers.get('Sec-Fetch-Site') || '';
     const referer = request.headers.get('Referer') || '';
-    const canonicalDomain = env.CANONICAL_DOMAIN || 'tiengnhat.edu.vn';
+    const canonicalDomain = env.CANONICAL_DOMAIN || 'tiengnhat-minna.pages.dev';
 
     // =========================================================================
     // HỆ THỐNG GẮN BẢO MẬT BIÊN (EDGE SECURITY HEADERS HELPER)
