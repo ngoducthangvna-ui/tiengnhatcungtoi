@@ -2425,26 +2425,27 @@ function renderContent(id) {
         <h2 class="lesson-title">${lessonTitle}</h2>
       </div>
 
-      <!-- THANH ĐIỀU HƯỚNG CÂU HỎI & CÔNG CỤ LÀM BÀI HỢP NHẤT (1 Ô DUY NHẤT) -->
+      <!-- THANH ĐIỀU HƯỚNG CÂU HỎI & CÔNG CỤ LÀM BÀI HỢP NHẤT (DẠNG ICON GỌN GÀNG 1 HÀNG) -->
       <div class="quiz-top-bar" id="quizStickyBar">
         <div class="quiz-controls-wrap">
-          <button id="btn-pause-timer" class="quiz-palette-toggle-btn" onclick="toggleQuizTimer()" title="Tạm dừng hoặc tiếp tục tính giờ">Tạm dừng</button>
+          <button id="btn-pause-timer" class="quiz-palette-toggle-btn btn-icon-only" onclick="toggleQuizTimer()" title="Tạm dừng hoặc tiếp tục tính giờ" aria-label="Tạm dừng tính giờ">Tạm dừng</button>
           <button id="btn-toggle-autoadvance" 
-                  class="quiz-palette-toggle-btn btn-autoadvance ${isAutoAdvanceActive ? 'active' : ''}" 
+                  class="quiz-palette-toggle-btn btn-autoadvance btn-icon-only ${isAutoAdvanceActive ? 'active' : ''}" 
                   onclick="toggleQuizAutoAdvance()" 
-                  title="Bật/Tắt tự động cuộn sang câu tiếp theo khi chọn đáp án">
-            <span class="autoadvance-icon"><svg class="icon-svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg></span>
-            <span>Tự chuyển</span>
+                  title="Tự động chuyển câu khi chọn đáp án (${isAutoAdvanceActive ? 'Đang BẬT' : 'Đang TẮT'})"
+                  aria-label="Tự chuyển câu">
+            <span class="autoadvance-icon"><svg class="icon-svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg></span>
+            <span class="btn-label-text">Tự chuyển</span>
             <strong class="autoadvance-status" id="autoadvance-status-label">${isAutoAdvanceActive ? 'BẬT' : 'TẮT'}</strong>
           </button>
-          <button class="quiz-palette-toggle-btn" onclick="togglePaletteView()" title="Ẩn/Hiện Bảng câu hỏi (1-${quizList.length})">
-            <svg class="icon-svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
-            <span>Bảng câu hỏi</span>
+          <button class="quiz-palette-toggle-btn btn-palette-toggle btn-icon-only" onclick="togglePaletteView()" title="Ẩn/Hiện Bảng câu hỏi (1-${quizList.length})" aria-label="Bảng câu hỏi">
+            <svg class="icon-svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+            <span class="btn-label-text">Bảng câu hỏi</span>
           </button>
         </div>
 
         <div class="quiz-topbar-actions" id="quizTopBarActions">
-          <div class="mini-timer-pill" id="quizMiniTimerPill" onclick="toggleQuizTimer()" title="Đồng hồ làm bài - Bấm để tạm dừng/tiếp tục">
+          <div class="mini-timer-pill" id="quizMiniTimerPill" onclick="toggleQuizTimer()" title="Đồng hồ làm bài - Bấm để tạm dừng/tiếp tục" aria-label="Đồng hồ đếm ngược">
             <span class="mini-timer-icon">
               <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
                 <circle cx="12" cy="12" r="10"></circle>
@@ -2454,11 +2455,11 @@ function renderContent(id) {
             <strong class="mini-timer-val" id="quizMiniClockText">30:00</strong>
             <span class="quiz-timer-display" id="quiz-timer-clock" style="display:none;" aria-hidden="true">30:00</span>
           </div>
-          <button type="button" class="mini-btn-submit" onclick="submitPracticeQuiz('${id}')" title="Nộp bài và xem kết quả">
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+          <button type="button" class="mini-btn-submit btn-icon-only" onclick="submitPracticeQuiz('${id}')" title="Nộp bài và xem kết quả" aria-label="Nộp bài">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round">
               <polyline points="20 6 9 17 4 12"></polyline>
             </svg>
-            <span>Nộp bài</span>
+            <span class="btn-label-text">Nộp bài</span>
           </button>
         </div>
       </div>
@@ -5288,11 +5289,12 @@ function renderDokkaiRoom(dokkaiId) {
           <div class="section-header" style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;">
             <h3 class="section-title">Câu Hỏi Đọc Hiểu (5 Câu)</h3>
             <button id="btn-dokkai-toggle-autoadvance" 
-                    class="quiz-palette-toggle-btn btn-autoadvance ${isAutoAdvanceActive ? 'active' : ''}" 
+                    class="quiz-palette-toggle-btn btn-autoadvance btn-icon-only ${isAutoAdvanceActive ? 'active' : ''}" 
                     onclick="toggleQuizAutoAdvance()" 
-                    title="Bật/Tắt tự động cuộn sang câu tiếp theo khi chọn đáp án">
-              <span class="autoadvance-icon"><svg class="icon-svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg></span>
-              <span>Tự chuyển:</span>
+                    title="Tự động chuyển câu (${isAutoAdvanceActive ? 'Đang BẬT' : 'Đang TẮT'})"
+                    aria-label="Tự chuyển câu">
+              <span class="autoadvance-icon"><svg class="icon-svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg></span>
+              <span class="btn-label-text">Tự chuyển:</span>
               <strong class="autoadvance-status" id="dokkai-autoadvance-status-label">${isAutoAdvanceActive ? 'BẬT' : 'TẮT'}</strong>
             </button>
           </div>
@@ -5519,6 +5521,10 @@ window.toggleQuizTimer = function() {
   isQuizTimerPaused = !isQuizTimerPaused;
   if (pauseBtn) {
     pauseBtn.textContent = isQuizTimerPaused ? 'Tiếp tục' : 'Tạm dừng';
+    if (typeof pauseBtn.setAttribute === 'function') {
+      pauseBtn.setAttribute('title', isQuizTimerPaused ? 'Tiếp tục tính giờ' : 'Tạm dừng tính giờ');
+      pauseBtn.setAttribute('aria-label', isQuizTimerPaused ? 'Tiếp tục' : 'Tạm dừng');
+    }
     if (pauseBtn.classList) {
       pauseBtn.classList.toggle('is-paused', isQuizTimerPaused);
     }
@@ -5559,7 +5565,13 @@ window.toggleQuizAutoAdvance = function() {
 
   const allBtns = document.querySelectorAll('.btn-autoadvance');
   const allLabels = document.querySelectorAll('.autoadvance-status');
-  allBtns.forEach(btn => btn.classList.toggle('active', next));
+  allBtns.forEach(btn => {
+    btn.classList.toggle('active', next);
+    if (typeof btn.setAttribute === 'function') {
+      btn.setAttribute('title', next ? 'Tự chuyển câu: Đang BẬT' : 'Tự chuyển câu: Đang TẮT');
+      btn.setAttribute('aria-label', next ? 'Tự chuyển câu: Đang BẬT' : 'Tự chuyển câu: Đang TẮT');
+    }
+  });
   allLabels.forEach(lbl => {
     lbl.textContent = next ? 'BẬT' : 'TẮT';
   });
