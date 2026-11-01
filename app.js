@@ -2053,12 +2053,14 @@ function renderModuleSyncBar(lessonNum, activeMode) {
         </button>
       </div>
       <div class="module-step-nav">
-        <button type="button" class="step-nav-btn" ${prevNum ? `onclick="switchModule('${modePrefix}-${prevNum}')"` : 'disabled'} title="${prevNum ? `Về Bài ${prevNum}` : 'Đang ở bài đầu tiên'}">
-          <span>← Bài ${prevNum || 1}</span>
+        <button type="button" class="step-nav-btn btn-icon-only" ${prevNum ? `onclick="switchModule('${modePrefix}-${prevNum}')"` : 'disabled'} title="${prevNum ? `Về Bài ${prevNum}` : 'Đang ở bài đầu tiên'}" aria-label="${prevNum ? `Về Bài ${prevNum}` : 'Bài đầu tiên'}">
+          ${APP_ICONS.arrowLeft}
+          <span class="sr-only">${prevNum ? `Về Bài ${prevNum}` : 'Bài đầu tiên'}</span>
         </button>
         <span class="step-nav-indicator">Bài ${num}/50</span>
-        <button type="button" class="step-nav-btn" ${nextNum ? `onclick="switchModule('${modePrefix}-${nextNum}')"` : 'disabled'} title="${nextNum ? `Sang Bài ${nextNum}` : 'Đang ở bài cuối'}">
-          <span>Bài ${nextNum || 50} →</span>
+        <button type="button" class="step-nav-btn btn-icon-only" ${nextNum ? `onclick="switchModule('${modePrefix}-${nextNum}')"` : 'disabled'} title="${nextNum ? `Sang Bài ${nextNum}` : 'Đang ở bài cuối'}" aria-label="${nextNum ? `Sang Bài ${nextNum}` : 'Bài cuối cùng'}">
+          ${APP_ICONS.arrowRight}
+          <span class="sr-only">${nextNum ? `Sang Bài ${nextNum}` : 'Bài cuối cùng'}</span>
         </button>
       </div>
     </div>

@@ -1858,7 +1858,7 @@ body.hide-furigana #btn-toggle-furigana {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
   gap: 12px;
   background: var(--bg-secondary);
   border: 1px solid var(--border-color);
@@ -1870,15 +1870,24 @@ body.hide-furigana #btn-toggle-furigana {
 .module-sync-tabs {
   display: flex;
   align-items: center;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
   gap: 6px;
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow-x: auto;
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+}
+
+.module-sync-tabs::-webkit-scrollbar {
+  display: none;
 }
 
 .sync-tab-btn {
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  padding: 8px 16px;
+  padding: 8px 14px;
   border-radius: var(--radius-sm);
   font-family: var(--font-vietnamese);
   font-size: 13px;
@@ -1886,6 +1895,8 @@ body.hide-furigana #btn-toggle-furigana {
   color: var(--text-secondary);
   background: transparent;
   transition: var(--transition);
+  white-space: nowrap;
+  flex-shrink: 0;
 }
 
 .sync-tab-btn:hover {
@@ -1921,36 +1932,74 @@ body.hide-furigana #btn-toggle-furigana {
 .module-step-nav {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 6px;
   margin-left: auto;
+  flex-shrink: 0;
 }
 
 .step-nav-btn {
-  padding: 7px 13px;
+  width: 34px;
+  height: 34px;
+  min-width: 34px;
+  min-height: 34px;
+  padding: 0;
   border-radius: var(--radius-sm);
   background: var(--bg-tertiary);
   border: 1px solid var(--border-color);
-  color: var(--text-primary);
+  color: var(--text-secondary);
   font-size: 12.5px;
   font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  flex-shrink: 0;
   transition: var(--transition);
+  touch-action: manipulation;
 }
 
 .step-nav-btn:hover:not(:disabled) {
   border-color: var(--accent-primary);
   color: var(--accent-primary);
+  background: var(--bg-hover);
+}
+
+.step-nav-btn:active:not(:disabled) {
+  transform: scale(0.95);
 }
 
 .step-nav-btn:disabled {
-  opacity: 0.4;
+  opacity: 0.35;
   cursor: not-allowed;
 }
 
+.step-nav-btn .icon-svg,
+.step-nav-btn svg {
+  width: 15px;
+  height: 15px;
+  display: block;
+}
+
 .step-nav-indicator {
-  font-size: 12px;
+  font-size: 12.5px;
   font-weight: 700;
-  color: var(--text-muted);
+  color: var(--text-secondary);
   padding: 0 4px;
+  white-space: nowrap;
+  line-height: 1;
+  user-select: none;
+}
+
+.step-nav-btn .sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
 }
 
 /* Hero Header Card */
@@ -5263,12 +5312,13 @@ body:has(.quiz-wrapper) .main-content {
     border: none !important;
   }
 
-  /* 3. Tăng kích thước vùng bấm (Tap Target) tối thiểu 44px */
+  /* 3. Tăng kích thước vùng bấm (Tap Target) tối thiểu 44px dạng Icon */
   .module-step-nav .step-nav-btn {
     min-height: 44px !important;
     height: 44px !important;
     min-width: 44px !important;
-    padding: 0 16px !important;
+    width: 44px !important;
+    padding: 0 !important;
     font-size: 13px !important;
     font-weight: 600 !important;
     display: inline-flex !important;
@@ -5998,8 +6048,13 @@ body:has(.quiz-wrapper) .main-content {
     padding: 10px 8px calc(var(--mobile-nav-height) + 38px + env(safe-area-inset-bottom, 0px)) !important;
   }
   .module-step-nav .step-nav-btn {
-    padding: 0 12px !important;
-    font-size: 12.5px !important;
+    padding: 0 !important;
+    width: 44px !important;
+    height: 44px !important;
+    min-width: 44px !important;
+    min-height: 44px !important;
+    justify-content: center !important;
+    align-items: center !important;
   }
   .cover-features-grid {
     grid-template-columns: repeat(2, 1fr);
