@@ -526,6 +526,9 @@ function initFuriganaToggle() {
       document.body.classList.toggle('hide-furigana', willHide);
       safeSetStorage(STORAGE_FURIGANA_KEY, willHide ? 'false' : 'true');
       showToast(willHide ? "Đã ẩn Furigana (Chạm/rê chuột lên Kanji để xem)" : "Đã bật hiển thị Furigana");
+      if (window.ExamEngine && typeof window.ExamEngine.syncFuriganaState === 'function') {
+        window.ExamEngine.syncFuriganaState();
+      }
     });
   }
 
@@ -535,6 +538,20 @@ function initFuriganaToggle() {
       if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
       if ((e.key === 'f' || e.key === 'F') && !e.ctrlKey && !e.metaKey && !e.altKey) {
         if (btn && btn.click) btn.click();
+      }
+    });
+
+    // Tap-to-Reveal Furigana tren thiet bi cam ung (P2-2)
+    document.addEventListener('click', (e) => {
+      if (!document.body || !document.body.classList.contains('hide-furigana')) return;
+      const ruby = e.target && e.target.closest ? e.target.closest('ruby') : null;
+      if (ruby) {
+        ruby.classList.toggle('furigana-revealed');
+      } else {
+        const revealed = document.querySelectorAll('ruby.furigana-revealed');
+        if (revealed && revealed.length > 0) {
+          revealed.forEach(r => r.classList.remove('furigana-revealed'));
+        }
       }
     });
   }
@@ -1738,6 +1755,10 @@ function renderSidebar() {
       if (maziiBtn && maziiBtn.classList) {
         maziiBtn.classList.toggle('active', currentActiveId === 'mazii-dict');
       }
+      const examBtn = sidebarMenu.querySelector ? sidebarMenu.querySelector('.sidebar-exam-btn') : null;
+      if (examBtn && examBtn.classList) {
+        examBtn.classList.toggle('active', currentActiveId === 'exam' || String(currentActiveId).startsWith('exam-'));
+      }
       return;
     }
   }
@@ -1773,6 +1794,27 @@ function renderSidebar() {
     fragment.appendChild(maziiQuickEl);
   } else {
     sidebarMenu.appendChild(maziiQuickEl);
+  }
+
+  // Nút truy cập nhanh Luyện Thi JLPT trên Sidebar
+  const examQuickEl = document.createElement('div');
+  examQuickEl.className = 'sidebar-exam-quick';
+  examQuickEl.innerHTML = `
+    <button type="button" class="sidebar-exam-btn ${(currentActiveId === 'exam' || String(currentActiveId).startsWith('exam-')) ? 'active' : ''}" onclick="switchModule('exam')" title="Luyện thi JLPT N5 &amp; N4: 50 đề thi chuẩn">
+      <span class="exam-quick-left">
+        <span class="exam-icon">${(typeof APP_ICONS !== 'undefined' && APP_ICONS.torii) ? APP_ICONS.torii : '<svg class="icon-svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 5c4-1 16-1 20 0"></path><line x1="4" y1="8.5" x2="20" y2="8.5"></line><line x1="7" y1="8.5" x2="7" y2="21"></line><line x1="17" y1="8.5" x2="17" y2="21"></line><line x1="12" y1="5.5" x2="12" y2="8.5"></line></svg>'}</span>
+        <span class="exam-text-col">
+          <span class="exam-title-main">Luyện Thi JLPT</span>
+          <span class="exam-title-sub">N5 &bull; N4</span>
+        </span>
+      </span>
+      <span class="exam-badge">50 Đề</span>
+    </button>
+  `;
+  if (fragment) {
+    fragment.appendChild(examQuickEl);
+  } else {
+    sidebarMenu.appendChild(examQuickEl);
   }
 
   const root = (typeof window !== 'undefined' ? window : (typeof global !== 'undefined' ? global : {}));
@@ -1860,6 +1902,20 @@ function renderSidebar() {
           label: r ? r.title : `Bộ thủ ${num} nét`,
           sub: r ? `${r.items.length} Bộ` : `Nhóm ${num} nét`,
           isCurrent: rId === currentActiveId
+        };
+      })
+    },
+    {
+      id: "group-exam",
+      title: "Luyện Thi JLPT",
+      isOpenDefault: false,
+      items: (root.EXAMS_MANIFEST && Array.isArray(root.EXAMS_MANIFEST.exams) ? root.EXAMS_MANIFEST.exams : []).map(ex => {
+        const isCur = (currentActiveId === ex.id || currentActiveId === `exam-${ex.code.toLowerCase()}`);
+        return {
+          id: ex.id,
+          label: `${ex.code}: ${ex.title.replace(/^Đề\s+[Nn][45]-\d+:\s*/, '').split('—')[0].trim()}`,
+          sub: `${ex.level} • 20 câu`,
+          isCurrent: isCur
         };
       })
     }
@@ -2127,6 +2183,22 @@ function renderContent(id) {
   if (!content) return;
 
   currentActiveId = id;
+
+  // Dọn dẹp đồng hồ thi nếu không phải màn hình làm bài thi
+  const isExamRunnerRoute = (String(id).startsWith('exam-') || String(id).startsWith('de-thi-') || String(id).includes('/'));
+  if (!isExamRunnerRoute) {
+    if (window.ExamEngine && typeof window.ExamEngine.cleanup === 'function') {
+      window.ExamEngine.cleanup();
+    }
+  }
+
+  // Dọn dẹp widget bài tập nếu không phải màn hình bài tập
+  if (!String(id).startsWith('quiz-')) {
+    if (typeof removeQuizMiniTimerWidget === 'function') {
+      removeQuizMiniTimerWidget();
+    }
+  }
+
   const extractedNum = extractLessonNumber(id);
   if (extractedNum) {
     lastLessonNumber = extractedNum;
@@ -2153,6 +2225,11 @@ function renderContent(id) {
   content.classList.remove('content-entering');
   safeRAF(() => {
     content.classList.add('content-entering');
+    setTimeout(() => {
+      if (content && content.classList) {
+        content.classList.remove('content-entering');
+      }
+    }, 400);
   });
 
   const isCompleted = isModuleCompleted(id);
@@ -2182,7 +2259,6 @@ function renderContent(id) {
           </button>
         </div>
         <h2 class="lesson-title">${lesson.title}</h2>
-        <p class="lesson-desc">${lesson.description}</p>
       </div>
 
       <!-- KHỐI LUYỆN TẬP TƯƠNG TÁC NHANH: FLASHCARD & KANJI MINI-QUIZ -->
@@ -2193,7 +2269,6 @@ function renderContent(id) {
         <div class="section-header vocab-section-header">
           <div class="section-title-group">
             <h3 class="section-title">Bảng Từ Vựng Trọng Tâm (${lesson.vocabulary.length} Từ)</h3>
-            <span class="section-subtitle">Chạm vào biểu tượng loa để nghe phát âm chuẩn giọng Tokyo</span>
           </div>
           <div class="vocab-toolbar">
             <div class="vocab-filter-search">
@@ -2259,7 +2334,6 @@ function renderContent(id) {
         <div class="section-header">
           <div class="section-title-group">
             <h3 class="section-title">Cấu Trúc Ngữ Pháp & Lưu Ý Phòng Thi (${lesson.grammar.length} Chủ điểm)</h3>
-            <span class="section-subtitle">Giải thích chi tiết cách dùng, mẹo tránh bẫy JLPT và hội thoại thực tế</span>
           </div>
         </div>
         <div class="grammar-list">
@@ -2349,30 +2423,42 @@ function renderContent(id) {
           </button>
         </div>
         <h2 class="lesson-title">${lessonTitle}</h2>
-        <p class="lesson-desc">${lessonDesc}</p>
       </div>
 
-      <!-- THANH ĐIỀU HƯỚNG CÂU HỎI & ĐỒNG HỒ ĐẾM NGƯỢC 30 PHÚT -->
-      <div class="quiz-top-bar">
-        <div class="quiz-timer-wrap">
-          <div class="quiz-timer-pill" title="Thời gian làm bài còn lại">
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
-            <span class="quiz-timer-display" id="quiz-timer-clock">30:00</span>
-          </div>
-          <button id="btn-pause-timer" class="quiz-palette-toggle-btn" onclick="toggleQuizTimer()">Tạm dừng</button>
-        </div>
+      <!-- THANH ĐIỀU HƯỚNG CÂU HỎI & CÔNG CỤ LÀM BÀI HỢP NHẤT (1 Ô DUY NHẤT) -->
+      <div class="quiz-top-bar" id="quizStickyBar">
         <div class="quiz-controls-wrap">
+          <button id="btn-pause-timer" class="quiz-palette-toggle-btn" onclick="toggleQuizTimer()" title="Tạm dừng hoặc tiếp tục tính giờ">Tạm dừng</button>
           <button id="btn-toggle-autoadvance" 
                   class="quiz-palette-toggle-btn btn-autoadvance ${isAutoAdvanceActive ? 'active' : ''}" 
                   onclick="toggleQuizAutoAdvance()" 
                   title="Bật/Tắt tự động cuộn sang câu tiếp theo khi chọn đáp án">
             <span class="autoadvance-icon"><svg class="icon-svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg></span>
-            <span>Tự chuyển:</span>
+            <span>Tự chuyển</span>
             <strong class="autoadvance-status" id="autoadvance-status-label">${isAutoAdvanceActive ? 'BẬT' : 'TẮT'}</strong>
           </button>
           <button class="quiz-palette-toggle-btn" onclick="togglePaletteView()" title="Ẩn/Hiện Bảng câu hỏi (1-${quizList.length})">
             <svg class="icon-svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
             <span>Bảng câu hỏi</span>
+          </button>
+        </div>
+
+        <div class="quiz-topbar-actions" id="quizTopBarActions">
+          <div class="mini-timer-pill" id="quizMiniTimerPill" onclick="toggleQuizTimer()" title="Đồng hồ làm bài - Bấm để tạm dừng/tiếp tục">
+            <span class="mini-timer-icon">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10"></circle>
+                <polyline points="12 6 12 12 16 14"></polyline>
+              </svg>
+            </span>
+            <strong class="mini-timer-val" id="quizMiniClockText">30:00</strong>
+            <span class="quiz-timer-display" id="quiz-timer-clock" style="display:none;" aria-hidden="true">30:00</span>
+          </div>
+          <button type="button" class="mini-btn-submit" onclick="submitPracticeQuiz('${id}')" title="Nộp bài và xem kết quả">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="20 6 9 17 4 12"></polyline>
+            </svg>
+            <span>Nộp bài</span>
           </button>
         </div>
       </div>
@@ -2438,7 +2524,18 @@ function renderContent(id) {
     const state = getPracticeQuizState(id);
     if (!state.submitted) {
       initQuizTimer();
+      if (typeof ensureQuizMiniTimerWidget === 'function') {
+        ensureQuizMiniTimerWidget(id);
+      }
+      if (typeof setupQuizScrollObserver === 'function') {
+        setupQuizScrollObserver(id);
+      }
     } else {
+      if (typeof removeQuizMiniTimerWidget === 'function') {
+        removeQuizMiniTimerWidget();
+      }
+      const topActions = document.getElementById('quizTopBarActions');
+      if (topActions) topActions.style.display = 'none';
       const clockEl = document.getElementById('quiz-timer-clock');
       const pauseBtn = document.getElementById('btn-pause-timer');
       if (clockEl) {
@@ -2482,6 +2579,15 @@ function renderContent(id) {
     const initialQuery = qMatch && qMatch[1] ? decodeURIComponent(qMatch[1]) : '';
     const initialType = qMatch && qMatch[2] ? decodeURIComponent(qMatch[2]) : 'word';
     renderMaziiDictSection(initialQuery, initialType);
+    restoreScrollPosition(getModuleScroll(id));
+    return;
+  }
+
+  // 7. TRƯỜNG HỢP: KHẢO THÍ & LUYỆN ĐỀ JLPT N5 & N4 (exam / exam-n5-01 / exam-n4-25)
+  if (id === 'exam' || id.startsWith('exam-') || id.startsWith('de-thi') || id.startsWith('exam/')) {
+    if (typeof ExamEngine !== 'undefined' && typeof ExamEngine.render === 'function') {
+      ExamEngine.render(content, id);
+    }
     restoreScrollPosition(getModuleScroll(id));
     return;
   }
@@ -2576,7 +2682,6 @@ function renderKanjiSection(sectionId, forcedTab = null) {
         </button>
       </div>
       <h2 class="lesson-title">${lesson.title}</h2>
-      <p class="lesson-desc">${lesson.description}</p>
     </div>
 
     <!-- THANH ĐIỀU HƯỚNG 2 THẺ RIÊNG BIỆT: DANH SÁCH MẸO NHỚ & BÀI KIỂM TRA FLASHCARD -->
@@ -2856,7 +2961,6 @@ window.initKanjiFlashcardStudio = function(lesson) {
             <span class="kfc-badge-icon">${APP_ICONS.cards}</span>
             <div>
               <h3 class="kfc-title">Kiểm Tra Flashcard Mẹo Nhớ Chữ Hán - Bài ${lesson.lesson}</h3>
-              <p class="kfc-subtitle">Chạm thẻ để lật kiểm tra chiết tự, câu chuyện mẹo nhớ, cách đọc và âm Hán Việt</p>
             </div>
           </div>
         </div>
@@ -3619,10 +3723,7 @@ function renderKfcQuizQuestion() {
       <div class="practice-box-header">
         <div class="practice-box-title">
           <span class="practice-icon-badge ${isK2M ? 'accent-sakura' : 'accent-indigo'}">${APP_ICONS.bolt}</span>
-          <div>
-            <h4>Trắc Nghiệm Phản Xạ: ${modeTitle}</h4>
-            <span class="practice-sub">${modeSubtitle}</span>
-          </div>
+          <h4>Trắc Nghiệm Phản Xạ: ${modeTitle}</h4>
         </div>
         <span class="practice-counter-pill accent-emerald">Đúng: ${kfcQuizScore}/${kfcQuizDeck.length}</span>
       </div>
@@ -3946,7 +4047,6 @@ function renderRadicalSection(sectionId, forcedTab = null) {
         </button>
       </div>
       <h2 class="lesson-title">${group.title}</h2>
-      <p class="lesson-desc">${group.description}</p>
     </div>
 
     <!-- ĐIỀU HƯỚNG TAB: TRA CỨU & NÉT VIẾT vs BÀI KIỂM TRA FLASHCARD -->
@@ -4192,7 +4292,6 @@ function initRadicalFlashcardStudio(group) {
             <span class="kfc-badge-icon">${APP_ICONS.cards}</span>
             <div>
               <h3 class="kfc-title">Kiểm Tra Flashcard Bộ Thủ - ${rfcScope === 'all' ? 'Toàn Bộ 191 Bộ Thủ' : group.title}</h3>
-              <p class="kfc-subtitle">Chạm thẻ để lật kiểm tra tên bộ, ý nghĩa gốc, ý nghĩa trong chữ Hán và các ví dụ</p>
             </div>
           </div>
         </div>
@@ -4844,10 +4943,7 @@ function renderRfcQuizQuestion() {
       <div class="practice-box-header">
         <div class="practice-box-title">
           <span class="practice-icon-badge ${isC2N ? 'accent-sakura' : 'accent-indigo'}">${APP_ICONS.bolt}</span>
-          <div>
-            <h4>Trắc Nghiệm Phản Xạ: ${modeTitle}</h4>
-            <span class="practice-sub">${modeSubtitle}</span>
-          </div>
+          <h4>Trắc Nghiệm Phản Xạ: ${modeTitle}</h4>
         </div>
         <span class="practice-counter-pill accent-emerald">Đúng: ${rfcQuizScore}/${rfcQuizDeck.length}</span>
       </div>
@@ -5159,7 +5255,6 @@ function renderDokkaiRoom(dokkaiId) {
         </button>
       </div>
       <h2 class="lesson-title">${dokkai.title}</h2>
-      <p class="lesson-desc"><strong>Chủ đề:</strong> ${dokkai.subTitle}. ${dokkai.description}</p>
     </div>
 
     <div class="dokkai-split-view">
@@ -5323,6 +5418,11 @@ window.initQuizTimer = function() {
     clearInterval(quizTimerInterval);
     quizTimerInterval = null;
   }
+  if (typeof removeQuizMiniTimerWidget === 'function') {
+    removeQuizMiniTimerWidget();
+  }
+  const topActions = document.getElementById('quizTopBarActions');
+  if (topActions) topActions.style.display = 'inline-flex';
 
   if (typeof stopMaziiVoiceSearch === 'function') {
     try { stopMaziiVoiceSearch(true); } catch (e) {}
@@ -5332,13 +5432,24 @@ window.initQuizTimer = function() {
 
   const clockEl = document.getElementById('quiz-timer-clock');
   const pauseBtn = document.getElementById('btn-pause-timer');
+  const miniClock = document.getElementById('quizMiniClockText');
+  const miniPill = document.getElementById('quizMiniTimerPill');
   if (clockEl) {
     clockEl.textContent = '30:00';
     clockEl.classList.remove('timer-warning');
     clockEl.classList.remove('timer-finished');
   }
+  if (miniClock) {
+    miniClock.textContent = '30:00';
+  }
+  if (miniPill) {
+    miniPill.classList.remove('timer-warning');
+  }
   if (pauseBtn) {
     pauseBtn.textContent = 'Tạm dừng';
+    if (pauseBtn.classList) {
+      pauseBtn.classList.remove('is-paused');
+    }
     pauseBtn.style.display = 'inline-flex';
   }
 
@@ -5350,6 +5461,7 @@ window.initQuizTimer = function() {
       clearInterval(quizTimerInterval);
       quizTimerInterval = null;
       if (clockEl) clockEl.textContent = '00:00';
+      if (miniClock) miniClock.textContent = '00:00';
       showToast('Đã hết 30 phút làm bài! Hệ thống đang tự động nộp bài...');
       if (typeof finalizePracticeQuizSubmission === 'function') {
         finalizePracticeQuizSubmission(currentActiveId);
@@ -5367,8 +5479,39 @@ window.initQuizTimer = function() {
         clockEl.classList.add('timer-warning');
       }
     }
+    const curMiniClock = document.getElementById('quizMiniClockText');
+    const curMiniPill = document.getElementById('quizMiniTimerPill');
+    if (curMiniClock) {
+      curMiniClock.textContent = timeStr;
+    }
+    if (curMiniPill) {
+      curMiniPill.classList.toggle('timer-warning', quizSecondsLeft <= 300);
+    }
   }, 1000);
   if (quizTimerInterval && typeof quizTimerInterval.unref === 'function') quizTimerInterval.unref();
+};
+
+/**
+ * ĐỒNG HỒ & NỘP BÀI ĐÃ ĐƯỢC HỢP NHẤT TRONG .quiz-top-bar (1 Ô DUY NHẤT)
+ */
+window.ensureQuizMiniTimerWidget = function(quizId) {
+  if (typeof document === 'undefined') return null;
+  removeQuizMiniTimerWidget();
+  const bar = document.getElementById('quizStickyBar') || document.querySelector('.quiz-top-bar');
+  return bar || null;
+};
+
+window.removeQuizMiniTimerWidget = function() {
+  if (typeof document === 'undefined') return;
+  const widget = document.getElementById('quizMiniTimerWidget');
+  if (widget && widget.parentNode && widget.parentNode === document.body) {
+    widget.parentNode.removeChild(widget);
+  }
+};
+
+window.setupQuizScrollObserver = function(quizId) {
+  // Thanh .quiz-top-bar có position: sticky; top: 0 cố định tự nhiên khi cuộn, không cần floating widget
+  removeQuizMiniTimerWidget();
 };
 
 window.toggleQuizTimer = function() {
@@ -5376,6 +5519,9 @@ window.toggleQuizTimer = function() {
   isQuizTimerPaused = !isQuizTimerPaused;
   if (pauseBtn) {
     pauseBtn.textContent = isQuizTimerPaused ? 'Tiếp tục' : 'Tạm dừng';
+    if (pauseBtn.classList) {
+      pauseBtn.classList.toggle('is-paused', isQuizTimerPaused);
+    }
   }
   showToast(isQuizTimerPaused ? 'Đã tạm dừng thời gian làm bài' : 'Tiếp tục tính giờ làm bài');
 };
@@ -5610,10 +5756,11 @@ function finalizePracticeQuizSubmission(quizId) {
     clearInterval(quizTimerInterval);
     quizTimerInterval = null;
   }
-
-  if (typeof stopMaziiVoiceSearch === 'function' && targetId !== 'mazii-dict') {
-    stopMaziiVoiceSearch(true);
+  if (typeof removeQuizMiniTimerWidget === 'function') {
+    removeQuizMiniTimerWidget();
   }
+  const topActions = document.getElementById('quizTopBarActions');
+  if (topActions) topActions.style.display = 'none';
 
   let correctCount = 0;
   const totalCount = quizList.length;
@@ -5922,6 +6069,9 @@ window.resetPracticeProgress = function(quizId = currentActiveId) {
     () => {
       const wrapper = document.querySelector ? document.querySelector('.quiz-wrapper') : null;
       if (wrapper && wrapper.classList) wrapper.classList.add('quiz-fade-reset');
+      if (typeof removeQuizMiniTimerWidget === 'function') {
+        removeQuizMiniTimerWidget();
+      }
 
       try {
         const raw = secureGetStorage(STORAGE_PRACTICE_KEY);
@@ -5947,6 +6097,9 @@ window.resetDokkaiProgress = function(dokkaiId) {
     () => {
       const wrapper = document.querySelector ? document.querySelector('.quiz-wrapper') : null;
       if (wrapper && wrapper.classList) wrapper.classList.add('quiz-fade-reset');
+      if (typeof removeQuizMiniTimerWidget === 'function') {
+        removeQuizMiniTimerWidget();
+      }
 
       try {
         const raw = secureGetStorage(STORAGE_DOKKAI_KEY);
@@ -6311,17 +6464,35 @@ window.handleSearchClick = function(targetId, highlightText = '') {
 // Đồng bộ thanh điều hướng dưới cùng trên điện thoại (Mobile Bottom Bar)
 function syncMobileBottomNav(activeId) {
   const id = String(activeId || currentActiveId || 'bai-1');
+  const isExamRunner = id.startsWith('exam-') || id.startsWith('de-thi') || id === 'exam/runner';
+  const nav = document.getElementById('mobile-bottom-nav');
+
+  if (typeof document !== 'undefined' && document.body) {
+    document.body.classList.toggle('exam-mode-active', isExamRunner);
+  }
+
+  if (isExamRunner) {
+    if (nav && nav.style) nav.style.display = 'none';
+    return;
+  } else {
+    if (nav && nav.style && nav.style.display === 'none') {
+      nav.style.display = '';
+    }
+  }
+
   const num = extractLessonNumber(id) || lastLessonNumber || 1;
 
   const lessonLabel = document.getElementById('mnav-label-lesson');
   const kanjiLabel = document.getElementById('mnav-label-kanji');
   const quizLabel = document.getElementById('mnav-label-quiz');
   const dokkaiLabel = document.getElementById('mnav-label-dokkai');
+  const examLabel = document.getElementById('mnav-label-exam');
   const radicalsLabel = document.getElementById('mnav-label-radicals');
   if (lessonLabel) lessonLabel.textContent = `Bài ${num}`;
   if (kanjiLabel) kanjiLabel.textContent = `Kanji ${num}`;
   if (quizLabel) quizLabel.textContent = `Đề ${num}`;
   if (dokkaiLabel) dokkaiLabel.textContent = `Đọc ${num}`;
+  if (examLabel) examLabel.textContent = `Thi JLPT`;
   if (radicalsLabel) radicalsLabel.textContent = `Bộ Thủ`;
 
   let activeNav = 'lesson';
@@ -6329,9 +6500,8 @@ function syncMobileBottomNav(activeId) {
   if (id.startsWith('kanji-')) { activeNav = 'kanji'; activeIndex = 1; }
   else if (id.startsWith('quiz-')) { activeNav = 'quiz'; activeIndex = 2; }
   else if (id.startsWith('dokkai-')) { activeNav = 'dokkai'; activeIndex = 3; }
-  else if (id.startsWith('radicals-')) { activeNav = 'radicals'; activeIndex = 4; }
+  else if (id === 'exam' || id.startsWith('exam-') || id.startsWith('de-thi') || id.startsWith('radicals-')) { activeNav = 'exam'; activeIndex = 4; }
 
-  const nav = document.getElementById('mobile-bottom-nav');
   if (nav) {
     if (nav.setAttribute) nav.setAttribute('data-active-index', String(activeIndex));
     if (nav.style) {
@@ -6379,7 +6549,7 @@ function initMobileBottomNavSliderTouch() {
   const nav = document.getElementById('mobile-bottom-nav');
   if (!nav || !nav.addEventListener) return;
 
-  const navTypes = ['lesson', 'kanji', 'quiz', 'dokkai', 'radicals'];
+  const navTypes = ['lesson', 'kanji', 'quiz', 'dokkai', 'exam'];
   let isDragging = false;
   let lastHoveredIndex = -1;
 
@@ -6478,6 +6648,8 @@ window.handleMobileBottomNav = function(targetType) {
     switchModule(`dokkai-${num}`);
   } else if (targetType === 'radicals') {
     switchModule(lastRadicalId || 'radicals-1');
+  } else if (targetType === 'exam') {
+    switchModule('exam');
   }
 };
 
@@ -6612,6 +6784,32 @@ window.switchModule = function(targetId, updateHash = true) {
     clearInterval(quizTimerInterval);
     quizTimerInterval = null;
   }
+  if (typeof removeQuizMiniTimerWidget === 'function') {
+    removeQuizMiniTimerWidget();
+  }
+  const topActions = document.getElementById('quizTopBarActions');
+  if (topActions) topActions.style.display = 'none';
+
+  // Kiểm tra rời khỏi bài thi đang làm dở (Anti-Cheat Exit Trigger 1: Điều hướng nội bộ)
+  if (window.ExamEngine && window.ExamEngine.state && window.ExamEngine.state.activeExamCode) {
+    const activeExam = window.ExamEngine.state.activeExamCode;
+    const isSubmitted = window.ExamEngine.state.submittedExams && window.ExamEngine.state.submittedExams[activeExam];
+    const cleanTarget = String(targetId).toLowerCase().replace(/^exam-/, '').replace(/^de-thi-/, '');
+    const isSameExam = cleanTarget === activeExam.toLowerCase();
+    if (!isSubmitted && !isSameExam) {
+      if (typeof window.ExamEngine.autoSubmitOnExit === 'function') {
+        window.ExamEngine.autoSubmitOnExit(activeExam, 'user_exit_internal_nav');
+      }
+    }
+  }
+
+  // Dọn dẹp đồng hồ thi nếu rời khỏi màn hình làm bài thi
+  const isExamRunnerTarget = (String(targetId).startsWith('exam-') || String(targetId).startsWith('de-thi-') || String(targetId).includes('/'));
+  if (!isExamRunnerTarget) {
+    if (window.ExamEngine && typeof window.ExamEngine.cleanup === 'function') {
+      window.ExamEngine.cleanup();
+    }
+  }
 
   if (typeof stopMaziiVoiceSearch === 'function' && targetId !== 'mazii-dict') {
     stopMaziiVoiceSearch(true);
@@ -6663,11 +6861,31 @@ window.switchModule = function(targetId, updateHash = true) {
 };
 
 if (typeof window !== 'undefined' && typeof window.addEventListener === 'function') {
+  const handleExamBrowserNav = (newHash) => {
+    if (window.ExamEngine && window.ExamEngine.state && window.ExamEngine.state.activeExamCode) {
+      const activeExam = window.ExamEngine.state.activeExamCode;
+      const isSubmitted = window.ExamEngine.state.submittedExams && window.ExamEngine.state.submittedExams[activeExam];
+      const cleanTarget = String(newHash || '').toLowerCase().replace(/^exam-/, '').replace(/^de-thi-/, '');
+      const isSameExam = cleanTarget === activeExam.toLowerCase();
+      if (!isSubmitted && !isSameExam) {
+        if (typeof window.ExamEngine.autoSubmitOnExit === 'function') {
+          window.ExamEngine.autoSubmitOnExit(activeExam, 'browser_nav_back_forward');
+        }
+      }
+    }
+  };
+
   window.addEventListener('hashchange', () => {
     const newHash = (window.location && window.location.hash ? window.location.hash : '').replace('#', '');
+    handleExamBrowserNav(newHash);
     if (newHash && newHash !== currentActiveId) {
       switchModule(newHash, false);
     }
+  });
+
+  window.addEventListener('popstate', () => {
+    const newHash = (window.location && window.location.hash ? window.location.hash : '').replace('#', '');
+    handleExamBrowserNav(newHash);
   });
 }
 
@@ -6993,6 +7211,20 @@ window.selectCoverTarget = function(targetHash, el, label) {
 
 window.enterAppAt = function(targetHash, el, label) {
   window.enterApp(targetHash);
+};
+
+window.returnToCoverPage = function() {
+  try {
+    sessionStorage.removeItem('minna_cover_closed');
+  } catch (e) {}
+  const cover = document.getElementById('cover-page-slide');
+  if (cover) {
+    cover.style.display = 'block';
+    cover.style.pointerEvents = 'auto';
+    cover.style.opacity = '1';
+    cover.classList.remove('hide-cover');
+    cover.scrollTop = 0;
+  }
 };
 
 function initCoverPage() {
@@ -7344,10 +7576,7 @@ function renderLessonPractice(vocabList, containerSelector = '#lesson-practice-m
       <div class="practice-box-header">
         <div class="practice-box-title">
           <span class="practice-icon-badge accent-sky">${APP_ICONS.cards}</span>
-          <div>
-            <h4>Flashcard Ghi Nhớ Từ Mới</h4>
-            <span class="practice-sub">Chạm vào thẻ để lật xem nghĩa & chữ Hán</span>
-          </div>
+          <h4>Flashcard Ghi Nhớ Từ Mới</h4>
         </div>
         <span class="practice-counter-pill" id="fc-counter">1 / ${cleanVocab.length}</span>
       </div>
@@ -7389,10 +7618,7 @@ function renderLessonPractice(vocabList, containerSelector = '#lesson-practice-m
       <div class="practice-box-header">
         <div class="practice-box-title">
           <span class="practice-icon-badge accent-sakura">${APP_ICONS.bolt}</span>
-          <div>
-            <h4>Phản Xạ Chữ Hán & Từ Vựng</h4>
-            <span class="practice-sub">Kiểm tra nhanh từ vựng ngay trong bài</span>
-          </div>
+          <h4>Phản Xạ Chữ Hán & Từ Vựng</h4>
         </div>
         <span class="practice-counter-pill accent-emerald" id="kq-score">Đúng: 0/25</span>
       </div>
@@ -9494,9 +9720,6 @@ function renderMaziiDictSection(initialQuery = '', initialType = 'word') {
               ${APP_ICONS.book}
               <span>Từ Điển Nhật - Việt</span>
             </h2>
-            <p class="mazii-hero-desc">
-              Tra cứu Từ vựng &amp; Chữ Hán bằng bàn phím, giọng nói hoặc Bảng vẽ tay nhận diện AI.
-            </p>
           </div>
         </div>
       </div>

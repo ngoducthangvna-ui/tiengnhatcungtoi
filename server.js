@@ -56,6 +56,30 @@ const MIME_TYPES = {
 // Ghi nhận IP dính bẫy Honeypot
 const blockedCrawlers = new Map();
 
+// Hệ thống quản lý phiên thi & khóa chống gian lận (Anti-Cheat Exam Session Manager)
+const activeExamSessions = new Map();
+const lockedExamCodes = new Map();
+
+let examsN5Data = null;
+let examsN4Data = null;
+try {
+  examsN5Data = require('./data/exams_n5.js');
+} catch (e) {
+  examsN5Data = [];
+}
+try {
+  examsN4Data = require('./data/exams_n4.js');
+} catch (e) {
+  examsN4Data = [];
+}
+
+function findExamOnServer(code) {
+  if (!code) return null;
+  const norm = String(code).trim().toUpperCase();
+  const all = [...(examsN5Data || []), ...(examsN4Data || [])];
+  return all.find(e => e.code.toUpperCase() === norm) || null;
+}
+
 /**
  * Hàm hỗ trợ gắn 9 Security Headers vào phản hồi
  */
@@ -100,7 +124,7 @@ async function handleRequest(req, res) {
   const parsedUrl = new URL(req.url, `http://${req.headers.host || 'localhost'}`);
   const pathname = parsedUrl.pathname || '/';
   const userAgent = req.headers['user-agent'] || '';
-  const clientIp = req.headers['x-forwarded-for'] || req.socket.remoteAddress || '127.0.0.1';
+  const clientIp = req.headers['x-forwarded-for'] || (req.socket && req.socket.remoteAddress) || '127.0.0.1';
   const referer = req.headers['referer'] || '';
   const secFetchSite = req.headers['sec-fetch-site'] || '';
 
@@ -255,6 +279,127 @@ async function handleRequest(req, res) {
   }
 
   // --------------------------------------------------------------------------
+  // 2B. ROUTE HỆ THỐNG THI & KHÓA PHIÊN CHỐNG GIAN LẬN (/api/exam/submit, /api/exam/session)
+  // --------------------------------------------------------------------------
+  if (normalizedPath === '/api/exam/submit') {
+    if (req.method === 'OPTIONS') {
+      return sendResponse(res, 204, {
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Methods': 'POST, OPTIONS',
+        'Access-Control-Allow-Headers': 'Content-Type, Authorization, X-Requested-With',
+        'Access-Control-Max-Age': '86400'
+      });
+    }
+
+    if (req.method !== 'POST') {
+      return sendResponse(res, 405, { 'Content-Type': 'application/json' },
+        JSON.stringify({ error: 'Method Not Allowed' })
+      );
+    }
+
+    try {
+      const body = await readJsonBody(req);
+      const rawCode = body.examCode || body.code || '';
+      const normalizedCode = String(rawCode).trim().toUpperCase();
+
+      if (!normalizedCode) {
+        return sendResponse(res, 400, { 'Content-Type': 'application/json' },
+          JSON.stringify({ error: 'Missing examCode' })
+        );
+      }
+
+      const answers = (body.answers && typeof body.answers === 'object') ? body.answers : {};
+      const exam = findExamOnServer(normalizedCode);
+
+      // Chấm điểm chuẩn xác từ phía máy chủ: các câu chưa làm tính là 0 điểm
+      let verifiedScore = 0;
+      if (exam && Array.isArray(exam.questions)) {
+        exam.questions.forEach(q => {
+          if (answers[q.id] === q.correct) {
+            verifiedScore++;
+          }
+        });
+      } else if (typeof body.clientScore === 'number') {
+        verifiedScore = Math.max(0, Math.min(20, Math.round(body.clientScore)));
+      }
+
+      const sessionId = body.sessionId || `sess_${normalizedCode}_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`;
+      const reason = body.reason || 'exit_trigger';
+      const isPass = verifiedScore >= 12;
+
+      const sessionRecord = {
+        sessionId,
+        examCode: normalizedCode,
+        status: 'SUBMITTED',
+        locked: true,
+        reason,
+        score: verifiedScore,
+        total: 20,
+        isPass,
+        answers,
+        submittedAt: Date.now(),
+        clientIp,
+        userAgent
+      };
+
+      // Khóa phiên vĩnh viễn trên database/máy chủ
+      lockedExamCodes.set(normalizedCode, sessionRecord);
+      activeExamSessions.set(sessionId, sessionRecord);
+
+      return sendResponse(res, 200, {
+        'Content-Type': 'application/json',
+        'Access-Control-Allow-Origin': '*'
+      }, JSON.stringify({
+        success: true,
+        status: 'SUBMITTED',
+        locked: true,
+        sessionId,
+        examCode: normalizedCode,
+        score: verifiedScore,
+        total: 20,
+        isPass,
+        reason,
+        message: 'Bài thi đã được tự động kết thúc, chấm điểm và khóa phiên làm việc an toàn.'
+      }));
+    } catch (err) {
+      return sendResponse(res, 500, { 'Content-Type': 'application/json' },
+        JSON.stringify({ error: 'Exam submission processing error', detail: err.message })
+      );
+    }
+  }
+
+  if (normalizedPath === '/api/exam/session') {
+    if (req.method === 'OPTIONS') {
+      return sendResponse(res, 204, {
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Methods': 'GET, OPTIONS',
+        'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+        'Access-Control-Max-Age': '86400'
+      });
+    }
+
+    const code = parsedUrl.searchParams.get('code') ? parsedUrl.searchParams.get('code').toUpperCase() : null;
+    const sessId = parsedUrl.searchParams.get('sessionId');
+
+    let matched = null;
+    if (code && lockedExamCodes.has(code)) {
+      matched = lockedExamCodes.get(code);
+    } else if (sessId && activeExamSessions.has(sessId)) {
+      matched = activeExamSessions.get(sessId);
+    }
+
+    return sendResponse(res, 200, {
+      'Content-Type': 'application/json',
+      'Access-Control-Allow-Origin': '*'
+    }, JSON.stringify({
+      success: true,
+      locked: Boolean(matched && matched.locked),
+      status: matched ? matched.status : 'ACTIVE',
+      session: matched || null
+    }));
+  }
+
+  // --------------------------------------------------------------------------
   // 3. CHỐNG HOTLINK BĂNG THÔNG ÂM THANH (.mp3)
   // --------------------------------------------------------------------------
   if (pathname.endsWith('.mp3') || pathname.startsWith('/audio/')) {
@@ -312,4 +457,4 @@ if (require.main === module) {
   });
 }
 
-module.exports = { server, handleRequest, SECURITY_HEADERS };
+module.exports = { server, handleRequest, SECURITY_HEADERS, activeExamSessions, lockedExamCodes, findExamOnServer };

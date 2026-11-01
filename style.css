@@ -47,7 +47,7 @@
   --sidebar-width: 288px;
   --header-height: 60px;
   --mobile-nav-height: 62px;
-  --font-mincho: 'Be Vietnam Pro', 'Shippori Mincho', 'Noto Serif JP', 'Hiragino Mincho ProN', Georgia, serif;
+  --font-mincho: 'Shippori Mincho', 'Noto Serif JP', 'Hiragino Mincho ProN', 'Be Vietnam Pro', Georgia, serif;
   --font-japanese: 'Be Vietnam Pro', 'Zen Kaku Gothic New', 'Noto Sans JP', 'Hiragino Kaku Gothic Pro', sans-serif;
   --font-vietnamese: 'Be Vietnam Pro', 'Roboto', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   --font-main: 'Be Vietnam Pro', 'Roboto', 'Zen Kaku Gothic New', 'Noto Sans JP', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
@@ -1210,6 +1210,13 @@ rt,
   }
 }
 
+/* Ẩn thanh tìm kiếm trong chế độ làm bài thi để chống xao nhãng */
+body.exam-mode-active .header-search-container,
+body.in-exam-mode .header-search-container,
+body:has(#examRunnerView) .header-search-container {
+  display: none !important;
+}
+
 /* Quick Search Ctrl + K (Phong cách tối giản Washi) */
 .header-search-container {
   flex: 1;
@@ -1245,7 +1252,7 @@ rt,
   border: none;
   outline: none;
   color: var(--text-primary);
-  font-size: 13.5px;
+  font-size: 16px;
   font-weight: 500;
   min-width: 0;
 }
@@ -1388,15 +1395,60 @@ rt,
   font-size: 13px;
 }
 
-/* Ẩn / Hiện Furigana */
+/* Ẩn / Hiện Furigana & Chuyển đổi Hán tự */
 body.hide-furigana ruby rt {
   display: none !important;
 }
-body.hide-furigana ruby:hover rt {
+body.hide-furigana ruby:hover rt,
+body.hide-furigana ruby.furigana-revealed rt {
   display: inline-block !important;
   opacity: 0.95;
   font-size: 0.65em;
   color: var(--accent-primary);
+}
+
+ruby.furigana-ruby {
+  ruby-position: over;
+  position: relative;
+  line-height: 1.8;
+}
+ruby.furigana-ruby .k-text {
+  display: inline;
+}
+ruby.furigana-ruby rt.r-text {
+  font-size: 0.62em;
+  color: var(--accent-indigo, #4b85cc);
+  font-weight: 600;
+  user-select: none;
+}
+ruby.furigana-ruby .h-text {
+  display: none !important;
+}
+body.hide-furigana:not(.kanji-as-hiragana) ruby.furigana-ruby rt.r-text {
+  display: none !important;
+}
+body.hide-furigana:not(.kanji-as-hiragana) ruby.furigana-ruby:hover rt.r-text,
+body.hide-furigana:not(.kanji-as-hiragana) ruby.furigana-ruby:active rt.r-text,
+body.hide-furigana:not(.kanji-as-hiragana) ruby.furigana-ruby.furigana-revealed rt.r-text {
+  display: inline-block !important;
+  opacity: 0.95;
+  font-size: 0.65em;
+  color: var(--primary, #e05244);
+}
+body.hide-furigana ruby {
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+body.kanji-as-hiragana ruby.furigana-ruby .k-text {
+  display: none !important;
+}
+body.kanji-as-hiragana ruby.furigana-ruby rt.r-text {
+  display: none !important;
+}
+body.kanji-as-hiragana ruby.furigana-ruby .h-text {
+  display: inline !important;
+  color: var(--text-primary);
+  font-family: inherit;
 }
 
 /* Nhóm nút hành động bên phải Header */
@@ -1766,8 +1818,7 @@ body.hide-furigana #btn-toggle-furigana {
 }
 
 .lesson-content.content-entering {
-  animation: contentTransitionIn 0.32s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-  will-change: opacity, transform;
+  animation: contentTransitionIn 0.32s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 @keyframes contentTransitionIn {
@@ -1777,12 +1828,12 @@ body.hide-furigana #btn-toggle-furigana {
   }
   to {
     opacity: 1;
-    transform: translate3d(0, 0, 0);
+    transform: none;
   }
 }
 
 .lesson-content.content-entering > * {
-  animation: childFadeSlideIn 0.36s cubic-bezier(0.16, 1, 0.3, 1) both;
+  animation: childFadeSlideIn 0.36s cubic-bezier(0.16, 1, 0.3, 1);
 }
 .lesson-content.content-entering > *:nth-child(1) { animation-delay: 0.02s; }
 .lesson-content.content-entering > *:nth-child(2) { animation-delay: 0.05s; }
@@ -1798,7 +1849,7 @@ body.hide-furigana #btn-toggle-furigana {
   }
   to {
     opacity: 1;
-    transform: translate3d(0, 0, 0);
+    transform: none;
   }
 }
 
@@ -1907,7 +1958,7 @@ body.hide-furigana #btn-toggle-furigana {
   background: var(--bg-secondary);
   border: 1px solid var(--border-color);
   border-radius: var(--radius-lg);
-  padding: 26px 30px;
+  padding: 20px 24px;
   position: relative;
   overflow: hidden;
   box-shadow: var(--shadow-sm);
@@ -1951,10 +2002,11 @@ body.hide-furigana #btn-toggle-furigana {
 }
 
 .btn-complete-icon {
-  width: 36px;
-  height: 36px;
-  min-width: 36px;
-  min-height: 36px;
+  width: 44px;
+  height: 44px;
+  min-width: 44px;
+  min-height: 44px;
+  touch-action: manipulation;
   border-radius: 50%;
   border: 1px solid var(--border-color);
   background: var(--bg-card-inner, rgba(255, 255, 255, 0.05));
@@ -2049,14 +2101,15 @@ body.hide-furigana #btn-toggle-furigana {
   font-weight: 700;
   color: var(--text-primary);
   line-height: 1.35;
-  margin-bottom: 10px;
+  margin-bottom: 0;
   letter-spacing: -0.01em;
 }
 
-.lesson-desc {
-  font-size: 15.5px;
-  color: var(--text-secondary);
-  line-height: 1.7;
+.lesson-desc,
+.practice-sub,
+.section-subtitle,
+.kfc-subtitle {
+  display: none !important;
 }
 
 .btn-redo {
@@ -2087,7 +2140,7 @@ body.hide-furigana #btn-toggle-furigana {
 .practice-hub {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: 20px;
+  gap: 16px;
   width: 100%;
 }
 
@@ -2095,12 +2148,12 @@ body.hide-furigana #btn-toggle-furigana {
   background: var(--bg-secondary);
   border: 1px solid var(--border-color);
   border-radius: var(--radius-lg);
-  padding: 22px 24px;
+  padding: 18px 20px;
   box-shadow: var(--shadow-sm);
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  gap: 14px;
+  gap: 12px;
 }
 
 .practice-box-header {
@@ -2108,6 +2161,7 @@ body.hide-furigana #btn-toggle-furigana {
   align-items: center;
   justify-content: space-between;
   gap: 10px;
+  min-height: 38px;
 }
 
 .practice-box-title {
@@ -2124,11 +2178,6 @@ body.hide-furigana #btn-toggle-furigana {
   color: var(--text-primary);
   margin: 0;
   line-height: 1.25;
-}
-
-.practice-sub {
-  font-size: 12px;
-  color: var(--text-muted);
 }
 
 .practice-icon-badge {
@@ -2285,7 +2334,8 @@ body.hide-furigana #btn-toggle-furigana {
 
 .btn-tool {
   flex: 1 1 auto;
-  min-height: 40px;
+  min-height: 44px;
+  touch-action: manipulation;
   padding: 8px 12px;
   border-radius: var(--radius-sm);
   background: var(--bg-tertiary);
@@ -2497,7 +2547,7 @@ body.hide-furigana #btn-toggle-furigana {
   border: 1px solid var(--border-color);
   border-radius: var(--radius-sm);
   padding: 8px 14px;
-  font-size: 13px;
+  font-size: 16px;
   color: var(--text-primary);
   outline: none;
   min-width: 220px;
@@ -2758,10 +2808,11 @@ body.hide-furigana #btn-toggle-furigana {
   background: var(--bg-tertiary);
   border: 1px solid var(--border-color);
   color: var(--accent-primary);
-  width: 36px;
-  height: 36px;
-  min-width: 36px;
-  min-height: 36px;
+  width: 44px;
+  height: 44px;
+  min-width: 44px;
+  min-height: 44px;
+  touch-action: manipulation;
   border-radius: 50%;
   display: inline-flex;
   align-items: center;
@@ -3330,52 +3381,171 @@ body.hide-furigana #btn-toggle-furigana {
   line-height: 1.65;
 }
 
+body:has(.quiz-wrapper) .main-content {
+  contain: style !important;
+}
+
 .quiz-top-bar {
-  position: sticky;
-  top: 0;
-  z-index: 25;
-  display: flex;
+  position: sticky !important;
+  top: 0 !important;
+  z-index: 100 !important;
+  display: flex !important;
   align-items: center;
-  justify-content: space-between;
+  justify-content: space-between !important;
   gap: 10px;
-  background: var(--bg-glass-heavy);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
+  background: var(--bg-surface, var(--bg-glass-heavy));
+  backdrop-filter: blur(20px) saturate(160%);
+  -webkit-backdrop-filter: blur(20px) saturate(160%);
   border: 1px solid var(--border-color);
-  border-radius: var(--radius-md);
+  border-radius: var(--radius-md, 12px);
   padding: 8px 14px;
-  box-shadow: var(--shadow-sm);
-  flex-wrap: wrap;
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.3);
+  margin-bottom: 20px;
+}
+
+[data-theme="light"] .quiz-top-bar {
+  background: var(--bg-surface, #ffffff);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
 }
 
 .quiz-timer-wrap {
-  display: flex;
-  align-items: center;
-  gap: 8px;
+  display: none !important;
 }
 
 .quiz-timer-pill {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  background: var(--bg-tertiary);
-  border: 1px solid var(--border-color);
-  padding: 4px 10px;
-  border-radius: var(--radius-sm);
-  font-size: 13px;
-  color: var(--text-secondary);
+  display: none !important;
 }
 
 .quiz-timer-display {
   background: transparent;
   padding: 0;
   border: none;
-  font-family: monospace;
+  font-family: monospace, inherit;
   font-size: 15px;
-  color: var(--accent-primary);
-  font-weight: 700;
+  color: var(--primary, #e05244);
+  font-weight: 800;
   letter-spacing: 0.5px;
   transition: all 0.25s ease;
+}
+
+.btn-topbar-submit {
+  display: none !important;
+}
+
+/* -------------------------------------------------------------------------
+   HỢP NHẤT ĐIỀU KHIỂN & ĐỒNG HỒ NỘP BÀI TRẮC NGHIỆM TRONG .quiz-top-bar (1 Ô DUY NHẤT)
+   ------------------------------------------------------------------------- */
+.quiz-topbar-actions {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+  margin-left: auto;
+}
+
+.quiz-mini-timer-widget {
+  position: fixed !important;
+  display: none !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+}
+
+.quiz-topbar-actions .mini-timer-pill,
+.quiz-mini-timer-widget .mini-timer-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  background: var(--bg-surface, #141822);
+  border: 1px solid var(--border-color);
+  padding: 6px 14px;
+  border-radius: 999px;
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.35);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  cursor: pointer;
+  min-height: 44px;
+  user-select: none;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.quiz-topbar-actions .mini-timer-pill:hover,
+.quiz-mini-timer-widget .mini-timer-pill:hover {
+  border-color: var(--primary, #e05244);
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px rgba(224, 82, 68, 0.25);
+}
+
+.quiz-topbar-actions .mini-timer-pill:active,
+.quiz-mini-timer-widget .mini-timer-pill:active {
+  transform: scale(0.96);
+}
+
+.quiz-topbar-actions .mini-timer-icon,
+.quiz-mini-timer-widget .mini-timer-icon {
+  display: inline-flex;
+  align-items: center;
+  color: var(--primary, #e05244);
+}
+
+.quiz-topbar-actions .mini-timer-icon svg,
+.quiz-mini-timer-widget .mini-timer-icon svg {
+  width: 15px;
+  height: 15px;
+}
+
+.quiz-topbar-actions .mini-timer-val,
+.quiz-mini-timer-widget .mini-timer-val {
+  font-family: monospace, inherit;
+  font-size: 0.96rem;
+  font-weight: 800;
+  color: var(--primary, #e05244);
+  letter-spacing: 0.5px;
+  line-height: 1;
+}
+
+.quiz-topbar-actions .mini-timer-pill.timer-warning,
+.quiz-mini-timer-widget .mini-timer-pill.timer-warning {
+  border-color: var(--accent-red, #f87171) !important;
+  background: rgba(248, 113, 113, 0.15) !important;
+  animation: timerWarningPulse 1s infinite alternate;
+}
+
+.quiz-topbar-actions .mini-btn-submit,
+.quiz-mini-timer-widget .mini-btn-submit {
+  min-height: 44px;
+  min-width: 44px;
+  padding: 6px 16px;
+  background: linear-gradient(135deg, #e05244 0%, #c23531 100%);
+  color: #ffffff;
+  border: none;
+  border-radius: 999px;
+  font-weight: 700;
+  font-size: 0.88rem;
+  cursor: pointer;
+  box-shadow: 0 4px 14px rgba(224, 82, 68, 0.35);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  white-space: nowrap;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.quiz-topbar-actions .mini-btn-submit:hover,
+.quiz-mini-timer-widget .mini-btn-submit:hover {
+  transform: translateY(-1px) scale(1.02);
+  box-shadow: 0 6px 18px rgba(224, 82, 68, 0.5);
+}
+
+.quiz-topbar-actions .mini-btn-submit:active,
+.quiz-mini-timer-widget .mini-btn-submit:active {
+  transform: scale(0.96);
+}
+
+[data-theme="light"] .quiz-topbar-actions .mini-timer-pill,
+[data-theme="light"] .quiz-mini-timer-widget .mini-timer-pill {
+  background: var(--bg-surface, #ffffff);
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.10);
 }
 
 .quiz-timer-display.timer-warning {
@@ -3389,23 +3559,53 @@ body.hide-furigana #btn-toggle-furigana {
 
 .quiz-palette-toggle-btn {
   font-size: 12px;
-  padding: 6px 12px;
-  border-radius: var(--radius-sm);
+  padding: 5px 11px;
+  border-radius: 999px;
   background: var(--bg-tertiary);
   border: 1px solid var(--border-color);
   color: var(--text-primary);
   font-weight: 600;
-  transition: var(--transition);
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 5px;
+  gap: 6px;
   white-space: nowrap;
+  cursor: pointer;
 }
 
 .quiz-palette-toggle-btn:hover {
   background: var(--accent-primary);
   color: #ffffff;
+  border-color: var(--accent-primary);
+  transform: translateY(-1px);
+}
+
+.quiz-palette-toggle-btn:active {
+  transform: scale(0.96);
+}
+
+#btn-pause-timer::before {
+  content: '';
+  display: inline-block;
+  width: 11px;
+  height: 11px;
+  background-color: currentColor;
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='currentColor'%3E%3Crect x='6' y='4' width='4' height='16' rx='1'/%3E%3Crect x='14' y='4' width='4' height='16' rx='1'/%3E%3C/svg%3E") no-repeat center / contain;
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='currentColor'%3E%3Crect x='6' y='4' width='4' height='16' rx='1'/%3E%3Crect x='14' y='4' width='4' height='16' rx='1'/%3E%3C/svg%3E") no-repeat center / contain;
+  vertical-align: -1px;
+  flex-shrink: 0;
+}
+
+#btn-pause-timer.is-paused {
+  background: rgba(245, 158, 11, 0.15);
+  border-color: rgba(245, 158, 11, 0.45);
+  color: #f59e0b;
+}
+
+#btn-pause-timer.is-paused::before {
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='currentColor'%3E%3Cpolygon points='5 3 19 12 5 21 5 3'/%3E%3C/svg%3E") no-repeat center / contain;
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='currentColor'%3E%3Cpolygon points='5 3 19 12 5 21 5 3'/%3E%3C/svg%3E") no-repeat center / contain;
 }
 
 .quiz-controls-wrap {
@@ -3444,7 +3644,7 @@ body.hide-furigana #btn-toggle-furigana {
   padding: 1px 5px;
   border-radius: 4px;
   background: var(--bg-secondary);
-  font-size: 10.5px;
+  font-size: 10px;
   letter-spacing: 0.5px;
   transition: all 0.2s ease;
 }
@@ -4485,16 +4685,31 @@ body.hide-furigana #btn-toggle-furigana {
   }
 
   .menu-toggle-btn {
-    width: 38px;
-    height: 38px;
-    min-width: 38px;
-    min-height: 38px;
+    width: 44px;
+    height: 44px;
+    min-width: 44px;
+    min-height: 44px;
     padding: 0;
     border-radius: 10px;
     display: inline-flex;
     align-items: center;
     justify-content: center;
     flex-shrink: 0;
+    touch-action: manipulation;
+  }
+
+  .btn-return-home {
+    width: 44px;
+    height: 44px;
+    min-width: 44px;
+    min-height: 44px;
+    padding: 0;
+    border-radius: 10px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    touch-action: manipulation;
   }
 
   .header-search-container {
@@ -4510,7 +4725,8 @@ body.hide-furigana #btn-toggle-furigana {
   .search-box-wrapper {
     padding: 6px 10px;
     border-radius: 10px;
-    height: 38px;
+    height: 44px;
+    min-height: 44px;
     box-sizing: border-box;
     gap: 6px;
   }
@@ -4522,7 +4738,7 @@ body.hide-furigana #btn-toggle-furigana {
   }
 
   .quick-search-input {
-    font-size: 13px;
+    font-size: 16px;
     min-width: 0;
     text-overflow: ellipsis;
   }
@@ -4543,22 +4759,25 @@ body.hide-furigana #btn-toggle-furigana {
   .header-action-btn,
   .voice-settings-btn,
   .theme-toggle-btn {
-    width: 38px;
-    height: 38px;
-    min-width: 38px;
-    min-height: 38px;
+    width: 44px;
+    height: 44px;
+    min-width: 44px;
+    min-height: 44px;
     padding: 0;
     border-radius: 10px;
     display: inline-flex;
     align-items: center;
     justify-content: center;
     flex-shrink: 0;
+    touch-action: manipulation;
   }
 
   #btn-toggle-furigana {
     width: auto;
     min-width: 44px;
-    height: 38px;
+    min-height: 44px;
+    height: 44px;
+    touch-action: manipulation;
     padding: 0 8px;
     font-size: 12px;
   }
@@ -4766,6 +4985,33 @@ body.hide-furigana #btn-toggle-furigana {
     transition: transform 0.22s ease, opacity 0.22s ease, visibility 0.22s;
   }
 
+  /* Khi học viên vào chế độ làm bài thi (Exam Mode), bắt buộc ẩn hoàn toàn thanh điều hướng đáy */
+  body.exam-mode-active .mobile-bottom-nav,
+  body.in-exam-mode .mobile-bottom-nav,
+  body:has(#examRunnerView) .mobile-bottom-nav {
+    display: none !important;
+    transform: translate(-50%, calc(100% + 40px)) !important;
+    opacity: 0 !important;
+    visibility: hidden !important;
+    pointer-events: none !important;
+    z-index: -1 !important;
+  }
+
+  /* Tối ưu không gian dọc: Ẩn thanh header và search bar khi làm bài thi trên di động */
+  body.exam-mode-active .app-header,
+  body.in-exam-mode .app-header,
+  body:has(#examRunnerView) .app-header {
+    display: none !important;
+  }
+
+  body.exam-mode-active .app-layout,
+  body.in-exam-mode .app-layout,
+  body:has(#examRunnerView) .app-layout {
+    height: 100dvh !important;
+    height: 100vh !important;
+    padding-top: env(safe-area-inset-top, 0px) !important;
+  }
+
   /* Thanh cuộn độc lập cho cả 5 phần trên điện thoại */
   .accordion-group {
     flex-shrink: 0 !important;
@@ -4783,7 +5029,8 @@ body.hide-furigana #btn-toggle-furigana {
   #group-kanji .accordion-body,
   #group-quiz .accordion-body,
   #group-dokkai .accordion-body,
-  #group-radicals .accordion-body {
+  #group-radicals .accordion-body,
+  #group-exam .accordion-body {
     max-height: 280px !important;
     overflow-y: auto !important;
     overflow-x: hidden !important;
@@ -4953,7 +5200,7 @@ body.hide-furigana #btn-toggle-furigana {
 
   .lesson-content {
     gap: 14px;
-    padding-bottom: calc(var(--mobile-nav-height) + 24px) !important;
+    padding-bottom: calc(var(--mobile-nav-height) + 38px + env(safe-area-inset-bottom, 0px)) !important;
   }
 
   /* 1. Ẩn cụm 4 ô điều hướng trên cùng bị trùng lặp với Bottom Nav */
@@ -5024,13 +5271,7 @@ body.hide-furigana #btn-toggle-furigana {
   .lesson-hero-card .lesson-title {
     font-size: 18px !important;
     line-height: 1.35 !important;
-    margin: 4px 0 4px !important;
-  }
-
-  .lesson-hero-card .lesson-desc {
-    font-size: 12.5px !important;
-    line-height: 1.45 !important;
-    margin-bottom: 0 !important;
+    margin: 4px 0 0 !important;
   }
 
   .section-card,
@@ -5141,41 +5382,58 @@ body.hide-furigana #btn-toggle-furigana {
   }
 
   .quiz-top-bar {
-    padding: 6px 10px;
+    position: sticky !important;
+    top: 0 !important;
+    z-index: 100 !important;
+    padding: 6px 8px;
     gap: 6px;
     border-radius: 10px;
-    justify-content: space-between;
+    justify-content: space-between !important;
+    padding-right: 8px;
     align-items: center;
-  }
-
-  .quiz-timer-wrap {
-    gap: 6px;
-    font-size: 12px;
-  }
-
-  .quiz-timer-pill {
-    padding: 3px 8px;
-    gap: 5px;
-  }
-
-  .quiz-timer-display {
-    padding: 0;
-    font-size: 13.5px;
+    flex-wrap: wrap;
   }
 
   .quiz-controls-wrap {
-    gap: 6px;
-    justify-content: flex-end;
+    gap: 5px;
+    justify-content: flex-start;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+
+  .quiz-topbar-actions {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    flex-shrink: 0;
+  }
+
+  .quiz-topbar-actions .mini-timer-pill {
+    padding: 4px 10px;
+    min-height: 44px;
+    font-size: 0.85rem;
+  }
+
+  .quiz-topbar-actions .mini-btn-submit {
+    padding: 4px 12px;
+    font-size: 0.82rem;
+    min-height: 44px;
+  }
+  .quiz-controls-wrap::-webkit-scrollbar {
+    display: none;
   }
 
   .quiz-palette-toggle-btn {
     font-size: 11px;
-    padding: 6px 10px;
+    padding: 5px 8px;
     min-height: 44px;
     touch-action: manipulation;
     display: inline-flex;
     align-items: center;
     justify-content: center;
+    flex-shrink: 0;
   }
 
   .quiz-palette-container {
@@ -5410,6 +5668,10 @@ body.hide-furigana #btn-toggle-furigana {
     gap: 6px;
   }
 
+  .cover-feature-card:last-child {
+    grid-column: span 2;
+  }
+
   .feature-stat-box {
     min-width: 44px;
     height: 28px;
@@ -5443,8 +5705,13 @@ body.hide-furigana #btn-toggle-furigana {
   }
 
   .target-chip {
-    padding: 5px 10px;
-    font-size: 11px;
+    padding: 6px 12px;
+    font-size: 12px;
+    min-height: 44px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    touch-action: manipulation;
   }
 
   .btn-enter-app {
@@ -5630,24 +5897,33 @@ body.hide-furigana #btn-toggle-furigana {
   .app-header {
     padding: max(5px, env(safe-area-inset-top, 0px)) 8px 5px;
     gap: 5px;
-    min-height: 48px;
+    min-height: 52px;
   }
   .menu-toggle-btn {
-    width: 35px;
-    height: 35px;
-    min-width: 35px;
-    min-height: 35px;
+    width: 44px;
+    height: 44px;
+    min-width: 44px;
+    min-height: 44px;
+    touch-action: manipulation;
+  }
+  .btn-return-home {
+    width: 44px;
+    height: 44px;
+    min-width: 44px;
+    min-height: 44px;
+    touch-action: manipulation;
   }
   .search-box-wrapper {
-    height: 35px;
+    height: 44px;
+    min-height: 44px;
     padding: 5px 8px;
     gap: 5px;
   }
   .quick-search-input {
-    font-size: 12px;
+    font-size: 16px;
   }
   .quick-search-input::placeholder {
-    font-size: 11px;
+    font-size: 13px;
   }
   .header-right {
     gap: 4px;
@@ -5655,19 +5931,22 @@ body.hide-furigana #btn-toggle-furigana {
   .header-action-btn,
   .voice-settings-btn,
   .theme-toggle-btn {
-    width: 35px;
-    height: 35px;
-    min-width: 35px;
-    min-height: 35px;
+    width: 44px;
+    height: 44px;
+    min-width: 44px;
+    min-height: 44px;
+    touch-action: manipulation;
   }
   #btn-toggle-furigana {
-    min-width: 38px;
-    height: 35px;
-    padding: 0 5px;
-    font-size: 11px;
+    min-width: 44px;
+    min-height: 44px;
+    height: 44px;
+    padding: 0 6px;
+    font-size: 12px;
+    touch-action: manipulation;
   }
   .search-dropdown {
-    top: calc(48px + env(safe-area-inset-top, 0px));
+    top: calc(52px + env(safe-area-inset-top, 0px));
     left: 8px;
     right: 8px;
   }
@@ -7821,7 +8100,7 @@ body.focus-mode .app-layout {
   position: relative;
   background: var(--bg-card, #ffffff);
   border-radius: 20px;
-  padding: 24px 24px 20px 24px;
+  padding: 16px 20px;
   border: 1px solid var(--border-color, rgba(0, 0, 0, 0.08));
   box-shadow: 0 6px 20px rgba(0, 0, 0, 0.04);
   margin-bottom: 20px;
@@ -7830,7 +8109,7 @@ body.focus-mode .app-layout {
 
 .mazii-hero-top {
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   justify-content: space-between;
   gap: 16px;
   flex-wrap: wrap;
@@ -7839,7 +8118,7 @@ body.focus-mode .app-layout {
 .mazii-hero-title-wrap h2 {
   font-size: 24px;
   font-weight: 800;
-  margin: 0 0 6px 0;
+  margin: 0;
   color: var(--text-primary, #1e293b);
   display: flex;
   align-items: center;
@@ -7847,10 +8126,7 @@ body.focus-mode .app-layout {
 }
 
 .mazii-hero-desc {
-  font-size: 14px;
-  color: var(--text-muted, #64748b);
-  margin: 0;
-  line-height: 1.5;
+  display: none !important;
 }
 
 
@@ -9052,12 +9328,11 @@ body.focus-mode .app-layout {
   }
   .mazii-hero-title-wrap h2 {
     font-size: 17px;
-    margin-bottom: 3px;
+    margin-bottom: 0;
     gap: 8px;
   }
   .mazii-hero-desc {
-    font-size: 12px;
-    line-height: 1.4;
+    display: none !important;
   }
   .mazii-search-panel {
     padding: 12px 10px;
@@ -9070,20 +9345,22 @@ body.focus-mode .app-layout {
   .mazii-search-input {
     min-height: 48px;
     padding: 10px 118px 10px 12px;
-    font-size: 14.5px;
+    font-size: 16px;
     border-radius: 12px;
   }
   .mazii-btn-voice {
-    min-width: 38px;
-    min-height: 38px;
-    width: 38px;
-    height: 38px;
+    min-width: 44px;
+    min-height: 44px;
+    width: 44px;
+    height: 44px;
+    touch-action: manipulation;
   }
   .mazii-hw-box-btn {
     min-height: 48px;
     height: 48px;
     padding: 0 12px;
     border-radius: 12px;
+    touch-action: manipulation;
   }
   .mazii-hw-box-icon {
     font-size: 16px;
@@ -9092,23 +9369,26 @@ body.focus-mode .app-layout {
     font-size: 13px;
   }
   .mazii-btn-hw-icon {
-    min-width: 40px;
-    min-height: 40px;
-    width: 38px;
-    height: 38px;
+    min-width: 44px;
+    min-height: 44px;
+    width: 44px;
+    height: 44px;
     font-size: 15px;
+    touch-action: manipulation;
   }
   .mazii-btn-search {
-    min-height: 40px;
-    min-width: 42px;
-    padding: 0 12px;
+    min-height: 44px;
+    min-width: 44px;
+    padding: 0 14px;
     border-radius: 8px;
+    touch-action: manipulation;
   }
   .mazii-btn-clear {
-    width: 32px;
-    height: 32px;
-    min-width: 32px;
-    min-height: 32px;
+    width: 44px;
+    height: 44px;
+    min-width: 44px;
+    min-height: 44px;
+    touch-action: manipulation;
   }
   .mazii-status-box {
     padding: 24px 14px;
@@ -9608,3 +9888,117 @@ body.focus-mode .app-layout {
 }
 
 
+
+/* ==========================================================================
+   PHÂN HỆ KHẢO THÍ & LUYỆN ĐỀ JLPT N5 & N4 (WA-MODERN EXAM SUBSYSTEM)
+   Đồng bộ 100% tokens: Sumi / Washi / Torii Shu-iro / Indigo / Kintsugi Gold
+   ========================================================================== */
+
+.sidebar-exam-quick {
+  padding: 4px 12px 6px 12px;
+  flex-shrink: 0 !important;
+}
+
+.sidebar-exam-btn {
+  width: 100%;
+  min-height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 12px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, rgba(224, 82, 68, 0.08), rgba(216, 164, 76, 0.12));
+  border: 1.5px solid rgba(224, 82, 68, 0.3);
+  color: var(--primary, #e05244);
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.22s ease;
+  flex-shrink: 0 !important;
+  user-select: none;
+}
+
+.sidebar-exam-btn:hover,
+.sidebar-exam-btn.active {
+  background: linear-gradient(135deg, #e05244, #d8a44c);
+  color: #ffffff;
+  border-color: #e05244;
+  box-shadow: 0 4px 14px rgba(224, 82, 68, 0.35);
+  transform: translateY(-1px);
+}
+
+.sidebar-exam-btn .exam-quick-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+
+.sidebar-exam-btn .exam-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  background: rgba(224, 82, 68, 0.12);
+  color: currentColor;
+  flex-shrink: 0;
+  transition: all 0.2s ease;
+}
+
+.sidebar-exam-btn:hover .exam-icon,
+.sidebar-exam-btn.active .exam-icon {
+  background: rgba(255, 255, 255, 0.22);
+  color: #ffffff;
+}
+
+.sidebar-exam-btn .exam-icon svg {
+  width: 17px;
+  height: 17px;
+  stroke: currentColor;
+}
+
+.sidebar-exam-btn .exam-text-col {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 1px;
+  line-height: 1.25;
+  min-width: 0;
+}
+
+.sidebar-exam-btn .exam-title-main {
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  white-space: nowrap;
+  color: inherit;
+}
+
+.sidebar-exam-btn .exam-title-sub {
+  font-size: 10px;
+  font-weight: 700;
+  opacity: 0.78;
+  letter-spacing: 0.6px;
+  white-space: nowrap;
+  color: inherit;
+  text-transform: uppercase;
+}
+
+.sidebar-exam-btn .exam-badge {
+  background: rgba(224, 82, 68, 0.16);
+  color: inherit;
+  font-size: 11px;
+  padding: 3px 9px;
+  border-radius: 999px;
+  font-weight: 700;
+  white-space: nowrap !important;
+  flex-shrink: 0 !important;
+  letter-spacing: 0.2px;
+}
+
+.sidebar-exam-btn:hover .exam-badge,
+.sidebar-exam-btn.active .exam-badge {
+  background: rgba(255, 255, 255, 0.25);
+  color: #ffffff;
+}

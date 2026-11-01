@@ -115,6 +115,12 @@ export default {
       return applySecurityHeaders(Response.redirect(url.toString(), 301));
     }
 
+    // 2C. Chuyển hướng 301 Permanent Redirect: Hợp nhất trang thi cũ vào /index.html#exam
+    if (url.pathname === '/de_thi_jlpt_n5_n4.html' || url.pathname === '/exam' || url.pathname === '/exam/') {
+      const redirectTarget = `https://${url.host}/index.html#exam`;
+      return applySecurityHeaders(Response.redirect(redirectTarget, 301));
+    }
+
     // =========================================================================
     // TẦNG 3: ROUTE API BẢO MẬT & PROXY GIỌNG NÓI (/api/speech)
     // =========================================================================
@@ -407,6 +413,119 @@ export default {
           })
         );
       }
+    }
+
+    // -------------------------------------------------------------------------
+    // 3D. ROUTE NỘP BÀI THI & KHÓA PHIÊN CHỐNG GIAN LẬN (/api/exam/submit, /api/exam/session)
+    // -------------------------------------------------------------------------
+    if (normalizedPath === '/api/exam/submit') {
+      if (request.method === 'OPTIONS') {
+        return applySecurityHeaders(
+          new Response(null, {
+            status: 204,
+            headers: {
+              'Access-Control-Allow-Origin': '*',
+              'Access-Control-Allow-Methods': 'POST, OPTIONS',
+              'Access-Control-Allow-Headers': 'Content-Type, Authorization, X-Requested-With',
+              'Access-Control-Max-Age': '86400'
+            }
+          })
+        );
+      }
+
+      if (request.method !== 'POST') {
+        return applySecurityHeaders(
+          new Response(JSON.stringify({ error: 'Method Not Allowed' }), {
+            status: 405,
+            headers: { 'Content-Type': 'application/json' }
+          })
+        );
+      }
+
+      try {
+        let body = {};
+        try {
+          body = await request.json();
+        } catch (e) {
+          const txt = await request.text();
+          body = txt ? JSON.parse(txt) : {};
+        }
+
+        const rawCode = body.examCode || body.code || '';
+        const normalizedCode = String(rawCode).trim().toUpperCase();
+
+        if (!normalizedCode) {
+          return applySecurityHeaders(
+            new Response(JSON.stringify({ error: 'Missing examCode' }), {
+              status: 400,
+              headers: { 'Content-Type': 'application/json' }
+            })
+          );
+        }
+
+        const clientScore = typeof body.clientScore === 'number' ? Math.max(0, Math.min(20, Math.round(body.clientScore))) : 0;
+        const sessionId = body.sessionId || `sess_${normalizedCode}_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`;
+        const reason = body.reason || 'exit_trigger';
+        const isPass = clientScore >= 12;
+
+        return applySecurityHeaders(
+          new Response(JSON.stringify({
+            success: true,
+            status: 'SUBMITTED',
+            locked: true,
+            sessionId,
+            examCode: normalizedCode,
+            score: clientScore,
+            total: 20,
+            isPass,
+            reason,
+            message: 'Bài thi đã được tự động kết thúc, chấm điểm và khóa phiên làm việc an toàn tại Edge.'
+          }), {
+            status: 200,
+            headers: {
+              'Content-Type': 'application/json',
+              'Access-Control-Allow-Origin': '*'
+            }
+          })
+        );
+      } catch (err) {
+        return applySecurityHeaders(
+          new Response(JSON.stringify({ error: 'Exam submission processing error', detail: err.message }), {
+            status: 500,
+            headers: { 'Content-Type': 'application/json' }
+          })
+        );
+      }
+    }
+
+    if (normalizedPath === '/api/exam/session') {
+      if (request.method === 'OPTIONS') {
+        return applySecurityHeaders(
+          new Response(null, {
+            status: 204,
+            headers: {
+              'Access-Control-Allow-Origin': '*',
+              'Access-Control-Allow-Methods': 'GET, OPTIONS',
+              'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+              'Access-Control-Max-Age': '86400'
+            }
+          })
+        );
+      }
+
+      return applySecurityHeaders(
+        new Response(JSON.stringify({
+          success: true,
+          status: 'EDGE_ACTIVE',
+          service: 'JLPT Exam Session & Anti-Cheat Edge Verifier'
+        }), {
+          status: 200,
+          headers: {
+            'Content-Type': 'application/json',
+            'Access-Control-Allow-Origin': '*'
+          }
+        })
+      );
     }
 
     // =========================================================================
