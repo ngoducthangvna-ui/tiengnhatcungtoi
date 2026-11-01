@@ -16,7 +16,12 @@
     COMPLETED: 'minna_completed_modules',
     PRACTICE: 'minna_practice_answers',
     DOKKAI: 'minna_dokkai_answers',
-    LAST_ACTIVE: 'minna_last_active'
+    LAST_ACTIVE: 'minna_last_active',
+    EXAM_HISTORY: 'jlpt_exam_history',
+    EXAM_BESTS: 'jlpt_exam_bests',
+    EXAM_DRAFT: 'jlpt_exam_draft',
+    EXAM_LEADERBOARD: 'jlpt_exam_leaderboard',
+    EXAM_LOCKED_SESSIONS: 'jlpt_exam_locked_sessions'
   };
 
   /**

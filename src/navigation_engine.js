@@ -84,6 +84,7 @@
       if (id.startsWith('kanji-')) return 'kanji';
       if (id.startsWith('radicals-')) return 'radicals';
       if (id === 'mazii-dict') return 'mazii';
+      if (id === 'exam' || id.startsWith('exam-') || id.startsWith('de-thi') || id.startsWith('exam/')) return 'exam';
       return 'other';
     },
 
@@ -124,6 +125,10 @@
           return kList.some(k => k && (k.lesson === num || k.id === id || k.id === `kanji-${num}`));
         }
         return kList.length > 0;
+      }
+
+      if (id === 'exam' || id.startsWith('exam-') || id.startsWith('de-thi') || id.startsWith('exam/')) {
+        return true;
       }
 
       return true;
