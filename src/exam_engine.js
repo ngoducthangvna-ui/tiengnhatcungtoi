@@ -28,7 +28,8 @@
     lightbulb: `<svg class="icon-svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 18h6"></path><path d="M10 22h4"></path><path d="M12 2a7 7 0 0 0-7 7c0 2.38 1.19 4.47 3 5.74V17a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1v-2.26c1.81-1.27 3-3.36 3-5.74a7 7 0 0 0-7-7z"></path></svg>`,
     kanjiBadge: `<svg class="icon-svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="3"></rect><path d="M7 8h10"></path><path d="M12 8v10"></path><path d="M8.5 14h7"></path></svg>`,
     torii: `<svg class="icon-svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 5h20"></path><path d="M4 8h16"></path><path d="M7 5v15"></path><path d="M17 5v15"></path></svg>`,
-    alert: `<svg class="icon-svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>`
+    alert: `<svg class="icon-svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>`,
+    zap: `<svg class="icon-svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>`
   };
 
   // Trạng thái phiên thi cử runtime
@@ -47,7 +48,8 @@
     lockedSessions: {}, // { [examCode]: sessionObj }
     filterQuery: '',
     isBarCollapsed: false, // Thu gọn thanh Top Bar thành mini widget góc trên phải khi làm bài
-    isAutoSubmitting: false
+    isAutoSubmitting: false,
+    autoAdvanceTimeout: null
   };
 
   /**
@@ -103,7 +105,7 @@
     const link = document.createElement('link');
     link.id = 'exam-engine-styles';
     link.rel = 'stylesheet';
-    link.href = 'src/exam_style.css?v=20261101_20';
+    link.href = 'src/exam_style.css?v=20261101_22';
     document.head.appendChild(link);
   }
 
@@ -264,6 +266,10 @@
         updateTimerDisplay();
         if (state.timeRemainingSeconds === 0) {
           clearInterval(state.timerInterval);
+      if (state.autoAdvanceTimeout) {
+        clearTimeout(state.autoAdvanceTimeout);
+        state.autoAdvanceTimeout = null;
+      }
           if (root.showToast) root.showToast('⏰ Đã hết 30 phút làm bài! Hệ thống đang tự động nộp bài...');
           ExamEngine.submitExam(examCode, true);
         }
@@ -540,6 +546,10 @@
     // 1. Dừng ngay lập tức đồng hồ đếm ngược
     if (state.timerInterval) {
       clearInterval(state.timerInterval);
+      if (state.autoAdvanceTimeout) {
+        clearTimeout(state.autoAdvanceTimeout);
+        state.autoAdvanceTimeout = null;
+      }
       state.timerInterval = null;
     }
     removeMiniTimerWidget();
@@ -643,6 +653,10 @@
         document.body.classList.remove('exam-mode-active');
       }
       clearInterval(state.timerInterval);
+      if (state.autoAdvanceTimeout) {
+        clearTimeout(state.autoAdvanceTimeout);
+        state.autoAdvanceTimeout = null;
+      }
       state.activeExamCode = null;
       removeMiniTimerWidget();
 
@@ -844,6 +858,10 @@
           }
           state.timeRemainingSeconds = 0;
           clearInterval(state.timerInterval);
+      if (state.autoAdvanceTimeout) {
+        clearTimeout(state.autoAdvanceTimeout);
+        state.autoAdvanceTimeout = null;
+      }
           state.timerInterval = null;
           removeMiniTimerWidget();
 
@@ -897,6 +915,7 @@
       const answers = state.userAnswers[code] || {};
       const answeredCount = Object.keys(answers).length;
       const isCollapsed = Boolean(state.isBarCollapsed && !isSubmitted);
+      const isAutoAdvance = ExamEngine.isAutoAdvanceEnabled();
 
       let html = `
         <div class="exam-runner-container" id="examRunnerView">
@@ -928,13 +947,17 @@
                 <!-- Nút Nộp Bài / Thi Lại -->
                 <div class="hud-actions">
                   ${isSubmitted ? `
-                    <button type="button" class="btn-hud-reset" onclick="window.ExamEngine.resetExam('${code}')" title="Thi lại đề này">
+                    <button type="button" class="btn-hud-reset btn-icon-only" onclick="window.ExamEngine.resetExam('${code}')" title="Thi lại đề này" aria-label="Thi lại đề này">
                       ${EXAM_ICONS.refresh}
                     </button>
                   ` : `
-                    <button type="button" class="btn-hud-submit" onclick="window.ExamEngine.submitExam('${code}')" title="Nộp bài và xem kết quả">
+                    <button type="button" class="btn-hud-autoadvance btn-autoadvance btn-icon-only ${isAutoAdvance ? 'active' : ''}" id="btnExamAutoAdvance" onclick="window.ExamEngine.toggleAutoAdvance()" title="Tự động chuyển câu khi chọn đáp án (${isAutoAdvance ? 'Đang BẬT' : 'Đang TẮT'})" aria-label="Tự động chuyển câu hỏi">
+                      ${EXAM_ICONS.zap}
+                      <span class="sr-only">Tự chuyển</span>
+                    </button>
+                    <button type="button" class="btn-hud-submit btn-icon-only" id="btnExamSubmit" onclick="window.ExamEngine.submitExam('${code}')" title="Nộp bài và xem kết quả" aria-label="Nộp bài">
                       ${EXAM_ICONS.check}
-                      <span>Nộp Bài</span>
+                      <span class="sr-only">Nộp bài</span>
                     </button>
                   `}
                 </div>
@@ -1260,6 +1283,17 @@
       if (bottomCountEl) bottomCountEl.textContent = count;
 
       if (root.triggerHaptic) root.triggerHaptic(15);
+
+      // 2. TỰ ĐỘNG CHUYỂN CÂU HỎI (SMART AUTO-ADVANCE)
+      if (state.autoAdvanceTimeout) {
+        clearTimeout(state.autoAdvanceTimeout);
+        state.autoAdvanceTimeout = null;
+      }
+      if (ExamEngine.isAutoAdvanceEnabled()) {
+        state.autoAdvanceTimeout = setTimeout(() => {
+          ExamEngine.triggerAutoAdvance(examCode, qId);
+        }, 450);
+      }
     },
 
     submitExam(examCode, isAuto = false) {
@@ -1287,6 +1321,10 @@
         document.body.classList.remove('exam-mode-active');
       }
       clearInterval(state.timerInterval);
+      if (state.autoAdvanceTimeout) {
+        clearTimeout(state.autoAdvanceTimeout);
+        state.autoAdvanceTimeout = null;
+      }
       state.isBarCollapsed = false;
       removeMiniTimerWidget();
 
@@ -1395,6 +1433,108 @@
       removeMiniTimerWidget();
     },
 
+    /**
+     * TỰ ĐỘNG CHUYỂN CÂU HỎI (SMART AUTO-ADVANCE)
+     */
+    scrollToQuestion(qId) {
+      const card = document.getElementById(`q-card-${qId}`);
+      if (card && card.scrollIntoView) {
+        card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        card.classList.add('auto-focused');
+        setTimeout(() => {
+          card.classList.remove('auto-focused');
+        }, 1200);
+      }
+    },
+
+    isAutoAdvanceEnabled() {
+      if (typeof root.isQuizAutoAdvanceEnabled === 'function') {
+        return root.isQuizAutoAdvanceEnabled();
+      }
+      try {
+        const val = localStorage.getItem('minna_quiz_auto_advance');
+        return val !== 'false';
+      } catch (e) {
+        return true;
+      }
+    },
+
+    toggleAutoAdvance() {
+      if (typeof root.toggleQuizAutoAdvance === 'function') {
+        root.toggleQuizAutoAdvance();
+      } else {
+        const cur = ExamEngine.isAutoAdvanceEnabled();
+        const next = !cur;
+        try {
+          localStorage.setItem('minna_quiz_auto_advance', String(next));
+        } catch (e) {}
+        if (root.showToast) {
+          root.showToast(next ? '⚡ Đã BẬT tự chuyển câu' : 'Đã TẮT tự chuyển câu');
+        }
+      }
+      ExamEngine.updateAutoAdvanceButtonState();
+    },
+
+    updateAutoAdvanceButtonState() {
+      const isEnabled = ExamEngine.isAutoAdvanceEnabled();
+      const btns = document.querySelectorAll('.btn-hud-autoadvance');
+      btns.forEach(btn => {
+        btn.classList.toggle('active', isEnabled);
+        btn.setAttribute('title', isEnabled ? 'Tự động chuyển câu khi chọn đáp án (Đang BẬT)' : 'Tự động chuyển câu khi chọn đáp án (Đang TẮT)');
+        btn.setAttribute('aria-label', isEnabled ? 'Tự chuyển câu: Đang BẬT' : 'Tự chuyển câu: Đang TẮT');
+      });
+    },
+
+    triggerAutoAdvance(examCode, currentQId) {
+      if (state.submittedExams[examCode]) return;
+      const code = normalizeExamCode(examCode);
+      const answers = state.userAnswers[code] || state.userAnswers[examCode] || {};
+      const answeredCount = Object.keys(answers).length;
+
+      // Nếu đã hoàn thành tất cả 20 câu
+      if (answeredCount >= 20) {
+        const bottomCard = document.getElementById('examBottomSubmitCard');
+        if (bottomCard && bottomCard.scrollIntoView) {
+          bottomCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          if (root.showToast) {
+            root.showToast('🎉 Bạn đã chọn đủ 20 câu hỏi! Hãy nhấn Nộp Bài để xem kết quả.');
+          }
+        }
+        return;
+      }
+
+      // Tìm câu hỏi kế tiếp chưa trả lời
+      let targetQId = null;
+
+      // 1. Ưu tiên câu ngay sau câu hiện tại nếu chưa làm
+      const nextQId = currentQId + 1;
+      if (nextQId <= 20 && answers[nextQId] === undefined) {
+        targetQId = nextQId;
+      } else {
+        // Tìm tiếp từ currentQId + 2 đến câu 20
+        for (let i = currentQId + 2; i <= 20; i++) {
+          if (answers[i] === undefined) {
+            targetQId = i;
+            break;
+          }
+        }
+      }
+
+      // 2. Nếu từ currentQId đến 20 đã làm hết, vòng lại tìm câu chưa làm từ câu 1 đến currentQId - 1
+      if (!targetQId) {
+        for (let i = 1; i < currentQId; i++) {
+          if (answers[i] === undefined) {
+            targetQId = i;
+            break;
+          }
+        }
+      }
+
+      if (targetQId) {
+        ExamEngine.scrollToQuestion(targetQId);
+      }
+    },
+
     toggleBarCollapse(fromMini = false) {
       ExamEngine.expandBar();
     },
@@ -1474,6 +1614,10 @@
         document.body.classList.remove('exam-mode-active');
       }
       clearInterval(state.timerInterval);
+      if (state.autoAdvanceTimeout) {
+        clearTimeout(state.autoAdvanceTimeout);
+        state.autoAdvanceTimeout = null;
+      }
       state.activeExamCode = null;
       state.isBarCollapsed = false;
       removeMiniTimerWidget();
@@ -1493,6 +1637,10 @@
         document.body.classList.remove('exam-mode-active');
       }
       clearInterval(state.timerInterval);
+      if (state.autoAdvanceTimeout) {
+        clearTimeout(state.autoAdvanceTimeout);
+        state.autoAdvanceTimeout = null;
+      }
       state.activeExamCode = null;
       state.isBarCollapsed = false;
       removeMiniTimerWidget();
@@ -1514,6 +1662,10 @@
             startTimer(examCode);
           } else {
             clearInterval(state.timerInterval);
+      if (state.autoAdvanceTimeout) {
+        clearTimeout(state.autoAdvanceTimeout);
+        state.autoAdvanceTimeout = null;
+      }
           }
           ExamEngine.renderRunnerUI(container, exam, Boolean(state.submittedExams[examCode]));
         }

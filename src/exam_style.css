@@ -640,6 +640,23 @@ body.kanji-as-hiragana ruby.furigana-ruby .h-text {
   margin-top: 4px;
 }
 
+[data-theme="light"] .btn-hud-autoadvance {
+  background: #f8fafc;
+  border-color: #cbd5e1;
+  color: #64748b;
+}
+
+[data-theme="light"] .btn-hud-autoadvance:hover {
+  background: #f1f5f9;
+  color: #0f172a;
+}
+
+[data-theme="light"] .btn-hud-autoadvance.active {
+  background: #fee2e2 !important;
+  border-color: #ef4444 !important;
+  color: #dc2626 !important;
+}
+
 [data-theme="light"] .runner-mobile-title-row {
   border-top-color: rgba(0, 0, 0, 0.08);
 }
@@ -809,16 +826,67 @@ body.kanji-as-hiragana ruby.furigana-ruby .h-text {
   line-height: 1;
 }
 
-/* Nút Nộp Bài & Thi Lại */
+/* Nút Nộp Bài, Tự Động Chuyển & Thi Lại Dạng Icon */
 .hud-actions {
   display: inline-flex;
   align-items: center;
+  gap: 8px;
   flex-shrink: 0;
 }
 
-.btn-hud-submit {
+.btn-hud-autoadvance {
+  width: 44px;
+  height: 44px;
+  min-width: 44px;
   min-height: 44px;
-  padding: 6px 16px;
+  padding: 0;
+  background: var(--bg-card-inner, rgba(255, 255, 255, 0.05));
+  border: 1px solid var(--border-color, rgba(255, 255, 255, 0.12));
+  color: var(--text-secondary, #94a3b8);
+  border-radius: 8px;
+  font-weight: 700;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  touch-action: manipulation;
+}
+
+.btn-hud-autoadvance:hover {
+  background: var(--bg-hover, rgba(255, 255, 255, 0.1));
+  color: var(--text-primary, #ffffff);
+  border-color: rgba(224, 82, 68, 0.4);
+}
+
+.btn-hud-autoadvance:active {
+  transform: scale(0.95);
+}
+
+.btn-hud-autoadvance.active {
+  background: rgba(224, 82, 68, 0.16) !important;
+  border-color: var(--primary, #e05244) !important;
+  color: var(--primary, #e05244) !important;
+  box-shadow: 0 0 10px rgba(224, 82, 68, 0.25);
+}
+
+.btn-hud-autoadvance .icon-svg,
+.btn-hud-autoadvance svg {
+  width: 17px;
+  height: 17px;
+}
+
+.btn-hud-autoadvance.active svg {
+  filter: drop-shadow(0 0 3px rgba(224, 82, 68, 0.5));
+}
+
+.btn-hud-submit {
+  width: 44px;
+  height: 44px;
+  min-width: 44px;
+  min-height: 44px;
+  padding: 0;
   background: linear-gradient(135deg, #e05244, #c23531);
   color: #ffffff;
   border: none;
@@ -829,8 +897,9 @@ body.kanji-as-hiragana ruby.furigana-ruby .h-text {
   box-shadow: 0 3px 10px rgba(224, 82, 68, 0.35);
   display: inline-flex;
   align-items: center;
-  gap: 6px;
-  transition: all 0.2s ease;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
   touch-action: manipulation;
 }
 
@@ -839,20 +908,73 @@ body.kanji-as-hiragana ruby.furigana-ruby .h-text {
   box-shadow: 0 5px 14px rgba(224, 82, 68, 0.45);
 }
 
+.btn-hud-submit:active {
+  transform: scale(0.95);
+}
+
+.btn-hud-submit .icon-svg,
+.btn-hud-submit svg {
+  width: 18px;
+  height: 18px;
+  stroke-width: 2.6;
+}
+
 .btn-hud-reset {
+  width: 44px;
+  height: 44px;
+  min-width: 44px;
   min-height: 44px;
-  padding: 6px 14px;
-  background: var(--bg-card-inner);
+  padding: 0;
+  background: var(--bg-card-inner, rgba(255, 255, 255, 0.05));
   color: var(--text-primary);
   border: 1px solid var(--border-color);
   border-radius: 8px;
   font-weight: 700;
-  font-size: 0.84rem;
   cursor: pointer;
   display: inline-flex;
   align-items: center;
-  gap: 6px;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: all 0.2s ease;
   touch-action: manipulation;
+}
+
+.btn-hud-reset:hover {
+  background: var(--bg-hover);
+  color: var(--primary, #e05244);
+  border-color: var(--primary, #e05244);
+}
+
+.btn-hud-reset:active {
+  transform: scale(0.95);
+}
+
+.btn-hud-submit span,
+.btn-hud-autoadvance span,
+.btn-hud-reset span {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* Hiệu ứng focus nổi bật khi tự động chuyển câu */
+@keyframes questionAutoHighlight {
+  0% {
+    box-shadow: 0 0 0 2px var(--primary, #e05244), 0 0 16px rgba(224, 82, 68, 0.35);
+  }
+  100% {
+    box-shadow: none;
+  }
+}
+
+.exam-question-card.auto-focused {
+  animation: questionAutoHighlight 1.2s cubic-bezier(0.2, 0.8, 0.2, 1);
 }
 
 .btn-hud-collapse {
@@ -1631,16 +1753,21 @@ body:not(:has(#examRunnerView)) #examMiniTimerWidget,
     font-size: 0.88rem;
   }
   .btn-hud-submit span,
-  .btn-hud-reset span {
-    display: inline-block !important;
-    font-size: 0.82rem;
-    font-weight: 700;
-    margin-left: 4px;
+  .btn-hud-reset span,
+  .btn-hud-autoadvance span {
+    display: none !important;
   }
   .btn-hud-submit,
-  .btn-hud-reset {
-    padding: 6px 12px;
+  .btn-hud-reset,
+  .btn-hud-autoadvance {
+    width: 44px;
+    height: 44px;
+    min-width: 44px;
     min-height: 44px;
+    padding: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
     touch-action: manipulation;
   }
   .exam-mini-timer-widget {
