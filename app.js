@@ -6928,14 +6928,14 @@ function applyTheme(themeName) {
 }
 
 function initThemeToggle() {
-  const saved = safeGetStorage('minna_theme', 'dark') || 'dark';
+  const saved = safeGetStorage('minna_theme', 'light') || 'light';
   applyTheme(saved);
 
   const btn = document.getElementById('theme-toggle-btn');
   if (btn && btn.addEventListener) {
     btn.addEventListener('click', (e) => {
       if (e && e.stopPropagation) e.stopPropagation();
-      const cur = document.documentElement.getAttribute('data-theme') || 'dark';
+      const cur = document.documentElement.getAttribute('data-theme') || 'light';
       const nxt = cur === 'dark' ? 'light' : 'dark';
       applyTheme(nxt);
       showToast(nxt === 'dark' ? 'Đã chuyển sang Giao diện Tối' : 'Đã chuyển sang Giao diện Sáng');
