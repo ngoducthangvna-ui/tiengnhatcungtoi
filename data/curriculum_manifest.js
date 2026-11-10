@@ -23,7 +23,7 @@
         title: 'Bài Tập',
         prefix: 'quiz-',
         count: 50,
-        subtext: () => '50 Câu'
+        subtext: () => '70 Câu'
       },
       {
         id: 'group-dokkai',
@@ -66,6 +66,13 @@
         const start = Math.floor((num - 1) / 5) * 5 + 1;
         const end = start + 4;
         return `data/quizzes_${start}_${end}.js`;
+      }
+      const kaiwaMatch = id.match(/^kaiwa-(\d+)$/);
+      if (kaiwaMatch) {
+        const num = parseInt(kaiwaMatch[1], 10);
+        const start = Math.floor((num - 1) / 10) * 10 + 1;
+        const end = start + 9;
+        return `data/kaiwa_${start}_${end}.js`;
       }
       if (id.startsWith('dokkai')) return 'data/dokkai.js';
       if (id.startsWith('radicals')) return 'data/radicals_data.js';

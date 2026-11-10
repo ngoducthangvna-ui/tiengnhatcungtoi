@@ -69,7 +69,7 @@
      */
     extractLessonNumber(id) {
       if (!id || typeof id !== 'string') return 1;
-      const m = id.match(/^(?:bai|lesson|quiz|dokkai|kanji|radicals)[^\d]*(\d+)/i);
+      const m = id.match(/^(?:bai|lesson|quiz|kaiwa|dokkai|kanji|radicals)[^\d]*(\d+)/i);
       return m ? parseInt(m[1], 10) : 1;
     },
 
@@ -80,10 +80,12 @@
       if (!id || typeof id !== 'string') return 'unknown';
       if (id.startsWith('bai-') || id.startsWith('lesson-')) return 'lesson';
       if (id.startsWith('quiz-')) return 'quiz';
+      if (id.startsWith('kaiwa-')) return 'kaiwa';
       if (id.startsWith('dokkai-')) return 'dokkai';
       if (id.startsWith('kanji-')) return 'kanji';
       if (id.startsWith('radicals-')) return 'radicals';
       if (id === 'mazii-dict') return 'mazii';
+      if (id === 'master-hub' || id === 'conjugation-lab' || id === 'mistake-notebook' || id === 'reference-hub') return 'master-hub';
       if (id === 'exam' || id.startsWith('exam-') || id.startsWith('de-thi') || id.startsWith('exam/')) return 'exam';
       return 'other';
     },
@@ -105,6 +107,12 @@
       if (qm) {
         const map = ctx.practiceQuizData || {};
         return Boolean(map[id] && Array.isArray(map[id]) && map[id].length > 0);
+      }
+
+      const kwm = id.match(/^kaiwa-(\d+)$/);
+      if (kwm) {
+        const kMap = ctx.KAIWA_DATA || {};
+        return Boolean(kMap[id] && Array.isArray(kMap[id].dialogue) && kMap[id].dialogue.length > 0);
       }
 
       if (id.startsWith('dokkai')) {

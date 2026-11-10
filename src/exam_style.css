@@ -11,7 +11,7 @@
 }
 
 .exam-hero-card {
-  background: linear-gradient(135deg, rgba(224, 82, 68, 0.12) 0%, rgba(30, 41, 59, 0.45) 50%, rgba(216, 164, 76, 0.12) 100%);
+  background: linear-gradient(135deg, rgba(255, 90, 54, 0.12) 0%, rgba(30, 41, 59, 0.45) 50%, rgba(216, 164, 76, 0.12) 100%);
   border: 1px solid var(--border-card, rgba(255, 255, 255, 0.1));
   border-radius: var(--radius-lg, 16px);
   padding: 20px 24px;
@@ -30,8 +30,8 @@
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  background: rgba(224, 82, 68, 0.15);
-  color: var(--primary, #e05244);
+  background: rgba(255, 90, 54, 0.15);
+  color: var(--primary, #ff5a36);
   padding: 4px 12px;
   border-radius: 999px;
   font-size: 0.76rem;
@@ -87,12 +87,12 @@
 
 .exam-stat-chip:hover,
 .exam-stat-chip.active {
-  border-color: var(--primary, #e05244);
-  background: rgba(224, 82, 68, 0.12);
+  border-color: var(--primary, #ff5a36);
+  background: rgba(255, 90, 54, 0.12);
 }
 
 .exam-stat-chip .stat-badge {
-  background: var(--primary, #e05244);
+  background: var(--primary, #ff5a36);
   color: #fff;
   font-size: 0.72rem;
   font-weight: 800;
@@ -143,9 +143,9 @@
 }
 
 .exam-level-tab.active {
-  background: var(--primary, #e05244);
+  background: var(--primary, #ff5a36);
   color: #ffffff;
-  box-shadow: 0 2px 8px rgba(224, 82, 68, 0.3);
+  box-shadow: 0 2px 8px rgba(255, 90, 54, 0.3);
 }
 
 .exam-search-box {
@@ -269,7 +269,7 @@
 .lb-score,
 .hist-score {
   font-weight: 800;
-  color: var(--primary, #e05244);
+  color: var(--primary, #ff5a36);
 }
 
 .lb-time {
@@ -322,7 +322,7 @@
 }
 
 .section-badge {
-  background: var(--primary, #e05244);
+  background: var(--primary, #ff5a36);
   color: #fff;
   font-size: 0.75rem;
   font-weight: 800;
@@ -361,7 +361,7 @@
 
 .exam-card:hover {
   transform: translateY(-2px);
-  border-color: var(--primary, #e05244);
+  border-color: var(--primary, #ff5a36);
   box-shadow: var(--shadow-md);
 }
 
@@ -380,8 +380,8 @@
 }
 
 .exam-level-tag.tag-n5 {
-  background: rgba(224, 82, 68, 0.15);
-  color: var(--primary, #e05244);
+  background: rgba(255, 90, 54, 0.15);
+  color: var(--primary, #ff5a36);
 }
 
 .exam-level-tag.tag-n4 {
@@ -435,7 +435,7 @@
   min-height: 44px;
   border: none;
   background: var(--bg-card-inner);
-  color: var(--primary, #e05244);
+  color: var(--primary, #ff5a36);
   border: 1px solid var(--border-color);
   border-radius: 8px;
   font-weight: 700;
@@ -449,9 +449,9 @@
 
 .exam-card:hover .btn-start-exam,
 .btn-start-exam:hover {
-  background: var(--primary, #e05244);
+  background: var(--primary, #ff5a36);
   color: #ffffff;
-  border-color: var(--primary, #e05244);
+  border-color: var(--primary, #ff5a36);
 }
 
 /* 2. EXAM RUNNER & HUD */
@@ -507,7 +507,7 @@ body.hide-furigana:not(.kanji-as-hiragana) ruby.furigana-ruby:active rt.r-text {
   display: inline-block !important;
   opacity: 0.95;
   font-size: 0.65em;
-  color: var(--primary, #e05244);
+  color: var(--primary, #ff5a36);
 }
 
 /* 2. Chế độ Thuần Hiragana: Chuyển toàn bộ Kanji sang Hiragana */
@@ -620,8 +620,8 @@ body.kanji-as-hiragana ruby.furigana-ruby .h-text {
 
 .btn-nav-back:hover {
   background: var(--bg-hover);
-  color: var(--primary, #e05244);
-  border-color: var(--primary, #e05244);
+  color: var(--primary, #ff5a36);
+  border-color: var(--primary, #ff5a36);
 }
 
 .runner-bar-main-row {
@@ -670,7 +670,7 @@ body.kanji-as-hiragana ruby.furigana-ruby .h-text {
 }
 
 .runner-code-pill {
-  background: var(--primary, #e05244);
+  background: var(--primary, #ff5a36);
   color: #ffffff;
   font-size: 0.74rem;
   font-weight: 800;
@@ -735,7 +735,7 @@ body.kanji-as-hiragana ruby.furigana-ruby .h-text {
 .runner-progress-track .hud-progress-fill,
 .hud-progress-bar-bg .hud-progress-fill {
   height: 100%;
-  background: linear-gradient(90deg, var(--primary, #e05244), var(--accent-indigo, #4b85cc));
+  background: linear-gradient(90deg, var(--primary, #ff5a36), var(--accent-indigo, #4b85cc));
   border-radius: 999px;
   transition: width 0.25s ease;
 }
@@ -765,9 +765,9 @@ body.kanji-as-hiragana ruby.furigana-ruby .h-text {
 }
 
 .runner-icon-btn.active {
-  border-color: var(--primary, #e05244);
-  color: var(--primary, #e05244);
-  background: rgba(224, 82, 68, 0.12);
+  border-color: var(--primary, #ff5a36);
+  color: var(--primary, #ff5a36);
+  background: rgba(255, 90, 54, 0.12);
 }
 
 .runner-icon-btn.mode-hiragana {
@@ -795,7 +795,7 @@ body.kanji-as-hiragana ruby.furigana-ruby .h-text {
 
 .hud-timer-badge:hover,
 .hud-timer-box:hover {
-  border-color: var(--primary, #e05244);
+  border-color: var(--primary, #ff5a36);
 }
 
 .hud-timer-badge.timer-warning,
@@ -814,14 +814,14 @@ body.kanji-as-hiragana ruby.furigana-ruby .h-text {
 .hud-timer-box .hud-timer-icon {
   display: inline-flex;
   align-items: center;
-  color: var(--primary, #e05244);
+  color: var(--primary, #ff5a36);
 }
 
 .hud-timer-badge .hud-timer-val,
 .hud-timer-box .hud-timer-val {
   font-size: 0.98rem;
   font-weight: 800;
-  color: var(--primary, #e05244);
+  color: var(--primary, #ff5a36);
   font-variant-numeric: tabular-nums;
   line-height: 1;
 }
@@ -857,7 +857,7 @@ body.kanji-as-hiragana ruby.furigana-ruby .h-text {
 .btn-hud-autoadvance:hover {
   background: var(--bg-hover, rgba(255, 255, 255, 0.1));
   color: var(--text-primary, #ffffff);
-  border-color: rgba(224, 82, 68, 0.4);
+  border-color: rgba(255, 90, 54, 0.4);
 }
 
 .btn-hud-autoadvance:active {
@@ -865,10 +865,10 @@ body.kanji-as-hiragana ruby.furigana-ruby .h-text {
 }
 
 .btn-hud-autoadvance.active {
-  background: rgba(224, 82, 68, 0.16) !important;
-  border-color: var(--primary, #e05244) !important;
-  color: var(--primary, #e05244) !important;
-  box-shadow: 0 0 10px rgba(224, 82, 68, 0.25);
+  background: rgba(255, 90, 54, 0.16) !important;
+  border-color: var(--primary, #ff5a36) !important;
+  color: var(--primary, #ff5a36) !important;
+  box-shadow: 0 0 10px rgba(255, 90, 54, 0.25);
 }
 
 .btn-hud-autoadvance .icon-svg,
@@ -878,7 +878,7 @@ body.kanji-as-hiragana ruby.furigana-ruby .h-text {
 }
 
 .btn-hud-autoadvance.active svg {
-  filter: drop-shadow(0 0 3px rgba(224, 82, 68, 0.5));
+  filter: drop-shadow(0 0 3px rgba(255, 90, 54, 0.5));
 }
 
 .btn-hud-submit {
@@ -887,14 +887,14 @@ body.kanji-as-hiragana ruby.furigana-ruby .h-text {
   min-width: 44px;
   min-height: 44px;
   padding: 0;
-  background: linear-gradient(135deg, #e05244, #c23531);
+  background: linear-gradient(135deg, #ff5a36, #ff5a36);
   color: #ffffff;
   border: none;
   border-radius: 8px;
   font-weight: 800;
   font-size: 0.86rem;
   cursor: pointer;
-  box-shadow: 0 3px 10px rgba(224, 82, 68, 0.35);
+  box-shadow: 0 3px 10px rgba(255, 90, 54, 0.35);
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -905,7 +905,7 @@ body.kanji-as-hiragana ruby.furigana-ruby .h-text {
 
 .btn-hud-submit:hover {
   transform: translateY(-1px);
-  box-shadow: 0 5px 14px rgba(224, 82, 68, 0.45);
+  box-shadow: 0 5px 14px rgba(255, 90, 54, 0.45);
 }
 
 .btn-hud-submit:active {
@@ -941,8 +941,8 @@ body.kanji-as-hiragana ruby.furigana-ruby .h-text {
 
 .btn-hud-reset:hover {
   background: var(--bg-hover);
-  color: var(--primary, #e05244);
-  border-color: var(--primary, #e05244);
+  color: var(--primary, #ff5a36);
+  border-color: var(--primary, #ff5a36);
 }
 
 .btn-hud-reset:active {
@@ -966,7 +966,7 @@ body.kanji-as-hiragana ruby.furigana-ruby .h-text {
 /* Hiệu ứng focus nổi bật khi tự động chuyển câu */
 @keyframes questionAutoHighlight {
   0% {
-    box-shadow: 0 0 0 2px var(--primary, #e05244), 0 0 16px rgba(224, 82, 68, 0.35);
+    box-shadow: 0 0 0 2px var(--primary, #ff5a36), 0 0 16px rgba(255, 90, 54, 0.35);
   }
   100% {
     box-shadow: none;
@@ -1053,9 +1053,9 @@ body:not(:has(#examRunnerView)) #examMiniTimerWidget,
 }
 
 .mini-timer-pill:hover {
-  border-color: var(--primary, #e05244);
+  border-color: var(--primary, #ff5a36);
   transform: translateY(-1px);
-  box-shadow: 0 6px 20px rgba(224, 82, 68, 0.25);
+  box-shadow: 0 6px 20px rgba(255, 90, 54, 0.25);
 }
 
 .mini-timer-pill:active {
@@ -1065,7 +1065,7 @@ body:not(:has(#examRunnerView)) #examMiniTimerWidget,
 .mini-timer-icon {
   display: inline-flex;
   align-items: center;
-  color: var(--primary, #e05244);
+  color: var(--primary, #ff5a36);
 }
 
 .mini-timer-icon svg {
@@ -1077,7 +1077,7 @@ body:not(:has(#examRunnerView)) #examMiniTimerWidget,
   font-family: monospace, inherit;
   font-size: 0.96rem;
   font-weight: 800;
-  color: var(--primary, #e05244);
+  color: var(--primary, #ff5a36);
   letter-spacing: 0.5px;
   line-height: 1;
 }
@@ -1092,14 +1092,14 @@ body:not(:has(#examRunnerView)) #examMiniTimerWidget,
   min-height: 44px;
   min-width: 44px;
   padding: 6px 14px;
-  background: linear-gradient(135deg, #e05244 0%, #c23531 100%);
+  background: linear-gradient(135deg, #ff5a36 0%, #ff5a36 100%);
   color: #ffffff;
   border: none;
   border-radius: 999px;
   font-weight: 700;
   font-size: 0.84rem;
   cursor: pointer;
-  box-shadow: 0 4px 14px rgba(224, 82, 68, 0.35);
+  box-shadow: 0 4px 14px rgba(255, 90, 54, 0.35);
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -1110,7 +1110,7 @@ body:not(:has(#examRunnerView)) #examMiniTimerWidget,
 
 .mini-btn-submit:hover {
   transform: translateY(-1px) scale(1.02);
-  box-shadow: 0 6px 18px rgba(224, 82, 68, 0.5);
+  box-shadow: 0 6px 18px rgba(255, 90, 54, 0.5);
 }
 
 .mini-btn-submit:active {
@@ -1167,7 +1167,7 @@ body:not(:has(#examRunnerView)) #examMiniTimerWidget,
 .ring-score-num {
   font-size: 2.5rem;
   font-weight: 900;
-  color: var(--primary, #e05244);
+  color: var(--primary, #ff5a36);
   line-height: 1;
 }
 
@@ -1243,7 +1243,7 @@ body:not(:has(#examRunnerView)) #examMiniTimerWidget,
 .btn-save-leaderboard {
   min-height: 44px;
   padding: 8px 18px;
-  background: var(--primary, #e05244);
+  background: var(--primary, #ff5a36);
   color: #fff;
   border: none;
   border-radius: 8px;
@@ -1279,7 +1279,7 @@ body:not(:has(#examRunnerView)) #examMiniTimerWidget,
 }
 
 .mondai-group-badge {
-  background: var(--primary, #e05244);
+  background: var(--primary, #ff5a36);
   color: #ffffff;
   font-size: 0.72rem;
   font-weight: 800;
@@ -1308,7 +1308,7 @@ body:not(:has(#examRunnerView)) #examMiniTimerWidget,
 .passage-card {
   background: var(--bg-secondary);
   border: 2px solid var(--border-color);
-  border-left: 5px solid var(--primary, #e05244);
+  border-left: 5px solid var(--primary, #ff5a36);
   border-radius: var(--radius-md, 12px);
   padding: 22px 24px;
   margin-bottom: 24px;
@@ -1329,14 +1329,14 @@ body:not(:has(#examRunnerView)) #examMiniTimerWidget,
 .passage-title {
   font-weight: 800;
   font-size: 0.98rem;
-  color: var(--primary, #e05244);
+  color: var(--primary, #ff5a36);
 }
 
 .passage-badge {
   font-size: 0.78rem;
   font-weight: 700;
-  background: rgba(224, 82, 68, 0.12);
-  color: var(--primary, #e05244);
+  background: rgba(255, 90, 54, 0.12);
+  color: var(--primary, #ff5a36);
   padding: 3px 10px;
   border-radius: 999px;
 }
@@ -1352,11 +1352,11 @@ body:not(:has(#examRunnerView)) #examMiniTimerWidget,
   display: inline-block;
   font-weight: 800;
   color: #ffffff !important;
-  background: var(--primary, #e05244);
+  background: var(--primary, #ff5a36);
   padding: 1px 8px;
   border-radius: 6px;
   margin: 0 3px;
-  box-shadow: 0 2px 4px rgba(224, 82, 68, 0.3);
+  box-shadow: 0 2px 4px rgba(255, 90, 54, 0.3);
 }
 
 /* Question Card */
@@ -1384,7 +1384,7 @@ body:not(:has(#examRunnerView)) #examMiniTimerWidget,
 }
 
 .q-num-badge {
-  background: var(--primary, #e05244);
+  background: var(--primary, #ff5a36);
   color: #fff;
   font-size: 0.75rem;
   font-weight: 800;
@@ -1439,7 +1439,7 @@ body:not(:has(#examRunnerView)) #examMiniTimerWidget,
   align-items: center;
   gap: 10px;
   padding: 10px 14px;
-  background: var(--bg-card-inner);
+  background: transparent;
   border: 1.5px solid var(--border-color);
   border-radius: 8px;
   cursor: pointer;
@@ -1448,13 +1448,13 @@ body:not(:has(#examRunnerView)) #examMiniTimerWidget,
 }
 
 .option-choice-btn:hover {
-  border-color: var(--primary, #e05244);
+  border-color: var(--primary, #ff5a36);
   background: var(--bg-hover);
 }
 
 .option-choice-btn.selected {
-  border-color: var(--primary, #e05244);
-  background: rgba(224, 82, 68, 0.14);
+  border-color: var(--primary, #ff5a36);
+  background: rgba(255, 90, 54, 0.14);
 }
 
 .option-radio-native {
@@ -1476,7 +1476,7 @@ body:not(:has(#examRunnerView)) #examMiniTimerWidget,
 }
 
 .option-choice-btn.selected .choice-num {
-  background: var(--primary, #e05244);
+  background: var(--primary, #ff5a36);
   color: #ffffff;
 }
 
@@ -1566,14 +1566,14 @@ body:not(:has(#examRunnerView)) #examMiniTimerWidget,
 .btn-floating-submit {
   min-height: 44px;
   padding: 8px 18px;
-  background: var(--primary, #e05244);
+  background: var(--primary, #ff5a36);
   color: #ffffff;
   border: none;
   border-radius: 999px;
   font-weight: 800;
   font-size: 0.85rem;
   cursor: pointer;
-  box-shadow: 0 2px 8px rgba(224, 82, 68, 0.3);
+  box-shadow: 0 2px 8px rgba(255, 90, 54, 0.3);
 }
 
 .btn-floating-reset,
@@ -1629,7 +1629,7 @@ body:not(:has(#examRunnerView)) #examMiniTimerWidget,
 }
 
 .bottom-submit-desc strong {
-  color: var(--primary, #e05244);
+  color: var(--primary, #ff5a36);
   font-size: 1.05rem;
 }
 
@@ -1638,7 +1638,7 @@ body:not(:has(#examRunnerView)) #examMiniTimerWidget,
   align-items: center;
   justify-content: center;
   gap: 8px;
-  background: linear-gradient(135deg, #e05244, #c23531);
+  background: linear-gradient(135deg, #ff5a36, #ff5a36);
   color: #ffffff;
   border: none;
   border-radius: var(--radius-md, 12px);
@@ -1647,14 +1647,14 @@ body:not(:has(#examRunnerView)) #examMiniTimerWidget,
   font-weight: 800;
   min-height: 46px;
   cursor: pointer;
-  box-shadow: 0 4px 16px rgba(224, 82, 68, 0.4);
+  box-shadow: 0 4px 16px rgba(255, 90, 54, 0.4);
   transition: all 0.2s ease;
   touch-action: manipulation;
 }
 
 .btn-exam-bottom-submit:hover {
   transform: translateY(-1px);
-  box-shadow: 0 6px 20px rgba(224, 82, 68, 0.5);
+  box-shadow: 0 6px 20px rgba(255, 90, 54, 0.5);
 }
 
 @media (max-width: 600px) {
@@ -2001,11 +2001,11 @@ body:has(#examRunnerView) .header-search-container {
   gap: 8px;
   min-height: 44px;
   padding: 10px 18px;
-  background: var(--primary, #e05244);
+  background: var(--primary, #ff5a36);
   color: #ffffff;
   border: 1px solid rgba(255, 255, 255, 0.25);
   border-radius: 9999px;
-  box-shadow: 0 8px 24px -2px rgba(224, 82, 68, 0.45), 0 3px 8px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 8px 24px -2px rgba(255, 90, 54, 0.45), 0 3px 8px rgba(0, 0, 0, 0.15);
   cursor: pointer;
   touch-action: manipulation;
   font-family: var(--font-vietnamese, sans-serif);
@@ -2086,7 +2086,7 @@ body:has(#examRunnerView) .header-search-container {
 .drawer-header-icon svg {
   width: 20px;
   height: 20px;
-  stroke: var(--primary, #e05244);
+  stroke: var(--primary, #ff5a36);
 }
 
 .btn-passage-drawer-close {

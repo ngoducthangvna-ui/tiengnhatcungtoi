@@ -42,7 +42,7 @@ const kanji_11_15 = [
           }
         ],
         "mnemonic": "【Chiết tự】: Gồm Bộ Một nét gạch ngang duy nhất\n【Mẹo nhớ】: Một nét gạch ngang duy nhất nối liền trời đất thể hiện khởi nguyên của vạn vật: SỐ MỘT, DUY NHẤT (一).",
-        "example": "一つを べんきょうします。(Học từ 一つ.)"
+        "example": "りんごを 一つ ください。 (Làm ơn cho tôi 1 quả táo.)"
       },
       {
         "id": "v-11-2",
@@ -72,7 +72,7 @@ const kanji_11_15 = [
           }
         ],
         "mnemonic": "【Chiết tự】: Gồm Bộ Hai nét gạch ngang song song\n【Mẹo nhớ】: Hai nét gạch ngang cân đối song song đại diện cho trời và đất, âm và dương: SỐ HAI (二).",
-        "example": "二つを べんきょうします。(Học từ 二つ.)"
+        "example": "みかんを 二つ 買いました。 (Tôi đã mua 2 quả quýt.)"
       },
       {
         "id": "v-11-3",
@@ -102,7 +102,7 @@ const kanji_11_15 = [
           }
         ],
         "mnemonic": "【Chiết tự】: Gồm Bộ Ba nét ngang (一, 一, 一: Thiên - Địa - Nhân)\n【Mẹo nhớ】: Ba nét gạch ngang tượng trưng cho Trời, Đất và Con người hòa hợp viên mãn: SỐ BA (3).",
-        "example": "三つを べんきょうします。(Học từ 三つ.)"
+        "example": "机の 上に 箱が 三つ あります。 (Trên bàn có 3 cái hộp.)"
       },
       {
         "id": "v-11-4",
@@ -132,7 +132,7 @@ const kanji_11_15 = [
           }
         ],
         "mnemonic": "【Chiết tự】: Gồm Bộ Vi (囗: khung bao ngoài) kết hợp với Bát (八 quay ngược: chia rẽ)\n【Mẹo nhớ】: Khung cửa sổ hình vuông (囗) có tấm rèm chia làm hai vạt (八), tạo thành 4 góc vuông vắn: SỐ BỐN (4).",
-        "example": "四つを べんきょうします。(Học từ 四つ.)"
+        "example": "部屋に 椅子が 四つ あります。 (Trong phòng có 4 cái ghế.)"
       },
       {
         "id": "v-11-5",
@@ -162,7 +162,7 @@ const kanji_11_15 = [
           }
         ],
         "mnemonic": "【Chiết tự】: Gồm Bộ Hai nét ngang (Trời và Đất) nối nhau bằng hai nét chéo giao nhau ở giữa\n【Mẹo nhớ】: Hai vạch Trời và Đất được đan chéo vững chãi bởi 5 yếu tố ngũ hành cân bằng: SỐ NĂM (5).",
-        "example": "五つを べんきょうします。(Học từ 五つ.)"
+        "example": "卵を 五つ 食べました。 (Tôi đã ăn 5 quả trứng.)"
       },
       {
         "id": "v-11-6",
@@ -192,7 +192,7 @@ const kanji_11_15 = [
           }
         ],
         "mnemonic": "【Chiết tự】: Gồm Bộ Đầu (亠: mái che) kết hợp với Bộ Bát (八: hai chân bước)\n【Mẹo nhớ】: Dưới mái che (亠), hai chân (八) vững chãi bước qua con số 6 may mắn: SỐ SÁU (6).",
-        "example": "六つを べんきょうします。(Học từ 六つ.)"
+        "example": "鞄の 中に りんごが 六つ あります。 (Trong cặp có 6 quả táo.)"
       },
       {
         "id": "v-11-7",
@@ -222,7 +222,7 @@ const kanji_11_15 = [
           }
         ],
         "mnemonic": "【Chiết tự】: Gồm Bộ Nhất (一: số 1) kết hợp với nét móc chéo (乚)\n【Mẹo nhớ】: Số 1 gạch ngang bị lưỡi dao chém xiên qua, chia thành 7 phần bằng nhau: SỐ BẢY (7).",
-        "example": "七つを べんきょうします。(Học từ 七つ.)"
+        "example": "あの 子は 今年 七つです。 (Đứa bé kia năm nay lên 7 tuổi.)"
       },
       {
         "id": "v-11-8",
@@ -252,7 +252,7 @@ const kanji_11_15 = [
           }
         ],
         "mnemonic": "【Chiết tự】: Gồm Bộ Hai nét phẩy và mác tẽ ra hai bên mở rộng\n【Mẹo nhớ】: Hai cánh cửa mở toang về hai hướng, tượng trưng cho sự phát đạt không ngừng: SỐ TÁM (8).",
-        "example": "八つを べんきょうします。(Học từ 八つ.)"
+        "example": "お土産を 八つ 買いました。 (Tôi đã mua 8 món quà lưu niệm.)"
       },
       {
         "id": "v-11-9",
@@ -282,7 +282,7 @@ const kanji_11_15 = [
           }
         ],
         "mnemonic": "【Chiết tự】: Gồm Bộ Ất (乙) uốn cong kết hợp nét phẩy vươn dài\n【Mẹo nhớ】: Cánh tay lực sĩ gập lại gồng cơ bắp cuồn cuộn với sức mạnh vô song của chín con rồng: SỐ CHÍN (9).",
-        "example": "九つを べんきょうします。(Học từ 九つ.)"
+        "example": "テーブルに コップが 九つ あります。 (Trên bàn ăn có 9 chiếc cốc.)"
       },
       {
         "id": "v-11-10",
@@ -312,7 +312,7 @@ const kanji_11_15 = [
           }
         ],
         "mnemonic": "【Chiết tự】: Gồm Bộ Hai nét ngang dọc giao nhau trọn vẹn\n【Mẹo nhớ】: Một nét ngang, một nét dọc giao nhau trọn vẹn thập toàn thập mỹ: SỐ MƯỜI, THẬP (十).",
-        "example": "十を べんきょうします。(Học từ 十.)"
+        "example": "パンを 十 買いました。 (Tôi đã mua 10 cái bánh mì.)"
       },
       {
         "id": "v-11-11",
@@ -352,7 +352,7 @@ const kanji_11_15 = [
           }
         ],
         "mnemonic": "【Cấu thành】: 一 (NHẤT: Số một [Một nét gạch ngang duy nhất]) + 人 (NHÂN: Người [Hình tượng hai nét tựa vào nhau])\n【Mẹo nhớ từ】: Nhất (一: một) + Nhân (人: con người). Đúng duy nhất một cá nhân đơn độc ➔ MỘT NGƯỜI.",
-        "example": "学生が 2人 います。(Có 2 học sinh.)"
+        "example": "私には 姉が 一人 います。 (Tôi có 1 người chị gái.)"
       },
       {
         "id": "v-11-12",
@@ -392,7 +392,7 @@ const kanji_11_15 = [
           }
         ],
         "mnemonic": "【Cấu thành】: 二 (NHỊ: Số hai [Hai nét gạch ngang song song]) + 人 (NHÂN: Người [Hình tượng hai nét tựa vào nhau])\n【Mẹo nhớ từ】: Nhị (二: hai) + Nhân (人: con người). Đôi bạn hoặc hai người cùng song hành ➔ HAI NGƯỜI.",
-        "example": "学生が 2人 います。(Có 2 học sinh.)"
+        "example": "教室に 学生が 二人 います。 (Trong phòng học có 2 học sinh.)"
       },
       {
         "id": "v-11-13",
@@ -432,7 +432,7 @@ const kanji_11_15 = [
           }
         ],
         "mnemonic": "【Cấu thành】: 切 (THIẾT: Cắt đứt [Chữ Thất (七: số bảy)]) + 手 (THỦ: Bàn tay [Hình tượng bàn tay năm ngón xòe ra])\n【Mẹo nhớ từ】: Mảnh giấy nhỏ CẮT (切) ra dán vào TAY THƯ (手) làm cước phí: TEM THƯ.",
-        "example": "70円の 切手 (Tem 70 Yên)"
+        "example": "84円の 切手を 5枚 ください。 (Làm ơn cho tôi 5 con tem loại 84 yên.)"
       },
       {
         "id": "v-11-14",
@@ -472,7 +472,7 @@ const kanji_11_15 = [
           }
         ],
         "mnemonic": "【Cấu thành】: 葉 (DIỆP: Chiếc lá [Thảo (艹: mầm xanh)]) + 書 (THƯ: Viết [Duật (聿: bàn tay cầm bút viết)])\n【Mẹo nhớ từ】: Bức THƯ VIẾT (書) ngắn gọn trên mảnh giấy mỏng như chiếc LÁ (葉): BƯU THIẾP.",
-        "example": "70円の 切手 (Tem 70 Yên)"
+        "example": "郵便局で 葉書を 10枚 買いました。 (Tôi đã mua 10 tấm bưu thiếp ở bưu điện.)"
       },
       {
         "id": "v-11-15",
@@ -512,7 +512,7 @@ const kanji_11_15 = [
           }
         ],
         "mnemonic": "【Cấu thành】: 封 (PHONG: Niêm phong [Thổ (土: đắp ụ đất)]) + 筒 (ĐỒNG: Ống tre [Trúc (竹: ống tre)])\n【Mẹo nhớ từ】: ỐNG TRE hoặc bao giấy (筒) NIÊM PHONG (封) kín thư từ: PHONG BÌ.",
-        "example": "70円の 切手 (Tem 70 Yên)"
+        "example": "封筒に 手紙を 入れます。 (Tôi bỏ lá thư vào trong phong bì.)"
       },
       {
         "id": "v-11-16",
@@ -552,7 +552,7 @@ const kanji_11_15 = [
           }
         ],
         "mnemonic": "【Cấu thành】: 両 (LƯỠNG: Cả hai [Khung cán cân giữ thăng bằng hai bên]) + 親 (THÂN: Cha mẹ [Chữ Lập (立: đứng)])\n【Mẹo nhớ từ】: CẢ HAI (両) đấng THÂN SINH (親) ruột thịt cha và mẹ: CHA MẸ.",
-        "example": "両親は 田舎に います。(Bố mẹ tôi ở quê.)"
+        "example": "両親は ベトナムに います。 (Bố mẹ tôi hiện đang ở Việt Nam.)"
       },
       {
         "id": "v-11-17",
@@ -592,7 +592,7 @@ const kanji_11_15 = [
           }
         ],
         "mnemonic": "【Cấu thành】: 兄 (HUYNH: Anh trai [Khẩu (口: miệng truyền dạy)]) + 弟 (ĐỆ: Em trai [Sợi dây quấn quanh cây gậy theo thứ tự])\n【Mẹo nhớ từ】: Tình thân giữa người anh HUYNH (兄) và người em ĐỆ (弟): ANH EM.",
-        "example": "両親は 田舎に います。(Bố mẹ tôi ở quê.)"
+        "example": "兄弟は 何人 いますか。 (Bạn có mấy anh chị em?)"
       },
       {
         "id": "v-11-18",
@@ -622,7 +622,7 @@ const kanji_11_15 = [
           }
         ],
         "mnemonic": "【Chiết tự】: Gồm Bộ Khẩu (口: miệng truyền dạy) kết hợp với Bộ Nhi (儿: đôi chân chạy trước)\n【Mẹo nhớ】: Người mở miệng (口) dạy bảo các em và dẫn đôi chân (儿) đi đầu bảo vệ đàn em thơ: ANH TRAI (兄).",
-        "example": "兄が 1人 います。(Tôi có 1 anh trai.)"
+        "example": "兄は 東京の 会社で 働いています。 (Anh trai tôi đang làm việc tại một công ty ở Tokyo.)"
       },
       {
         "id": "v-11-19",
@@ -652,7 +652,7 @@ const kanji_11_15 = [
           }
         ],
         "mnemonic": "【Chiết tự】: Gồm Bộ Khẩu (口: miệng truyền dạy) kết hợp với Bộ Nhi (儿: đôi chân chạy trước)\n【Mẹo nhớ】: Người mở miệng (口) dạy bảo các em và dẫn đôi chân (儿) đi đầu bảo vệ đàn em thơ: ANH TRAI (兄).",
-        "example": "兄が 1人 います。(Tôi có 1 anh trai.)"
+        "example": "田中さんの お兄さんは 医者です。 (Anh trai của bạn Tanaka là bác sĩ.)"
       },
       {
         "id": "v-11-20",
@@ -682,7 +682,7 @@ const kanji_11_15 = [
           }
         ],
         "mnemonic": "【Chiết tự】: Gồm Bộ Nữ (女: người con gái) kết hợp với Chữ Thị (市: khu chợ)\n【Mẹo nhớ】: Người con gái (女) tháo vát xách giỏ đi chợ (市) mua thức ăn về chăm sóc đàn em thơ chính là CHỊ GÁI (姉).",
-        "example": "姉は 結婚しています。(Chị tôi đã kết hôn.)"
+        "example": "姉は 銀行で 働きます。 (Chị gái tôi làm việc ở ngân hàng.)"
       },
       {
         "id": "v-11-21",
@@ -712,7 +712,7 @@ const kanji_11_15 = [
           }
         ],
         "mnemonic": "【Chiết tự】: Gồm Bộ Nữ (女: người con gái) kết hợp với Chữ Thị (市: khu chợ)\n【Mẹo nhớ】: Người con gái (女) tháo vát xách giỏ đi chợ (市) mua thức ăn về chăm sóc đàn em thơ chính là CHỊ GÁI (姉).",
-        "example": "姉は 結婚しています。(Chị tôi đã kết hôn.)"
+        "example": "お姉さんは 何歳ですか。 (Chị gái của bạn bao nhiêu tuổi?)"
       },
       {
         "id": "v-11-22",
@@ -742,7 +742,7 @@ const kanji_11_15 = [
           }
         ],
         "mnemonic": "【Chiết tự】: Gồm Bộ Sợi dây quấn quanh cây gậy theo thứ tự\n【Mẹo nhớ】: Sợi dây quấn vòng theo thứ tự từ trên xuống dưới chỉ người sinh sau đẻ muộn trong gia đình: EM TRAI (弟).",
-        "example": "妹が 2人 います。(Có 2 em gái.)"
+        "example": "弟は 大学生です。 (Em trai tôi là sinh viên đại học.)"
       },
       {
         "id": "v-11-23",
@@ -772,7 +772,7 @@ const kanji_11_15 = [
           }
         ],
         "mnemonic": "【Chiết tự】: Gồm Bộ Nữ (女: người con gái) kết hợp với Chữ Vị (未: chưa trưởng thành)\n【Mẹo nhớ】: Người con gái (女) nhỏ tuổi ngây thơ chưa (未) đến tuổi trưởng thành trong nhà là EM GÁI (妹).",
-        "example": "妹が 2人 います。(Có 2 em gái.)"
+        "example": "妹は 高校の 学生です。 (Em gái tôi là học sinh cấp 3.)"
       },
       {
         "id": "v-11-24",
@@ -812,7 +812,7 @@ const kanji_11_15 = [
           }
         ],
         "mnemonic": "【Cấu thành】: 全 (TOÀN: Toàn bộ [Nhân (人: mái che)]) + 部 (BỘ: Bộ phận [Chữ Lập (立: đứng)])\n【Mẹo nhớ từ】: Toàn bộ (全部: tất cả các phần gom lại) + で. Gom góp toàn bộ mọi khoản mục lại để tính tổng ➔ TỔNG CỘNG, TẤT CẢ.",
-        "example": "全部で 500円です。(Tổng cộng 500 Yên.)"
+        "example": "全部で 1,500円です。 (Tổng cộng là 1.500 yên.)"
       },
       {
         "id": "v-11-25",
@@ -852,7 +852,7 @@ const kanji_11_15 = [
           }
         ],
         "mnemonic": "【Cấu thành】: 日 (NHẬT: Mặt trời [Hình tượng vầng thái dương chiếu sáng]) + 本 (BẢN: Gốc rễ [Mộc (木: cây cối)])\n【Mẹo nhớ từ】: Hình ảnh thực tế sinh động: thông qua 日 (NHẬT: Mặt trời), 本 (BẢN: Gốc rễ), hành động được khắc họa rõ nét tạo nên ý nghĩa Sống ở Nhật ➔ 日本にいる (にほんにいる).",
-        "example": "日本にいるを べんきょうします。(Học từ 日本にいる.)"
+        "example": "1年 日本にいます。 (Tôi ở Nhật Bản 1 năm.)"
       },
       {
         "id": "v-11-26",
@@ -882,7 +882,7 @@ const kanji_11_15 = [
           }
         ],
         "mnemonic": "【Chiết tự】: Gồm Bộ Nhân (亻: người) kết hợp với Bộ Mộc (木: cây cối)\n【Mẹo nhớ】: Người nông dân (亻) sau buổi cày đồng vất vả đến đứng tựa lưng vào bóng mát gốc cây (木) để NGHỈ NGƠI (休).",
-        "example": "休むを べんきょうします。(Học từ 休む.)"
+        "example": "先週 2日 会社を 休みました。 (Tuần trước tôi đã nghỉ làm 2 ngày.)"
       },
       {
         "id": "v-11-27",
@@ -912,7 +912,7 @@ const kanji_11_15 = [
           }
         ],
         "mnemonic": "【Chiết tự】: Gồm Bộ Hình tượng hai nét tựa vào nhau\n【Mẹo nhớ】: Hai nét nghiêng tựa vào nhau như hai con NGƯỜI (人) cùng nương tựa, tương trợ lẫn nhau để đứng vững trong cuộc đời.",
-        "example": "～人を べんきょうします。(Học từ ～人.)"
+        "example": "私の 家族は 4人です。 (Gia đình tôi có 4 người.)"
       },
       {
         "id": "v-11-28",
@@ -942,7 +942,7 @@ const kanji_11_15 = [
           }
         ],
         "mnemonic": "【Chiết tự】: Gồm Bộ Khư (厶: khối đế vững) kết hợp với Bộ Khẩu (口: miệng phẳng)\n【Mẹo nhớ】: Khối bệ đá vững chãi (厶) có mặt phẳng đặt đồ (口) làm giá đỡ cho máy móc thiết bị: CÁI BỆ, ĐÀI (台).",
-        "example": "～台を べんきょうします。(Học từ ～台.)"
+        "example": "会社に パソコンが 10台 あります。 (Ở công ty có 10 chiếc máy tính.)"
       },
       {
         "id": "v-11-29",
@@ -972,7 +972,7 @@ const kanji_11_15 = [
           }
         ],
         "mnemonic": "【Chiết tự】: Gồm Bộ Mộc (木: cành cây) kết hợp với Bộ Phốc (攵: roi đập bẹt)\n【Mẹo nhớ】: Thanh gỗ (木) qua bàn tay đập giã gõ mỏng (攵) tạo thành từng TỜ, TẤM MỎNG (枚) phẳng phiu.",
-        "example": "～枚を べんきょうします。(Học từ ～枚.)"
+        "example": "シャツを 3枚 買いました。 (Tôi đã mua 3 chiếc áo sơ mi.)"
       },
       {
         "id": "v-11-30",
@@ -1002,7 +1002,7 @@ const kanji_11_15 = [
           }
         ],
         "mnemonic": "【Chiết tự】: Gồm Bộ Hai khung vuông lồng vào nhau xoay tròn\n【Mẹo nhớ】: Vòng xoáy cuộn tròn từ ngoài vào trong rồi lại quay ngược ra biểu thị sự XOAY QUANH, LẦN LƯỢT (回).",
-        "example": "～回を べんきょうします。(Học từ ～回.)"
+        "example": "1か月に 2回 映画を 見ます。 (Trong 1 tháng tôi xem phim 2 lần.)"
       },
       {
         "id": "v-11-31",
@@ -1042,7 +1042,7 @@ const kanji_11_15 = [
           }
         ],
         "mnemonic": "【Cấu thành】: 速 (TỐC: Nhanh chóng [Chữ Thúc (束: bó hàng gọn ghẽ)]) + 達 (ĐẠT: Đạt được [Thổ (土: đất)])\n【Mẹo nhớ từ】: Vận chuyển hỏa TỐC (速) để bưu phẩm ĐẠT ĐẾN (達) nhanh nhất: CHUYỂN PHÁT NHANH.",
-        "example": "速達を べんきょうします。(Học từ 速達.)"
+        "example": "この 手紙を 速達で お願いします。 (Làm ơn gửi lá thư này bằng chuyển phát nhanh.)"
       },
       {
         "id": "v-11-32",
@@ -1082,7 +1082,7 @@ const kanji_11_15 = [
           }
         ],
         "mnemonic": "【Cấu thành】: 書 (THƯ: Viết [Duật (聿: bàn tay cầm bút viết)]) + 留 (LƯU: Ở lại [Chữ Mão (cái cày cắm xuống)])\n【Mẹo nhớ từ】: Văn bản THƯ TỪ (書) được LƯU (留) lại chữ ký bảo đảm: THƯ BẢO ĐẢM.",
-        "example": "書留を べんきょうします。(Học từ 書留.)"
+        "example": "この 封筒を 書留で 送ります。 (Tôi gửi phong bì này theo dạng thư bảo đảm.)"
       },
       {
         "id": "v-11-33",
@@ -1122,7 +1122,7 @@ const kanji_11_15 = [
           }
         ],
         "mnemonic": "【Cấu thành】: 船 (THUYỀN: Thuyền bè [Chu (舟: chiếc thuyền con)]) + 便 (TIỆN: Thuận tiện [Nhân (亻: người)])\n【Mẹo nhớ từ】: Vận chuyển TIỆN LỢI (便) hàng hóa bằng đường THUYỀN (船) biển: GỬI ĐƯỜNG BIỂN.",
-        "example": "船便を べんきょうします。(Học từ 船便.)"
+        "example": "船便は 安いですが、時間が かかります。 (Gửi đường biển tuy rẻ nhưng mất nhiều thời gian.)"
       },
       {
         "id": "v-11-34",
@@ -1152,7 +1152,7 @@ const kanji_11_15 = [
           }
         ],
         "mnemonic": "【Chiết tự】: Gồm Bộ Sợi dây quấn quanh cây gậy theo thứ tự\n【Mẹo nhớ】: Sợi dây quấn vòng theo thứ tự từ trên xuống dưới chỉ người sinh sau đẻ muộn trong gia đình: EM TRAI (弟).",
-        "example": "弟さんを べんきょうします。(Học từ 弟さん.)"
+        "example": "ミラーさんの 弟さんは 学生ですか。 (Em trai của anh Miller có phải là sinh viên không?)"
       },
       {
         "id": "v-11-35",
@@ -1182,7 +1182,7 @@ const kanji_11_15 = [
           }
         ],
         "mnemonic": "【Chiết tự】: Gồm Bộ Nữ (女: người con gái) kết hợp với Chữ Vị (未: chưa trưởng thành)\n【Mẹo nhớ】: Người con gái (女) nhỏ tuổi ngây thơ chưa (未) đến tuổi trưởng thành trong nhà là EM GÁI (妹).",
-        "example": "妹さんを べんきょうします。(Học từ 妹さん.)"
+        "example": "あなたの 妹さんは きれいですね。 (Em gái của bạn xinh đẹp quá nhỉ.)"
       },
       {
         "id": "v-11-36",
@@ -1222,7 +1222,7 @@ const kanji_11_15 = [
           }
         ],
         "mnemonic": "【Cấu thành】: 時 (THỜI: Thời gian [Nhật (日: mặt trời)]) + 間 (GIAN: Khoảng cách [Môn (門: hai cánh cổng khép)])\n【Mẹo nhớ từ】: Khoảng GIAN (間) được tính theo từng giờ THỜI (時): THỜI GIAN.",
-        "example": "～時間を べんきょうします。(Học từ ～時間.)"
+        "example": "毎日 2時間 日本語を 勉強します。 (Mỗi ngày tôi học tiếng Nhật 2 tiếng đồng hồ.)"
       },
       {
         "id": "v-11-37",
@@ -1262,7 +1262,7 @@ const kanji_11_15 = [
           }
         ],
         "mnemonic": "【Cấu thành】: 週 (CHU: Tuần lễ [Chữ Chu (周: chu vi vòng quanh)]) + 間 (GIAN: Khoảng cách [Môn (門: hai cánh cổng khép)])\n【Mẹo nhớ từ】: Định lượng hoặc mốc thời gian (間: GIAN) tương ứng với 週 (CHU: Tuần lễ) ➔ Xác định thời điểm: ~ tuần (～週間: ～しゅうかん).",
-        "example": "～週間を べんきょうします。(Học từ ～週間.)"
+        "example": "2週間 東京へ 旅行します。 (Tôi đi du lịch Tokyo trong 2 tuần.)"
       },
       {
         "id": "v-11-38",
@@ -1292,7 +1292,7 @@ const kanji_11_15 = [
           }
         ],
         "mnemonic": "【Chiết tự】: Gồm Bộ Hình tượng vầng trăng lưỡi liềm soi sáng\n【Mẹo nhớ】: Vầng trăng lưỡi liềm khuyết có mây bay ngang qua soi sáng màn đêm biểu thị MẶT TRĂNG, THÁNG (月).",
-        "example": "～か月を べんきょうします。(Học từ ～か月.)"
+        "example": "国で 6か月 日本語を 勉強しました。 (Tôi đã học tiếng Nhật ở trong nước 6 tháng.)"
       },
       {
         "id": "v-11-39",
@@ -1322,7 +1322,7 @@ const kanji_11_15 = [
           }
         ],
         "mnemonic": "【Chiết tự】: Gồm Bộ Hình người gánh bó lúa mùa màng\n【Mẹo nhớ】: Người nông dân gánh bó lúa trĩu hạt sau đúng một chu kỳ bốn mùa cấy gặt tạo thành tròn vẹn MỘT NĂM (年).",
-        "example": "～年を べんきょうします。(Học từ ～年.)"
+        "example": "3年 日本に います。 (Tôi ở Nhật Bản 3 năm.)"
       },
       {
         "id": "v-11-40",
@@ -1352,7 +1352,7 @@ const kanji_11_15 = [
           }
         ],
         "mnemonic": "【Chiết tự】: Gồm Bộ Tỷ (比: so hàng, sánh đôi) kết hợp với Bộ Bạch (白: màu trắng, rõ ràng)\n【Mẹo nhớ】: MỌI NGƯỜI (皆) xếp hàng ngay ngắn (比) cùng hướng về ánh sáng mặt trời trắng sáng (白) rực rỡ.",
-        "example": "皆を べんきょうします。(Học từ 皆.)"
+        "example": "家族は 皆 元気です。 (Gia đình tôi mọi người đều khỏe mạnh.)"
       },
       {
         "id": "v-11-41",
@@ -1392,7 +1392,7 @@ const kanji_11_15 = [
           }
         ],
         "mnemonic": "【Cấu thành】: 荷 (HÀ: Hành lý [Thảo (艹: kiện cỏ buộc)]) + 物 (VẬT: Đồ vật [Ngưu (牛: con bò)])\n【Mẹo nhớ từ】: VẬT PHẨM (物) được gánh vác NẰM TRÊN LƯNG (荷) khi đi xa: HÀNH LÝ, ĐỒ ĐẠC.",
-        "example": "荷物を べんきょうします。(Học từ 荷物.)"
+        "example": "航空便で 荷物を 送ります。 (Tôi gửi kiện hàng bằng đường hàng không.)"
       },
       {
         "id": "v-11-42",
@@ -1432,7 +1432,7 @@ const kanji_11_15 = [
           }
         ],
         "mnemonic": "【Cấu thành】: 天 (THIÊN: Bầu trời [Nhất (一: tầng mây trời cao)]) + 気 (KHÍ: Khí chất [Khí (气: hơi nước bay cuồn cuộn)])\n【Mẹo nhớ từ】: Thiên khí (天気: thời tiết trời mây) + いい (tuyệt đẹp). Lời mở đầu giao tiếp thân thiện: Bầu trời hôm nay thật trong xanh đẹp đẽ! ➔ TRỜI HÔM NAY ĐẸP QUÁ NHỈ!",
-        "example": "いい天気ですねを べんきょうします。(Học từ いい天気ですね.)"
+        "example": "今日は いい天気ですね。 (Hôm nay thời tiết đẹp quá nhỉ.)"
       },
       {
         "id": "v-11-43",
@@ -1462,7 +1462,7 @@ const kanji_11_15 = [
           }
         ],
         "mnemonic": "【Chiết tự】: Gồm Bộ Xích (彳: bước chân trái) kết hợp với Bộ Xúc (亍: bước chân phải)\n【Mẹo nhớ】: Hai người cùng rảo bước chân trái phải tại ngã tư đường lớn để ĐI LẠI và TIẾN HÀNH (行) công việc.",
-        "example": "行ってらっしゃいを べんきょうします。(Học từ 行ってらっしゃい.)"
+        "example": "行ってきます。― 行ってらっしゃい。 (Tôi đi đây. ― Bạn đi cẩn thận nhé.)"
       },
       {
         "id": "v-11-44",
@@ -1492,7 +1492,7 @@ const kanji_11_15 = [
           }
         ],
         "mnemonic": "【Chiết tự】: Gồm Bộ Xích (彳: bước chân trái) kết hợp với Bộ Xúc (亍: bước chân phải)\n【Mẹo nhớ】: Hai người cùng rảo bước chân trái phải tại ngã tư đường lớn để ĐI LẠI và TIẾN HÀNH (行) công việc.",
-        "example": "行ってまいりますを べんきょうします。(Học từ 行ってまいります.)"
+        "example": "これから 郵便局へ 行ってまいります。 (Bây giờ tôi xin phép đi bưu điện đây ạ.)"
       },
       {
         "id": "v-11-45",
@@ -1522,7 +1522,7 @@ const kanji_11_15 = [
           }
         ],
         "mnemonic": "【Chiết tự】: Gồm Bộ Xích (彳: bước chân trái) kết hợp với Bộ Xúc (亍: bước chân phải)\n【Mẹo nhớ】: Hai người cùng rảo bước chân trái phải tại ngã tư đường lớn để ĐI LẠI và TIẾN HÀNH (行) công việc.",
-        "example": "行ってきますを べんきょうします。(Học từ 行ってきます.)"
+        "example": "ちょっと コンビニへ 行ってきます。 (Tôi đi ra cửa hàng tiện lợi một chút rồi về.)"
       },
       {
         "id": "v-11-46",
@@ -1552,7 +1552,7 @@ const kanji_11_15 = [
           }
         ],
         "mnemonic": "【Chiết tự】: Gồm Bộ Hai ngọn núi (山 kết hợp với 山) xếp chồng cao ngất lên nhau\n【Mẹo nhớ】: Vượt qua dãy núi này đến ngọn núi khác (hai chữ 山) để bước RA NGOÀI thế giới rộng lớn: XUẤT HIỆN, RA (出).",
-        "example": "お出かけですかを べんきょうします。(Học từ お出かけですか.)"
+        "example": "いい天気ですね。お出かけですか。 (Trời đẹp quá nhỉ. Anh/chị đi ra ngoài đấy à?)"
       },
       {
         "id": "v-11-47",
@@ -1582,7 +1582,7 @@ const kanji_11_15 = [
           }
         ],
         "mnemonic": "【Chiết tự】: Gồm Bộ Xích (彳: bước chân trái) kết hợp với Bộ Xúc (亍: bước chân phải)\n【Mẹo nhớ】: Hai người cùng rảo bước chân trái phải tại ngã tư đường lớn để ĐI LẠI và TIẾN HÀNH (行) công việc.",
-        "example": "行っていらっしゃいを べんきょうします。(Học từ 行っていらっしゃい.)"
+        "example": "気をつけて、行っていらっしゃい。 (Hãy bảo trọng và đi cẩn thận nhé.)"
       }
     ]
   },
@@ -1622,7 +1622,7 @@ const kanji_11_15 = [
           }
         ],
         "mnemonic": "【Chiết tự】: Gồm Bộ Cân (斤: chiếc rìu đốn cây) kết hợp với Bộ Xước (辶: bước chân đi)\n【Mẹo nhớ】: Cầm chiếc rìu (斤) cất bước chân (辶) chỉ một quãng đường ngắn là tới nơi đốn củi: GẦN GŨI, CẬN (近).",
-        "example": "駅から 近いです。(Gần nhà ga.)"
+        "example": "私の 家は 駅に 近いです。 (Nhà của tôi gần nhà ga.)"
       },
       {
         "id": "v-12-2",
@@ -1652,7 +1652,7 @@ const kanji_11_15 = [
           }
         ],
         "mnemonic": "【Chiết tự】: Gồm Bộ Xước (辶: bước chân đi) kết hợp với Chữ Viên (袁: áo dài rộng quệt đất)\n【Mẹo nhớ】: Mặc chiếc áo choàng dài (袁) cất bước chân (辶) đi biền biệt đến tận chân trời góc biển: XA XÔI (遠).",
-        "example": "駅から 近いです。(Gần nhà ga.)"
+        "example": "会社は 家から 遠いです。 (Công ty ở xa nhà.)"
       },
       {
         "id": "v-12-3",
@@ -1682,7 +1682,7 @@ const kanji_11_15 = [
           }
         ],
         "mnemonic": "【Chiết tự】: Gồm Bộ Chữ Tê (con cừu chậm rãi) kết hợp với Bộ Xước (辶: bước chân đi)\n【Mẹo nhớ】: Dắt con cừu già bước từng bước chân (辶) chậm chạp bị tụt lại mãi phía sau: CHẬM TRỄ, MUỘN MÀNG (遅).",
-        "example": "新幹線は 速いです。(Tàu Shinkansen nhanh.)"
+        "example": "バスは 電車より 遅いです。 (Xe buýt chậm hơn tàu điện.)"
       },
       {
         "id": "v-12-4",
@@ -1712,7 +1712,7 @@ const kanji_11_15 = [
           }
         ],
         "mnemonic": "【Chiết tự】: Gồm Bộ Hai chữ Tịch (夕 kết hợp với 夕: hai vầng trăng khuyết chồng lên nhau)\n【Mẹo nhớ】: Hết đêm trăng này lại đến đêm trăng khác (夕+夕) nối tiếp nhau xuất hiện biểu thị số lượng RẤT NHIỀU, ĐA (多).",
-        "example": "人が 多いです。(Đông người.)"
+        "example": "東京は 人が 多いです。 (Ở Tokyo có đông/nhiều người.)"
       },
       {
         "id": "v-12-5",
@@ -1742,7 +1742,7 @@ const kanji_11_15 = [
           }
         ],
         "mnemonic": "【Chiết tự】: Gồm Bộ Nhật (日: mặt trời) kết hợp với Chữ Viện (bàn tay kéo đỡ sưởi ấm)\n【Mẹo nhớ】: Ánh mặt trời mùa xuân (日) chiếu những tia nắng dịu dàng sưởi ấm đôi bàn tay giá buốt: ẤM ÁP (暖).",
-        "example": "秋は 涼しいです。(Mùa thu mát mẻ.)"
+        "example": "春は 暖かい 季節です。 (Mùa xuân là mùa ấm áp.)"
       },
       {
         "id": "v-12-6",
@@ -1772,7 +1772,7 @@ const kanji_11_15 = [
           }
         ],
         "mnemonic": "【Chiết tự】: Gồm Bộ Thủy (氵: dòng nước) kết hợp với Bộ Nhật (日: mặt trời) kết hợp với Bộ Mãnh (chiếc đĩa giữ nhiệt)\n【Mẹo nhớ】: Dòng nước (氵) được ánh mặt trời (日) sưởi ấm trong chiếc đĩa giữ nhiệt: ẤM ÁP, ÔN HÒA (温).",
-        "example": "温かいを べんきょうします。(Học từ 温かい.)"
+        "example": "温かい スープを 飲みました。 (Tôi đã uống món súp ấm nóng.)"
       },
       {
         "id": "v-12-7",
@@ -1802,7 +1802,7 @@ const kanji_11_15 = [
           }
         ],
         "mnemonic": "【Chiết tự】: Gồm Bộ Thủy (氵: dòng nước) kết hợp với Chữ Kinh (京: thủ đô hoa lệ)\n【Mẹo nhớ】: Dòng nước suối mát lành (氵) từ trên kinh thành cao (京) chảy tràn xuống xua tan cái oi bức: MÁT MẺ (涼).",
-        "example": "秋は 涼しいです。(Mùa thu mát mẻ.)"
+        "example": "秋は 涼しいですから、好きです。 (Vì mùa thu mát mẻ nên tôi thích.)"
       },
       {
         "id": "v-12-8",
@@ -1832,7 +1832,7 @@ const kanji_11_15 = [
           }
         ],
         "mnemonic": "【Chiết tự】: Gồm Bộ Một vật thơm ngon ngậm chặt trong miệng\n【Mẹo nhớ】: Miếng kẹo ngọt ngào ngậm chặt bên trong khoang miệng để tận hưởng dư vị thơm lừng: NGỌT NGÀO (甘).",
-        "example": "甘い お菓子 (Bánh kẹo ngọt)"
+        "example": "この りんごは とても 甘いです。 (Quả táo này rất ngọt.)"
       },
       {
         "id": "v-12-9",
@@ -1862,7 +1862,7 @@ const kanji_11_15 = [
           }
         ],
         "mnemonic": "【Chiết tự】: Gồm Bộ Hình chiếc kim xăm khắc hình đau đớn\n【Mẹo nhớ】: Mũi kim nhọn châm vào da thịt gây cảm giác tê tái cay xè và gian truân: CAY ĐẮNG, VẤT VẢ, CAY (辛).",
-        "example": "甘い お菓子 (Bánh kẹo ngọt)"
+        "example": "韓国の キムチは 辛いです。 (Kim chi của Hàn Quốc cay.)"
       },
       {
         "id": "v-12-10",
@@ -1870,7 +1870,7 @@ const kanji_11_15 = [
         "kanji": "重い",
         "reading": "おもい",
         "hanViet": "TRỌNG",
-        "meaning": "Nặng すくない THIẾU / THIỂU Ít",
+        "meaning": "Nặng",
         "type": "Tính từ",
         "kanjiCount": 1,
         "kanjis": [
@@ -1892,7 +1892,7 @@ const kanji_11_15 = [
           }
         ],
         "mnemonic": "【Chiết tự】: Gồm Bộ Chữ Thiên (千: nghìn) kết hợp với Bộ Điền (田: thửa ruộng) kết hợp với Đất (土)\n【Mẹo nhớ】: Khối đất đá nặng hàng nghìn (千) tấn đè nặng lên thửa ruộng (田) dưới chân: NẶNG NỀ, QUAN TRỌNG (重).",
-        "example": "重い 荷物 (Hành lý nặng)"
+        "example": "この 荷物は とても 重いです。 (Kiện hành lý này rất nặng.)"
       },
       {
         "id": "v-12-11",
@@ -1922,7 +1922,7 @@ const kanji_11_15 = [
           }
         ],
         "mnemonic": "【Chiết tự】: Gồm Bộ Xa (車: cỗ xe) kết hợp với Chữ Kính (nhẹ nhàng luồn lách)\n【Mẹo nhớ】: Chiếc xe đẩy làm bằng khung nhẹ (車) dễ dàng luồn lách qua từng bụi cỏ: NHẸ NHÀNG, KHINH (軽).",
-        "example": "重い 荷物 (Hành lý nặng)"
+        "example": "この パソコンは 小さくて、軽いです。 (Chiếc máy tính này nhỏ và nhẹ.)"
       },
       {
         "id": "v-12-12",
@@ -1962,7 +1962,7 @@ const kanji_11_15 = [
           }
         ],
         "mnemonic": "【Cấu thành】: 季 (QUÝ: Mùa màng [Hòa (禾: bông lúa)]) + 節 (TIẾT: Thời tiết [Trúc (竹: cây tre)])\n【Mẹo nhớ từ】: Từng TIẾT KHÍ (節) chuyển vần trong MÙA VỤ (季): MÙA MÀNG, MÙA TRONG NĂM.",
-        "example": "好きな 季節 (Mùa yêu thích)"
+        "example": "季節で いつが いちばん 好きですか。 (Trong các mùa thì bạn thích nhất mùa nào?)"
       },
       {
         "id": "v-12-13",
@@ -1992,7 +1992,7 @@ const kanji_11_15 = [
           }
         ],
         "mnemonic": "【Chiết tự】: Gồm Bộ Tam (三: ba) kết hợp với Bộ Nhân (人: người) kết hợp với Bộ Nhật (日: mặt trời ấm)\n【Mẹo nhớ】: Ba (三) người (人) cùng nhau rủ đi dạo sưởi ấm dưới ánh mặt trời (日) ấm áp của MÙA XUÂN (春).",
-        "example": "春が いちばん 好きです。(Tôi thích mùa xuân nhất.)"
+        "example": "春は 桜が きれいです。 (Vào mùa xuân hoa anh đào rất đẹp.)"
       },
       {
         "id": "v-12-14",
@@ -2022,7 +2022,7 @@ const kanji_11_15 = [
           }
         ],
         "mnemonic": "【Chiết tự】: Gồm Bộ Nhất (一: vòm trời) kết hợp với Bộ Tự (mắt nhìn nắng) kết hợp với Bộ Trĩ (夂: bước chân chậm chạp)\n【Mẹo nhớ】: Dưới vòm trời nắng gắt (一), người ta ngước mắt nhìn rồi bước chân chậm chạp (夂) tránh oi bức MÙA HÈ (夏).",
-        "example": "春が いちばん 好きです。(Tôi thích mùa xuân nhất.)"
+        "example": "私は 夏より 秋の ほうが 好きです。 (So với mùa hè thì tôi thích mùa thu hơn.)"
       },
       {
         "id": "v-12-15",
@@ -2052,7 +2052,7 @@ const kanji_11_15 = [
           }
         ],
         "mnemonic": "【Chiết tự】: Gồm Bộ Hoà (禾: cây lúa chín vàng) kết hợp với Bộ Hoả (火: ngọn lửa đỏ rực)\n【Mẹo nhớ】: Cánh đồng lúa (禾) ngả màu vàng óng ả như ngọn lửa ấm (火) báo hiệu MÙA THU (秋) gặt hái đã sang.",
-        "example": "春が いちばん 好きです。(Tôi thích mùa xuân nhất.)"
+        "example": "日本の 秋は 果物が おいしいです。 (Mùa thu ở Nhật Bản trái cây rất ngon.)"
       },
       {
         "id": "v-12-16",
@@ -2082,7 +2082,7 @@ const kanji_11_15 = [
           }
         ],
         "mnemonic": "【Chiết tự】: Gồm Bộ Trĩ (夂: bước chân run rẩy) kết hợp với Hai giọt băng giá (冫: tuyết lạnh)\n【Mẹo nhớ】: Hai giọt băng tuyết (冫) rơi buốt giá khiến bước chân (夂) run rẩy chậm lại giữa MÙA ĐÔNG (冬) lạnh ngắt.",
-        "example": "春が いちばん 好きです。(Tôi thích mùa xuân nhất.)"
+        "example": "北海道の 冬は とても 寒いです。 (Mùa đông ở Hokkaido rất lạnh.)"
       },
       {
         "id": "v-12-17",
@@ -2112,7 +2112,7 @@ const kanji_11_15 = [
           }
         ],
         "mnemonic": "【Chiết tự】: Gồm Bộ Nhất (vòm trời) kết hợp với Khung mây giăng phủ kết hợp với Bốn hạt nước nhỏ rơi xuống\n【Mẹo nhớ】: Từ trên vòm trời mây xám giăng kín, bốn hạt mưa tí tách rơi nghiêng xuống đồng cỏ: CƠN MƯA (雨).",
-        "example": "きのうは 雨でした。(Hôm qua trời mưa.)"
+        "example": "昨日は 一日中 雨でした。 (Hôm qua trời mưa suốt cả ngày.)"
       },
       {
         "id": "v-12-18",
@@ -2142,7 +2142,7 @@ const kanji_11_15 = [
           }
         ],
         "mnemonic": "【Chiết tự】: Gồm Bộ Vũ (雨: mưa trên trời) kết hợp với Bộ Ký/Bạch (ヨ: chiếc chổi quét dọn)\n【Mẹo nhớ】: Cơn mưa (雨) đông đặc rơi thành từng bông trắng xoá phủ kín lối đi, phải cầm chổi (ヨ) ra sức dọn: TUYẾT (雪).",
-        "example": "きのうは 雨でした。(Hôm qua trời mưa.)"
+        "example": "冬は 山に 雪が たくさん あります。 (Vào mùa đông trên núi có rất nhiều tuyết.)"
       },
       {
         "id": "v-12-19",
@@ -2172,7 +2172,7 @@ const kanji_11_15 = [
           }
         ],
         "mnemonic": "【Chiết tự】: Gồm Bộ Vũ (雨: mây mưa) kết hợp với Chữ Vân (云: mây bay tầng tầng)\n【Mẹo nhớ】: Đám mây mưa dày đặc (雨) tầng tầng lớp lớp (云) che khuất ánh mặt trời: TRỜI NHIỀU MÂY, U ÁM (曇).",
-        "example": "曇りを べんきょうします。(Học từ 曇り.)"
+        "example": "今日の 天気は 曇りです。 (Thời tiết hôm nay trời nhiều mây.)"
       },
       {
         "id": "v-12-20",
@@ -2212,7 +2212,7 @@ const kanji_11_15 = [
           }
         ],
         "mnemonic": "【Cấu thành】: 天 (THIÊN: Bầu trời [Nhất (一: tầng mây trời cao)]) + 気 (KHÍ: Khí chất [Khí (气: hơi nước bay cuồn cuộn)])\n【Mẹo nhớ từ】: KHÍ TIẾT (気) của đất TRỜI (天) ban xuống: THỜI TIẾT.",
-        "example": "きのうは 雨でした。(Hôm qua trời mưa.)"
+        "example": "昨日は いい 天気でした。 (Hôm qua thời tiết rất đẹp.)"
       },
       {
         "id": "v-12-21",
@@ -2252,7 +2252,7 @@ const kanji_11_15 = [
           }
         ],
         "mnemonic": "【Cấu thành】: 空 (KHÔNG: Bầu trời [Huyệt (穴: cái hang hốc trống trải)]) + 港 (CẢNG: Bến cảng [Thuỷ (氵: vùng nước sông biển)])\n【Mẹo nhớ từ】: BẾN CẢNG (港) trên BẦU TRỜI KHÔNG (空) cho máy bay cất hạ cánh: SÂN BAY.",
-        "example": "海で 泳ぎます。(Bơi ở biển.)"
+        "example": "バスで 空港まで 1時間 かかります。 (Đi bằng xe buýt đến sân bay mất 1 tiếng.)"
       },
       {
         "id": "v-12-22",
@@ -2282,7 +2282,7 @@ const kanji_11_15 = [
           }
         ],
         "mnemonic": "【Chiết tự】: Gồm Bộ Thuỷ (氵: làn nước mênh mông) kết hợp với Chữ Mỗi (毎: mỗi người, tấm lòng người mẹ)\n【Mẹo nhớ】: Vùng nước mênh mông (氵) bao dung như lòng người mẹ nuôi dưỡng mỗi (毎) con người từ xưa: BIỂN CẢ (海).",
-        "example": "海で 泳ぎます。(Bơi ở biển.)"
+        "example": "夏休みに 家族と 海へ 行きました。 (Kỳ nghỉ hè tôi đã đi biển cùng gia đình.)"
       },
       {
         "id": "v-12-23",
@@ -2322,7 +2322,7 @@ const kanji_11_15 = [
           }
         ],
         "mnemonic": "【Cấu thành】: 世 (THẾ: Thế giới [Ba chữ Thập (十]) + 界 (GIỚI: Ranh giới [Điền (田: thửa ruộng)])\n【Mẹo nhớ từ】: KHÔNG GIAN CÕI (世) ranh GIỚI (界) của toàn nhân loại: THẾ GIỚI.",
-        "example": "祇園祭 (Lễ hội Gion)"
+        "example": "世界で いちばん 高い 山は エベレストです。 (Ngọn núi cao nhất trên thế giới là Everest.)"
       },
       {
         "id": "v-12-24",
@@ -2352,7 +2352,7 @@ const kanji_11_15 = [
           }
         ],
         "mnemonic": "【Chiết tự】: Gồm Bộ Nhục (月: miếng thịt cúng) kết hợp với Chữ Hựu (又: bàn tay dâng) kết hợp với Bộ Kỳ (示: bàn thờ thần)\n【Mẹo nhớ】: Bàn tay (又) thành kính dâng miếng thịt tươi (月) lên bàn thờ thần (示) để cầu phúc trong LỄ HỘI (祭).",
-        "example": "祇園祭 (Lễ hội Gion)"
+        "example": "京都の お祭りは にぎやかでした。 (Lễ hội ở Kyoto đã rất náo nhiệt.)"
       },
       {
         "id": "v-12-25",
@@ -2382,7 +2382,7 @@ const kanji_11_15 = [
           }
         ],
         "mnemonic": "【Chiết tự】: Gồm Bộ Hoả (火: ngọn lửa đỏ) kết hợp với Chữ Nghiêu (đống củi trên gò đất cao)\n【Mẹo nhớ】: Châm ngọn lửa đỏ (火) vào đống củi xếp trên gò đất để NƯỚNG thịt và ĐỐT CHÁY (焼) củi khô.",
-        "example": "刺身を 食べます。(Ăn món Sashimi.)"
+        "example": "昨日 初めて すき焼きを 食べました。 (Hôm qua lần đầu tiên tôi đã ăn món Sukiyaki.)"
       },
       {
         "id": "v-12-26",
@@ -2422,7 +2422,7 @@ const kanji_11_15 = [
           }
         ],
         "mnemonic": "【Cấu thành】: 刺 (THÍCH: Đâm [Bụi gai nhọn bên trái]) + 身 (THÂN: Thân thể [Hình vẽ người phụ nữ mang thai nhìn nghiêng với bụng nhô về phía trước])\n【Mẹo nhớ từ】: Thích (刺: thái lát mỏng) + Thân (身: thân cá). Lát cá tươi sống thái mỏng tinh tế chấm kèm mù tạt Wasabi ➔ MÓN SASHIMI.",
-        "example": "刺身を 食べます。(Ăn món Sashimi.)"
+        "example": "日本料理で 刺身が いちばん 好きです。 (Trong các món ăn Nhật, tôi thích nhất món Sashimi.)"
       },
       {
         "id": "v-12-27",
@@ -2462,7 +2462,7 @@ const kanji_11_15 = [
           }
         ],
         "mnemonic": "【Cấu thành】: 寿 (THỌ: Tuổi thọ [Ba nét ngang dài biểu thị thời gian trường cửu]) + 司 (TI: Quản lý [Khung vòm bao bọc])\n【Mẹo nhớ từ】: Thọ (寿: sống lâu trăm tuổi) + Ty (司: nắm cơm trộn giấm). Nắm cơm trộn giấm ăn kèm hải sản tươi sống chúc trường thọ ➔ MÓN SUSHI.",
-        "example": "刺身を 食べます。(Ăn món Sashimi.)"
+        "example": "すき焼きと 寿司と どちらが 好きですか。 (Giữa Sukiyaki và Sushi thì bạn thích món nào hơn?)"
       },
       {
         "id": "v-12-28",
@@ -2502,7 +2502,7 @@ const kanji_11_15 = [
           }
         ],
         "mnemonic": "【Cấu thành】: 簡 (GIẢN: Đơn giản [Trúc (竹: thẻ tre)]) + 単 (ĐƠN: Đơn độc [Hai đốm sừng bên trên])\n【Mẹo nhớ từ】: Giản (簡: đơn giản) + Đơn (単: một mình, không phức tạp). Mọi việc rõ ràng mạch lạc, thực hiện vô cùng dễ dàng ➔ ĐƠN GIẢN, DỄ DÀNG.",
-        "example": "簡単（な）を べんきょうします。(Học từ 簡単（な）.)"
+        "example": "この 料理は 簡単ですから、よく 作ります。 (Món ăn này vì đơn giản nên tôi thường hay nấu.)"
       },
       {
         "id": "v-12-29",
@@ -2542,7 +2542,7 @@ const kanji_11_15 = [
           }
         ],
         "mnemonic": "【Cấu thành】: 人 (NHÂN: Người [Hình tượng hai nét tựa vào nhau]) + 多 (ĐA: Nhiều [Hai chữ Tịch (夕])\n【Mẹo nhớ từ】: Nhân (人: con người) + Đa (多: nhiều). Đám đông người qua lại tấp nập nhộn nhịp ➔ ĐÔNG NGƯỜI.",
-        "example": "人が多いを べんきょうします。(Học từ 人が多い.)"
+        "example": "日曜日の デパートは 人が多いです。 (Trung tâm thương mại vào Chủ nhật rất đông người.)"
       },
       {
         "id": "v-12-30",
@@ -2582,7 +2582,7 @@ const kanji_11_15 = [
           }
         ],
         "mnemonic": "【Cấu thành】: 人 (NHÂN: Người [Hình tượng hai nét tựa vào nhau]) + 少 (THIỂU: Ít ỏi [Chữ Tiểu (小: nhỏ bé)])\n【Mẹo nhớ từ】: Nhân (人: con người) + Thiểu (少: ít ỏi). Nơi vắng vẻ, thưa thớt bóng người qua lại ➔ ÍT NGƯỜI, VẮNG VẺ.",
-        "example": "人が少ないを べんきょうします。(Học từ 人が少ない.)"
+        "example": "夜の 公園は 人が少ないです。 (Công viên vào buổi tối vắng người.)"
       },
       {
         "id": "v-12-31",
@@ -2612,7 +2612,7 @@ const kanji_11_15 = [
           }
         ],
         "mnemonic": "【Chiết tự】: Gồm Bộ Thảo (艹: búp cỏ non tơ) kết hợp với Chữ Hữu (bàn tay nâng niu chăm sóc)\n【Mẹo nhớ】: Búp cỏ non xanh mơn mởn (艹) tràn đầy nhựa sống mọc vươn lên đón nắng: TRẺ TRUNG, XANH TƯƠI (若).",
-        "example": "若い 先生 (Thầy giáo trẻ)"
+        "example": "ミラーさんは 私より 若いです。 (Anh Miller trẻ hơn tôi.)"
       },
       {
         "id": "v-12-32",
@@ -2642,7 +2642,7 @@ const kanji_11_15 = [
           }
         ],
         "mnemonic": "【Chiết tự】: Gồm Bộ Sư (⺕: bàn tay cầm chiếc chổi) kết hợp với Chữ Cân (巾: tấm khăn lau)\n【Mẹo nhớ】: Cầm chổi (⺕) và khăn (巾) quét tước nhà cửa sạch sẽ tinh tươm rồi trở VỀ NHÀ, QUY (帰) tụ sum họp.",
-        "example": "お帰りなさいを べんきょうします。(Học từ お帰りなさい.)"
+        "example": "ただいま。― お帰りなさい。 (Tôi đã về đây. ― Anh/chị đã về rồi đấy à.)"
       },
       {
         "id": "v-12-33",
@@ -2672,7 +2672,7 @@ const kanji_11_15 = [
           }
         ],
         "mnemonic": "【Chiết tự】: Gồm Bộ Nạch (疒: giường ốm đau) kết hợp với Bộ Bì (皮: làn da nhăn nheo héo úa)\n【Mẹo nhớ】: Làm việc quá sức khiến làn da (皮) héo úa như ngã bệnh nằm liệt giường (疒): MỆT MỎI, BÌ (疲).",
-        "example": "疲れましたを べんきょうします。(Học từ 疲れました.)"
+        "example": "今日は 仕事が 多かったですから、疲れました。 (Hôm nay vì nhiều việc nên tôi mệt rồi.)"
       },
       {
         "id": "v-12-34",
@@ -2722,7 +2722,7 @@ const kanji_11_15 = [
           }
         ],
         "mnemonic": "【Cấu thành】: 祇 (KỲ: Thần đất [Thị (礻: thần linh)]) + 園 (VIÊN: Khu vườn [Vi (囗: bờ tường bao quanh)]) + 祭 (TẾ: Lễ hội [Nhục (月: miếng thịt cúng)])\n【Mẹo nhớ từ】: Kỳ Viên (祇園: ngôi đền Gion ở Kyoto) + Tế (祭: lễ hội). Lễ hội truyền thống linh thiêng bậc nhất mùa hè Kyoto ➔ LỄ HỘI GION.",
-        "example": "祇園祭を べんきょうします。(Học từ 祇園祭.)"
+        "example": "祇園祭は 京都で いちばん 有名な 祭りです。 (Lễ hội Gion là lễ hội nổi tiếng nhất ở Kyoto.)"
       },
       {
         "id": "v-12-35",
@@ -2762,7 +2762,7 @@ const kanji_11_15 = [
           }
         ],
         "mnemonic": "【Cấu thành】: 生 (SINH: Sống [Mầm cây nảy chồi từ mặt đất (土)]) + 花 (HOA: Bông hoa [Thảo (艹: cây cỏ non)])\n【Mẹo nhớ từ】: Sinh (生: sức sống) + Hoa (花: bông hoa). Nghệ thuật cắm hoa thổi hồn sức sống thanh tao vào từng cành hoa chiếc lá ➔ NGHỆ THUẬT CẮM HOA IKEBANA.",
-        "example": "生け花を べんきょうします。(Học từ 生け花.)"
+        "example": "日本の 生け花は とても きれいです。 (Nghệ thuật cắm hoa của Nhật Bản rất đẹp.)"
       },
       {
         "id": "v-12-36",
@@ -2792,7 +2792,7 @@ const kanji_11_15 = [
           }
         ],
         "mnemonic": "【Chiết tự】: Gồm Bộ Y (衤: mảnh vải) kết hợp với Bộ Đao (刀: con dao cắt)\n【Mẹo nhớ】: Con dao (刀) đặt nhát cắt đầu tiên lên tấm vải lụa (衤) để may áo là bước KHỞI ĐẦU, SƠ KHAI (初).",
-        "example": "初めてを べんきょうします。(Học từ 初めて.)"
+        "example": "去年の 冬、初めて 雪を 見ました。 (Mùa đông năm ngoái, lần đầu tiên tôi đã nhìn thấy tuyết.)"
       },
       {
         "id": "v-12-37",
@@ -2832,7 +2832,7 @@ const kanji_11_15 = [
           }
         ],
         "mnemonic": "【Cấu thành】: 試 (THÍ: Thi cử [Ngôn (言: lời tra hỏi thi cử)]) + 験 (NGHIỆM: Kinh nghiệm [Mã (馬: phi ngựa thần)])\n【Mẹo nhớ từ】: Thí (試: thử sức) + Nghiệm (験: kiểm nghiệm trình độ). Bài kiểm tra đánh giá năng lực học vấn ➔ KỲ THI, BÀI KIỂM TRA.",
-        "example": "試験を べんきょうします。(Học từ 試験.)"
+        "example": "昨日の 試験は 簡単でした。 (Bài kiểm tra ngày hôm qua rất đơn giản.)"
       },
       {
         "id": "v-12-38",
@@ -2872,7 +2872,7 @@ const kanji_11_15 = [
           }
         ],
         "mnemonic": "【Cấu thành】: 紅 (HỒNG: Màu đỏ [Mịch (糸: sợi tơ chỉ)]) + 葉 (DIỆP: Chiếc lá [Thảo (艹: mầm xanh)])\n【Mẹo nhớ từ】: Hồng (紅: sắc đỏ thắm) + Diệp (葉: chiếc lá phong). Rừng lá phong chuyển sang sắc đỏ rực rỡ vào mùa thu Nhật Bản ➔ MÙA LÁ ĐỎ MOMIJI.",
-        "example": "紅葉を べんきょうします。(Học từ 紅葉.)"
+        "example": "秋は 京都の 紅葉が きれいです。 (Vào mùa thu, lá đỏ ở Kyoto rất đẹp.)"
       },
       {
         "word": "少ない",
@@ -2901,7 +2901,7 @@ const kanji_11_15 = [
           }
         ],
         "mnemonic": "【Chiết tự】: Gồm Bộ Tiểu (小: nhỏ bé) thêm một nét phẩy (丿) cắt bớt đi\n【Mẹo nhớ】: Đã nhỏ bé (小) lại còn bị cắt bớt đi một nét nữa thì số lượng càng thêm ÍT (少).",
-        "example": "人が 少ないです。(Ít người.)",
+        "example": "この 町は バスが 少ないです。 (Thị trấn này có ít xe buýt.)",
         "id": "v-12-39"
       }
     ]
@@ -2942,7 +2942,7 @@ const kanji_11_15 = [
           }
         ],
         "mnemonic": "【Chiết tự】: Gồm Bộ Phương (方: lá cờ bay) kết hợp với Bộ Tử (子: đứa trẻ) kết hợp với Bộ Xước (辶: đôi chân cất bước)\n【Mẹo nhớ】: Đứa trẻ (子) cầm cờ phướn (方) tung tăng cất bước (辶) dạo chơi thỏa thích muôn phương: VUI CHƠI, DU HÍ (遊).",
-        "example": "遊ぶを べんきょうします。(Học từ 遊ぶ.)"
+        "example": "公園で 子供と 遊びます。 (Tôi vui chơi cùng con ở công viên.)"
       },
       {
         "id": "v-13-2",
@@ -2972,7 +2972,7 @@ const kanji_11_15 = [
           }
         ],
         "mnemonic": "【Chiết tự】: Gồm Bộ Thuỷ (氵: làn nước trong) kết hợp với Chữ Vĩnh (永: bơi lội trường kỳ không mệt)\n【Mẹo nhớ】: Nhảy mình vào làn nước biếc (氵) sải tay bơi miệt mài vươn xa vô tận (永): BƠI LỘI, VỊNH (泳).",
-        "example": "泳ぐを べんきょうします。(Học từ 泳ぐ.)"
+        "example": "夏は 海で 泳ぎたいです。 (Mùa hè tôi muốn bơi ở biển.)"
       },
       {
         "id": "v-13-3",
@@ -3002,7 +3002,7 @@ const kanji_11_15 = [
           }
         ],
         "mnemonic": "【Chiết tự】: Gồm Bộ Chữ Ngang (ngước nhìn kính cẩn) kết hợp với Bộ Xước (辶: rảo bước đi ra)\n【Mẹo nhớ】: Rảo nhanh bước chân (辶) ra tận đầu cổng ngước nhìn kính cẩn chào đón khách quý: NGHÊNH TIẾP (迎).",
-        "example": "迎えるを べんきょうします。(Học từ 迎える.)"
+        "example": "空港へ 友達を 迎えに 行きます。 (Tôi đi ra sân bay để đón bạn.)"
       },
       {
         "id": "v-13-4",
@@ -3032,7 +3032,7 @@ const kanji_11_15 = [
           }
         ],
         "mnemonic": "【Chiết tự】: Gồm Bộ Thủ (扌: đôi bàn tay) kết hợp với Chữ Hoán (chim chuyền cành đổi vị trí)\n【Mẹo nhớ】: Đôi bàn tay (扌) nhận vé rồi di chuyển sang bến tàu khác để tiếp tục lộ trình: ĐỔI XE, HOÁN ĐỔI (換).",
-        "example": "換えるを べんきょうします。(Học từ 換える.)"
+        "example": "銀行で お金を 換えます。 (Tôi đổi tiền ở ngân hàng.)"
       },
       {
         "id": "v-13-5",
@@ -3062,7 +3062,7 @@ const kanji_11_15 = [
           }
         ],
         "mnemonic": "【Chiết tự】: Gồm Bộ Nạch (疒: giường ốm đau) kết hợp với Bộ Bì (皮: làn da nhăn nheo héo úa)\n【Mẹo nhớ】: Làm việc quá sức khiến làn da (皮) héo úa như ngã bệnh nằm liệt giường (疒): MỆT MỎI, BÌ (疲).",
-        "example": "疲れるを べんきょうします。(Học từ 疲れる.)"
+        "example": "たくさん 歩きましたから、疲れました。 (Vì đã đi bộ nhiều nên tôi bị mệt.)"
       },
       {
         "id": "v-13-6",
@@ -3092,7 +3092,7 @@ const kanji_11_15 = [
           }
         ],
         "mnemonic": "【Chiết tự】: Gồm Bộ Hai ngọn núi (山 kết hợp với 山) xếp chồng cao ngất lên nhau\n【Mẹo nhớ】: Vượt qua dãy núi này đến ngọn núi khác (hai chữ 山) để bước RA NGOÀI thế giới rộng lớn: XUẤT HIỆN, RA (出).",
-        "example": "出すを べんきょうします。(Học từ 出す.)"
+        "example": "郵便局へ 手紙を 出しに 行きます。 (Tôi đi bưu điện để gửi thư.)"
       },
       {
         "id": "v-13-7",
@@ -3122,7 +3122,7 @@ const kanji_11_15 = [
           }
         ],
         "mnemonic": "【Chiết tự】: Gồm Bộ Hai ngọn núi (山 kết hợp với 山) xếp chồng cao ngất lên nhau\n【Mẹo nhớ】: Vượt qua dãy núi này đến ngọn núi khác (hai chữ 山) để bước RA NGOÀI thế giới rộng lớn: XUẤT HIỆN, RA (出).",
-        "example": "出るを べんきょうします。(Học từ 出る.)"
+        "example": "毎朝 7時半に 家を 出ます。 (Mỗi sáng tôi rời khỏi nhà lúc 7 giờ rưỡi.)"
       },
       {
         "id": "v-13-8",
@@ -3152,7 +3152,7 @@ const kanji_11_15 = [
           }
         ],
         "mnemonic": "【Chiết tự】: Gồm Bộ Cốc (谷: thung lũng sâu không đáy) kết hợp với Bộ Khiếm (欠: há to miệng khát khao)\n【Mẹo nhớ】: Lòng tham sâu như thung lũng (谷), há to miệng (欠) không ngừng khát khao đòi hỏi: HAM MUỐN, DỤC (欲).",
-        "example": "車が 欲しいです。(Tôi muốn có một chiếc ô tô.)"
+        "example": "私は 新しい パソコンが 欲しいです。 (Tôi muốn có một chiếc máy tính mới.)"
       },
       {
         "id": "v-13-9",
@@ -3182,7 +3182,7 @@ const kanji_11_15 = [
           }
         ],
         "mnemonic": "【Chiết tự】: Gồm Bộ Miên (宀: mái nhà trống vắng) kết hợp với Chữ Thúc (khắc khổ, lẻ loi)\n【Mẹo nhớ】: Dưới mái nhà hoang vu (宀) chỉ có một bóng hình lẻ loi giữa đêm đông vắng ngắt: CÔ ĐƠN, TĨNH MỊCH (寂).",
-        "example": "一人で 寂しいです。(Ở một mình cô đơn.)"
+        "example": "一人で 日本に いますから、時々 寂しいです。 (Vì ở Nhật một mình nên thỉnh thoảng tôi thấy cô đơn.)"
       },
       {
         "id": "v-13-10",
@@ -3212,7 +3212,7 @@ const kanji_11_15 = [
           }
         ],
         "mnemonic": "【Chiết tự】: Gồm Bộ Nghiễm (广: mái hiên rộng thênh) kết hợp với Bộ Khư (厶: vùng đất riêng)\n【Mẹo nhớ】: Mái hiên nhà (广) mở ra khoảng sân riêng (厶) rộng thênh thang bát ngát: RỘNG RÃI, QUẢNG ĐẠI (広).",
-        "example": "広い 部屋 (Căn phòng rộng)"
+        "example": "広い 家が 欲しいです。 (Tôi muốn có một ngôi nhà rộng rãi.)"
       },
       {
         "id": "v-13-11",
@@ -3242,7 +3242,7 @@ const kanji_11_15 = [
           }
         ],
         "mnemonic": "【Chiết tự】: Gồm Bộ Khuyển (犭: con chó) kết hợp với Chữ Hiệp (bị kẹp cứng giữa hai bên bờ rào)\n【Mẹo nhớ】: Con chó (犭) chạy vào ngõ cụt bị kẹp cứng giữa hai bức tường hẹp không quay đầu được: CHẬT HẸP (狭).",
-        "example": "広い 部屋 (Căn phòng rộng)"
+        "example": "私の 部屋は 狭いですが、きれいです。 (Phòng của tôi tuy hẹp nhưng sạch đẹp.)"
       },
       {
         "id": "v-13-12",
@@ -3292,7 +3292,7 @@ const kanji_11_15 = [
           }
         ],
         "mnemonic": "【Cấu thành】: 市 (THỊ: Thành phố [Đầu (亠: cổng vào chợ)]) + 役 (DỊCH: Công vụ [Xích (彳: bước chân đi lại)]) + 所 (SỞ: Nơi chốn [Hộ (戸: cánh cửa nhà)])\n【Mẹo nhớ từ】: Khuôn viên, tòa cơ sở chuyên trách phục vụ cho mục đích [市役]: Ủy Ban Nhân Dân (市役所: しやくしょ).",
-        "example": "川で 泳ぎます。(Bơi ở sông.)"
+        "example": "市役所の 前に バス乗り場が あります。 (Phía trước tòa thị chính có bến xe buýt.)"
       },
       {
         "id": "v-13-13",
@@ -3322,7 +3322,7 @@ const kanji_11_15 = [
           }
         ],
         "mnemonic": "【Chiết tự】: Gồm Bộ Ba nét sổ uốn lượn tượng hình dòng nước chảy xuôi dòng\n【Mẹo nhớ】: Ba nhánh nước từ khe núi cùng uốn lượn chảy xuôi về phía đồng bằng: DÒNG SÔNG, XUYÊN (川).",
-        "example": "川で 泳ぎます。(Bơi ở sông.)"
+        "example": "日曜日に 川へ 釣りに 行きます。 (Chủ nhật tôi đi ra sông để câu cá.)"
       },
       {
         "id": "v-13-14",
@@ -3352,7 +3352,7 @@ const kanji_11_15 = [
           }
         ],
         "mnemonic": "【Chiết tự】: Gồm Bộ Kim (金: lưỡi câu bằng sắt kim loại) kết hợp với Bộ Thược (勺: chiếc muôi múc)\n【Mẹo nhớ】: Dùng chiếc lưỡi câu bằng kim loại (金) móc mồi quăng xuống lòng hồ múc cá lên: CÂU CÁ, ĐIẾU (釣).",
-        "example": "釣りへ 行きます。(Đi câu cá.)"
+        "example": "父は 釣りが 大好きです。 (Bố tôi rất thích câu cá.)"
       },
       {
         "id": "v-13-15",
@@ -3392,7 +3392,7 @@ const kanji_11_15 = [
           }
         ],
         "mnemonic": "【Cấu thành】: 週 (CHU: Tuần lễ [Chữ Chu (周: chu vi vòng quanh)]) + 末 (MẠT: Cuối cùng [Mộc (cây cối) với nét gạch ngang trên đỉnh vươn dài hơn nét dưới])\n【Mẹo nhớ từ】: Chu (週: tuần lễ) + Mạt (末: phần cuối). Những ngày cuối cùng khép lại một tuần làm việc bận rộn ➔ CUỐI TUẦN.",
-        "example": "3時ごろ (Khoảng 3 giờ)"
+        "example": "週末は 何を したいですか。 (Cuối tuần bạn muốn làm gì?)"
       },
       {
         "id": "v-13-16",
@@ -3422,7 +3422,7 @@ const kanji_11_15 = [
           }
         ],
         "mnemonic": "【Chiết tự】: Gồm Bộ Nhân (亻: người) kết hợp với Chữ Khả (可: đòn gánh có thể gánh vác)\n【Mẹo nhớ】: Một người (亻) vác trên vai chiếc đòn gánh nặng trĩu (可) cất tiếng hỏi: Đang gánh CÁI GÌ (何) thế kia?",
-        "example": "どこかへ 行きたいです。(Muốn đi đâu đó.)"
+        "example": "冷たい 飲み物を 何か 飲みたいです。 (Tôi muốn uống một thứ đồ uống lạnh nào đó.)"
       },
       {
         "id": "v-13-17",
@@ -3462,7 +3462,7 @@ const kanji_11_15 = [
           }
         ],
         "mnemonic": "【Cấu thành】: 腹 (PHÚC: Cái bụng [Nhục (月: da thịt thân thể)]) + 空 (KHÔNG: Bầu trời [Huyệt (穴: cái hang hốc trống trải)])\n【Mẹo nhớ từ】: Phúc (腹: bụng dạ) + Không (空: trống rỗng). Bụng dạ trống rỗng cồn cào vì chưa có hạt cơm nào lót dạ ➔ ĐÓI BỤNG RỒI.",
-        "example": "お腹が空きましたを べんきょうします。(Học từ お腹が空きました.)"
+        "example": "お腹が空きましたから、何か 食べましょう。 (Vì đói bụng rồi nên chúng ta cùng ăn gì đó nhé.)"
       },
       {
         "id": "v-13-18",
@@ -3502,7 +3502,7 @@ const kanji_11_15 = [
           }
         ],
         "mnemonic": "【Cấu thành】: 喉 (HẦU: Cổ họng [Khẩu (口: miệng)]) + 渇 (KHÁT: Khát nước [Thủy (氵: nước)])\n【Mẹo nhớ từ】: Hầu (喉: cổ họng) + Khát (渇: khô khát). Cổ họng khô khốc cần uống nước giải nhiệt ➔ KHÁT NƯỚC RỒI.",
-        "example": "喉が渇きましたを べんきょうします。(Học từ 喉が渇きました.)"
+        "example": "喉が渇きましたから、水を 飲みたいです。 (Vì khát nước nên tôi muốn uống nước.)"
       },
       {
         "id": "v-13-19",
@@ -3552,7 +3552,7 @@ const kanji_11_15 = [
           }
         ],
         "mnemonic": "【Cấu thành】: 手 (THỦ: Bàn tay [Hình tượng bàn tay năm ngón xòe ra]) + 紙 (CHỈ: Tờ giấy [Mịch (糸: sợi xơ tơ)]) + 出 (XUẤT: Đi ra [Hai ngọn núi (山])\n【Mẹo nhớ từ】: Thủ chỉ (手紙: lá thư tay) + Xuất (出: gửi đi). Thả phong thư tay vào hòm thư gửi gắm tâm tình tới phương xa ➔ GỬI THƯ.",
-        "example": "手紙を出すを べんきょうします。(Học từ 手紙を出す.)"
+        "example": "ポストで 手紙を出します。 (Tôi bỏ/gửi thư ở thùng thư bưu điện.)"
       },
       {
         "id": "v-13-20",
@@ -3582,7 +3582,7 @@ const kanji_11_15 = [
           }
         ],
         "mnemonic": "【Chiết tự】: Gồm Bộ Hai nét khép mở tạo thành khe cửa có người lách chân bước vào\n【Mẹo nhớ】: Nét nghiêng rẽ lối như bước chân lách qua khe cửa để ĐI VÀO bên trong căn phòng: NHẬP, VÀO (入).",
-        "example": "入るを べんきょうします。(Học từ 入る.)"
+        "example": "あの レストランに 入りましょう。 (Chúng ta hãy vào nhà hàng kia nhé.)"
       },
       {
         "id": "v-13-21",
@@ -3642,7 +3642,7 @@ const kanji_11_15 = [
           }
         ],
         "mnemonic": "【Cấu thành】: 喫 (KHIẾT: Ăn uống [Khẩu (口: miệng)]) + 茶 (TRÀ: Trà [Thảo (艹: búp lá cỏ)]) + 店 (ĐIẾM: Cửa hàng [Quảng (广: mái nhà che chở)]) + 入 (NHẬP: Đi vào [Hai nét khép mở tạo thành khe cửa có người lách chân bước vào])\n【Mẹo nhớ từ】: Khiết trà điếm (喫茶店: quán cà phê giải khát) + Nhập (入: bước vào). Bước chân vào quán nước gọi một tách cà phê thơm lừng thư giãn ➔ VÀO QUÁN CÀ PHÊ.",
-        "example": "喫茶店に入るを べんきょうします。(Học từ 喫茶店に入る.)"
+        "example": "喫茶店に入って、コーヒーを 飲みます。 (Tôi vào quán giải khát và uống cà phê.)"
       },
       {
         "id": "v-13-22",
@@ -3702,7 +3702,7 @@ const kanji_11_15 = [
           }
         ],
         "mnemonic": "【Cấu thành】: 喫 (KHIẾT: Ăn uống [Khẩu (口: miệng)]) + 茶 (TRÀ: Trà [Thảo (艹: búp lá cỏ)]) + 店 (ĐIẾM: Cửa hàng [Quảng (广: mái nhà che chở)]) + 出 (XUẤT: Đi ra [Hai ngọn núi (山])\n【Mẹo nhớ từ】: Khiết trà điếm (喫茶店: quán cà phê) + Xuất (出: bước ra). Đứng dậy thanh toán và bước ra khỏi quán nước ➔ RỜI KHỎI QUÁN CÀ PHÊ.",
-        "example": "喫茶店を出るを べんきょうします。(Học từ 喫茶店を出る.)"
+        "example": "3時に 喫茶店を出ました。 (Lúc 3 giờ tôi đã rời khỏi quán cà phê.)"
       },
       {
         "id": "v-13-23",
@@ -3742,7 +3742,7 @@ const kanji_11_15 = [
           }
         ],
         "mnemonic": "【Cấu thành】: 結 (KẾT: Kết nối [Mịch (糸: sợi tơ hồng)]) + 婚 (HÔN: Kết hôn [Nữ (女: cô dâu)])\n【Mẹo nhớ từ】: Kết (結: gắn kết tơ hồng) + Hôn (婚: lễ cưới). Thắt chặt mối duyên lành bằng lễ cưới trăm năm hạnh phúc ➔ KẾT HÔN, CƯỚI NHAU.",
-        "example": "結婚するを べんきょうします。(Học từ 結婚する.)"
+        "example": "来年 彼女と 結婚したいです。 (Năm sau tôi muốn kết hôn với cô ấy.)"
       },
       {
         "id": "v-13-24",
@@ -3782,7 +3782,7 @@ const kanji_11_15 = [
           }
         ],
         "mnemonic": "【Cấu thành】: 買 (MÃI: Mua sắm [Võng (罒: con mắt soi xét)]) + 物 (VẬT: Đồ vật [Ngưu (牛: con bò)])\n【Mẹo nhớ từ】: Mãi (買: mua sắm) + Vật (物: đồ dùng). Rảo bước qua các gian hàng chọn mua những vật phẩm cần thiết cho gia đình ➔ ĐI MUA SẮM.",
-        "example": "買い物するを べんきょうします。(Học từ 買い物する.)"
+        "example": "デパートへ 買い物に 行きます。 (Tôi đi trung tâm thương mại để mua sắm.)"
       },
       {
         "id": "v-13-25",
@@ -3822,7 +3822,7 @@ const kanji_11_15 = [
           }
         ],
         "mnemonic": "【Cấu thành】: 食 (THỰC: Ăn [Nhân (人: người)]) + 事 (SỰ: Sự việc [Bàn tay cầm bút ghi chép mọi biến cố])\n【Mẹo nhớ từ】: Thực (食: ăn uống) + Sự (事: việc dùng bữa). Ngồi vào bàn thưởng thức những món ăn ngon lành ➔ DÙNG BỮA, ĂN CƠM.",
-        "example": "食事するを べんきょうします。(Học từ 食事する.)"
+        "example": "家族と レストランへ 食事に 行きます。 (Tôi đi nhà hàng dùng bữa cùng gia đình.)"
       },
       {
         "id": "v-13-26",
@@ -3862,7 +3862,7 @@ const kanji_11_15 = [
           }
         ],
         "mnemonic": "【Cấu thành】: 散 (TÁN: Đi dạo [Thảo cúc (hoa lá rải rác)]) + 歩 (BỘ: Đi bộ [Chữ Chỉ (止: dừng lại)])\n【Mẹo nhớ từ】: Tán (散: tản bộ thong dong) + Bộ (歩: bước chân). Thong dong cất từng bước chân dạo mát ngắm nhìn cảnh vật phố phường ➔ ĐI DẠO, TẢN BỘ.",
-        "example": "散歩するを べんきょうします。(Học từ 散歩する.)"
+        "example": "毎朝 犬と 散歩します。 (Mỗi sáng tôi đi dạo cùng chú chó.)"
       },
       {
         "id": "v-13-27",
@@ -3922,7 +3922,7 @@ const kanji_11_15 = [
           }
         ],
         "mnemonic": "【Cấu thành】: 公 (CÔNG: Công cộng [Bát (八: chia mở ra)]) + 園 (VIÊN: Khu vườn [Vi (囗: bờ tường bao quanh)]) + 散 (TÁN: Đi dạo [Thảo cúc (hoa lá rải rác)]) + 歩 (BỘ: Đi bộ [Chữ Chỉ (止: dừng lại)])\n【Mẹo nhớ từ】: Công viên (公園) + Tán bộ (散歩: đi dạo). Thong thả rảo bước dạo quanh vườn cây bóng mát của công viên ➔ ĐI DẠO TRONG CÔNG VIÊN.",
-        "example": "公園を散歩するを べんきょうします。(Học từ 公園を散歩する.)"
+        "example": "涼しいですから、公園を散歩しましょう。 (Vì trời mát mẻ nên chúng ta hãy đi dạo trong công viên nhé.)"
       },
       {
         "id": "v-13-28",
@@ -3962,7 +3962,7 @@ const kanji_11_15 = [
           }
         ],
         "mnemonic": "【Cấu thành】: 大 (ĐẠI: To lớn [Hình tượng người dang rộng tứ chi]) + 変 (BIẾN: Biến đổi [Đầu (suy nghĩ)])\n【Mẹo nhớ từ】: Biến cố ĐỔI THAY (変) quá to LỚN ĐẠI (大) khiến người ta phải vất vả: VẤT VẢ, KHÓ KHĂN.",
-        "example": "大変を べんきょうします。(Học từ 大変.)"
+        "example": "今日の 仕事は 大変 忙しいです。 (Công việc hôm nay vô cùng bận rộn.)"
       },
       {
         "id": "v-13-29",
@@ -3992,7 +3992,7 @@ const kanji_11_15 = [
           }
         ],
         "mnemonic": "【Chiết tự】: Gồm Bộ Phi (非: đôi cánh quay lưng lìa xa) kết hợp với Bộ Tâm (心: trái tim quặn thắt)\n【Mẹo nhớ】: Hai người quay lưng lìa xa (非) khiến con tim (心) quặn thắt nghẹn ngào xót xa: ĐAU BUỒN, BI THƯƠNG (悲).",
-        "example": "別れは 悲しいです。(Chia ly thật buồn.)"
+        "example": "悲しい 映画を 見て、泣きました。 (Xem bộ phim buồn nên tôi đã khóc.)"
       },
       {
         "id": "v-13-30",
@@ -4032,7 +4032,7 @@ const kanji_11_15 = [
           }
         ],
         "mnemonic": "【Cấu thành】: 経 (KINH: Kinh nghiệm [Mịch (糸: sợi tơ chỉ dệt)]) + 済 (TẾ: Hoàn tất [Thủy (氵: dòng nước)])\n【Mẹo nhớ từ】: Kinh (経: kinh bang) + Tế (済: tế thế). Việc quản lý tài chính và điều tiết của cải phục vụ đời sống nhân dân ➔ KINH TẾ.",
-        "example": "経済を べんきょうします。(Học từ 経済.)"
+        "example": "日本へ 経済の 勉強に 来ました。 (Tôi đã đến Nhật để học về kinh tế.)"
       },
       {
         "id": "v-13-31",
@@ -4072,7 +4072,7 @@ const kanji_11_15 = [
           }
         ],
         "mnemonic": "【Cấu thành】: 美 (MỸ: Xinh đẹp [Dương (羊: con cừu non)]) + 術 (THUẬT: Kỹ thuật [Hành (行: bước đi trên đường)])\n【Mẹo nhớ từ】: Mỹ (美: cái đẹp) + Thuật (術: nghệ thuật tinh hoa). Ngành nghệ thuật thị giác sáng tạo nên những tác phẩm hội họa điêu khắc tuyệt mỹ ➔ MỸ THUẬT, HỘI HỌA.",
-        "example": "美術を べんきょうします。(Học từ 美術.)"
+        "example": "フランスへ 美術の 勉強に 行きたいです。 (Tôi muốn đi Pháp để học mỹ thuật.)"
       },
       {
         "id": "v-13-32",
@@ -4112,7 +4112,7 @@ const kanji_11_15 = [
           }
         ],
         "mnemonic": "【Cấu thành】: 会 (HỘI: Gặp gỡ [Nhân (人: người)]) + 議 (NGHỊ: Hội nghị [Ngôn (言: lời nói)])\n【Mẹo nhớ từ】: Hội (会: tụ họp) + Nghị (議: bàn bạc thảo luận). Cuộc họp mặt đông đủ để thảo luận và đưa ra quyết sách ➔ CUỘC HỌP, HỘI NGHỊ.",
-        "example": "会議を べんきょうします。(Học từ 会議.)"
+        "example": "午後から 大阪で 会議が あります。 (Từ buổi chiều có cuộc họp ở Osaka.)"
       },
       {
         "id": "v-13-33",
@@ -4152,7 +4152,7 @@ const kanji_11_15 = [
           }
         ],
         "mnemonic": "【Cấu thành】: 登 (ĐĂNG: Leo núi [Bát (癶: đôi bàn chân leo bước)]) + 録 (LỤC: Ghi âm [Kim (金: tấm đĩa đồng kim loại)])\n【Mẹo nhớ từ】: Đăng (登: ghi tên lên) + Lục (録: sổ sách lưu trữ). Ghi danh vào danh bạ sổ sách chính thức ➔ ĐĂNG KÝ.",
-        "example": "登録を べんきょうします。(Học từ 登録.)"
+        "example": "市役所で 外国人登録を します。 (Tôi làm thủ tục đăng ký người nước ngoài ở tòa thị chính.)"
       },
       {
         "id": "v-13-34",
@@ -4182,7 +4182,7 @@ const kanji_11_15 = [
           }
         ],
         "mnemonic": "【Chiết tự】: Gồm Bộ Tỉ (匕: chiếc thìa múc) kết hợp với Hiệt (頁: cái đầu nghiêng ngả)\n【Mẹo nhớ】: Nghiêng đầu (頁) múc từng thìa thời gian (匕) đo lường khoảnh khắc trôi qua: KHOẢNG CHỪNG (trong 〜の頃).",
-        "example": "～頃を べんきょうします。(Học từ ～頃.)"
+        "example": "毎日 12時頃 昼ご飯を 食べます。 (Mỗi ngày tôi ăn trưa vào khoảng 12 giờ.)"
       },
       {
         "id": "v-13-35",
@@ -4222,7 +4222,7 @@ const kanji_11_15 = [
           }
         ],
         "mnemonic": "【Cấu thành】: 見 (KIẾN: Nhìn [Mục (目: đôi mắt)]) + 物 (VẬT: Đồ vật [Ngưu (牛: con bò)])\n【Mẹo nhớ từ】: Kiến (見: ngắm nhìn) + Vật (物: cảnh vật). Tận mắt chiêm ngưỡng những cảnh sắc và danh lam thắng cảnh độc đáo ➔ THAM QUAN, NGẮM CẢNH.",
-        "example": "見物するを べんきょうします。(Học từ 見物する.)"
+        "example": "京都へ お寺の 見物に 行きました。 (Tôi đã đi Kyoto để tham quan chùa chiền.)"
       },
       {
         "id": "v-13-36",
@@ -4252,7 +4252,7 @@ const kanji_11_15 = [
           }
         ],
         "mnemonic": "【Chiết tự】: Gồm Bộ Nhục (月: da thịt thân thể) kết hợp với Chữ Phục (tích tụ, phục hồi)\n【Mẹo nhớ】: Vùng da thịt (月) chứa dạ dày luôn cần được nạp đầy thức ăn để phục hồi sinh lực: CÁI BỤNG (腹).",
-        "example": "お腹がいっぱいですを べんきょうします。(Học từ お腹がいっぱいです.)"
+        "example": "たくさん 食べましたから、お腹がいっぱいです。 (Vì đã ăn nhiều nên tôi no bụng rồi.)"
       },
       {
         "id": "v-13-37",
@@ -4292,7 +4292,7 @@ const kanji_11_15 = [
           }
         ],
         "mnemonic": "【Cấu thành】: 注 (CHÚ: Rót nước [Thủy (氵: giọt nước)]) + 文 (VĂN: Văn học [Hình người có hình xăm hoa văn trước ngực])\n【Mẹo nhớ từ】: Kính ngữ ご + Chú (注: tập trung) + Văn (問: gọi món). Lời hỏi ân cần của nhân viên nhà hàng khi khách chọn món: 'Quý khách muốn dùng món gì ạ?' ➔ BẠN MUỐN GỌI MÓN GÌ Ạ?",
-        "example": "ご注文は？を べんきょうします。(Học từ ご注文は？.)"
+        "example": "いらっしゃいませ。ご注文は？ (Xin kính chào quý khách. Quý khách dùng món gì ạ?)"
       },
       {
         "id": "v-13-38",
@@ -4332,7 +4332,7 @@ const kanji_11_15 = [
           }
         ],
         "mnemonic": "【Cấu thành】: 定 (ĐỊNH: Quy định [Miên (宀: mái nhà)]) + 食 (THỰC: Ăn [Nhân (人: người)])\n【Mẹo nhớ từ】: Suất ĂN (食) trọn gói được QUY ĐỊNH (定) sẵn món: SUẤT ĂN CỐ ĐỊNH.",
-        "example": "定食を べんきょうします。(Học từ 定食.)"
+        "example": "てんぷら定食を お願いします。 (Làm ơn cho tôi một suất cơm Tempura.)"
       },
       {
         "id": "v-13-39",
@@ -4372,7 +4372,7 @@ const kanji_11_15 = [
           }
         ],
         "mnemonic": "【Cấu thành】: 牛 (NGƯU: Con bò [Hình tượng con bò với cặp sừng cong]) + 丼 (ĐỔNG: Bát tô [Tỉnh (井: cái giếng vuông vắn)])\n【Mẹo nhớ từ】: BÁT TÔ CƠM (丼) phủ đầy thịt BÒ (牛) xào hành tây thơm nức: CƠM BÒ XÀO.",
-        "example": "牛丼を べんきょうします。(Học từ 牛丼.)"
+        "example": "昼ご飯は 牛丼を 食べました。 (Bữa trưa tôi đã ăn món cơm thịt bò Gyudon.)"
       },
       {
         "id": "v-13-40",
@@ -4412,7 +4412,7 @@ const kanji_11_15 = [
           }
         ],
         "mnemonic": "【Cấu thành】: 少 (THIỂU: Ít ỏi [Chữ Tiểu (小: nhỏ bé)]) + 待 (ĐÃI: Chờ đợi [Xích (彳: bước chân dừng lại)])\n【Mẹo nhớ từ】: Thiểu (少: một chút) + Đãi (待: chờ đợi). Lời đề nghị lịch sự: 'Xin quý khách vui lòng nán lại chờ trong giây lát ạ!' ➔ XIN VUI LÒNG ĐỢI MỘT CHÚT Ạ.",
-        "example": "少々お待ちくださいを べんきょうします。(Học từ 少々お待ちください.)"
+        "example": "かしこまりました。少々お待ちください。 (Tôi đã rõ rồi ạ. Xin quý khách vui lòng đợi một chút.)"
       },
       {
         "id": "v-13-41",
@@ -4442,7 +4442,7 @@ const kanji_11_15 = [
           }
         ],
         "mnemonic": "【Chiết tự】: Gồm Bộ Khẩu kết hợp với Bộ Đao (刂: lưỡi dao rạch đôi)\n【Mẹo nhớ】: Lưỡi dao sắc bén (刂) cắt rời hai phần ra riêng biệt rành mạch: PHÂN BIỆT, TÁCH BIỆT (別).",
-        "example": "別々にを べんきょうします。(Học từ 別々に.)"
+        "example": "すみません、別々に お願いします。 (Xin lỗi, làm ơn tính tiền riêng từng người giúp chúng tôi.)"
       }
     ]
   },
@@ -4482,7 +4482,7 @@ const kanji_11_15 = [
           }
         ],
         "mnemonic": "【Chiết tự】: Gồm Bộ Chiêm (占: xem bói gieo quẻ) kết hợp với Bộ Hoả (灬: bốn đốm than lửa)\n【Mẹo nhớ】: Thầy bói (占) chấm những đốm lửa nhỏ (灬) nung mai rùa để xem quẻ tính ĐIỂM cát hung: ĐIỂM, CHẤM (点).",
-        "example": "点けるを べんきょうします。(Học từ 点ける.)"
+        "example": "暑いですから、エアコンを 点けてください。 (Vì trời nóng nên xin hãy bật điều hòa lên.)"
       },
       {
         "id": "v-14-2",
@@ -4512,7 +4512,7 @@ const kanji_11_15 = [
           }
         ],
         "mnemonic": "【Chiết tự】: Gồm Bộ Thủy (氵: giọt nước) kết hợp với Chữ Tiêu (肖: ngọn nến le lói)\n【Mẹo nhớ】: Dội một gáo nước mát (氵) lên ngọn nến đang cháy le lói (肖) khiến ngọn lửa DẬP TẮT, BIẾN MẤT (消).",
-        "example": "消すを べんきょうします。(Học từ 消す.)"
+        "example": "寝る 前に、テレビを 消してください。 (Trước khi ngủ, xin hãy tắt tivi.)"
       },
       {
         "id": "v-14-3",
@@ -4542,7 +4542,7 @@ const kanji_11_15 = [
           }
         ],
         "mnemonic": "【Chiết tự】: Gồm Bộ Môn (門: hai cánh cổng) kết hợp với Chữ Cung/Thập (hai tay tháo then cài giữa)\n【Mẹo nhớ】: Đưa hai bàn tay tháo tung thanh then cài giữa hai cánh cổng lớn (門) để MỞ CỬA đón nắng: MỞ, KHAI (開).",
-        "example": "開けるを べんきょうします。(Học từ 開ける.)"
+        "example": "窓を 開けてください。 (Xin hãy mở cửa sổ ra.)"
       },
       {
         "id": "v-14-4",
@@ -4572,7 +4572,7 @@ const kanji_11_15 = [
           }
         ],
         "mnemonic": "【Chiết tự】: Gồm Bộ Môn (門: hai cánh cổng) kết hợp với Bộ Tài (才: then gỗ gài chặt ở trong)\n【Mẹo nhớ】: Khép hai cánh cổng lớn (門) lại rồi dùng thanh then gỗ tốt (才) gài chặt chẽ: ĐÓNG CỬA, BẾ TẮC (閉).",
-        "example": "閉めるを べんきょうします。(Học từ 閉める.)"
+        "example": "寒いですから、窓を 閉めましょう。 (Vì trời lạnh nên chúng ta hãy đóng cửa sổ lại nhé.)"
       },
       {
         "id": "v-14-5",
@@ -4602,7 +4602,7 @@ const kanji_11_15 = [
           }
         ],
         "mnemonic": "【Chiết tự】: Gồm Bộ Bao (勹: ôm vội đồ đạc) kết hợp với Bộ Tâm (心: trái tim đập thình thịch)\n【Mẹo nhớ】: Vừa ôm đồ đạc (勹) vừa nghe tim mình (心) đập thình thịch vì sợ trễ chuyến tàu: GẤP RÚT, KHẨN CẤP (急).",
-        "example": "急ぐを べんきょうします。(Học từ 急ぐ.)"
+        "example": "時間が ありませんから、急いでください。 (Vì không có thời gian nên xin hãy nhanh lên.)"
       },
       {
         "id": "v-14-6",
@@ -4632,7 +4632,7 @@ const kanji_11_15 = [
           }
         ],
         "mnemonic": "【Chiết tự】: Gồm Bộ Xích (彳: bước chân dừng lại) kết hợp với Bộ Tự (寺: ngôi chùa tôn nghiêm)\n【Mẹo nhớ】: Dừng bước chân (彳) đứng trước cổng ngôi chùa thanh tịnh (寺) kiên nhẫn CHỜ ĐỢI người bạn thân: CHỜ ĐỢI (待).",
-        "example": "待つを べんきょうします。(Học từ 待つ.)"
+        "example": "ここで 少し 待ってください。 (Xin hãy đợi ở đây một chút.)"
       },
       {
         "id": "v-14-7",
@@ -4662,7 +4662,7 @@ const kanji_11_15 = [
           }
         ],
         "mnemonic": "【Chiết tự】: Gồm Bộ Hình bàn chân đứng khựng lại trên một vạch mốc ranh giới\n【Mẹo nhớ】: Bàn chân bước tới vạch giới hạn thì đứng khựng lại không đi tiếp: DỪNG LẠI, ĐÌNH CHỈ (止).",
-        "example": "止めるを べんきょうします。(Học từ 止める.)"
+        "example": "あの 銀行の 前に 車を 止めてください。 (Xin hãy dừng xe ở phía trước ngân hàng kia.)"
       },
       {
         "id": "v-14-8",
@@ -4692,7 +4692,7 @@ const kanji_11_15 = [
           }
         ],
         "mnemonic": "【Chiết tự】: Gồm Bộ Thủ (扌: bàn tay nắm) kết hợp với Bộ Tự (寺: ngôi chùa thanh tịnh)\n【Mẹo nhớ】: Đôi bàn tay (扌) thành kính cầm nén hương thơm dâng lên trước ngôi chùa (寺): CẦM NẮM, DUY TRÌ (持).",
-        "example": "持つを べんきょうします。(Học từ 持つ.)"
+        "example": "荷物を 持ちましょうか。 (Tôi xách đỡ hành lý giúp bạn nhé?)"
       },
       {
         "id": "v-14-9",
@@ -4732,7 +4732,7 @@ const kanji_11_15 = [
           }
         ],
         "mnemonic": "【Cấu thành】: 手 (THỦ: Bàn tay [Hình tượng bàn tay năm ngón xòe ra]) + 伝 (TRUYỀN: Truyền đạt [Nhân (亻: người truyền tin)])\n【Mẹo nhớ từ】: Thủ (手: bàn tay) + Truyền (伝: hỗ trợ). Xòe đôi bàn tay ra chung sức giúp đỡ người khác vượt qua khó khăn ➔ GIÚP ĐỠ.",
-        "example": "手伝うを べんきょうします。(Học từ 手伝う.)"
+        "example": "すみません、ちょっと 手伝ってください。 (Xin lỗi, làm ơn phụ giúp tôi một chút.)"
       },
       {
         "id": "v-14-10",
@@ -4762,7 +4762,7 @@ const kanji_11_15 = [
           }
         ],
         "mnemonic": "【Chiết tự】: Gồm Bộ Khẩu (口: khuôn miệng to) kết hợp với Chữ Hồ (乎: tiếng ngân vang dài)\n【Mẹo nhớ】: Mở to khuôn miệng (口) cất tiếng ngân vang (乎) gọi người ở đằng xa nghe rõ: HÔ HOÁN, GỌI (呼).",
-        "example": "呼ぶを べんきょうします。(Học từ 呼ぶ.)"
+        "example": "田中さんを 呼んでください。 (Xin hãy gọi anh Tanaka giúp tôi.)"
       },
       {
         "id": "v-14-11",
@@ -4792,7 +4792,7 @@ const kanji_11_15 = [
           }
         ],
         "mnemonic": "【Chiết tự】: Gồm Bộ Ngôn (言: lời nói) kết hợp với Bộ Thiệt (舌: cái lưỡi)\n【Mẹo nhớ】: Lời nói (言) được uốn nắn phát ra từ chiếc lưỡi (舌) để ĐỐI THOẠI, NÓI CHUYỆN (話) tâm tình cùng nhau.",
-        "example": "話すを べんきょうします。(Học từ 話す.)"
+        "example": "ゆっくり 話してください。 (Xin hãy nói chậm rãi thôi.)"
       },
       {
         "id": "v-14-12",
@@ -4822,7 +4822,7 @@ const kanji_11_15 = [
           }
         ],
         "mnemonic": "【Chiết tự】: Gồm Bộ Mục (目: đôi mắt) kết hợp với Bộ Nhi (儿: đôi chân đi)\n【Mẹo nhớ】: Đôi mắt tinh anh (目) đặt trên đôi chân (儿) đi khắp bốn phương trời để NHÌN NGẮM, XEM XÉT (見).",
-        "example": "見せるを べんきょうします。(Học từ 見せる.)"
+        "example": "パスポートを 見せてください。 (Xin vui lòng xuất trình hộ chiếu.)"
       },
       {
         "id": "v-14-13",
@@ -4852,7 +4852,7 @@ const kanji_11_15 = [
           }
         ],
         "mnemonic": "【Chiết tự】: Gồm Bộ Chữ Hiếu (孝: con cái hiếu thảo) kết hợp với Bộ Phốc (攵: cành roi uốn nắn)\n【Mẹo nhớ】: Người thầy cầm chiếc roi nhỏ (攵) nghiêm khắc uốn nắn con trẻ có lòng hiếu thảo (孝), đó là công việc GIÁO DỤC, DẠY DỖ (教).",
-        "example": "教えるを べんきょうします。(Học từ 教える.)"
+        "example": "電話番号を 教えてください。 (Xin hãy cho tôi biết số điện thoại.)"
       },
       {
         "id": "v-14-14",
@@ -4882,7 +4882,7 @@ const kanji_11_15 = [
           }
         ],
         "mnemonic": "【Chiết tự】: Gồm Bộ Nữ (女: người mẹ) kết hợp với Chữ Thai (台: cái đài bệ mầm sống)\n【Mẹo nhớ】: Người mẹ (女) đón nhận mầm sống non nớt mới hình thành là sự KHỞI ĐẦU của một kiếp người: BẮT ĐẦU (始).",
-        "example": "始めるを べんきょうします。(Học từ 始める.)"
+        "example": "これから 会議を 始めます。 (Bây giờ chúng ta sẽ bắt đầu cuộc họp.)"
       },
       {
         "id": "v-14-15",
@@ -4922,7 +4922,7 @@ const kanji_11_15 = [
           }
         ],
         "mnemonic": "【Cấu thành】: 住 (TRÚ: Sinh sống [Nhân (亻: con người)]) + 所 (SỞ: Nơi chốn [Hộ (戸: cánh cửa nhà)])\n【Mẹo nhớ từ】: NƠI CHỐN (所) CƯ TRÚ (住) lâu dài của một gia đình: ĐỊA CHỈ NHÀ.",
-        "example": "住所を 教えてください。"
+        "example": "ここに 住所と 名前を 書いてください。 (Xin hãy viết địa chỉ và tên vào đây.)"
       },
       {
         "id": "v-14-16",
@@ -4962,7 +4962,7 @@ const kanji_11_15 = [
           }
         ],
         "mnemonic": "【Cấu thành】: 地 (ĐỊA: Đất đai [Thổ (土: đất cát)]) + 図 (ĐỒ: Bản đồ [Vi (囗: khung tranh viền ngoài)])\n【Mẹo nhớ từ】: BẢN ĐỒ (図) phác họa địa hình ĐẤT ĐAI (地): BẢN ĐỒ.",
-        "example": "駅の 地図を 見ます。"
+        "example": "駅の 地図を 見せてください。 (Xin hãy cho tôi xem bản đồ nhà ga.)"
       },
       {
         "id": "v-14-17",
@@ -4992,7 +4992,7 @@ const kanji_11_15 = [
           }
         ],
         "mnemonic": "【Chiết tự】: Gồm Bộ Miên (宀: mái nhà) kết hợp với Bộ Nữ (女: người phụ nữ)\n【Mẹo nhớ】: Dưới mái nhà (宀) có bàn tay chăm sóc khéo léo của người phụ nữ (女) thì gia đình luôn BÌNH AN (安) và chi tiêu TIẾT KIỆM (RẺ).",
-        "example": "安いのはありませんかを べんきょうします。(Học từ 安いのはありませんか.)"
+        "example": "もう少し 安いのはありませんか。 (Có cái nào rẻ hơn một chút không ạ?)"
       },
       {
         "id": "v-14-18",
@@ -5022,7 +5022,7 @@ const kanji_11_15 = [
           }
         ],
         "mnemonic": "【Chiết tự】: Gồm Bộ Thổ (土: bãi đất phơi) kết hợp với Bộ Lộ (chậu chưng cất muối dưới quyền quan sát)\n【Mẹo nhớ】: Dưới sự giám sát của quan trông coi, người dân phơi nước biển trên bãi đất (土) gạt lấy MUỐI TRẮNG: MUỐI (塩).",
-        "example": "塩を 取ってください。"
+        "example": "すみません、塩を 取ってください。 (Xin lỗi, làm ơn lấy giúp tôi lọ muối.)"
       },
       {
         "id": "v-14-19",
@@ -5062,7 +5062,7 @@ const kanji_11_15 = [
           }
         ],
         "mnemonic": "【Cấu thành】: 砂 (SA: Cát [Thạch (石: tảng đá cuội to)]) + 糖 (ĐƯỜNG: Đường ăn [Mễ (米: hạt gạo thơm)])\n【Mẹo nhớ từ】: Sa (砂: hạt nhỏ như cát) + Đường (糖: chất ngọt). Từng hạt tinh thể màu trắng ngọt ngào dùng nêm nếm món ăn ➔ ĐƯỜNG ĂN.",
-        "example": "コーヒーに 砂糖を 入れます。"
+        "example": "コーヒーに 砂糖を 入れます。 (Tôi cho đường vào cà phê.)"
       },
       {
         "id": "v-14-20",
@@ -5122,7 +5122,7 @@ const kanji_11_15 = [
           }
         ],
         "mnemonic": "【Cấu thành】: 信 (TÍN: Tín hiệu [Nhân (亻: con người)]) + 号 (HIỆU: Tín hiệu [Khẩu (口: miệng gọi to)]) + 右 (HỮU: Bên phải [Nét vung tay (𠂇)]) + 曲 (KHÚC: Rẽ [Hình chiếc thước thợ uốn cong hoặc khuông nhạc uốn lượn nhiều ngăn])\n【Mẹo nhớ từ】: Tín hiệu (信号: đèn giao thông) + Hữu khúc (右へ曲がる: rẽ phải). Lời chỉ đường: Đến chỗ cột đèn giao thông thì rẽ sang phía bên tay phải ➔ RẼ PHẢI Ở CHỖ ĐÈN GIAO THÔNG.",
-        "example": "信号を右へ曲がってを べんきょうします。(Học từ 信号を右へ曲がって.)"
+        "example": "あの 信号を右へ曲がってください。 (Xin hãy rẽ phải ở chỗ đèn tín hiệu giao thông kia.)"
       },
       {
         "id": "v-14-21",
@@ -5162,7 +5162,7 @@ const kanji_11_15 = [
           }
         ],
         "mnemonic": "【Cấu thành】: 読 (ĐỘC: Đọc sách [Ngôn (言: lời nói)]) + 方 (PHƯƠNG: Phương hướng [Hình người dang tay chỉ hướng])\n【Mẹo nhớ từ】: Độc (読: đọc sách) + Phương (方: cách thức). Phương pháp đánh vần và đọc chuẩn xác một chữ Hán hay từ vựng ➔ CÁCH ĐỌC.",
-        "example": "漢字の 読み方を 教えてください。"
+        "example": "この 漢字の 読み方を 教えてください。 (Xin hãy chỉ cho tôi cách đọc chữ Hán này.)"
       },
       {
         "id": "v-14-22",
@@ -5192,7 +5192,7 @@ const kanji_11_15 = [
           }
         ],
         "mnemonic": "【Chiết tự】: Gồm Bộ Chữ Nguyên (原: cội nguồn) kết hợp với Bộ Hiệt (頁: cái đầu)\n【Mẹo nhớ】: Người nhớ về cội nguồn (原) thành tâm ngẩng cao đầu (頁) hướng lên trời cầu NGUYỆN (願) những điều tốt lành.",
-        "example": "これでお願いしますを べんきょうします。(Học từ これでお願いします.)"
+        "example": "1万円です。これでお願いします。 (Đây là tờ 10.000 yên. Nhờ anh/chị tính tiền bằng tờ này ạ.)"
       },
       {
         "id": "v-14-23",
@@ -5222,7 +5222,7 @@ const kanji_11_15 = [
           }
         ],
         "mnemonic": "【Chiết tự】: Gồm Bộ Kim (金: lưỡi câu bằng sắt kim loại) kết hợp với Bộ Thược (勺: chiếc muôi múc)\n【Mẹo nhớ】: Dùng chiếc lưỡi câu bằng kim loại (金) móc mồi quăng xuống lòng hồ múc cá lên: CÂU CÁ, ĐIẾU (釣).",
-        "example": "お釣りを べんきょうします。(Học từ お釣り.)"
+        "example": "300円の お釣りです。どうぞ。 (Đây là 300 yên tiền thừa trả lại. Xin mời nhận.)"
       },
       {
         "id": "v-14-24",
@@ -5252,15 +5252,15 @@ const kanji_11_15 = [
           }
         ],
         "mnemonic": "【Chiết tự】: Gồm Bộ Môn (門: hai cánh cổng) kết hợp với Bộ Tài (才: then gỗ gài chặt ở trong)\n【Mẹo nhớ】: Khép hai cánh cổng lớn (門) lại rồi dùng thanh then gỗ tốt (才) gài chặt chẽ: ĐÓNG CỬA, BẾ TẮC (閉).",
-        "example": "ドアを閉めるを べんきょうします。(Học từ ドアを閉める.)"
+        "example": "部屋に 入って、ドアを閉めてください。 (Hãy bước vào phòng và đóng cửa lại.)"
       },
       {
         "id": "v-14-25",
         "word": "電気を点ける",
         "kanji": "電気を点ける",
         "reading": "でんきをつける",
-        "hanViet": "ĐIỆN KHÍ ĐIẾM",
-        "meaning": "Bật điền",
+        "hanViet": "ĐIỆN KHÍ ĐIỂM",
+        "meaning": "Bật đèn, bật điện",
         "type": "Động từ",
         "kanjiCount": 3,
         "kanjis": [
@@ -5302,7 +5302,7 @@ const kanji_11_15 = [
           }
         ],
         "mnemonic": "【Cấu thành】: 電 (ĐIỆN: Điện khí [Vũ (雨: cơn mưa dông)]) + 気 (KHÍ: Khí chất [Khí (气: hơi nước bay cuồn cuộn)]) + 点 (ĐIỂM: Điểm số [Chiêm (占: xem bói gieo quẻ)])\n【Mẹo nhớ từ】: Điện khí (電気: đèn điện) + Điểm (点: thắp sáng). Bật công tắc cho ánh đèn điện bừng sáng căn phòng ➔ BẬT ĐÈN.",
-        "example": "電気を点けるを べんきょうします。(Học từ 電気を点ける.)"
+        "example": "暗いですから、電気を点けてください。 (Vì trời tối nên xin hãy bật đèn lên.)"
       },
       {
         "id": "v-14-26",
@@ -5310,7 +5310,7 @@ const kanji_11_15 = [
         "kanji": "電気を消す",
         "reading": "でんきをけす",
         "hanViet": "ĐIỆN KHÍ TIÊU",
-        "meaning": "Tắt điền",
+        "meaning": "Tắt đèn, tắt điện",
         "type": "Danh từ",
         "kanjiCount": 3,
         "kanjis": [
@@ -5352,7 +5352,7 @@ const kanji_11_15 = [
           }
         ],
         "mnemonic": "【Cấu thành】: 電 (ĐIỆN: Điện khí [Vũ (雨: cơn mưa dông)]) + 気 (KHÍ: Khí chất [Khí (气: hơi nước bay cuồn cuộn)]) + 消 (TIÊU: Xóa [Thủy (氵: giọt nước)])\n【Mẹo nhớ từ】: Điện khí (電気: đèn điện) + Tiêu (消: dập tắt). Tắt công tắc điện để bóng tối bao phủ tiết kiệm điện năng ➔ TẮT ĐÈN.",
-        "example": "電気を消すを べんきょうします。(Học từ 電気を消す.)"
+        "example": "出かける とき、電気を消してください。 (Khi đi ra ngoài, xin hãy tắt điện.)"
       },
       {
         "id": "v-14-27",
@@ -5402,7 +5402,7 @@ const kanji_11_15 = [
           }
         ],
         "mnemonic": "【Cấu thành】: 友 (HỮU: Bạn bè [Hai bàn tay (又]) + 達 (ĐẠT: Đạt được [Thổ (土: đất)]) + 待 (ĐÃI: Chờ đợi [Xích (彳: bước chân dừng lại)])\n【Mẹo nhớ từ】: Hữu đạt (友達: bạn bè) + Đãi (待: chờ đợi). Đứng chờ người bạn thân tại điểm hẹn cùng đi chơi ➔ CHỜ BẠN.",
-        "example": "友達を待つを べんきょうします。(Học từ 友達を待つ.)"
+        "example": "駅の 前で 友達を待っています。 (Tôi đang đợi bạn ở phía trước nhà ga.)"
       },
       {
         "id": "v-14-28",
@@ -5432,7 +5432,7 @@ const kanji_11_15 = [
           }
         ],
         "mnemonic": "【Chiết tự】: Gồm Bộ Môn (門: hai cánh cổng) kết hợp với Chữ Cung/Thập (hai tay tháo then cài giữa)\n【Mẹo nhớ】: Đưa hai bàn tay tháo tung thanh then cài giữa hai cánh cổng lớn (門) để MỞ CỬA đón nắng: MỞ, KHAI (開).",
-        "example": "ドアを開けるを べんきょうします。(Học từ ドアを開ける.)"
+        "example": "すみません、その ドアを開けてください。 (Xin lỗi, làm ơn mở cánh cửa đó ra giúp tôi.)"
       },
       {
         "id": "v-14-29",
@@ -5462,7 +5462,7 @@ const kanji_11_15 = [
           }
         ],
         "mnemonic": "【Chiết tự】: Gồm Bộ Hình chiếc thước thợ uốn cong hoặc khuông nhạc uốn lượn nhiều ngăn\n【Mẹo nhớ】: Đường nét bẻ gập nhiều khúc quanh co tựa như dòng nhạc trầm bổng của một KHÚC CA: QUẸO, UỐN CONG (曲).",
-        "example": "曲がるを べんきょうします。(Học từ 曲がる.)"
+        "example": "次の 角を 左へ 曲がってください。 (Xin hãy rẽ trái ở góc đường tiếp theo.)"
       },
       {
         "id": "v-14-30",
@@ -5502,7 +5502,7 @@ const kanji_11_15 = [
           }
         ],
         "mnemonic": "【Cấu thành】: 右 (HỮU: Bên phải [Nét vung tay (𠂇)]) + 曲 (KHÚC: Rẽ [Hình chiếc thước thợ uốn cong hoặc khuông nhạc uốn lượn nhiều ngăn])\n【Mẹo nhớ từ】: Hữu (右: bên phải) + Khúc (曲: rẽ, bẻ cong). Chuyển hướng rẽ về phía bên tay phải ➔ RẼ PHẢI, QUẸO PHẢI.",
-        "example": "右へ曲がるを べんきょうします。(Học từ 右へ曲がる.)"
+        "example": "銀行の 前を 右へ曲がってください。 (Xin hãy rẽ phải ở phía trước ngân hàng.)"
       },
       {
         "id": "v-14-31",
@@ -5532,7 +5532,7 @@ const kanji_11_15 = [
           }
         ],
         "mnemonic": "【Chiết tự】: Gồm Bộ Nhĩ (耳: cái tai) kết hợp với Bộ Hựu (又: bàn tay vươn ra chụp lấy)\n【Mẹo nhớ】: Bàn tay (又) vươn ra nắm lấy vành tai (耳) lôi lại gần: NẮM LẤY, THU NHẬN (取).",
-        "example": "取るを べんきょうします。(Học từ 取る.)"
+        "example": "棚の 上の 本を 取ってください。 (Xin hãy lấy cuốn sách ở trên kệ giúp tôi.)"
       },
       {
         "id": "v-14-32",
@@ -5582,7 +5582,7 @@ const kanji_11_15 = [
           }
         ],
         "mnemonic": "【Cấu thành】: 住 (TRÚ: Sinh sống [Nhân (亻: con người)]) + 所 (SỞ: Nơi chốn [Hộ (戸: cánh cửa nhà)]) + 教 (GIÁO: Dạy dỗ [Chữ Hiếu (孝: con cái hiếu thảo)])\n【Mẹo nhớ từ】: Trú sở (住所: địa chỉ nhà) + Giáo (教: chỉ dẫn). Cung cấp hoặc chỉ dẫn địa chỉ nhà cho người khác biết ➔ CHO BIẾT ĐỊA CHỈ.",
-        "example": "住所を教えるを べんきょうします。(Học từ 住所を教える.)"
+        "example": "あなたの 住所を教えてください。 (Xin hãy cho tôi biết địa chỉ của bạn.)"
       },
       {
         "id": "v-14-33",
@@ -5632,7 +5632,7 @@ const kanji_11_15 = [
           }
         ],
         "mnemonic": "【Cấu thành】: 授 (THỤ: Truyền thụ [Thủ (扌: bàn tay trao)]) + 業 (NGHIỆP: Nghề nghiệp [Khung giá gỗ tinh xảo treo dãy chuông nhạc nghi lễ thời xưa]) + 始 (THỦY: Bắt đầu [Nữ (女: người mẹ)])\n【Mẹo nhớ từ】: Thụ nghiệp (授業: tiết học) + Thủy (始: bắt đầu). Thầy trò bước vào mở đầu bài giảng của tiết học mới ➔ BẮT ĐẦU GIỜ HỌC.",
-        "example": "授業を始めるを べんきょうします。(Học từ 授業を始める.)"
+        "example": "9時に 日本語の 授業を始めます。 (Lúc 9 giờ sẽ bắt đầu giờ học tiếng Nhật.)"
       },
       {
         "id": "v-14-34",
@@ -5662,7 +5662,7 @@ const kanji_11_15 = [
           }
         ],
         "mnemonic": "【Chiết tự】: Gồm Bộ Khẩu (口: khuôn miệng to) kết hợp với Chữ Hồ (乎: tiếng ngân vang dài)\n【Mẹo nhớ】: Mở to khuôn miệng (口) cất tiếng ngân vang (乎) gọi người ở đằng xa nghe rõ: HÔ HOÁN, GỌI (呼).",
-        "example": "タクシーを呼ぶを べんきょうします。(Học từ タクシーを呼ぶ.)"
+        "example": "雨ですから、タクシーを呼びましょうか。 (Vì trời mưa nên chúng ta gọi taxi nhé?)"
       },
       {
         "id": "v-14-35",
@@ -5692,7 +5692,7 @@ const kanji_11_15 = [
           }
         ],
         "mnemonic": "【Chiết tự】: Gồm Bộ Phụ (阝: vách núi dốc đứng) kết hợp với Đôi bàn chân bước từng bước xuống\n【Mẹo nhớ】: Đôi bàn chân thận trọng bước từ sườn dốc núi cao (阝) xuống đồng bằng: BƯỚC XUỐNG, RƠI XUỐNG (降).",
-        "example": "降るを べんきょうします。(Học từ 降る.)"
+        "example": "外は 雪が 降っています。 (Bên ngoài tuyết đang rơi.)"
       },
       {
         "id": "v-14-36",
@@ -5732,7 +5732,7 @@ const kanji_11_15 = [
           }
         ],
         "mnemonic": "【Cấu thành】: 雨 (VŨ: Mưa [Nhất (vòm trời)]) + 降 (GIÁNG: Xuống xe [Phụ (阝: vách núi dốc đứng)])\n【Mẹo nhớ từ】: Vũ (雨: cơn mưa) + Hàng (降: rơi xuống). Từng giọt mưa từ tầng mây trời đổ xuống tưới mát cỏ cây ➔ MƯA RƠI.",
-        "example": "雨が降るを べんきょうします。(Học từ 雨が降る.)"
+        "example": "今 雨が降っていますか。 (Bây giờ trời có đang mưa không?)"
       },
       {
         "id": "v-14-37",
@@ -5762,7 +5762,7 @@ const kanji_11_15 = [
           }
         ],
         "mnemonic": "【Chiết tự】: Gồm Bộ Phần trên là tia sáng rọi vào mí mắt kết hợp với Bộ Kiến (見: mở mắt nhìn thấu)\n【Mẹo nhớ】: Mở mắt nhìn thấy (見) ánh nắng ban mai chiếu rọi, trí óc bừng sáng thức tỉnh: NHẬN BIẾT, NHỚ RÕ (覚).",
-        "example": "覚えるを べんきょうします。(Học từ 覚える.)"
+        "example": "毎日 新しい 漢字を 10個 覚えます。 (Mỗi ngày tôi học thuộc 10 chữ Hán mới.)"
       },
       {
         "id": "v-14-38",
@@ -5792,7 +5792,7 @@ const kanji_11_15 = [
           }
         ],
         "mnemonic": "【Chiết tự】: Gồm Bộ Hình người đi dưới rặng cây trĩu hạt\n【Mẹo nhớ】: Người từ phương xa đi dưới những rặng cây bước ĐẾN (来) nhà mang theo niềm hy vọng về tương lai.",
-        "example": "また来ますを べんきょうします。(Học từ また来ます.)"
+        "example": "すみません、また来ます。 (Xin lỗi, để lần khác tôi lại đến nhé.)"
       },
       {
         "id": "v-14-39",
@@ -5822,7 +5822,7 @@ const kanji_11_15 = [
           }
         ],
         "mnemonic": "【Chiết tự】: Gồm Bộ Hình người dang tay chỉ hướng\n【Mẹo nhớ】: Một người đứng dang rộng hai cánh tay chỉ PHƯƠNG (方) hướng rõ ràng, hoặc cung kính cúi chào một VỊ / NGÀI tôn kính.",
-        "example": "～方を べんきょうします。(Học từ ～方.)"
+        "example": "この コピー機の 使い方を 教えてください。 (Xin hãy chỉ cho tôi cách sử dụng máy photocopy này.)"
       },
       {
         "id": "v-14-40",
@@ -5852,7 +5852,7 @@ const kanji_11_15 = [
           }
         ],
         "mnemonic": "【Chiết tự】: Gồm Bộ Xích (彳: bước chân trái) kết hợp với Bộ Xúc (亍: bước chân phải)\n【Mẹo nhớ】: Hai người cùng rảo bước chân trái phải tại ngã tư đường lớn để ĐI LẠI và TIẾN HÀNH (行) công việc.",
-        "example": "まっすぐ行きますを べんきょうします。(Học từ まっすぐ行きます.)"
+        "example": "この 道を 100メートル まっすぐ行きます。 (Đi thẳng con đường này 100 mét.)"
       },
       {
         "id": "v-14-41",
@@ -5882,7 +5882,7 @@ const kanji_11_15 = [
           }
         ],
         "mnemonic": "【Chiết tự】: Gồm Bộ Xích (彳: bước chân đi) kết hợp với Bộ Yêu (幺: sợi dây xích nhỏ) kết hợp với Chữ Trĩ (夊: bước chân chậm trễ)\n【Mẹo nhớ】: Bước chân đi (彳) bị sợi dây (幺) níu kéo bước đi chậm chạp (夊) tụt lại ở mãi TẬN PHÍA SAU (後).",
-        "example": "後でを べんきょうします。(Học từ 後で.)"
+        "example": "今 忙しいですから、後で 電話します。 (Vì bây giờ đang bận nên lát nữa tôi sẽ gọi điện.)"
       },
       {
         "word": "もう少し",
@@ -5911,7 +5911,7 @@ const kanji_11_15 = [
           }
         ],
         "mnemonic": "【Cấu thành】: もう (Thêm) + 少し (THIỂU: Một chút)\n【Mẹo nhớ từ】: Xin thêm MỘT CHÚT ÍT (少し) nữa: THÊM MỘT CHÚT.",
-        "example": "もう少し ゆっくり 話して ください。(Xin hãy nói chậm lại thêm một chút.)",
+        "example": "もう少し ゆっくり 話してください。 (Xin hãy nói chậm hơn một chút nữa.)",
         "id": "v-14-42"
       }
     ]
@@ -5952,7 +5952,7 @@ const kanji_11_15 = [
           }
         ],
         "mnemonic": "【Chiết tự】: Gồm Bộ Hình một người đứng thẳng vững chãi với hai chân cắm sâu trên mặt đất\n【Mẹo nhớ】: Đôi chân vững vàng đạp thẳng lên mặt đất vươn mình đứng thẳng hiên ngang: ĐỨNG LẬP, THIẾT LẬP (立).",
-        "example": "立つを べんきょうします。(Học từ 立つ.)"
+        "example": "名前を 呼ばれたら、立ってください。 (Khi được gọi tên, xin hãy đứng dậy.)"
       },
       {
         "id": "v-15-2",
@@ -5982,7 +5982,7 @@ const kanji_11_15 = [
           }
         ],
         "mnemonic": "【Chiết tự】: Gồm Bộ Nhân (亻: người làm) kết hợp với Chữ Lại (吏: quan chức sai phái)\n【Mẹo nhớ】: Người chủ chỉ tay giao việc cho người làm (亻) cầm dụng cụ đem ra SỬ DỤNG và làm việc: DÙNG, SỬ (使).",
-        "example": "使うを べんきょうします。(Học từ 使う.)"
+        "example": "この パソコンを 使っても いいですか。 (Tôi sử dụng chiếc máy tính này có được không?)"
       },
       {
         "id": "v-15-3",
@@ -6012,7 +6012,7 @@ const kanji_11_15 = [
           }
         ],
         "mnemonic": "【Chiết tự】: Gồm Bộ Võng (罒: tấm lưới phủ) kết hợp với Chữ Trực (直: đặt ngay ngắn thẳng thớm)\n【Mẹo nhớ】: Xếp đồ đạc ngay ngắn thẳng hàng (直) rồi phủ tấm lưới mỏng (罒) lên giữ gìn cẩn thận: ĐẶT ĐỂ, BỐ TRÍ (置).",
-        "example": "置くを べんきょうします。(Học từ 置く.)"
+        "example": "ここに 荷物を 置いても いいですか。 (Tôi đặt hành lý ở đây có được không?)"
       },
       {
         "id": "v-15-4",
@@ -6042,7 +6042,7 @@ const kanji_11_15 = [
           }
         ],
         "mnemonic": "【Chiết tự】: Gồm Bộ Nhân (亻: con người) kết hợp với Chữ Chủ (主: ngọn đèn chủ nhà)\n【Mẹo nhớ】: Con người (亻) thắp sáng ngọn đèn ấm áp (主) trong ngôi nhà nơi mình gắn bó sinh sống: CƯ TRÚ (住).",
-        "example": "住むを べんきょうします。(Học từ 住む.)"
+        "example": "将来 日本に 住みたいです。 (Tương lai tôi muốn sống ở Nhật Bản.)"
       },
       {
         "id": "v-15-5",
@@ -6072,7 +6072,7 @@ const kanji_11_15 = [
           }
         ],
         "mnemonic": "【Chiết tự】: Gồm Bộ Thỉ (矢: mũi tên bay nhanh trúng đích) kết hợp với Bộ Khẩu (口: miệng nói lời thông tuệ)\n【Mẹo nhớ】: Lời nói từ miệng (口) thốt ra chuẩn xác nhanh như tên bắn (矢) chứng tỏ một người am hiểu sâu rộng: TRI THỨC, BIẾT (知).",
-        "example": "知るを べんきょうします。(Học từ 知る.)"
+        "example": "この 歌を 知っていますか。― いいえ、知りません。 (Bạn có biết bài hát này không? ― Không, tôi không biết.)"
       },
       {
         "id": "v-15-6",
@@ -6102,7 +6102,7 @@ const kanji_11_15 = [
           }
         ],
         "mnemonic": "【Chiết tự】: Gồm Bộ Thỉ (矢: mũi tên bay nhanh trúng đích) kết hợp với Bộ Khẩu (口: miệng nói lời thông tuệ)\n【Mẹo nhớ】: Lời nói từ miệng (口) thốt ra chuẩn xác nhanh như tên bắn (矢) chứng tỏ một người am hiểu sâu rộng: TRI THỨC, BIẾT (知).",
-        "example": "知っているを べんきょうします。(Học từ 知っている.)"
+        "example": "ミラーさんを 知っていますか。 (Bạn có biết anh Miller không?)"
       },
       {
         "id": "v-15-7",
@@ -6132,7 +6132,7 @@ const kanji_11_15 = [
           }
         ],
         "mnemonic": "【Chiết tự】: Gồm Bộ Nhân (亻: con người) kết hợp với Chữ Chủ (主: ngọn đèn chủ nhà)\n【Mẹo nhớ】: Con người (亻) thắp sáng ngọn đèn ấm áp (主) trong ngôi nhà nơi mình gắn bó sinh sống: CƯ TRÚ (住).",
-        "example": "住んでいるを べんきょうします。(Học từ 住んでいる.)"
+        "example": "私は 今 ハノイに 住んでいます。 (Hiện tại tôi đang sống ở Hà Nội.)"
       },
       {
         "id": "v-15-8",
@@ -6172,7 +6172,7 @@ const kanji_11_15 = [
           }
         ],
         "mnemonic": "【Cấu thành】: 資 (TƯ: Tư liệu [Chữ Thứ (次: tích luỹ từng lần)]) + 料 (LIỆU: Nguyên liệu [Mễ (米: hạt gạo)])\n【Mẹo nhớ từ】: Tư (資: nguồn vốn tài nguyên) + Liệu (料: dữ liệu). Tài liệu thông tin nền tảng dùng phục vụ cho công việc hay nghiên cứu ➔ TÀI LIỆU.",
-        "example": "会議の 資料を コピーしました。(Tôi đã photo tài liệu cuộc họp.)"
+        "example": "会議の 資料を もらっても いいですか。 (Tôi nhận tài liệu cuộc họp có được không?)"
       },
       {
         "id": "v-15-9",
@@ -6222,7 +6222,7 @@ const kanji_11_15 = [
           }
         ],
         "mnemonic": "【Cấu thành】: 時 (THỜI: Thời gian [Nhật (日: mặt trời)]) + 刻 (KHẮC: Khắc sâu [Chữ Hợi (亥: con lợn tế cúng)]) + 表 (BIỂU: Bảng biểu [Y (áo ngoài) phủ lên lớp lông thú lộn ra ngoài])\n【Mẹo nhớ từ】: Thời khắc (時刻: giờ giấc) + Biểu (表: bảng biểu). Bảng biểu ghi rõ từng khung giờ tàu xe xuất bến và cập bến ➔ BẢNG GIỜ TÀU XE.",
-        "example": "駅で 電車の 時刻表を 見ます。(Tôi xem bảng giờ tàu chạy tại ga.)"
+        "example": "バスの 時刻表を 見せてください。 (Xin hãy cho tôi xem bảng giờ xe buýt chạy.)"
       },
       {
         "id": "v-15-10",
@@ -6252,7 +6252,7 @@ const kanji_11_15 = [
           }
         ],
         "mnemonic": "【Chiết tự】: Gồm Bộ Nguyệt (月: da thịt cơ thể) kết hợp với Chữ Phục (bàn tay vuốt êm ái)\n【Mẹo nhớ】: Tấm vải mềm mại ôm khít lấy da thịt thân thể (月) giúp che chắn giữ ấm: TRANG PHỤC, ÁO QUẦN (服).",
-        "example": "デパートで 冬の 服を 買いました。(Tôi đã mua quần áo mùa đông ở trung tâm thương mại.)"
+        "example": "デパートで 子供の 服を 買っています。 (Tôi đang mua quần áo trẻ em ở trung tâm thương mại.)"
       },
       {
         "id": "v-15-11",
@@ -6292,7 +6292,7 @@ const kanji_11_15 = [
           }
         ],
         "mnemonic": "【Cấu thành】: 製 (CHẾ: Chế tạo [Chữ Chế (制: quy chuẩn khuôn phép)]) + 品 (PHẨM: Hàng hoá [Ba chiếc miệng (口])\n【Mẹo nhớ từ】: VẬT PHẨM (品) được CHẾ TẠO (製) ra từ nhà máy: SẢN PHẨM.",
-        "example": "これらは 日本の 製品です。(Đây là những sản phẩm của Nhật Bản.)"
+        "example": "IMCは コンピューターソフトの 製品を 作っています。 (IMC đang sản xuất các sản phẩm phần mềm máy tính.)"
       },
       {
         "id": "v-15-12",
@@ -6332,7 +6332,7 @@ const kanji_11_15 = [
           }
         ],
         "mnemonic": "【Cấu thành】: 専 (CHUYÊN: Chuyên môn [Thập (十: mười phần trọn vẹn)]) + 門 (MÔN: Cánh cổng [Hình hai cánh cổng gỗ đồ sộ đối xứng nhau])\n【Mẹo nhớ từ】: Cánh CỔNG (門) mở vào lĩnh vực CHUYÊN (専) sâu: CHUYÊN MÔN.",
-        "example": "わたしの 専門は 経済です。(Chuyên ngành của tôi là kinh tế.)"
+        "example": "大学で 専門は 何ですか。 (Ở trường đại học, chuyên ngành của bạn là gì?)"
       },
       {
         "id": "v-15-13",
@@ -6382,7 +6382,7 @@ const kanji_11_15 = [
           }
         ],
         "mnemonic": "【Cấu thành】: 歯 (XỈ: Răng miệng [Xỉ (hàng răng trên và hàng răng dưới khít vào nhau)]) + 医 (Y: Y học [Phương (匚: chiếc hòm đựng đồ)]) + 者 (GIẢ: Người [Lão (耂: ông già có râu)])\n【Mẹo nhớ từ】: BÁC SĨ (医者) chuyên khoa khám chữa hàm RĂNG (歯): NHA SĨ.",
-        "example": "歯が 痛いので、歯医者へ 行きます。(Vì đau răng nên tôi đi khám nha sĩ.)"
+        "example": "歯が 痛いですから、歯医者へ 行きます。 (Vì bị đau răng nên tôi đi khám nha sĩ.)"
       },
       {
         "id": "v-15-14",
@@ -6422,7 +6422,7 @@ const kanji_11_15 = [
           }
         ],
         "mnemonic": "【Cấu thành】: 床 (SÀNG: Sàn nhà [Nghiễm (广: gian phòng rộng)]) + 屋 (ỐC: Căn nhà [Thi (尸: thân người nằm / mái hiên)])\n【Mẹo nhớ từ】: Cửa hiệu, quán xá (屋: nơi dừng chân dưới mái nhà) chuyên mua bán và phục vụ mặt hàng [床]: Tiệm hớt tóc (床屋: とこや).",
-        "example": "日曜日に 床屋へ 行きました。(Tôi đã đi cắt tóc vào Chủ Nhật.)"
+        "example": "駅の 前の 床屋で 髪を 切りました。 (Tôi đã cắt tóc ở tiệm hớt tóc trước nhà ga.)"
       },
       {
         "id": "v-15-15",
@@ -6462,7 +6462,7 @@ const kanji_11_15 = [
           }
         ],
         "mnemonic": "【Cấu thành】: 独 (ĐỘC: Đơn độc [Khuyển (犭: con chó hoang)]) + 身 (THÂN: Thân thể [Hình vẽ người phụ nữ mang thai nhìn nghiêng với bụng nhô về phía trước])\n【Mẹo nhớ từ】: Bản THÂN (身) sống ĐƠN ĐỘC (独) chưa lập gia đình: ĐỘC THÂN.",
-        "example": "サントスさんは まだ 独身です。(Anh Santos vẫn còn độc thân.)"
+        "example": "私の 兄は まだ 独身です。 (Anh trai của tôi vẫn còn độc thân.)"
       },
       {
         "id": "v-15-16",
@@ -6492,7 +6492,7 @@ const kanji_11_15 = [
           }
         ],
         "mnemonic": "【Chiết tự】: Gồm Bộ Ngưu (牛: con bò đực dũng mãnh) kết hợp với Bộ Tự (寺: khuôn viên chùa)\n【Mẹo nhớ】: Con bò thần (牛) được nuôi dưỡng trang trọng trong sân chùa (寺) có vị thế vô cùng khác thường: ĐẶC BIỆT (特).",
-        "example": "果物が 好きです。特に りんごが 好きです。(Tôi thích hoa quả. Đặc biệt là thích táo.)"
+        "example": "果物が 好きです。特に りんごが 好きです。 (Tôi thích trái cây. Đặc biệt là thích táo.)"
       },
       {
         "id": "v-15-17",
@@ -6532,7 +6532,7 @@ const kanji_11_15 = [
           }
         ],
         "mnemonic": "【Cấu thành】: 思 (TƯ: Nghĩ [Điền (田: nếp nhăn não bộ)]) + 出 (XUẤT: Đi ra [Hai ngọn núi (山])\n【Mẹo nhớ từ】: Tư (思: nhớ nghĩ) + Xuất (出: hiện ra). Ký ức xưa cũ bỗng hiện về rõ mồn một trong tâm trí ➔ NHỚ RA, HỒI TƯỞNG.",
-        "example": "思い出すを べんきょうします。(Học từ 思い出す.)"
+        "example": "この 写真を 見て、家族を 思い出します。 (Nhìn bức ảnh này, tôi nhớ về gia đình.)"
       },
       {
         "id": "v-15-18",
@@ -6572,7 +6572,7 @@ const kanji_11_15 = [
           }
         ],
         "mnemonic": "【Cấu thành】: 家 (GIA: Gia đình [Miên (宀: mái nhà)]) + 族 (TỘC: Gia tộc [Phương (方: lá cờ bay)])\n【Mẹo nhớ từ】: Nét nghĩa của 家 (GIA: Gia đình) khéo léo kết duyên cùng 族 (TỘC: Gia tộc) mở ra hình ảnh biểu trưng cho Gia đình bạn ➔ ご家族 (ごかぞく).",
-        "example": "ご家族は お元気ですか。(Gia đình của bạn có khỏe không?)"
+        "example": "ご家族は どちらに 住んでいますか。 (Gia đình của bạn đang sống ở đâu ạ?)"
       },
       {
         "id": "v-15-19",
@@ -6612,7 +6612,7 @@ const kanji_11_15 = [
           }
         ],
         "mnemonic": "【Cấu thành】: 高 (CAO: Cao lớn [Mái tháp cao nhọn]) + 校 (HIỆU: Trường học [Mộc (木: cây cối)])\n【Mẹo nhớ từ】: Không gian, cơ sở chuyên biệt (校: HIỆU) phục vụ cho 高 (CAO: Cao lớn) ➔ Nhận diện địa điểm: Trường cấp 3 (高校: こうこう).",
-        "example": "兄は 高校の 先生です。(Anh trai tôi là giáo viên trường cấp 3.)"
+        "example": "姉は 高校で 英語を 教えています。 (Chị gái tôi đang dạy tiếng Anh ở trường cấp 3.)"
       },
       {
         "id": "v-15-20",
@@ -6642,7 +6642,7 @@ const kanji_11_15 = [
           }
         ],
         "mnemonic": "【Chiết tự】: Gồm Bộ Nghiễm (广: mái nhà) kết hợp với Hai chữ Nhân (人 kết hợp với 人: hai người) kết hợp với Bộ Thổ (土: đất)\n【Mẹo nhớ】: Hai người (人+人) bước vào dưới mái nhà (广) cùng ngồi trên mảnh đất (土) trò chuyện: CHỖ NGỒI, TOẠ (座).",
-        "example": "座るを べんきょうします。(Học từ 座る.)"
+        "example": "どうぞ あの 椅子に 座ってください。 (Xin mời ngồi vào chiếc ghế kia.)"
       },
       {
         "id": "v-15-21",
@@ -6672,7 +6672,7 @@ const kanji_11_15 = [
           }
         ],
         "mnemonic": "【Chiết tự】: Gồm Bộ Nhân (亻: con người) kết hợp với Chữ Sạ (乍: chiếc dao đẽo gọt gỗ)\n【Mẹo nhớ】: Bàn tay con người (亻) cầm dao gọt giũa từng khúc gỗ tạo ra tác phẩm tinh xảo: CHẾ TẠO, TÁC PHẨM (作).",
-        "example": "作るを べんきょうします。(Học từ 作る.)"
+        "example": "母は 今 晩ご飯を 作っています。 (Mẹ tôi hiện đang nấu bữa tối.)"
       },
       {
         "id": "v-15-22",
@@ -6702,7 +6702,7 @@ const kanji_11_15 = [
           }
         ],
         "mnemonic": "【Chiết tự】: Gồm Bộ Chữ Cáo (告: công bố bản vẽ thiết kế) kết hợp với Bộ Xước (辶: cất bước thi công)\n【Mẹo nhớ】: Sau khi công bố xong bản vẽ (告), đoàn thợ cất bước (辶) bắt tay vào xây dựng chế tạo: CHẾ TẠO, SẢN XUẤT (造).",
-        "example": "造るを べんきょうします。(Học từ 造る.)"
+        "example": "この 工場では 自動車を 造っています。 (Ở nhà máy này người ta đang chế tạo ô tô.)"
       },
       {
         "id": "v-15-23",
@@ -6772,7 +6772,7 @@ const kanji_11_15 = [
           }
         ],
         "mnemonic": "【Cấu thành】: 電 (ĐIỆN: Điện khí [Vũ (雨: cơn mưa dông)]) + 話 (THOẠI: Nói chuyện [Ngôn (言: lời nói)]) + 番 (PHIÊN: Chương trình ti vi [Biện (dấu chân gieo hạt)]) + 号 (HIỆU: Tín hiệu [Khẩu (口: miệng gọi to)]) + 知 (TRI: Biết [Thỉ (矢: mũi tên bay nhanh trúng đích)])\n【Mẹo nhớ từ】: Hình ảnh thực tế sinh động: thông qua 電 (ĐIỆN: Điện khí), 話 (THOẠI: Nói chuyện), 番 (PHIÊN: Chương trình ti vi), 号 (HIỆU: Tín hiệu), 知 (TRI: Biết), hành động được khắc họa rõ nét tạo nên ý nghĩa Biết số điện thoại ➔ 電話番号を知っている (でんわばんごうをしっている).",
-        "example": "電話番号を知っているを べんきょうします。(Học từ 電話番号を知っている.)"
+        "example": "市役所の 電話番号を知っていますか。 (Bạn có biết số điện thoại của tòa thị chính không?)"
       },
       {
         "id": "v-15-24",
@@ -6822,7 +6822,7 @@ const kanji_11_15 = [
           }
         ],
         "mnemonic": "【Cấu thành】: 大 (ĐẠI: To lớn [Hình tượng người dang rộng tứ chi]) + 阪 (PHẢN: Bờ dốc [Phụ (阝: vách núi gồ ghề)]) + 住 (TRÚ: Sinh sống [Nhân (亻: con người)])\n【Mẹo nhớ từ】: Hình ảnh thực tế sinh động: thông qua 大 (ĐẠI: To lớn), 阪 (PHẢN: Bờ dốc), 住 (TRÚ: Sinh sống), hành động được khắc họa rõ nét tạo nên ý nghĩa Sống ở OSAKA ➔ 大阪に住んでいる (おおさかにすんでいる).",
-        "example": "大阪に住んでいるを べんきょうします。(Học từ 大阪に住んでいる.)"
+        "example": "私の 家族は 大阪に住んでいます。 (Gia đình của tôi đang sống ở Osaka.)"
       },
       {
         "id": "v-15-25",
@@ -6862,7 +6862,7 @@ const kanji_11_15 = [
           }
         ],
         "mnemonic": "【Cấu thành】: 研 (NGHIÊN: Nghiên cứu [Thạch (石: hòn đá)]) + 究 (CỨU: Nghiên cứu [Huyệt (穴: cái hang sâu)])\n【Mẹo nhớ từ】: Hành động bắt nguồn từ 研 (NGHIÊN: Nghiên cứu) hòa quyện cùng 究 (CỨU: Nghiên cứu) để thực hiện trọn vẹn việc Nghiên cứu ➔ 研究する (けんきゅうする).",
-        "example": "研究するを べんきょうします。(Học từ 研究する.)"
+        "example": "大学で 日本の 歴史を 研究しています。 (Tôi đang nghiên cứu lịch sử Nhật Bản tại trường đại học.)"
       },
       {
         "id": "v-15-26",
@@ -6902,7 +6902,7 @@ const kanji_11_15 = [
           }
         ],
         "mnemonic": "【Cấu thành】: 禁 (CẤM: Cấm đoán [Lâm (林: khu rừng rậm)]) + 煙 (YÊN: Khói thuốc [Hoả (火: ngọn lửa đỏ)])\n【Mẹo nhớ từ】: Cấm (禁: nghiêm cấm) + Yên (煙: khói thuốc lá). Biển báo nghiêm cấm hành vi châm lửa hút thuốc ➔ CẤM HÚT THUỐC.",
-        "example": "ここは 禁煙です。(Ở đây cấm hút thuốc.)"
+        "example": "ここは 禁煙ですから、煙草を 吸っては いけません。 (Vì ở đây cấm hút thuốc nên không được hút thuốc lá.)"
       },
       {
         "id": "v-15-27",
@@ -6942,7 +6942,7 @@ const kanji_11_15 = [
           }
         ],
         "mnemonic": "【Cấu thành】: 上 (THƯỢNG: Bên trên [Đường chân trời]) + 妹 (MUỘI: Em gái [Nữ (女: người con gái)])\n【Mẹo nhớ từ】: Nét nghĩa của 上 (THƯỢNG: Bên trên) khéo léo kết duyên cùng 妹 (MUỘI: Em gái) mở ra hình ảnh biểu trưng cho Chị gái kế ➔ 上の妹 (うえのいもうと).",
-        "example": "上の妹を べんきょうします。(Học từ 上の妹.)"
+        "example": "上の妹は 病院で 働いています。 (Người em gái kế của tôi đang làm việc ở bệnh viện.)"
       },
       {
         "id": "v-15-28",
@@ -6982,7 +6982,7 @@ const kanji_11_15 = [
           }
         ],
         "mnemonic": "【Cấu thành】: 下 (HẠ: Dưới [Đường chân trời]) + 妹 (MUỘI: Em gái [Nữ (女: người con gái)])\n【Mẹo nhớ từ】: Nét nghĩa của 下 (HẠ: Dưới) khéo léo kết duyên cùng 妹 (MUỘI: Em gái) mở ra hình ảnh biểu trưng cho Em gái kế ➔ 下の妹 (したのいもうと).",
-        "example": "下の妹を べんきょうします。(Học từ 下の妹.)"
+        "example": "下の妹は まだ 高校生です。 (Cô em gái út của tôi vẫn còn là học sinh cấp 3.)"
       }
     ]
   }

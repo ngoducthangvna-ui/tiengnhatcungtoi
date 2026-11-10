@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="192" height="192" fill="none" aria-label="Daruma 日">
+  <!-- Superellipse Squircle Base (Dark Obsidian & Champagne Gold Border) -->
+  <path d="M12 2C18.5 2 22 5.5 22 12C22 18.5 18.5 22 12 22C5.5 22 2 18.5 2 12C2 5.5 5.5 2 12 2Z" fill="#0b101e" stroke="#e5c178" stroke-width="1.2"/>
+
+  <!-- Smooth Pear-Shaped Outer Daruma Tumbler Body Contour (Crimson Red 1.5px Hairline) -->
+  <path d="M12 3.8C16.6 3.8 19.2 7.2 19.2 12.6C19.2 17.6 16.4 20.2 12 20.2C7.6 20.2 4.8 17.6 4.8 12.6C4.8 7.2 7.4 3.8 12 3.8Z" stroke="#e11d48" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+
+  <!-- Inner Crimson Hood Rim Accent -->
+  <path d="M6.6 11.2C6.2 7.4 8.5 4.8 12 4.8C15.5 4.8 17.8 7.4 17.4 11.2" stroke="#e11d48" stroke-width="1.5" stroke-linecap="round" fill="none"/>
+
+  <!-- Inner Daruma Face Arch Frame (Champagne Gold 1.5px Hairline) -->
+  <path d="M7.3 9.4C7.3 6.7 9.2 5.5 12 5.5C14.8 5.5 16.7 6.7 16.7 9.4C16.7 11.5 15.0 12.5 12 12.5C9.0 12.5 7.3 11.5 7.3 9.4Z" stroke="#e5c178" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+
+  <!-- Forehead Brow Dots & Traditional Crane Eyebrows -->
+  <path d="M11.2 6.4L11.4 6.6 M12.8 6.4L12.6 6.6 M8.3 7.3C9.2 6.8 10.3 7.1 11.1 7.9 M15.7 7.3C14.8 6.8 13.7 7.1 12.9 7.9" stroke="#e5c178" stroke-width="1.5" stroke-linecap="round" fill="none"/>
+
+  <!-- Expressive Round Daruma Eyes -->
+  <circle cx="9.7" cy="9.1" r="1.15" stroke="#e5c178" stroke-width="1.2" fill="#0b101e"/>
+  <circle cx="9.7" cy="9.1" r="0.35" fill="#e5c178"/>
+  <circle cx="14.3" cy="9.1" r="1.15" stroke="#e5c178" stroke-width="1.2" fill="#0b101e"/>
+  <circle cx="14.3" cy="9.1" r="0.35" fill="#e5c178"/>
+
+  <!-- Determined Scowl Mouth & Cheek Whiskers -->
+  <path d="M9.3 11.3C10.6 10.2 13.4 10.2 14.7 11.3 M10.3 11.6C11.2 11.1 12.8 11.1 13.7 11.6 M8.0 10.4C8.2 10.9 8.6 11.2 9.0 11.4 M16.0 10.4C15.8 10.9 15.4 11.2 15.0 11.4" stroke="#e5c178" stroke-width="1.5" stroke-linecap="round" fill="none"/>
+
+  <!-- Belly Double-Arc Brackets (( 日 )) -->
+  <path d="M6.8 14.3C6.3 15.9 6.9 17.6 8.0 18.6 M8.5 14.8C8.1 16.0 8.5 17.3 9.3 18.1 M17.2 14.3C17.7 15.9 17.1 17.6 16.0 18.6 M15.5 14.8C15.9 16.0 15.5 17.3 14.7 18.1" stroke="#e5c178" stroke-width="1.5" stroke-linecap="round" fill="none"/>
+
+  <!-- Pure Vector Kanji Monogram 「日」 -->
+  <path id="kanji-monogram-日" d="M10.4 14.2H13.6V18.4H10.4Z M10.4 16.3H13.6" stroke="#e5c178" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+</svg>

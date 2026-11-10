@@ -183,6 +183,121 @@
     },
 
     /**
+     * Dịch tự động hai chiều Việt - Nhật / Nhật - Việt chuẩn 4-Phase Linear Anatomy
+     * @param {string} text Đoạn văn bản cần dịch
+     * @param {object} options Tùy chọn { sl, tl, timeoutMs }
+     * @returns {Promise<{ original: string, translated: string, transliteration: string, sourceLang: string, targetLang: string, error?: string }>}
+     */
+    async translateText(text, options = {}) {
+      // Phase 1: Guard Clauses & Fail-Fast
+      if (!text || typeof text !== 'string') {
+        return { original: '', translated: '', transliteration: '', sourceLang: '', targetLang: '' };
+      }
+      const rawTrim = text.trim();
+      if (!rawTrim) {
+        return { original: '', translated: '', transliteration: '', sourceLang: '', targetLang: '' };
+      }
+
+      // Phase 2: Data Normalization
+      const normalizedQuery = rawTrim.replace(/\s+/g, ' ');
+      const hasJapanese = /[\u3040-\u309f\u30a0-\u30ff\u4e00-\u9faf]/.test(normalizedQuery);
+      const sourceLang = options.sl || (hasJapanese ? 'ja' : 'vi');
+      const targetLang = options.tl || (hasJapanese ? 'vi' : 'ja');
+      const cacheKey = `trans_${sourceLang}_${targetLang}_${normalizedQuery}`;
+
+      // Cost-Ordered Short-Circuit: LRU In-Memory Cache (0ms)
+      if (_maziiCache.has(cacheKey)) {
+        return _maziiCache.get(cacheKey);
+      }
+
+      // Phase 3 & 4: Network Fetch with Timeout & Fallback (Imperative Shell)
+      const timeoutMs = options.timeoutMs || 5000;
+      const controller = typeof AbortController !== 'undefined' ? new AbortController() : null;
+      const timer = controller ? setTimeout(() => controller.abort(), timeoutMs) : null;
+
+      const endpoints = [
+        `https://translate.google.com/translate_a/single?client=gtx&sl=${sourceLang}&tl=${targetLang}&dt=t&dt=rm&q=${encodeURIComponent(normalizedQuery)}`,
+        `https://translate.googleapis.com/translate_a/single?client=gtx&sl=${sourceLang}&tl=${targetLang}&dt=t&dt=rm&q=${encodeURIComponent(normalizedQuery)}`
+      ];
+
+      let lastError = null;
+      for (const url of endpoints) {
+        try {
+          const fetchOptions = {
+            method: 'GET',
+            headers: { 'Accept': 'application/json' }
+          };
+          if (controller) {
+            fetchOptions.signal = controller.signal;
+          }
+
+          const res = await fetch(url, fetchOptions);
+          if (timer) clearTimeout(timer);
+          if (!res.ok) throw new Error(`HTTP ${res.status}`);
+
+          const rawData = await res.json();
+          // Phase 3 (Pure Extraction)
+          const result = this._parseTranslatePayload(rawData, normalizedQuery, sourceLang, targetLang);
+          if (result && result.translated) {
+            this._setCache(cacheKey, result);
+            return result;
+          }
+        } catch (err) {
+          lastError = err;
+        }
+      }
+
+      if (timer) clearTimeout(timer);
+      console.warn('[DictionaryEngine] Lỗi dịch tự động:', lastError);
+      return {
+        original: normalizedQuery,
+        translated: '',
+        transliteration: '',
+        sourceLang,
+        targetLang,
+        error: lastError ? lastError.message : 'Dịch thất bại'
+      };
+    },
+
+    /**
+     * Trích xuất cấu trúc dữ liệu bản dịch thuần túy (Pure Function)
+     */
+    _parseTranslatePayload(data, original, sourceLang, targetLang) {
+      if (!Array.isArray(data) || !Array.isArray(data[0])) {
+        return { original, translated: '', transliteration: '', sourceLang, targetLang };
+      }
+
+      let translated = '';
+      let transliteration = '';
+
+      // data[0] chứa các mảng phân đoạn dịch: [[translatedSegment, originalSegment, ...], ...]
+      const segments = data[0];
+      for (let i = 0; i < segments.length; i++) {
+        const seg = segments[i];
+        if (Array.isArray(seg)) {
+          if (typeof seg[0] === 'string') {
+            translated += seg[0];
+          }
+          if (typeof seg[2] === 'string' && !transliteration) {
+            transliteration = seg[2];
+          } else if (typeof seg[3] === 'string' && !transliteration) {
+            transliteration = seg[3];
+          }
+        }
+      }
+
+      const detectedLang = typeof data[2] === 'string' ? data[2] : sourceLang;
+
+      return {
+        original,
+        translated: translated.trim(),
+        transliteration: transliteration.trim(),
+        sourceLang: detectedLang,
+        targetLang
+      };
+    },
+
+    /**
      * Quản lý bộ nhớ đệm có giới hạn kích thước
      */
     _setCache(key, value) {
@@ -219,7 +334,7 @@
       const recognition = new SpeechRecognition();
 
       recognition.lang = lang || 'ja-JP';
-      recognition.continuous = options.continuous !== undefined ? Boolean(options.continuous) : false;
+      recognition.continuous = options.continuous !== undefined ? Boolean(options.continuous) : true;
       recognition.interimResults = true;
       recognition.maxAlternatives = options.maxAlternatives || 5; // Lấy tối đa 5 phương án xếp hạng theo Google
 
@@ -246,8 +361,9 @@
               if (alt && !allAlternatives.includes(alt)) {
                 allAlternatives.push(alt);
                 // Nếu là tiếng Nhật và có chứa ký tự Latinh (Romaji) -> tự động bổ sung biến thể Hiragana
-                if (lang === 'ja-JP' && /^[a-zA-Z\s]+$/.test(alt)) {
-                  const kana = this.romajiToHiragana(alt);
+                if (lang === 'ja-JP' && /[a-zA-Z]/.test(alt)) {
+                  const cleanRomaji = alt.replace(/['’\-_]/g, ' ');
+                  const kana = this.romajiToHiragana(cleanRomaji).replace(/\s+/g, '');
                   if (kana && !allAlternatives.includes(kana)) {
                     allAlternatives.push(kana);
                   }

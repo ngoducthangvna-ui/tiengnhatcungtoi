@@ -600,6 +600,246 @@ const quizzes_41_45 = {
       ],
       "correctIdx": 0,
       "explanation": "[Độ khó: DỄ | Tổng kết bài 41] Kính ngữ của hệ thống cho nhận hành động và đồ vật."
+    },
+    {
+      "id": "pq41-51",
+      "question": "Hệ thống động từ cho nhận kính ngữ: Bảng đối ứng ĐÚNG giữa dạng thông thường và dạng kính ngữ:",
+      "options": [
+        "もらいます -> いただきます (Khiêm nhường) / くれます -> くださいます (Tôn kính) / あげます -> やります (Bề dưới/động vật)",
+        "もらいます -> くださいます / くれます -> いただきます",
+        "あげます -> いただきます",
+        "くれます -> やります"
+      ],
+      "correctIdx": 0,
+      "explanation": "[Độ khó: VẬN DỤNG CAO | Bảng đối ứng cho nhận kính ngữ] Nhận từ bề trên: いただきます; Bề trên cho tôi: くださいます; Cho người dưới/thú cưng/cây cối: やります."
+    },
+    {
+      "id": "pq41-52",
+      "question": "A:「<ruby>社長<rt>しゃちょう</rt></ruby>が <ruby>私<rt>わたし</rt></ruby>に <ruby>お土産<rt>おみやげ</rt></ruby>を ........。」\nB:「よかったですね。」",
+      "options": [
+        "くださいました (<ruby>社長<rt>しゃちょう</rt></ruby>が)",
+        "いただきました (nếu dùng <ruby>私<rt>わたし</rt></ruby>は <ruby>社長<rt>しゃちょう</rt></ruby>に)",
+        "あげました",
+        "やりました"
+      ],
+      "correctIdx": 0,
+      "explanation": "[Độ khó: VẬN DỤNG CAO | Chủ ngữ là cấp trên trao tặng cho tôi] Chủ ngữ đi với が là Giám đốc (<ruby>社長<rt>しゃちょう</rt></ruby>が), người nhận là tôi (<ruby>私<rt>わたし</rt></ruby>に) -> bắt buộc dùng くださいます (くださいました)."
+    },
+    {
+      "id": "pq41-53",
+      "question": "A:「<ruby>私<rt>わたし</rt></ruby>は <ruby>部長<rt>ぶちょう</rt></ruby>に ネクタイを ........。」\nB:「とても <ruby>素敵<rt>すてき</rt></ruby>な ネクタイですね。」",
+      "options": [
+        "いただきました (<ruby>私<rt>わたし</rt></ruby>は <ruby>部長<rt>ぶちょう</rt></ruby>に)",
+        "くださいました",
+        "やりました",
+        "あげました (với sếp tránh dùng)"
+      ],
+      "correctIdx": 0,
+      "explanation": "[Độ khó: VẬN DỤNG CAO | Chủ ngữ là tôi nhận từ cấp trên] Chủ ngữ là Tôi (<ruby>私<rt>わたし</rt></ruby>は), đối tượng trao tặng đi với trợ từ に (<ruby>部長<rt>ぶちょう</rt></ruby>に) -> bắt buộc dùng khiêm nhường いただきました."
+    },
+    {
+      "id": "pq41-54",
+      "question": "A:「<ruby>犬<rt>いぬ</rt></ruby>に えさを ........ か。」\nB:「ええ、もう やりましたよ。」",
+      "options": [
+        "やりました",
+        "いただきました",
+        "くださいました",
+        "もらいました"
+      ],
+      "correctIdx": 0,
+      "explanation": "[Độ khó: VẬN DỤNG CAO | Cho thú cưng ăn] Cho chó ăn thức ăn: えさを やります (やりました)."
+    },
+    {
+      "id": "pq41-55",
+      "question": "A:「<ruby>先生<rt>せんせい</rt></ruby>に <ruby>論文<rt>ろんぶん</rt></ruby>を <ruby>直<rt>なお</rt></ruby>して ........。」\nB:「<ruby>親切<rt>しんせつ</rt></ruby>な <ruby>先生<rt>せんせい</rt></ruby>ですね。」",
+      "options": [
+        "いただきました",
+        "あげました",
+        "やりました",
+        "くださいました (nếu chủ ngữ là thầy)"
+      ],
+      "correctIdx": 0,
+      "explanation": "[Độ khó: VẬN DỤNG CAO | Được thầy giáo sửa luận văn giúp] Tôi được thầy sửa giúp: <ruby>先生<rt>せんせい</rt></ruby>に <ruby>直<rt>なお</rt></ruby>して いただきました."
+    },
+    {
+      "id": "pq41-56",
+      "question": "Yêu cầu lịch sự ở mức độ CAO NHẤT trong các cách nhờ vả sau là:",
+      "options": [
+        "もう<ruby>一度<rt>いちど</rt></ruby> <ruby>説明<rt>せつめい</rt></ruby>して いただけませんか。(Lịch sự cao độ)",
+        "もう<ruby>一度<rt>いちど</rt></ruby> <ruby>説明<rt>せつめい</rt></ruby>して くださいませんか。",
+        "もう<ruby>一度<rt>いちど</rt></ruby> <ruby>説明<rt>せつめい</rt></ruby>して ください。",
+        "もう<ruby>一度<rt>いちど</rt></ruby> <ruby>説明<rt>せつめい</rt></ruby>して くれ。"
+      ],
+      "correctIdx": 0,
+      "explanation": "[Độ khó: VẬN DỤNG CAO | Thang đo mức độ lịch sự của nhờ vả] V-て いただけませんか là cách thỉnh cầu khiêm nhường trang trọng nhất, dùng khi nhờ cấp trên, giáo viên hoặc đối tác khách hàng."
+    },
+    {
+      "id": "pq41-57",
+      "question": "Tìm câu SAI ngữ pháp và văn hóa giao tiếp trong 4 câu dưới đây:",
+      "options": [
+        "<ruby>私<rt>わたし</rt></ruby>は <ruby>社長<rt>しゃちょう</rt></ruby>に プレゼントを やりました。(Thất lễ nghiêm trọng với giám đốc)",
+        "<ruby>私<rt>わたし</rt></ruby>は <ruby>弟<rt>おとうと</rt></ruby>に お<ruby>小<rt>ちい</rt></ruby><ruby>遣<rt>づか</rt></ruby>いを やりました。(Đúng: với em trai)",
+        "<ruby>社長<rt>しゃちょう</rt></ruby>は <ruby>私<rt>わたし</rt></ruby>に <ruby>本<rt>ほん</rt></ruby>を <ruby>買<rt>か</rt></ruby>ってくださいました。(Đúng)",
+        "<ruby>私<rt>わたし</rt></ruby>は <ruby>社長<rt>しゃちょう</rt></ruby>に <ruby>本<rt>ほん</rt></ruby>を <ruby>買<rt>か</rt></ruby>っていただきました。(Đúng)"
+      ],
+      "correctIdx": 0,
+      "explanation": "[Độ khó: VẬN DỤNG CAO | Lỗi dùng やる với cấp trên] やる chỉ dùng cho người bề dưới trong nhà (con cái, em út), thú cưng hoặc cây cối; tuyệt đối không dùng với giám đốc."
+    },
+    {
+      "id": "pq41-58",
+      "question": "A:「<ruby>息子<rt>むすこ</rt></ruby>に パソコンを <ruby>買<rt>か</rt></ruby>って ........。」\nB:「<ruby>優<rt>やさ</rt></ruby>しい お<ruby>父<rt>とう</rt></ruby>さんですね。」",
+      "options": [
+        "やりました (あげました)",
+        "いただきました",
+        "くださいました",
+        "もらいました"
+      ],
+      "correctIdx": 0,
+      "explanation": "[Độ khó: VẬN DỤNG CAO | Bố mua máy tính cho con trai] Người trên mua cho con cái trong nhà: <ruby>買<rt>か</rt></ruby>って やりました (hoặc <ruby>買<rt>か</rt></ruby>ってあげました)."
+    },
+    {
+      "id": "pq41-59",
+      "question": "Điền trợ từ thích hợp:「<ruby>先生<rt>せんせい</rt></ruby> ........ <ruby>推薦<rt>すいせん</rt></ruby><ruby>状<rt>じょう</rt></ruby> (すいせんじょう) を <ruby>書<rt>か</rt></ruby>いて いただきました。」",
+      "options": [
+        "に (hoặc から)",
+        "で",
+        "を",
+        "へ"
+      ],
+      "correctIdx": 0,
+      "explanation": "[Độ khó: VẬN DỤNG CAO | Nhận thư giới thiệu từ thầy giáo] Được thầy giáo viết thư giới thiệu cho: <ruby>先生<rt>せんせい</rt></ruby>に (hoặc から) <ruby>書<rt>か</rt></ruby>いて いただきました."
+    },
+    {
+      "id": "pq41-60",
+      "question": "Tìm câu ĐỒNG NGHĨA với:「<ruby>部長<rt>ぶちょう</rt></ruby>は <ruby>私<rt>わたし</rt></ruby>に <ruby>仕事<rt>しごと</rt></ruby>を <ruby>教<rt>おし</rt></ruby>えて くださいました。」",
+      "options": [
+        "<ruby>私<rt>わたし</rt></ruby>は <ruby>部長<rt>ぶちょう</rt></ruby>に <ruby>仕事<rt>しごと</rt></ruby>を <ruby>教<rt>おし</rt></ruby>えて いただきました。",
+        "<ruby>私<rt>わたし</rt></ruby>は <ruby>部長<rt>ぶちょう</rt></ruby>に <ruby>仕事<rt>しごと</rt></ruby>を <ruby>教<rt>おし</rt></ruby>えて あげました。",
+        "<ruby>部長<rt>ぶちょう</rt></ruby>は <ruby>私<rt>わたし</rt></ruby>に <ruby>仕事<rt>しごと</rt></ruby>を <ruby>教<rt>おし</rt></ruby>えて やりました。",
+        "<ruby>私<rt>わたし</rt></ruby>は <ruby>部長<rt>ぶちょう</rt></ruby>に <ruby>仕事<rt>しごと</rt></ruby>を <ruby>教<rt>おし</rt></ruby>えて もらいませんでした。"
+      ],
+      "correctIdx": 0,
+      "explanation": "[Độ khó: VẬN DỤNG CAO | Chuyển đổi góc nhìn くださる <-> いただく] Trưởng phòng dạy việc cho tôi = Tôi được trưởng phòng dạy việc cho."
+    },
+    {
+      "id": "pq41-61",
+      "question": "A:「コピー<ruby>機<rt>き</rt></ruby>の <ruby>使<rt>つか</rt></ruby>い<ruby>方<rt>かた</rt></ruby>が <ruby>分<rt>ふん</rt></ruby>からないんですが、<ruby>教<rt>おし</rt></ruby>えて ........ いただけませんか。」\nB:「ええ、いいですよ。」",
+      "options": [
+        "<ruby>教<rt>おし</rt></ruby>えて",
+        "<ruby>教<rt>おし</rt></ruby>えます",
+        "<ruby>教<rt>おし</rt></ruby>えたら",
+        "<ruby>教<rt>おし</rt></ruby>えない"
+      ],
+      "correctIdx": 0,
+      "explanation": "[Độ khó: VẬN DỤNG CAO | V-ていただけませんか] Thể て + いただけませんか: <ruby>教<rt>おし</rt></ruby>えて いただけませんか."
+    },
+    {
+      "id": "pq41-62",
+      "question": "Khi tặng quà cho đối tác khách hàng hoặc bề trên, người Nhật dùng động từ nào thay cho「あげます」?",
+      "options": [
+        "<ruby>差<rt>さ</rt></ruby>し<ruby>上<rt>あ</rt></ruby>げます (さしあげます)",
+        "やります",
+        "いただきます",
+        "くださいます"
+      ],
+      "correctIdx": 0,
+      "explanation": "[Độ khó: VẬN DỤNG CAO | Khiêm nhường ngữ của あげます là <ruby>差<rt>さ</rt></ruby>し<ruby>上<rt>あ</rt></ruby>げます] Tặng quà bề trên: <ruby>先生<rt>せんせい</rt></ruby>に <ruby>お土産<rt>おみやげ</rt></ruby>を <ruby>差<rt>さ</rt></ruby>し<ruby>上<rt>あ</rt></ruby>げました."
+    },
+    {
+      "id": "pq41-63",
+      "question": "A:「<ruby>花<rt>はな</rt></ruby>に <ruby>水<rt>みず</rt></ruby>を ........ か。」\nB:「はい、<ruby>今<rt>いま</rt></ruby> <ruby>朝<rt>あさ</rt></ruby>の <ruby>水<rt>みず</rt></ruby>やりを しました。」",
+      "options": [
+        "やりました",
+        "いただきました",
+        "くださいました",
+        "あげませんでした"
+      ],
+      "correctIdx": 0,
+      "explanation": "[Độ khó: VẬN DỤNG CAO | Tưới nước cho cây hoa] Tưới nước cho hoa: <ruby>水<rt>みず</rt></ruby>を やりましたか."
+    },
+    {
+      "id": "pq41-64",
+      "question": "Điền trợ từ:「<ruby>先輩<rt>せんぱい</rt></ruby> ........ ご<ruby>飯<rt>はん</rt></ruby>を おごって いただきました。」",
+      "options": [
+        "に",
+        "で",
+        "を",
+        "へ"
+      ],
+      "correctIdx": 0,
+      "explanation": "[Độ khó: VẬN DỤNG CAO | Được tiền bối bao bữa ăn] Được tiền bối bao cơm: <ruby>先輩<rt>せんぱい</rt></ruby>に ご<ruby>飯<rt>はん</rt></ruby>を おごって いただきました."
+    },
+    {
+      "id": "pq41-65",
+      "question": "A:「<ruby>写真<rt>しゃしん</rt></ruby>を <ruby>撮<rt>と</rt></ruby>って ........ いただけませんか。」\nB:「いいですよ。はい、チーズ！」",
+      "options": [
+        "くださって (いただけませんか)",
+        "あげて",
+        "もらって",
+        "やって"
+      ],
+      "correctIdx": 0,
+      "explanation": "[Độ khó: VẬN DỤNG CAO | Nhờ người lạ chụp ảnh hộ] <ruby>撮<rt>と</rt></ruby>って いただけませんか (hoặc <ruby>撮<rt>と</rt></ruby>って くださいませんか)."
+    },
+    {
+      "id": "pq41-66",
+      "question": "Từ「お<ruby>祝<rt>いわ</rt></ruby>い (おいわい)」nghĩa là gì?",
+      "options": [
+        "Quà mừng, lời chúc mừng nhân dịp đặc biệt",
+        "Tiền phạt",
+        "Lời xin lỗi",
+        "Giấy hẹn khám bệnh"
+      ],
+      "correctIdx": 0,
+      "explanation": "[Độ khó: VẬN DỤNG CAO | Từ vựng văn hóa quà tặng] お<ruby>祝<rt>いわ</rt></ruby>い (quà mừng đám cưới, lễ tốt nghiệp, tân gia)."
+    },
+    {
+      "id": "pq41-67",
+      "question": "A:「<ruby>娘<rt>むすめ</rt></ruby>に <ruby>絵本<rt>えほん</rt></ruby>を <ruby>読<rt>よ</rt></ruby>んで ........。」\nB:「<ruby>娘<rt>むすめ</rt></ruby>さんは <ruby>喜<rt>よろこ</rt></ruby>んで いましたか。」",
+      "options": [
+        "やりました (あげました)",
+        "いただきました",
+        "くださいました",
+        "もらいました"
+      ],
+      "correctIdx": 0,
+      "explanation": "[Độ khó: VẬN DỤNG CAO | Đọc truyện cho con gái nghe] Đọc truyện cho con gái: <ruby>読<rt>よ</rt></ruby>んで やりました."
+    },
+    {
+      "id": "pq41-68",
+      "question": "Tìm lỗi sai trong câu:「<ruby>課長<rt>かちょう</rt></ruby>が <ruby>私<rt>わたし</rt></ruby>に お<ruby>茶<rt>ちゃ</rt></ruby>を <ruby>入<rt>い</rt></ruby>れて いただきました。」",
+      "options": [
+        "<ruby>入<rt>い</rt></ruby>れて いただきました -> <ruby>入<rt>い</rt></ruby>れて くださいました",
+        "<ruby>課長<rt>かちょう</rt></ruby>が -> <ruby>課長<rt>かちょう</rt></ruby>は",
+        "<ruby>私<rt>わたし</rt></ruby>に -> <ruby>私<rt>わたし</rt></ruby>を",
+        "お<ruby>茶<rt>ちゃ</rt></ruby>を -> お<ruby>茶<rt>ちゃ</rt></ruby>で"
+      ],
+      "correctIdx": 0,
+      "explanation": "[Độ khó: VẬN DỤNG CAO | Lỗi chủ ngữ <ruby>課長<rt>かちょう</rt></ruby>が đi với いただく] Chủ ngữ là người bề trên (<ruby>課長<rt>かちょう</rt></ruby>が), hành động hướng về tôi thì bắt buộc phải dùng くださいました (không dùng いただきました)."
+    },
+    {
+      "id": "pq41-69",
+      "question": "A:「これ、<ruby>田中<rt>たなか</rt></ruby><ruby>先生<rt>せんせい</rt></ruby>に ........ <ruby>本<rt>ほん</rt></ruby>です。」\nB:「<ruby>大切<rt>たいせつ</rt></ruby>に <ruby>読<rt>よ</rt></ruby>んで くださいね。」",
+      "options": [
+        "いただいた",
+        "くださった",
+        "やった",
+        "あげた"
+      ],
+      "correctIdx": 0,
+      "explanation": "[Độ khó: VẬN DỤNG CAO | Bổ nghĩa danh từ: cuốn sách được thầy tặng] Cuốn sách mà tôi ĐƯỢC thầy tặng: <ruby>先生<rt>せんせい</rt></ruby>に いただいた <ruby>本<rt>ほん</rt></ruby>."
+    },
+    {
+      "id": "pq41-70",
+      "question": "Tổng kết Bài 41: Tại sao việc sử dụng chính xác các cặp động từ cho - nhận kính ngữ là thước đo của sự trưởng thành xã hội tại Nhật?",
+      "options": [
+        "Vì nó thể hiện sự tôn ti trật tự chính xác giữa người trên (<ruby>目<rt>め</rt></ruby><ruby>上<rt>うえ</rt></ruby>), người dưới (<ruby>目<rt>め</rt></ruby><ruby>下<rt>した</rt></ruby>), trong ngoài (ウチ・ソト) và sự tri ân lễ nghĩa chuẩn mực",
+        "Chỉ là bài tập kiểm tra trên lớp",
+        "Không ai sử dụng trong thực tế",
+        "Chỉ dùng cho hoàng gia"
+      ],
+      "correctIdx": 0,
+      "explanation": "[Độ khó: VẬN DỤNG CAO | Chuẩn mực ứng xử văn hóa Nhật Bản] Sử dụng đúng kính ngữ cho nhận là điều kiện bắt buộc để hòa nhập vào môi trường doanh nghiệp chuyên nghiệp tại Nhật."
     }
   ],
   "quiz-42": [
@@ -1202,6 +1442,246 @@ const quizzes_41_45 = {
       ],
       "correctIdx": 0,
       "explanation": "[Độ khó: DỄ | Tổng kết bài 42] Mục đích ために và công dụng/chi phí のに."
+    },
+    {
+      "id": "pq42-51",
+      "question": "Quy tắc ngữ pháp VÀNG của cấu trúc mục đích「{V-る / N の} + ために」:",
+      "options": [
+        "Động từ trước ために BẮT BUỘC LÀ ĐỘNG TỪ CÓ Ý CHÍ (<ruby>意<rt>い</rt></ruby><ruby>志<rt>し</rt></ruby><ruby>動詞<rt>どうし</rt></ruby>) và Chủ ngữ ở hai vế trước và sau BẮT BUỘC PHẢI CÙNG LÀ MỘT CHỦ THỂ",
+        "Động từ trước ために là thể khả năng",
+        "Hai vế phải khác chủ ngữ",
+        "Trước ために dùng thể quá khứ"
+      ],
+      "correctIdx": 0,
+      "explanation": "[Độ khó: VẬN DỤNG CAO | Điều kiện cốt lõi của ために] 1. Động từ ý chí (<ruby>買<rt>か</rt></ruby>う, <ruby>留学<rt>りゅうがく</rt></ruby>する, <ruby>働<rt>はたら</rt></ruby>く); 2. Đồng chủ ngữ (Tôi tiết kiệm tiền ĐỂ tôi mua nhà). Nếu khác chủ ngữ hoặc động từ không ý chí (để con học giỏi, để trời tạnh mưa) thì BẮT BUỘC DÙNG ように."
+    },
+    {
+      "id": "pq42-52",
+      "question": "Phân biệt giữa「<ruby>家<rt>いえ</rt></ruby>を <ruby>買<rt>か</rt></ruby>う ために、<ruby>貯金<rt>ちょきん</rt></ruby>して います」và「<ruby>家<rt>いえ</rt></ruby>が <ruby>買<rt>か</rt></ruby>える ように、<ruby>貯金<rt>ちょきん</rt></ruby>して います」:",
+      "options": [
+        "Câu 1 dùng động từ ý chí <ruby>買<rt>か</rt></ruby>う + ために; câu 2 dùng động từ thể khả năng <ruby>買<rt>か</rt></ruby>える (không ý chí) + ように, cả hai đều diễn tả cùng một mục đích nhưng khác góc nhìn ngữ pháp",
+        "Câu 1 là mua nhà cho bố mẹ; câu 2 là mua nhà cho mình",
+        "Câu 1 đã mua xong; câu 2 chưa mua",
+        "Hai câu không có liên hệ gì"
+      ],
+      "correctIdx": 0,
+      "explanation": "[Độ khó: VẬN DỤNG CAO | So sánh bản chất ngữ pháp ために vs ように] Đây là câu hỏi phân loại kinh điển trong JLPT: Động từ ý chí + ために = Động từ khả năng + ように."
+    },
+    {
+      "id": "pq42-53",
+      "question": "Mẫu câu công dụng:「{V-る / N} + に つかいます (Dùng vào việc gì / Dùng để làm gì)」: Điền động từ thích hợp:\n「この はさみは <ruby>花<rt>はな</rt></ruby>を ........ に <ruby>使<rt>つか</rt></ruby>います。」",
+      "options": [
+        "<ruby>切<rt>き</rt></ruby>る (きる)",
+        "<ruby>切<rt>き</rt></ruby>った",
+        "<ruby>切<rt>き</rt></ruby>って",
+        "<ruby>切<rt>き</rt></ruby>ります"
+      ],
+      "correctIdx": 0,
+      "explanation": "[Độ khó: VẬN DỤNG CAO | Động từ thể từ điển trước に<ruby>使<rt>つか</rt></ruby>います] V-る + に <ruby>使<rt>つか</rt></ruby>います: <ruby>花<rt>はな</rt></ruby>を <ruby>切<rt>き</rt></ruby>る に <ruby>使<rt>つか</rt></ruby>います (Kéo này dùng ĐỂ cắt hoa)."
+    },
+    {
+      "id": "pq42-54",
+      "question": "A:「<ruby>何<rt>なん</rt></ruby>のために <ruby>日本語<rt>にほんご</rt></ruby>を <ruby>勉強<rt>べんきょう</rt></ruby>して いるんですか。」\nB:「<ruby>日本<rt>にほん</rt></ruby>で <ruby>働<rt>はたら</rt></ruby>く ........ です。」",
+      "options": [
+        "ため",
+        "よう",
+        "こと",
+        "もの"
+      ],
+      "correctIdx": 0,
+      "explanation": "[Độ khó: VẬN DỤNG CAO | Trả lời cho câu hỏi <ruby>何<rt>なん</rt></ruby>のために] <ruby>何<rt>なん</rt></ruby>のために -> 〜ためです (Để làm việc tại Nhật)."
+    },
+    {
+      "id": "pq42-55",
+      "question": "Điền danh từ kết hợp với ために:「<ruby>健康<rt>けんこう</rt></ruby> ........ ために、<ruby>毎朝<rt>まいあさ</rt></ruby> <ruby>走<rt>はし</rt></ruby>って います。」",
+      "options": [
+        "の",
+        "な",
+        "だ",
+        "に"
+      ],
+      "correctIdx": 0,
+      "explanation": "[Độ khó: VẬN DỤNG CAO | Danh từ + のために] Danh từ đi với ために phải có trợ từ の: <ruby>健康<rt>けんこう</rt></ruby>の ために (Vì sức khỏe)."
+    },
+    {
+      "id": "pq42-56",
+      "question": "Mẫu câu tiêu tốn thời gian, tiền bạc vào việc gì:「{V-る / N} + に かかります」:\n「この <ruby>本<rt>ほん</rt></ruby>を <ruby>全部<rt>ぜんぶ</rt></ruby> <ruby>読<rt>よ</rt></ruby>む ........ 3<ruby>日<rt>にち</rt></ruby> かかりました。」",
+      "options": [
+        "のに",
+        "ために",
+        "ように",
+        "から"
+      ],
+      "correctIdx": 0,
+      "explanation": "[Độ khó: VẬN DỤNG CAO | Tiêu tốn thời gian V-るのに] Đọc hết cuốn sách này mất 3 ngày: <ruby>読<rt>よ</rt></ruby>むのに 3<ruby>日<rt>にち</rt></ruby> かかりました."
+    },
+    {
+      "id": "pq42-57",
+      "question": "A:「この かばんは <ruby>旅行<rt>りょこう</rt></ruby>に ........ ですね。」\nB:「ええ、<ruby>軽<rt>かる</rt></ruby>くて ポケットも <ruby>多<rt>おお</rt></ruby>いですから。」",
+      "options": [
+        "<ruby>便利<rt>べんり</rt></ruby> (べんり)",
+        "<ruby>高<rt>たか</rt></ruby>い",
+        "<ruby>重<rt>おも</rt></ruby>い",
+        "<ruby>悪<rt>わる</rt></ruby>い"
+      ],
+      "correctIdx": 0,
+      "explanation": "[Độ khó: VẬN DỤNG CAO | Đánh giá công dụng N に <ruby>便利<rt>べんり</rt></ruby>] Chiếc túi này tiện lợi cho việc đi du lịch: <ruby>旅行<rt>りょこう</rt></ruby>に <ruby>便利<rt>べんり</rt></ruby>ですね."
+    },
+    {
+      "id": "pq42-58",
+      "question": "Tìm câu SAI ngữ pháp trong 4 câu dưới đây:",
+      "options": [
+        "<ruby>病気<rt>びょうき</rt></ruby>が <ruby>治る<rt>なおる</rt></ruby> ために、<ruby>薬<rt>くすり</rt></ruby>を <ruby>飲<rt>の</rt></ruby>みます。(Sai vì <ruby>治る<rt>なおる</rt></ruby> là tự động từ không ý chí)",
+        "<ruby>病気<rt>びょうき</rt></ruby>が <ruby>治る<rt>なおる</rt></ruby> ように、<ruby>薬<rt>くすり</rt></ruby>を <ruby>飲<rt>の</rt></ruby>みます。(Đúng)",
+        "<ruby>大学<rt>だいがく</rt></ruby>に <ruby>入<rt>はい</rt></ruby>る ために、<ruby>一生懸命<rt>いっしょうけんめい</rt></ruby> <ruby>勉強<rt>べんきょう</rt></ruby>して います。(Đúng)",
+        "<ruby>家族<rt>かぞく</rt></ruby>の ために、<ruby>一生懸命<rt>いっしょうけんめい</rt></ruby> <ruby>働<rt>はたら</rt></ruby>きます。(Đúng)"
+      ],
+      "correctIdx": 0,
+      "explanation": "[Độ khó: VẬN DỤNG CAO | Lỗi dùng ために với tự động từ không ý chí] <ruby>治る<rt>なおる</rt></ruby> (khỏi bệnh) là hiện tượng tự nhiên của cơ thể không thuộc ý chí con người, bắt buộc phải dùng <ruby>治る<rt>なおる</rt></ruby> ように (không dùng <ruby>治る<rt>なおる</rt></ruby>ために)."
+    },
+    {
+      "id": "pq42-59",
+      "question": "Dịch câu:「Tôi mua máy tính xách tay để phục vụ cho công việc.」",
+      "options": [
+        "<ruby>仕事<rt>しごと</rt></ruby>の ために、ノートパソコンを <ruby>買<rt>か</rt></ruby>いました。",
+        "<ruby>仕事<rt>しごと</rt></ruby>の ように、ノートパソコンを <ruby>買<rt>か</rt></ruby>いました。",
+        "<ruby>仕事<rt>しごと</rt></ruby>を <ruby>買<rt>か</rt></ruby>うために、ノートパソコンです。",
+        "<ruby>仕事<rt>しごと</rt></ruby>に ノートパソコンを <ruby>買<rt>か</rt></ruby>いました。"
+      ],
+      "correctIdx": 0,
+      "explanation": "[Độ khó: VẬN DỤNG CAO | Mục đích cho công việc Danh từ + のために] <ruby>仕事<rt>しごと</rt></ruby>の ために (Vì công việc / Phục vụ cho công việc)."
+    },
+    {
+      "id": "pq42-60",
+      "question": "A:「<ruby>東京<rt>とうきょう</rt></ruby>で マンションを <ruby>買<rt>か</rt></ruby>う ........、5,000<ruby>万<rt>まん</rt></ruby><ruby>円<rt>えん</rt></ruby><ruby>以上<rt>いじょう</rt></ruby> かかりますよ。」\nB:「ええ、<ruby>本当に<rt>ほんとうに</rt></ruby> <ruby>高<rt>たか</rt></ruby>いですね。」",
+      "options": [
+        "のに",
+        "ために",
+        "ように",
+        "ので"
+      ],
+      "correctIdx": 0,
+      "explanation": "[Độ khó: VẬN DỤNG CAO | Tiêu tốn chi phí mua nhà V-るのに] Để mua một căn chung cư ở Tokyo thì tốn trên 50 triệu yên: <ruby>買<rt>か</rt></ruby>うのに."
+    },
+    {
+      "id": "pq42-61",
+      "question": "Từ「<ruby>弁護士<rt>べんごし</rt></ruby> (べんごし)」nghĩa là gì?",
+      "options": [
+        "Luật sư",
+        "Kế toán",
+        "Kỹ sư",
+        "Phi công"
+      ],
+      "correctIdx": 0,
+      "explanation": "[Độ khó: VẬN DỤNG CAO | Từ vựng nghề nghiệp chuyên môn] <ruby>弁護士<rt>べんごし</rt></ruby> (luật sư)."
+    },
+    {
+      "id": "pq42-62",
+      "question": "A:「<ruby>将来<rt>しょうらい</rt></ruby>、<ruby>弁護士<rt>べんごし</rt></ruby>に なる ........、<ruby>法律<rt>ほうりつ</rt></ruby>を <ruby>勉強<rt>べんきょう</rt></ruby>して います。」\nB:「<ruby>素晴らしい<rt>すばらしい</rt></ruby> <ruby>夢<rt>ゆめ</rt></ruby>ですね。」",
+      "options": [
+        "ために",
+        "ように",
+        "ので",
+        "から"
+      ],
+      "correctIdx": 0,
+      "explanation": "[Độ khó: VẬN DỤNG CAO | Mục tiêu ý chí nghề nghiệp] Để trở thành luật sư: <ruby>弁護士<rt>べんごし</rt></ruby>に なる ために."
+    },
+    {
+      "id": "pq42-63",
+      "question": "Điền trợ từ:「この <ruby>辞書<rt>じしょ</rt></ruby>は <ruby>漢字<rt>かんじ</rt></ruby>の <ruby>意味<rt>いみ</rt></ruby>を <ruby>調<rt>しら</rt></ruby>べる ........ <ruby>役<rt>やく</rt></ruby>に<ruby>立<rt>た</rt></ruby>ちます。」",
+      "options": [
+        "のに",
+        "ために",
+        "ように",
+        "から"
+      ],
+      "correctIdx": 0,
+      "explanation": "[Độ khó: VẬN DỤNG CAO | Hữu ích cho việc gì V-るのに<ruby>役<rt>やく</rt></ruby>に<ruby>立<rt>た</rt></ruby>つ] Có ích cho việc tra nghĩa chữ Hán: <ruby>調<rt>しら</rt></ruby>べる のに <ruby>役<rt>やく</rt></ruby>に<ruby>立<rt>た</rt></ruby>ちます."
+    },
+    {
+      "id": "pq42-64",
+      "question": "Tìm câu ĐỒNG NGHĨA với:「<ruby>家<rt>いえ</rt></ruby>を <ruby>建てる<rt>たてる</rt></ruby> ために、ローンを <ruby>組<rt>く</rt></ruby>みました。」",
+      "options": [
+        "<ruby>家<rt>いえ</rt></ruby>を <ruby>建てる<rt>たてる</rt></ruby> <ruby>目的<rt>もくてき</rt></ruby>で、<ruby>銀行<rt>ぎんこう</rt></ruby>から お<ruby>金<rt>かね</rt></ruby>を <ruby>借<rt>か</rt></ruby>りました。",
+        "<ruby>家<rt>いえ</rt></ruby>を <ruby>建<rt>た</rt></ruby>てた <ruby>後で<rt>あとで</rt></ruby>、お<ruby>金<rt>かね</rt></ruby>を <ruby>返<rt>かえ</rt></ruby>しました。",
+        "<ruby>家<rt>いえ</rt></ruby>が <ruby>壊<rt>こわ</rt></ruby>れたので、<ruby>引<rt>ひ</rt></ruby>っ<ruby>越<rt>こ</rt></ruby>しました。",
+        "<ruby>家<rt>いえ</rt></ruby>を <ruby>売<rt>う</rt></ruby>りたいです。"
+      ],
+      "correctIdx": 0,
+      "explanation": "[Độ khó: VẬN DỤNG CAO | Biến đổi từ vựng đồng nghĩa] Vay thế chấp ngân hàng để xây nhà (ローンを<ruby>組<rt>く</rt></ruby>む) = Vay tiền ngân hàng với mục đích xây nhà."
+    },
+    {
+      "id": "pq42-65",
+      "question": "A:「<ruby>何<rt>なん</rt></ruby>に <ruby>使<rt>つか</rt></ruby>う んですか。」\nB:「パンを ........ のに <ruby>使<rt>つか</rt></ruby>います。」",
+      "options": [
+        "<ruby>焼<rt>や</rt></ruby>く (やく)",
+        "<ruby>焼<rt>や</rt></ruby>いた",
+        "<ruby>焼<rt>や</rt></ruby>いて",
+        "<ruby>焼<rt>や</rt></ruby>き"
+      ],
+      "correctIdx": 0,
+      "explanation": "[Độ khó: VẬN DỤNG CAO | Công dụng nướng bánh mì] Dùng để nướng bánh: パンを <ruby>焼<rt>や</rt></ruby>く のに <ruby>使<rt>つか</rt></ruby>います."
+    },
+    {
+      "id": "pq42-66",
+      "question": "Điền trợ từ:「<ruby>世界<rt>せかい</rt></ruby><ruby>平和<rt>へいわ</rt></ruby> ........ ために、<ruby>何<rt>なん</rt></ruby>が できますか。」",
+      "options": [
+        "の",
+        "な",
+        "だ",
+        "に"
+      ],
+      "correctIdx": 0,
+      "explanation": "[Độ khó: VẬN DỤNG CAO | Danh từ trừu tượng đi với ために] Hòa bình thế giới (<ruby>世界<rt>せかい</rt></ruby><ruby>平和<rt>へいわ</rt></ruby>) + のために: Vì nền hòa bình thế giới."
+    },
+    {
+      "id": "pq42-67",
+      "question": "A:「<ruby>駅<rt>えき</rt></ruby>から <ruby>大学<rt>だいがく</rt></ruby>まで <ruby>行<rt>い</rt></ruby>くのに、<ruby>歩<rt>ある</rt></ruby>いて どのくらい かかりますか。」\nB:「20<ruby>分<rt>ふん</rt></ruby> ........ かかります。」",
+      "options": [
+        "くらい",
+        "ごろ",
+        "まで",
+        "から"
+      ],
+      "correctIdx": 0,
+      "explanation": "[Độ khó: VẬN DỤNG CAO | Khoảng thời gian đo lường くらい] Mất khoảng 20 phút: 20<ruby>分<rt>ふん</rt></ruby>くらい かかります."
+    },
+    {
+      "id": "pq42-68",
+      "question": "Cụm từ「〜の <ruby>役<rt>やく</rt></ruby>に <ruby>立<rt>た</rt></ruby>ちます (やくにたちます)」nghĩa là:",
+      "options": [
+        "Hữu ích, có tác dụng tốt, giúp ích cho việc gì",
+        "Đứng dậy",
+        "Hỏng hóc",
+        "Không có tác dụng"
+      ],
+      "correctIdx": 0,
+      "explanation": "[Độ khó: VẬN DỤNG CAO | Quán dụng ngữ <ruby>役<rt>やく</rt></ruby>に<ruby>立<rt>た</rt></ruby>つ] <ruby>役<rt>やく</rt></ruby>に<ruby>立<rt>た</rt></ruby>つ (có ích, hữu dụng)."
+    },
+    {
+      "id": "pq42-69",
+      "question": "A:「<ruby>新<rt>あたら</rt></ruby>しい <ruby>車<rt>くるま</rt></ruby>を <ruby>買<rt>か</rt></ruby>うのに、いくら ........ か。」\nB:「<ruby>全部で<rt>ぜんぶで</rt></ruby> 300<ruby>万<rt>まん</rt></ruby><ruby>円<rt>えん</rt></ruby> かかりました。」",
+      "options": [
+        "かかりました",
+        "<ruby>使<rt>つか</rt></ruby>いました",
+        "<ruby>払<rt>はら</rt></ruby>いました",
+        "<ruby>買<rt>か</rt></ruby>いました"
+      ],
+      "correctIdx": 0,
+      "explanation": "[Độ khó: VẬN DỤNG CAO | Mẫu câu V-るのにいくらかかる] Mất bao nhiêu tiền để mua xe: いくら かかりましたか."
+    },
+    {
+      "id": "pq42-70",
+      "question": "Tổng kết Bài 42: Ba mẫu câu trọng tâm của Bài 42 là gì?",
+      "options": [
+        "1. {V-る / Nの} + ために (Mục đích ý chí) / 2. {V-る / N} + に つかいます (Công dụng) / 3. {V-る / N} + に かかります (Tiêu tốn chi phí/thời gian)",
+        "Thể sai khiến, thể mệnh lệnh, thể cấm chỉ",
+        "Kính ngữ tôn kính và khiêm nhường",
+        "So sánh hơn và so sánh nhất"
+      ],
+      "correctIdx": 0,
+      "explanation": "[Độ khó: VẬN DỤNG CAO | Tam giác mục đích & công dụng Bài 42] Khung cấu trúc hoàn chỉnh về mục đích hành động, công năng vật thể và định lượng nguồn lực."
     }
   ],
   "quiz-43": [
@@ -1804,6 +2284,246 @@ const quizzes_41_45 = {
       ],
       "correctIdx": 0,
       "explanation": "[Độ khó: DỄ | Tổng kết bài 43] Trông có vẻ (A-bỏ/V-bỏ + そうです) và V-て 来ます."
+    },
+    {
+      "id": "pq43-51",
+      "question": "Cấu trúc phỏng đoán trực quan qua dáng vẻ「〜そうです (Trông có vẻ...)」: Quy tắc kết hợp là gì?",
+      "options": [
+        "Động từ bỏ ます + そうです / Tính từ đuôi い bỏ い + そうです / Tính từ đuôi な bỏ な + そうです",
+        "Động từ thể từ điển + そうです (Đó là Bài 47: Nghe nói)",
+        "Tính từ đuôi い giữ nguyên い + そうです",
+        "Tính từ đuôi な thêm だ + そうです"
+      ],
+      "correctIdx": 0,
+      "explanation": "[Độ khó: VẬN DỤNG CAO | Quy tắc bỏ đuôi trước そうです dáng vẻ] Động từ: <ruby>落<rt>お</rt></ruby>ちます -> <ruby>落<rt>お</rt></ruby>ちそう (Sắp rơi); Tính từ い: おいしい -> おいしそう (Trông có vẻ ngon); Tính từ な: <ruby>元気<rt>げんき</rt></ruby>な -> <ruby>元気<rt>げんき</rt></ruby>そう (Trông có vẻ khỏe mạnh)."
+    },
+    {
+      "id": "pq43-52",
+      "question": "Biến đổi BẤT QUY TẮC ĐẶC BIỆT của tính từ「いい」và「ない」khi đi với「そうです (Dáng vẻ)」:",
+      "options": [
+        "いい -> よさそうです (Trông có vẻ tốt) / ない -> なさそうです (Trông có vẻ không có)",
+        "いい -> いそう / ない -> なそう",
+        "いい -> いいそう / ない -> ないそう",
+        "いい -> よいそう / ない -> なくそう"
+      ],
+      "correctIdx": 0,
+      "explanation": "[Độ khó: VẬN DỤNG CAO | Hai ngoại lệ thêm さ kinh điển của そうです] Tính từ いい biến thành よさそうです; tính từ/đuôi phủ định ない biến thành なさそうです (chèn thêm chữ さ)."
+    },
+    {
+      "id": "pq43-53",
+      "question": "Nhóm tính từ nào TUYỆT ĐỐI KHÔNG ĐƯỢC DÙNG với「〜そうです (Trông có vẻ)」?",
+      "options": [
+        "Tính từ miêu tả màu sắc trực quan rõ ràng trước mắt (như <ruby>赤<rt>あか</rt></ruby>い, <ruby>白<rt>しろ</rt></ruby>い, <ruby>黒<rt>くろ</rt></ruby>い) và hình dáng trực diện",
+        "Tính từ chỉ cảm xúc (おいしい, <ruby>楽<rt>たの</rt></ruby>しい)",
+        "Tính từ chỉ trạng thái (<ruby>忙<rt>いそが</rt></ruby>しい, <ruby>暇<rt>ひま</rt></ruby>な)",
+        "Tính từ chỉ tính cách (<ruby>親切<rt>しんせつ</rt></ruby>な)"
+      ],
+      "correctIdx": 0,
+      "explanation": "[Độ khó: VẬN DỤNG CAO | Giới hạn nhận thức của そうです dáng vẻ] Những thuộc tính mắt thường nhìn thấy rõ rành rành 100% như màu sắc (màu đỏ, màu đen) không cần phỏng đoán, nên KHÔNG BAO GIỜ NÓI <ruby>赤<rt>あか</rt></ruby>そう hay <ruby>黒<rt>くろ</rt></ruby>そう."
+    },
+    {
+      "id": "pq43-54",
+      "question": "A nhìn lên bầu trời đen kịt đầy mây đen:「<ruby>今<rt>いま</rt></ruby>にも <ruby>雨<rt>あめ</rt></ruby>が ........ そうですね。」\nB:「ええ、<ruby>傘<rt>かさ</rt></ruby>を <ruby>持<rt>も</rt></ruby>って <ruby>行<rt>い</rt></ruby>きましょう。」",
+      "options": [
+        "<ruby>降<rt>ふ</rt></ruby>り (ふり)",
+        "<ruby>降<rt>ふ</rt></ruby>る",
+        "<ruby>降<rt>ふ</rt></ruby>った",
+        "<ruby>降<rt>ふ</rt></ruby>らない"
+      ],
+      "correctIdx": 0,
+      "explanation": "[Độ khó: VẬN DỤNG CAO | Sắp sửa xảy ra với <ruby>今<rt>いま</rt></ruby>にも + V-bỏ ます + そう] Trời sắp sửa đổ mưa ngay tức thì: <ruby>今<rt>いま</rt></ruby>にも <ruby>雨<rt>あめ</rt></ruby>が <ruby>降<rt>ふ</rt></ruby>りそうです."
+    },
+    {
+      "id": "pq43-55",
+      "question": "Nhìn chiếc đĩa bánh ngọt bày trong tủ kính rất hấp dẫn:",
+      "options": [
+        "この ケーキ、とても おいしそうですね。",
+        "この ケーキ、とても おいしいそうですね。(Sai vì không bỏ い)",
+        "この ケーキ、とても おいしいだそうですね。",
+        "この ケーキ、とても おいしくそうですね。"
+      ],
+      "correctIdx": 0,
+      "explanation": "[Độ khó: VẬN DỤNG CAO | Tính từ đuôi い bỏ い + そう] おいしい bỏ い thành おいしそう (Trông có vẻ ngon mắt)."
+    },
+    {
+      "id": "pq43-56",
+      "question": "A:「<ruby>荷物<rt>にもつ</rt></ruby>が たくさん あって、<ruby>大変<rt>たいへん</rt></ruby>そうですね。<ruby>手伝<rt>てつだ</rt></ruby>いましょうか。」\nB:「すみません、........。」",
+      "options": [
+        "<ruby>お願いします<rt>おねがいします</rt></ruby> (<ruby>助<rt>たす</rt></ruby>かります)",
+        "<ruby>結<rt>けつ</rt></ruby><ruby>構<rt>かま</rt></ruby>です",
+        "いいえ",
+        "どういたしまして"
+      ],
+      "correctIdx": 0,
+      "explanation": "[Độ khó: VẬN DỤNG CAO | Đồng cảm qua dáng vẻ <ruby>大変<rt>たいへん</rt></ruby>そう] Trông có vẻ vất vả quá: <ruby>大変<rt>たいへん</rt></ruby>そうですね. Đáp lại lời đề nghị giúp: <ruby>お願いします<rt>おねがいします</rt></ruby>."
+    },
+    {
+      "id": "pq43-57",
+      "question": "A:「この <ruby>靴<rt>くつ</rt></ruby>、<ruby>履<rt>は</rt></ruby>き<ruby>心<rt>しん</rt></ruby><ruby>地<rt>ち</rt></ruby> (はきごこち) は どうですか。」\nB:「<ruby>軽<rt>かる</rt></ruby>くて、<ruby>歩<rt>ある</rt></ruby>き........ ですよ。」",
+      "options": [
+        "やすそう",
+        "やすい",
+        "やすくて",
+        "やすかった"
+      ],
+      "correctIdx": 0,
+      "explanation": "[Độ khó: VẬN DỤNG CAO | Ghép やすい + そうです] <ruby>歩<rt>ある</rt></ruby>きやすい bỏ い + そう -> <ruby>歩<rt>ある</rt></ruby>きやすそうです (Trông có vẻ dễ đi)."
+    },
+    {
+      "id": "pq43-58",
+      "question": "Tìm câu SAI ngữ pháp trong 4 câu dưới đây:",
+      "options": [
+        "あの りんごは <ruby>赤<rt>あか</rt></ruby>そうです。(Sai vì màu sắc không đi với そうです)",
+        "あの りんごは おいしそうです。(Đúng)",
+        "<ruby>雨<rt>あめ</rt></ruby>が <ruby>降<rt>ふ</rt></ruby>りそうです。(Đúng)",
+        "ボタンが <ruby>取<rt>と</rt></ruby>れそうです。(Đúng)"
+      ],
+      "correctIdx": 0,
+      "explanation": "[Độ khó: VẬN DỤNG CAO | Lỗi dùng màu sắc với そうです] Màu đỏ nhìn thấy trực diện, không dùng <ruby>赤<rt>あか</rt></ruby>そうです; chỉ nói あのりんごは <ruby>赤<rt>あか</rt></ruby>いです."
+    },
+    {
+      "id": "pq43-59",
+      "question": "Phân biệt ý nghĩa của cấu trúc「V-て <ruby>来<rt>き</rt></ruby>ます (てきます)」(Bài 43):",
+      "options": [
+        "Rời khỏi vị trí hiện tại đi đâu đó thực hiện một hành động rồi quay trở lại vị trí ban đầu (Ví dụ: ちょっと <ruby>電話<rt>でんわ</rt></ruby>を かけて <ruby>来<rt>き</rt></ruby>ます)",
+        "Hành động diễn ra trong quá khứ",
+        "Đi luôn không quay lại",
+        "Đến đây lần đầu"
+      ],
+      "correctIdx": 0,
+      "explanation": "[Độ khó: VẬN DỤNG CAO | Chu trình Đi - Làm - Quay về của V-てきます] Đi làm việc gì đó rồi quay lại vị trí nói: ちょっと トイレへ <ruby>行<rt>い</rt></ruby>って<ruby>来<rt>き</rt></ruby>ます (Tôi đi vệ sinh một lát rồi quay lại ngay)."
+    },
+    {
+      "id": "pq43-60",
+      "question": "A:「タバコを <ruby>買<rt>か</rt></ruby>って <ruby>来<rt>き</rt></ruby>ます。」\nB:「じゃ、ついでに お<ruby>茶<rt>ちゃ</rt></ruby>も ........。」",
+      "options": [
+        "<ruby>買<rt>か</rt></ruby>って <ruby>来<rt>き</rt></ruby>て ください",
+        "<ruby>買<rt>か</rt></ruby>って <ruby>行<rt>い</rt></ruby>って ください",
+        "<ruby>買<rt>か</rt></ruby>わないで ください",
+        "<ruby>買<rt>か</rt></ruby>いました"
+      ],
+      "correctIdx": 0,
+      "explanation": "[Độ khó: VẬN DỤNG CAO | Nhờ mua tiện thể khi người khác đi rồi về] Mua tiện thể mang về giúp: <ruby>買<rt>か</rt></ruby>って <ruby>来<rt>き</rt></ruby>て ください."
+    },
+    {
+      "id": "pq43-61",
+      "question": "Cúc áo sắp tuột ra:「ボタンが ........ そうですよ。」",
+      "options": [
+        "<ruby>取<rt>と</rt></ruby>れ (とれ)",
+        "<ruby>取れる<rt>とれる</rt></ruby>",
+        "<ruby>取<rt>と</rt></ruby>れた",
+        "<ruby>取<rt>と</rt></ruby>れない"
+      ],
+      "correctIdx": 0,
+      "explanation": "[Độ khó: VẬN DỤNG CAO | Hiện tượng sắp xảy ra với động từ] <ruby>取<rt>と</rt></ruby>れます bỏ ます + そう: ボタンが <ruby>取<rt>と</rt></ruby>れそうです (Cúc áo sắp tuột ra rồi kìa)."
+    },
+    {
+      "id": "pq43-62",
+      "question": "A:「ミラーさんは <ruby>今日<rt>きょう</rt></ruby> <ruby>来<rt>く</rt></ruby>るでしょうか。」\nB:「<ruby>仕事<rt>しごと</rt></ruby>が <ruby>忙<rt>いそが</rt></ruby>しいですから、<ruby>今日<rt>きょう</rt></ruby>は ........ そうですよ。」",
+      "options": [
+        "<ruby>来<rt>き</rt></ruby>なさ (こなさ)",
+        "<ruby>来<rt>こ</rt></ruby>ない",
+        "<ruby>来<rt>き</rt></ruby>",
+        "<ruby>来<rt>く</rt></ruby>る"
+      ],
+      "correctIdx": 0,
+      "explanation": "[Độ khó: VẬN DỤNG CAO | Phủ định của そうです là なさそう] <ruby>来<rt>こ</rt></ruby>ない -> <ruby>来<rt>き</rt></ruby>なさそうです (Trông có vẻ hôm nay sẽ không đến được)."
+    },
+    {
+      "id": "pq43-63",
+      "question": "Dịch câu:「Người kia trông có vẻ rất thông minh.」",
+      "options": [
+        "あの <ruby>人<rt>ひと</rt></ruby>は <ruby>頭<rt>あたま</rt></ruby>が よさそうです。",
+        "あの <ruby>人<rt>ひと</rt></ruby>は <ruby>頭<rt>あたま</rt></ruby>が いいそうです。(Nghe nói thông minh - Bài 47)",
+        "あの <ruby>人<rt>ひと</rt></ruby>は <ruby>頭<rt>あたま</rt></ruby>が いいだそうです。",
+        "あの <ruby>人<rt>ひと</rt></ruby>は <ruby>頭<rt>あたま</rt></ruby>が よくそうです。"
+      ],
+      "correctIdx": 0,
+      "explanation": "[Độ khó: VẬN DỤNG CAO | Biến đổi tính từ いい sang よさそう] いい biến thành よさそうです (Trông có vẻ thông minh, sáng dạ)."
+    },
+    {
+      "id": "pq43-64",
+      "question": "A:「ちょっと <ruby>手紙<rt>てがみ</rt></ruby>を ........ <ruby>来<rt>き</rt></ruby>ます。」\nB:「いってらっしゃい。」",
+      "options": [
+        "<ruby>出<rt>だ</rt></ruby>して (だして)",
+        "<ruby>出<rt>だ</rt></ruby>す",
+        "<ruby>出<rt>だ</rt></ruby>した",
+        "<ruby>出<rt>だ</rt></ruby>さないで"
+      ],
+      "correctIdx": 0,
+      "explanation": "[Độ khó: VẬN DỤNG CAO | V-てきます đi gửi thư rồi về] Đi bỏ thư vào thùng bưu điện rồi quay lại: <ruby>手紙<rt>てがみ</rt></ruby>を <ruby>出<rt>だ</rt></ruby>して <ruby>来<rt>き</rt></ruby>ます."
+    },
+    {
+      "id": "pq43-65",
+      "question": "Từ「<ruby>今<rt>いま</rt></ruby>にも (いまにも)」trong câu「<ruby>今<rt>いま</rt></ruby>にも <ruby>雨<rt>あめ</rt></ruby>が <ruby>降<rt>ふ</rt></ruby>りそうです」nghĩa là gì?",
+      "options": [
+        "Bất cứ lúc nào / Sắp sửa xảy ra ngay bây giờ (chỉ trong chốc lát)",
+        "Không bao giờ",
+        "Hôm qua",
+        "Tuần sau"
+      ],
+      "correctIdx": 0,
+      "explanation": "[Độ khó: VẬN DỤNG CAO | Phó từ <ruby>今<rt>いま</rt></ruby>にも đi với そうです] <ruby>今<rt>いま</rt></ruby>にも biểu thị tình trạng khẩn trương, sắp sửa bùng phát ngay tức khắc."
+    },
+    {
+      "id": "pq43-66",
+      "question": "A:「この <ruby>料理<rt>りょうり</rt></ruby>、<ruby>辛<rt>から</rt></ruby>そうですね。」\nB:「いいえ、<ruby>見<rt>み</rt></ruby>た<ruby>目<rt>め</rt></ruby>より <ruby>全然<rt>ぜんぜん</rt></ruby> ........。」",
+      "options": [
+        "<ruby>辛<rt>から</rt></ruby>くないですよ (からくない)",
+        "<ruby>辛<rt>から</rt></ruby>いですよ",
+        "<ruby>辛<rt>から</rt></ruby>かったです",
+        "<ruby>辛<rt>から</rt></ruby>くありませんでした"
+      ],
+      "correctIdx": 0,
+      "explanation": "[Độ khó: VẬN DỤNG CAO | Trái ngược giữa dáng vẻ và thực tế] Nhìn có vẻ cay nhưng thực tế hoàn toàn không cay: <ruby>全然<rt>ぜんぜん</rt></ruby> <ruby>辛<rt>から</rt></ruby>くないですよ."
+    },
+    {
+      "id": "pq43-67",
+      "question": "Tìm câu SAI ngữ pháp trong 4 câu dưới đây:",
+      "options": [
+        "<ruby>明日<rt>あした</rt></ruby>は <ruby>寒<rt>さむ</rt></ruby>そうでした。(Sai cách phối hợp thì phỏng đoán tương lai)",
+        "<ruby>昨日<rt>きのう</rt></ruby>は <ruby>寒<rt>さむ</rt></ruby>そうでした。(Đúng: Nhìn hôm qua có vẻ lạnh)",
+        "<ruby>明日<rt>あした</rt></ruby>は <ruby>寒<rt>さむ</rt></ruby>そうです。(Đúng)",
+        "<ruby>今日<rt>きょう</rt></ruby>は <ruby>暖<rt>あたた</rt></ruby>かそうです。(Đúng)"
+      ],
+      "correctIdx": 0,
+      "explanation": "[Độ khó: VẬN DỤNG CAO | Phối hợp thì với そうでした] <ruby>明日<rt>あした</rt></ruby> (ngày mai) không thể đi với thì quá khứ そうでした."
+    },
+    {
+      "id": "pq43-68",
+      "question": "Điền tính từ thích hợp:「この <ruby>机<rt>つくえ</rt></ruby>は とても <ruby>丈夫<rt>じょうぶ</rt></ruby> (じょうぶ) ........ ですね。」",
+      "options": [
+        "そう",
+        "なそう",
+        "だそう",
+        "くそう"
+      ],
+      "correctIdx": 0,
+      "explanation": "[Độ khó: VẬN DỤNG CAO | Tính từ đuôi な <ruby>丈夫<rt>じょうぶ</rt></ruby> + そう] <ruby>丈夫<rt>じょうぶ</rt></ruby> (tính từ đuôi な) bỏ な + そう: <ruby>丈夫<rt>じょうぶ</rt></ruby>そうです (Trông chiếc bàn rất chắc chắn, bền bỉ)."
+    },
+    {
+      "id": "pq43-69",
+      "question": "A:「ちょっと コンビニで <ruby>お弁当<rt>おべんとう</rt></ruby>を ........ <ruby>来<rt>き</rt></ruby>ます。」\nB:「じゃ、お<ruby>茶<rt>ちゃ</rt></ruby>を <ruby>買<rt>か</rt></ruby>って <ruby>来<rt>き</rt></ruby>て ください。」",
+      "options": [
+        "<ruby>買<rt>か</rt></ruby>って",
+        "<ruby>買<rt>か</rt></ruby>う",
+        "<ruby>買<rt>か</rt></ruby>った",
+        "<ruby>買<rt>か</rt></ruby>わないで"
+      ],
+      "correctIdx": 0,
+      "explanation": "[Độ khó: VẬN DỤNG CAO | Đi mua cơm hộp rồi về] <ruby>買<rt>か</rt></ruby>って <ruby>来<rt>き</rt></ruby>ます."
+    },
+    {
+      "id": "pq43-70",
+      "question": "Tổng kết Bài 43: Điểm mấu chốt để phân biệt「〜そうです (Dáng vẻ: Bài 43)」và「〜そうです (Truyền văn: Bài 47)」là gì?",
+      "options": [
+        "Bài 43 (Dáng vẻ) BỎ đuôi (V bỏ ます, A bỏ い/な); Bài 47 (Nghe nói) GIỮ NGUYÊN THỂ THÔNG THƯỜNG (V-るそうです, <ruby>雨<rt>あめ</rt></ruby>だそうです)",
+        "Hai mẫu câu viết giống hệt nhau không có cách nào phân biệt",
+        "Bài 43 chỉ dùng cho đồ ăn",
+        "Bài 47 chỉ dùng cho đài radio"
+      ],
+      "correctIdx": 0,
+      "explanation": "[Độ khó: VẬN DỤNG CAO | Phân biệt cặp trùng âm そうです đỉnh cao JLPT] おいしそう (Trông có vẻ ngon - Nhìn bằng mắt); おいしいそう (Nghe nói là ngon - Nghe bằng tai)."
     }
   ],
   "quiz-44": [
@@ -2406,6 +3126,246 @@ const quizzes_41_45 = {
       ],
       "correctIdx": 0,
       "explanation": "[Độ khó: DỄ | Tổng kết bài 44] 〜すぎます, 〜やすい/にくい, N に します, A-く/に します."
+    },
+    {
+      "id": "pq44-51",
+      "question": "Cấu trúc vượt quá giới hạn bình thường「〜すぎます (Quá... / Quá mức...)」kết hợp như thế nào?",
+      "options": [
+        "Động từ bỏ ます + すぎます / Tính từ đuôi い bỏ い + すぎます / Tính từ đuôi な bỏ な + すぎます",
+        "Động từ thể từ điển + すぎます",
+        "Tính từ đuôi い giữ nguyên い + すぎます",
+        "Danh từ + すぎます"
+      ],
+      "correctIdx": 0,
+      "explanation": "[Độ khó: VẬN DỤNG CAO | Quy tắc kết hợp trước すぎる] V bỏ ます + すぎる (<ruby>食<rt>た</rt></ruby>べすぎる: Ăn quá nhiều); A-い bỏ い + すぎる (<ruby>高<rt>たか</rt></ruby>すぎる: Quá đắt); Na bỏ な + すぎる (<ruby>簡単<rt>かんたん</rt></ruby>すぎる: Quá dễ). Bản thân 〜すぎる chia như động từ nhóm 2."
+    },
+    {
+      "id": "pq44-52",
+      "question": "Cấu trúc mức độ dễ/khó thực hiện:「V-bỏ ます + やすいです / にくいです」chia biến đổi theo từ loại nào?",
+      "options": [
+        "Chia đuôi hoàn toàn giống hệt một TÍNH TỪ ĐUÔI い (Ví dụ: <ruby>読<rt>よ</rt></ruby>みやすかった, <ruby>読<rt>よ</rt></ruby>みにくくない)",
+        "Chia như động từ nhóm 1",
+        "Chia như danh từ",
+        "Không bao giờ biến đổi đuôi"
+      ],
+      "correctIdx": 0,
+      "explanation": "[Độ khó: VẬN DỤNG CAO | Bản chất từ loại của やすい / にくい] Cả やすい (dễ làm) và にくい (khó làm) đều kết thúc bằng chữ い và biến đổi đuôi như tính từ đuôi い: <ruby>飲<rt>の</rt></ruby>みやすかった, <ruby>使<rt>つか</rt></ruby>いにくくて, <ruby>分<rt>ふん</rt></ruby>かりやすくない."
+    },
+    {
+      "id": "pq44-53",
+      "question": "Phân biệt giữa tác động chủ quan biến đổi「{A-く / Na-に / N-に} します」và biến đổi tự nhiên「〜なります」:",
+      "options": [
+        "〜します là do con người CHỦ Ý TÁC ĐỘNG làm cho đối tượng thay đổi (như vặn nhạc to lên, cắt tóc ngắn đi); 〜なります là sự vật TỰ BIẾN ĐỔI khách quan (như trời tự tối đi, tự lớn lên)",
+        "〜します chỉ dùng cho nấu ăn",
+        "〜なります là do con người tác động",
+        "Hai cách dùng giống hệt nhau"
+      ],
+      "correctIdx": 0,
+      "explanation": "[Độ khó: VẬN DỤNG CAO | Chủ ý 〜します vs Tự nhiên 〜なります] <ruby>音<rt>おと</rt></ruby>を <ruby>大<rt>おお</rt></ruby>きく します (Tôi chủ động vặn to âm lượng); <ruby>音<rt>おと</rt></ruby>が <ruby>大<rt>おお</rt></ruby>きく なります (Âm lượng tự nhiên to lên do máy tự động)."
+    },
+    {
+      "id": "pq44-54",
+      "question": "Mẫu câu quyết định lựa chọn「N に します」dùng trong ngữ cảnh nào điển hình nhất?",
+      "options": [
+        "Khi gọi món ăn tại nhà hàng, chọn mua một sản phẩm trong số nhiều lựa chọn (Tôi quyết định chọn N)",
+        "Khi chào tạm biệt",
+        "Khi từ chối cuộc hẹn",
+        "Khi đếm tiền"
+      ],
+      "correctIdx": 0,
+      "explanation": "[Độ khó: VẬN DỤNG CAO | Quyết định chọn lựa N に します] Quyết định chọn món: <ruby>私<rt>わたし</rt></ruby>は コーヒーに します (Tôi chọn cà phê); <ruby>会議<rt>かいぎ</rt></ruby>は <ruby>明日<rt>あした</rt></ruby>に します (Cuộc họp quyết định dời sang ngày mai)."
+    },
+    {
+      "id": "pq44-55",
+      "question": "A:「<ruby>夕べ<rt>ゆうべ</rt></ruby>は お<ruby>酒<rt>さけ</rt></ruby>を ........、<ruby>頭<rt>あたま</rt></ruby>が <ruby>痛<rt>いた</rt></ruby>いんです。」\nB:「お<ruby>酒<rt>さけ</rt></ruby>は ほどほどに した ほうが いいですよ。」",
+      "options": [
+        "<ruby>飲<rt>の</rt></ruby>みすぎて (のみすぎて)",
+        "<ruby>飲<rt>の</rt></ruby>んで",
+        "<ruby>飲<rt>の</rt></ruby>みやすくて",
+        "<ruby>飲<rt>の</rt></ruby>みにくくて"
+      ],
+      "correctIdx": 0,
+      "explanation": "[Độ khó: VẬN DỤNG CAO | Uống quá chén chia thể て nguyên nhân] Uống quá nhiều rượu (<ruby>飲<rt>の</rt></ruby>みすぎる) chia thể て: <ruby>飲<rt>の</rt></ruby>みすぎて."
+    },
+    {
+      "id": "pq44-56",
+      "question": "A:「この <ruby>薬<rt>くすり</rt></ruby>は <ruby>苦<rt>く</rt></ruby>くなくて、とても ........ ですね。」\nB:「ええ、<ruby>子<rt>こ</rt></ruby>どもでも <ruby>飲<rt>の</rt></ruby>めますよ。」",
+      "options": [
+        "<ruby>飲<rt>の</rt></ruby>みやすい (のみやすい)",
+        "<ruby>飲<rt>の</rt></ruby>みにくい",
+        "<ruby>飲<rt>の</rt></ruby>みすぎる",
+        "<ruby>飲<rt>の</rt></ruby>まない"
+      ],
+      "correctIdx": 0,
+      "explanation": "[Độ khó: VẬN DỤNG CAO | Thuốc dễ uống <ruby>飲<rt>の</rt></ruby>みやすい] Thuốc không đắng nên rất dễ uống: <ruby>飲<rt>の</rt></ruby>みやすいです."
+    },
+    {
+      "id": "pq44-57",
+      "question": "A:「<ruby>字<rt>じ</rt></ruby>が <ruby>小<rt>ちい</rt></ruby>さくて、........ ですね。」\nB:「<ruby>老<rt>ろう</rt></ruby><ruby>眼鏡<rt>めがね</rt></ruby> (ろうがんきょう) を かけましょう。」",
+      "options": [
+        "<ruby>読<rt>よ</rt></ruby>みにくい (よみにくい)",
+        "<ruby>読<rt>よ</rt></ruby>みやすい",
+        "<ruby>読<rt>よ</rt></ruby>みすぎる",
+        "<ruby>読<rt>よ</rt></ruby>めない"
+      ],
+      "correctIdx": 0,
+      "explanation": "[Độ khó: VẬN DỤNG CAO | Chữ nhỏ khó đọc <ruby>読<rt>よ</rt></ruby>みにくい] Chữ nhỏ khó đọc: <ruby>読<rt>よ</rt></ruby>みにくいです."
+    },
+    {
+      "id": "pq44-58",
+      "question": "A:「テレビの <ruby>音<rt>おと</rt></ruby>が <ruby>大<rt>おお</rt></ruby>きいですよ。」\nB:「すみません、<ruby>今<rt>いま</rt></ruby> ........ します。」",
+      "options": [
+        "<ruby>小<rt>ちい</rt></ruby>さく (ちいさく)",
+        "<ruby>小<rt>ちい</rt></ruby>さいに",
+        "<ruby>小<rt>ちい</rt></ruby>さいく",
+        "<ruby>小<rt>ちい</rt></ruby>さくて"
+      ],
+      "correctIdx": 0,
+      "explanation": "[Độ khó: VẬN DỤNG CAO | Vặn nhỏ âm lượng tính từ い bỏ い + く します] <ruby>小<rt>ちい</rt></ruby>さい -> <ruby>小<rt>ちい</rt></ruby>さく します (chủ động vặn nhỏ lại)."
+    },
+    {
+      "id": "pq44-59",
+      "question": "A:「<ruby>髪<rt>かみ</rt></ruby>が <ruby>長<rt>なが</rt></ruby>く なりましたね。」\nB:「ええ、<ruby>明日<rt>あした</rt></ruby> <ruby>美<rt>うつく</rt></ruby><ruby>容<rt>よう</rt></ruby><ruby>院<rt>いん</rt></ruby>へ <ruby>行<rt>い</rt></ruby>って、........ します。」",
+      "options": [
+        "<ruby>短<rt>みじか</rt></ruby>く (みじかく)",
+        "<ruby>短<rt>みじか</rt></ruby>いに",
+        "<ruby>短<rt>みじか</rt></ruby>いく",
+        "<ruby>短<rt>みじか</rt></ruby>いで"
+      ],
+      "correctIdx": 0,
+      "explanation": "[Độ khó: VẬN DỤNG CAO | Cắt tóc ngắn đi <ruby>短<rt>みじか</rt></ruby>くします] <ruby>短<rt>みじか</rt></ruby>い -> <ruby>短<rt>みじか</rt></ruby>く します."
+    },
+    {
+      "id": "pq44-60",
+      "question": "A:「<ruby>部屋<rt>へや</rt></ruby>を きれいに ........ ください。」\nB:「はい、<ruby>今<rt>いま</rt></ruby> <ruby>掃除<rt>そうじ</rt></ruby>します。」",
+      "options": [
+        "して",
+        "なって",
+        "ある",
+        "おく"
+      ],
+      "correctIdx": 0,
+      "explanation": "[Độ khó: VẬN DỤNG CAO | Dọn phòng cho sạch tính từ な + に します] きれい (tính từ đuôi な) -> きれいに して ください."
+    },
+    {
+      "id": "pq44-61",
+      "question": "Tìm câu SAI ngữ pháp trong 4 câu dưới đây:",
+      "options": [
+        "この <ruby>服<rt>ふく</rt></ruby>は <ruby>高<rt>たか</rt></ruby>すぎないでした。(Sai thì quá khứ tính từ)",
+        "この <ruby>服<rt>ふく</rt></ruby>は <ruby>高<rt>たか</rt></ruby>すぎませんでした。(Đúng: Động từ quá khứ phủ định)",
+        "<ruby>昨日<rt>きのう</rt></ruby> ご<ruby>飯<rt>はん</rt></ruby>を <ruby>食<rt>た</rt></ruby>べすぎました。(Đúng)",
+        "この <ruby>町<rt>まち</rt></ruby>は <ruby>静<rt>しず</rt></ruby>かすぎて、<ruby>寂<rt>さび</rt></ruby>しいです。(Đúng)"
+      ],
+      "correctIdx": 0,
+      "explanation": "[Độ khó: VẬN DỤNG CAO | Lỗi chia đuôi của すぎる] すぎる là động từ nhóm 2, thể quá khứ phủ định lịch sự bắt buộc là すぎませんでした (không có dạng すぎないでした)."
+    },
+    {
+      "id": "pq44-62",
+      "question": "A:「ご<ruby>注文<rt>ちゅうもん</rt></ruby>は お<ruby>決<rt>き</rt></ruby>まりですか。」\nB:「<ruby>私<rt>わたし</rt></ruby>は Aランチに ........。」",
+      "options": [
+        "します",
+        "なります",
+        "あります",
+        "いきます"
+      ],
+      "correctIdx": 0,
+      "explanation": "[Độ khó: VẬN DỤNG CAO | Quyết định chọn suất ăn trưa A] <ruby>私<rt>わたし</rt></ruby>は Aランチに します."
+    },
+    {
+      "id": "pq44-63",
+      "question": "Điền tính từ thích hợp:「この <ruby>靴<rt>くつ</rt></ruby>は <ruby>白<rt>しろ</rt></ruby>いですから、<ruby>汚<rt>きたな</rt></ruby>れ (よごれ) ........ です。」",
+      "options": [
+        "やすい (よごれやすい)",
+        "にくい",
+        "すぎる",
+        "そう"
+      ],
+      "correctIdx": 0,
+      "explanation": "[Độ khó: VẬN DỤNG CAO | Giày trắng dễ bị bám bẩn] Dễ bị dơ bẩn: <ruby>汚<rt>きたな</rt></ruby>れやすい (よごれやすい)."
+    },
+    {
+      "id": "pq44-64",
+      "question": "A:「<ruby>東京<rt>とうきょう</rt></ruby>の <ruby>地下鉄<rt>ちかてつ</rt></ruby>は <ruby>乗<rt>の</rt></ruby>り<ruby>換<rt>か</rt></ruby>えが ........ ですね。」\nB:「ええ、<ruby>慣<rt>な</rt></ruby>れるまで <ruby>大変<rt>たいへん</rt></ruby>ですよ。」",
+      "options": [
+        "<ruby>分<rt>ふん</rt></ruby>かりにくい (わかりにくい)",
+        "<ruby>分<rt>ふん</rt></ruby>かりやすい",
+        "<ruby>分<rt>ふん</rt></ruby>かりすぎる",
+        "<ruby>分<rt>ふん</rt></ruby>からなさそう"
+      ],
+      "correctIdx": 0,
+      "explanation": "[Độ khó: VẬN DỤNG CAO | Khó hiểu / Khó nắm bắt <ruby>分<rt>ふん</rt></ruby>かりにくい] Chuyển tàu phức tạp khó hiểu: <ruby>分<rt>ふん</rt></ruby>かりにくいです."
+    },
+    {
+      "id": "pq44-65",
+      "question": "Điền trợ từ:「<ruby>塩<rt>しお</rt></ruby> (しお) の <ruby>量<rt>りょう</rt></ruby>を <ruby>半分<rt>はんぶん</rt></ruby> ........ <ruby>減<rt>へ</rt></ruby>らしました (へらしました)。」",
+      "options": [
+        "に",
+        "で",
+        "を",
+        "へ"
+      ],
+      "correctIdx": 0,
+      "explanation": "[Độ khó: VẬN DỤNG CAO | Giảm lượng muối xuống một nửa] Giảm xuống còn một nửa: <ruby>半分<rt>はんぶん</rt></ruby>に <ruby>減<rt>へ</rt></ruby>らしました."
+    },
+    {
+      "id": "pq44-66",
+      "question": "Tìm câu ĐỒNG NGHĨA với:「この パソコンは <ruby>操作<rt>そうさ</rt></ruby>が <ruby>簡単<rt>かんたん</rt></ruby>で、<ruby>使<rt>つか</rt></ruby>いやすいです。」",
+      "options": [
+        "この パソコンは <ruby>誰<rt>だれ</rt></ruby>でも <ruby>簡単<rt>かんたん</rt></ruby>に <ruby>使<rt>つか</rt></ruby>う ことが できます。",
+        "この パソコンは <ruby>複雑<rt>ふくざつ</rt></ruby>で、<ruby>使<rt>つか</rt></ruby>いにくいです。",
+        "この パソコンは <ruby>高<rt>たか</rt></ruby>すぎて、<ruby>買<rt>か</rt></ruby>えません。",
+        "この パソコンは <ruby>壊<rt>こわ</rt></ruby>れやすいです。"
+      ],
+      "correctIdx": 0,
+      "explanation": "[Độ khó: VẬN DỤNG CAO | Biến đổi từ vựng đồng nghĩa] Thao tác đơn giản, dễ dùng = Ai cũng có thể sử dụng dễ dàng."
+    },
+    {
+      "id": "pq44-67",
+      "question": "A:「どうして <ruby>食<rt>た</rt></ruby>べないんですか。」\nB:「<ruby>辛<rt>から</rt></ruby>........、<ruby>食<rt>た</rt></ruby>べられません。」",
+      "options": [
+        "すぎて (からすぎて)",
+        "やすくて",
+        "にくくて",
+        "そうで"
+      ],
+      "correctIdx": 0,
+      "explanation": "[Độ khó: VẬN DỤNG CAO | Quá cay không ăn được] <ruby>辛<rt>から</rt></ruby>い bỏ い + すぎて: <ruby>辛<rt>から</rt></ruby>すぎて (quá cay)."
+    },
+    {
+      "id": "pq44-68",
+      "question": "A:「<ruby>会議室<rt>かいぎしつ</rt></ruby>の <ruby>椅子<rt>いす</rt></ruby>を 20<ruby>脚<rt>きゃく</rt></ruby> (きゃく) に ........ ください。」\nB:「<ruby>分<rt>ふん</rt></ruby>かりました。」",
+      "options": [
+        "して (<ruby>増<rt>ふ</rt></ruby>やして)",
+        "なって",
+        "ある",
+        "おく"
+      ],
+      "correctIdx": 0,
+      "explanation": "[Độ khó: VẬN DỤNG CAO | Chủ động chỉnh số lượng ghế thành 20 chiếc] Danh từ số lượng + に します: 20脚に して ください."
+    },
+    {
+      "id": "pq44-69",
+      "question": "Từ「<ruby>雨<rt>あめ</rt></ruby>の <ruby>日<rt>にち</rt></ruby>は <ruby>事故<rt>じこ</rt></ruby>が <ruby>起<rt>お</rt></ruby>きやすい」nghĩa là gì?",
+      "options": [
+        "Ngày mưa rất dễ xảy ra tai nạn giao thông (xác suất cao)",
+        "Ngày mưa không có tai nạn",
+        "Ngày mưa tai nạn khó xảy ra",
+        "Ngày mưa đường vắng"
+      ],
+      "correctIdx": 0,
+      "explanation": "[Độ khó: VẬN DỤNG CAO | Xác suất diễn ra xu hướng やすい] <ruby>起<rt>お</rt></ruby>きやすい (rất dễ xảy ra / có xu hướng hay phát sinh)."
+    },
+    {
+      "id": "pq44-70",
+      "question": "Tổng kết Bài 44: Điểm khác biệt lớn nhất giữa「〜やすい」và「〜にくい」khi ghép với động từ là gì?",
+      "options": [
+        "〜やすい biểu thị tính chất dễ thực hiện hoặc xu hướng dễ xảy ra việc gì; 〜にくい biểu thị sự khó khăn, trở ngại khi thao tác hoặc việc đó ít khi xảy ra",
+        "Cả hai từ đều có nghĩa là nhanh chóng",
+        "〜にくい chỉ dùng cho người",
+        "〜やすい chỉ dùng cho máy tính"
+      ],
+      "correctIdx": 0,
+      "explanation": "[Độ khó: VẬN DỤNG CAO | Phân tích cặp tiếp vĩ ngữ đối lập] Dễ thao tác / dễ bị (やすい) đối lập trực tiếp với khó thao tác / trắc trở (にくい)."
     }
   ],
   "quiz-45": [
@@ -3008,6 +3968,246 @@ const quizzes_41_45 = {
       ],
       "correctIdx": 0,
       "explanation": "[Độ khó: DỄ | Tổng kết bài 45] 〜場合は (trong trường hợp) và 〜のに (thế mà, vậy mà)."
+    },
+    {
+      "id": "pq45-51",
+      "question": "Cấu trúc giả định tình huống「〜<ruby>場合<rt>ばあい</rt></ruby>は (Trong trường hợp...)」: Danh từ và Tính từ đuôi な kết hợp thế nào?",
+      "options": [
+        "Danh từ + の <ruby>場合<rt>ばあい</rt></ruby>は (<ruby>火事<rt>かじ</rt></ruby>の <ruby>場合<rt>ばあい</rt></ruby>は) / Tính từ đuôi な + な <ruby>場合<rt>ばあい</rt></ruby>は (<ruby>暇<rt>ひま</rt></ruby>な <ruby>場合<rt>ばあい</rt></ruby>は)",
+        "Danh từ + だ <ruby>場合<rt>ばあい</rt></ruby>は (<ruby>火事<rt>かじ</rt></ruby>だ<ruby>場合<rt>ばあい</rt></ruby>は)",
+        "Tính từ đuôi な + だ <ruby>場合<rt>ばあい</rt></ruby>は",
+        "Danh từ + に <ruby>場合<rt>ばあい</rt></ruby>は"
+      ],
+      "correctIdx": 0,
+      "explanation": "[Độ khó: VẬN DỤNG CAO | Quy tắc kết hợp chuẩn trước <ruby>場合<rt>ばあい</rt></ruby>は] Danh từ + の <ruby>場合<rt>ばあい</rt></ruby>は (<ruby>火事<rt>かじ</rt></ruby>の<ruby>場合<rt>ばあい</rt></ruby>は, <ruby>事故<rt>じこ</rt></ruby>の<ruby>場合<rt>ばあい</rt></ruby>は); Tính từ đuôi な + な <ruby>場合<rt>ばあい</rt></ruby>は (<ruby>無理<rt>むり</rt></ruby>な<ruby>場合<rt>ばあい</rt></ruby>は, <ruby>必要<rt>ひつよう</rt></ruby>な<ruby>場合<rt>ばあい</rt></ruby>は); Động từ và Tính từ い ở thể thông thường."
+    },
+    {
+      "id": "pq45-52",
+      "question": "Cấu trúc biểu thị sự tương phản trái với mong đợi「〜のに (Thế mà... / Vậy mà...)」: Sắc thái tâm lý của người nói là gì?",
+      "options": [
+        "Bất ngờ, ngạc nhiên, thất vọng, bất mãn hoặc tiếc nuối khi kết quả thực tế đi ngược lại hoàn toàn với quy luật thông thường hoặc mong đợi",
+        "Vui mừng khôn xiết",
+        "Mệnh lệnh bắt buộc",
+        "Đồng ý nhiệt tình"
+      ],
+      "correctIdx": 0,
+      "explanation": "[Độ khó: VẬN DỤNG CAO | Sắc thái tâm lý bất mãn của 〜のに] 〜のに diễn tả sự trái khoáy, ấm ức: Đã cố gắng thế mà thi trượt; Đã uống thuốc thế mà sốt không hạ."
+    },
+    {
+      "id": "pq45-53",
+      "question": "Quy tắc kết hợp trước「〜のに」: Danh từ và Tính từ đuôi な ở thể khẳng định hiện tại kết hợp thế nào?",
+      "options": [
+        "BẮT BUỘC DÙNG「な」(Ví dụ: <ruby>日曜日<rt>にちようび</rt></ruby>なのに / <ruby>好<rt>す</rt></ruby>きなのに / <ruby>暇<rt>ひま</rt></ruby>なのに)",
+        "Dùng だ (<ruby>日曜日<rt>にちようび</rt></ruby>だのに)",
+        "Dùng の (<ruby>日曜日<rt>にちようび</rt></ruby>ののに)",
+        "Dùng に (<ruby>日曜日<rt>にちようび</rt></ruby>にのに)"
+      ],
+      "correctIdx": 0,
+      "explanation": "[Độ khó: VẬN DỤNG CAO | Bẫy kết hợp chữ な trước のに] Giống hệt như cấu trúc 〜ので, trước 〜のに thì cả Danh từ và Tính từ đuôi な đều phải dùng chữ「な」: <ruby>日曜日<rt>にちようび</rt></ruby>なのに (Thế mà là chủ nhật), <ruby>好<rt>す</rt></ruby>きなのに (Thích thế mà)."
+    },
+    {
+      "id": "pq45-54",
+      "question": "Vế sau của cấu trúc「〜のに (Thế mà)」TUYỆT ĐỐI CẤM KỴ điều gì?",
+      "options": [
+        "Không được dùng ý chí, mệnh lệnh, yêu cầu nhờ vả hoặc xin phép (như 〜てください, 〜なさい, 〜たい, 〜ましょう)",
+        "Không được dùng thể quá khứ",
+        "Không được dùng cho con người",
+        "Không có điều cấm kỵ nào"
+      ],
+      "correctIdx": 0,
+      "explanation": "[Độ khó: VẬN DỤNG CAO | Giới hạn cú pháp vế sau của のに] Vế sau của のに chỉ là một thực tế hiển hiện khách quan gây bất ngờ; TUYỆT ĐỐI KHÔNG chứa mệnh lệnh hay rủ rê (Ví dụ: <ruby>日曜日<rt>にちようび</rt></ruby>なのに、<ruby>勉強<rt>べんきょう</rt></ruby>してください - SAI HOÀN TOÀN; phải dùng: <ruby>日曜日<rt>にちようび</rt></ruby>ですから、<ruby>勉強<rt>べんきょう</rt></ruby>してください)."
+    },
+    {
+      "id": "pq45-55",
+      "question": "A:「<ruby>地震<rt>じしん</rt></ruby>や <ruby>火事<rt>かじ</rt></ruby>の ........、エレベーターを <ruby>使<rt>つか</rt></ruby>っては いけません。」\nB:「<ruby>階段<rt>かいだん</rt></ruby>を <ruby>使<rt>つか</rt></ruby>いましょう。」",
+      "options": [
+        "<ruby>場合<rt>ばあい</rt></ruby>は (ばあいは)",
+        "のに",
+        "とおりに",
+        "あとで"
+      ],
+      "correctIdx": 0,
+      "explanation": "[Độ khó: VẬN DỤNG CAO | Tình huống khẩn cấp giả định Danh từ + の<ruby>場合<rt>ばあい</rt></ruby>は] Trong trường hợp xảy ra động đất hoặc hỏa hoạn: <ruby>火事<rt>かじ</rt></ruby>の <ruby>場合<rt>ばあい</rt></ruby>は."
+    },
+    {
+      "id": "pq45-56",
+      "question": "A:「<ruby>一生懸命<rt>いっしょうけんめい</rt></ruby> <ruby>勉強<rt>べんきょう</rt></ruby>した ........、<ruby>試験<rt>しけん</rt></ruby>に <ruby>落<rt>お</rt></ruby>ちて しまいました。」\nB:「<ruby>元気<rt>げんき</rt></ruby>を<ruby>出<rt>だ</rt></ruby>して。<ruby>次<rt>つぎ</rt></ruby>が ありますよ。」",
+      "options": [
+        "のに",
+        "ので",
+        "から",
+        "ために"
+      ],
+      "correctIdx": 0,
+      "explanation": "[Độ khó: VẬN DỤNG CAO | Thất vọng trái với nỗ lực 〜のに] Đã học hành chăm chỉ hết sức thế mà lại bị trượt kỳ thi: <ruby>勉強<rt>べんきょう</rt></ruby>した のに."
+    },
+    {
+      "id": "pq45-57",
+      "question": "A:「パスポートを なくした ........、すぐに <ruby>警察<rt>けいさつ</rt></ruby>と <ruby>大使館<rt>たいしかん</rt></ruby>へ <ruby>連絡<rt>れんらく</rt></ruby>して ください。」\nB:「はい、<ruby>分<rt>ふん</rt></ruby>かりました。」",
+      "options": [
+        "<ruby>場合<rt>ばあい</rt></ruby>は (ばあいは)",
+        "のに",
+        "ので",
+        "から"
+      ],
+      "correctIdx": 0,
+      "explanation": "[Độ khó: VẬN DỤNG CAO | Hướng dẫn tình huống mất hộ chiếu V-た<ruby>場合<rt>ばあい</rt></ruby>は] Trong trường hợp làm mất hộ chiếu: なくした <ruby>場合<rt>ばあい</rt></ruby>は."
+    },
+    {
+      "id": "pq45-58",
+      "question": "A:「<ruby>約束<rt>やくそく</rt></ruby>した ........、どうして <ruby>来<rt>こ</rt></ruby>なかったの？」\nB:「ごめん、<ruby>急<rt>いそ</rt></ruby>に <ruby>用事<rt>ようじ</rt></ruby>が できちゃって…」",
+      "options": [
+        "のに",
+        "ので",
+        "から",
+        "ために"
+      ],
+      "correctIdx": 0,
+      "explanation": "[Độ khó: VẬN DỤNG CAO | Trách móc lỡ hẹn 〜のに] Đã hẹn ước rõ ràng thế mà tại sao không đến: <ruby>約束<rt>やくそく</rt></ruby>した のに."
+    },
+    {
+      "id": "pq45-59",
+      "question": "Tìm câu SAI ngữ pháp trong 4 câu dưới đây:",
+      "options": [
+        "<ruby>雨<rt>あめ</rt></ruby>だのに、<ruby>傘<rt>かさ</rt></ruby>を <ruby>差<rt>さ</rt></ruby>さないで <ruby>歩<rt>ある</rt></ruby>いています。(Sai vì phải là <ruby>雨<rt>あめ</rt></ruby>なのに)",
+        "<ruby>雨<rt>あめ</rt></ruby>なのに、<ruby>傘<rt>かさ</rt></ruby>を <ruby>差<rt>さ</rt></ruby>さないで <ruby>歩<rt>ある</rt></ruby>いています。(Đúng)",
+        "<ruby>日曜日<rt>にちようび</rt></ruby>なのに、<ruby>働<rt>はたら</rt></ruby>かなければ なりません。(Đúng)",
+        "<ruby>火事<rt>かじ</rt></ruby>の <ruby>場合<rt>ばあい</rt></ruby>は、119<ruby>番<rt>ばん</rt></ruby>に <ruby>電<rt>でん</rt></ruby><ruby>話<rt>はな</rt></ruby>して ください。(Đúng)"
+      ],
+      "correctIdx": 0,
+      "explanation": "[Độ khó: VẬN DỤNG CAO | Lỗi dùng だのに với Danh từ] Danh từ <ruby>雨<rt>あめ</rt></ruby> đi với のに bắt buộc là <ruby>雨<rt>あめ</rt></ruby>なのに, không bao giờ có dạng <ruby>雨<rt>あめ</rt></ruby>だのに."
+    },
+    {
+      "id": "pq45-60",
+      "question": "Phân biệt sự khác nhau giữa「〜ても」và「〜のに」:",
+      "options": [
+        "〜ても dùng cho cả giả định chưa xảy ra trong tương lai và quá khứ; 〜のに CHỈ DÙNG CHO SỰ VIỆC ĐÃ HOÀN TẤT THỰC TẾ hoặc đang diễn ra, mang đậm cảm xúc bất mãn",
+        "〜のに dùng cho tương lai giả định",
+        "Cả hai giống hệt nhau không có khác biệt",
+        "〜ても chỉ dùng khi tức giận"
+      ],
+      "correctIdx": 0,
+      "explanation": "[Độ khó: VẬN DỤNG CAO | Tương phản giả định ても vs Tương phản thực tế のに] <ruby>明日<rt>あした</rt></ruby><ruby>雨<rt>あめ</rt></ruby>が<ruby>降<rt>ふ</rt></ruby>っても<ruby>行<rt>い</rt></ruby>きます (ĐÚNG - Giả định tương lai); <ruby>明日<rt>あした</rt></ruby><ruby>雨が降る<rt>あめがふる</rt></ruby>のに<ruby>行<rt>い</rt></ruby>きます (SAI - のに không dùng cho giả định tương lai)."
+    },
+    {
+      "id": "pq45-61",
+      "question": "A:「<ruby>田中<rt>たなか</rt></ruby>さんは <ruby>約束<rt>やくそく</rt></ruby>の <ruby>時間<rt>じかん</rt></ruby>に いつも ........ のに、<ruby>今日<rt>きょう</rt></ruby>は <ruby>遅<rt>おそ</rt></ruby>いですね。」\nB:「<ruby>何か<rt>なにか</rt></ruby> あったのかも しれませんね。」",
+      "options": [
+        "<ruby>遅<rt>おそ</rt></ruby>れない (おくれたことが ない)",
+        "<ruby>遅れる<rt>おくれる</rt></ruby>",
+        "<ruby>遅<rt>おそ</rt></ruby>れた",
+        "<ruby>遅<rt>おそ</rt></ruby>れなくて"
+      ],
+      "correctIdx": 0,
+      "explanation": "[Độ khó: VẬN DỤNG CAO | Thói quen không bao giờ trễ hẹn thế mà hôm nay lại trễ] Thường không bao giờ đến muộn thế mà: いつも <ruby>遅<rt>おそ</rt></ruby>れない のに."
+    },
+    {
+      "id": "pq45-62",
+      "question": "Điền từ thích hợp:「<ruby>領収書<rt>りょうしゅうしょ</rt></ruby> (りょうしゅうしょ) が <ruby>必要<rt>ひつよう</rt></ruby>な ........、<ruby>係員<rt>かかりいん</rt></ruby>に お<ruby>申<rt>もう</rt></ruby>し<ruby>付<rt>つ</rt></ruby>けください。」",
+      "options": [
+        "<ruby>場合<rt>ばあい</rt></ruby>は (ばあいは)",
+        "のに",
+        "ので",
+        "から"
+      ],
+      "correctIdx": 0,
+      "explanation": "[Độ khó: VẬN DỤNG CAO | Tính từ đuôi な <ruby>必要<rt>ひつよう</rt></ruby> + な<ruby>場合<rt>ばあい</rt></ruby>は] Trong trường hợp cần hóa đơn đỏ: <ruby>必要<rt>ひつよう</rt></ruby>な <ruby>場合<rt>ばあい</rt></ruby>は."
+    },
+    {
+      "id": "pq45-63",
+      "question": "A:「もう 3<ruby>月<rt>がつ</rt></ruby>なのに、<ruby>今日<rt>きょう</rt></ruby>は ........ <ruby>寒<rt>さむ</rt></ruby>いですね。」\nB:「<ruby>雪<rt>ゆき</rt></ruby>が <ruby>降<rt>ふ</rt></ruby>りそうですね。」",
+      "options": [
+        "<ruby>真<rt>しん</rt></ruby><ruby>冬<rt>ふゆ</rt></ruby>の ように (とても)",
+        "<ruby>春<rt>はる</rt></ruby>の ように",
+        "<ruby>夏<rt>なつ</rt></ruby>のように",
+        "<ruby>暖<rt>あたた</rt></ruby>かく"
+      ],
+      "correctIdx": 0,
+      "explanation": "[Độ khó: VẬN DỤNG CAO | Đã tháng 3 thế mà trời vẫn lạnh ngắt] Đã là tháng 3 thế mà trời vẫn rét căm căm: もう 3<ruby>月<rt>がつ</rt></ruby>なのに."
+    },
+    {
+      "id": "pq45-64",
+      "question": "Tìm câu ĐỒNG NGHĨA với:「<ruby>薬<rt>くすり</rt></ruby>を <ruby>飲<rt>の</rt></ruby>んだのに、<ruby>熱<rt>ねつ</rt></ruby>が <ruby>下<rt>した</rt></ruby>がりません。」",
+      "options": [
+        "<ruby>薬<rt>くすり</rt></ruby>を <ruby>飲<rt>の</rt></ruby>みましたが、<ruby>熱<rt>ねつ</rt></ruby>が <ruby>下<rt>した</rt></ruby>がりません。(Mang thêm sắc thái tiếc nuối/bất ngờ)",
+        "<ruby>薬<rt>くすり</rt></ruby>を <ruby>飲<rt>の</rt></ruby>んだので、<ruby>熱<rt>ねつ</rt></ruby>が <ruby>下<rt>した</rt></ruby>がりました。",
+        "<ruby>薬<rt>くすり</rt></ruby>を <ruby>飲<rt>の</rt></ruby>まなければ、<ruby>熱<rt>ねつ</rt></ruby>が <ruby>下<rt>した</rt></ruby>がりません。",
+        "<ruby>薬<rt>くすり</rt></ruby>を <ruby>飲<rt>の</rt></ruby>む <ruby>前<rt>まえ</rt></ruby>に、<ruby>熱<rt>ねつ</rt></ruby>を <ruby>測<rt>はか</rt></ruby>りました。"
+      ],
+      "correctIdx": 0,
+      "explanation": "[Độ khó: VẬN DỤNG CAO | Biến đổi tương đương のに sang が tương phản] Đã uống thuốc thế mà sốt không hạ = Uống thuốc rồi nhưng sốt vẫn không hạ."
+    },
+    {
+      "id": "pq45-65",
+      "question": "A:「<ruby>機械<rt>きかい</rt></ruby>の <ruby>調子<rt>ちょうし</rt></ruby>が <ruby>悪<rt>わる</rt></ruby>い ........、すぐに スイッチを <ruby>切<rt>き</rt></ruby>って ください。」\nB:「はい、<ruby>分<rt>ふん</rt></ruby>かりました。」",
+      "options": [
+        "<ruby>場合<rt>ばあい</rt></ruby>は",
+        "のに",
+        "ので",
+        "から"
+      ],
+      "correctIdx": 0,
+      "explanation": "[Độ khó: VẬN DỤNG CAO | Thao tác an toàn trong công xưởng] Trong trường hợp máy vận hành có trục trặc: <ruby>調子<rt>ちょうし</rt></ruby>が <ruby>悪<rt>わる</rt></ruby>い <ruby>場合<rt>ばあい</rt></ruby>は."
+    },
+    {
+      "id": "pq45-66",
+      "question": "Từ「<ruby>領収書<rt>りょうしゅうしょ</rt></ruby> (りょうしゅうしょ)」nghĩa là gì?",
+      "options": [
+        "Hóa đơn thanh toán, biên lai thu tiền chính thức",
+        "Giấy mời họp",
+        "Thẻ giảm giá",
+        "Vé xem phim"
+      ],
+      "correctIdx": 0,
+      "explanation": "[Độ khó: VẬN DỤNG CAO | Thuật ngữ chứng từ tài chính kế toán] <ruby>領収書<rt>りょうしゅうしょ</rt></ruby> (hóa đơn, biên lai thanh toán tiền)."
+    },
+    {
+      "id": "pq45-67",
+      "question": "A:「<ruby>携帯電話<rt>けいたいでんわ</rt></ruby>の <ruby>調子<rt>ちょうし</rt></ruby>が おかしいんです。」\nB:「<ruby>修理<rt>しゅうり</rt></ruby>しても <ruby>直<rt>なお</rt></ruby>らない ........、<ruby>新<rt>あたら</rt></ruby>しいのを <ruby>買<rt>か</rt></ruby>いましょう。」",
+      "options": [
+        "<ruby>場合<rt>ばあい</rt></ruby>は",
+        "のに",
+        "ので",
+        "から"
+      ],
+      "correctIdx": 0,
+      "explanation": "[Độ khó: VẬN DỤNG CAO | Trường hợp sửa cũng không khỏi V-ない<ruby>場合<rt>ばあい</rt></ruby>は] Trong trường hợp sửa mà cũng không khỏi: <ruby>直<rt>なお</rt></ruby>らない <ruby>場合<rt>ばあい</rt></ruby>は."
+    },
+    {
+      "id": "pq45-68",
+      "question": "A:「<ruby>何回も<rt>なんかいも</rt></ruby> <ruby>練習<rt>れんしゅう</rt></ruby>した ........、<ruby>本<rt>ほん</rt></ruby><ruby>番<rt>ばん</rt></ruby>で <ruby>失敗<rt>しっぱい</rt></ruby>して しまいました。」\nB:「ドンマイ！ いい <ruby>経験<rt>けいけん</rt></ruby>に なりましたよ。」",
+      "options": [
+        "のに",
+        "ので",
+        "から",
+        "ために"
+      ],
+      "correctIdx": 0,
+      "explanation": "[Độ khó: VẬN DỤNG CAO | Nuối tiếc sau nhiều lần tập luyện] Đã luyện tập bao nhiêu lần thế mà lúc thi thật lại mắc lỗi: <ruby>練習<rt>れんしゅう</rt></ruby>した のに."
+    },
+    {
+      "id": "pq45-69",
+      "question": "Điền từ thích hợp:「<ruby>時間<rt>じかん</rt></ruby><ruby>通<rt>とお</rt></ruby>りに <ruby>来<rt>き</rt></ruby>た ........、<ruby>相手<rt>あいて</rt></ruby>は まだ <ruby>来<rt>き</rt></ruby>て いませんでした。」",
+      "options": [
+        "のに",
+        "ので",
+        "から",
+        "ために"
+      ],
+      "correctIdx": 0,
+      "explanation": "[Độ khó: VẬN DỤNG CAO | Đúng giờ thế mà đối phương chưa đến] Mình đến đúng giờ hẹn thế mà đối phương vẫn chưa tới: <ruby>来<rt>き</rt></ruby>た のに."
+    },
+    {
+      "id": "pq45-70",
+      "question": "Tổng kết Bài 45: Hai mẫu câu lớn chi phối cách diễn đạt tình huống của Bài 45 là gì?",
+      "options": [
+        "1. 〜<ruby>場合<rt>ばあい</rt></ruby>は (Giả định tình huống pháp lý / hướng dẫn quy tắc xử lý) / 2. 〜のに (Nghịch lý trái với mong đợi, mang cảm xúc bất mãn)",
+        "Thể bị động và thể sai khiến",
+        "Kính ngữ và khiêm nhường ngữ",
+        "So sánh hơn và so sánh nhất"
+      ],
+      "correctIdx": 0,
+      "explanation": "[Độ khó: VẬN DỤNG CAO | Cặp phạm trù Bài 45] Dự liệu phương án tình huống (<ruby>場合<rt>ばあい</rt></ruby>は) và biểu cảm tâm lý nghịch lý trái khoáy (のに)."
     }
   ]
 };

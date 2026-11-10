@@ -1,0 +1,2046 @@
+/* ==========================================================================
+   Minna no Nihongo N5-N4 — All-In-One Master Suite V4 Stylesheet
+   Neo-Edo Dark Glassmorphism, Bento Grid UI & Open UI/UX Design System
+   Mobile Web Guardrails: min-height: 44px, flex-shrink: 0 !important
+   Brace Balance Invariant: { count === } count (delta = 0)
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   01. SEMANTIC DESIGN TOKENS & CSS VARIABLES (LIGHT / DARK THEMES)
+   -------------------------------------------------------------------------- */
+:root,
+[data-theme="light"] {
+  --ms-crimson: var(--primary, #ff5a36);
+  --ms-crimson-soft: rgba(255, 90, 54, 0.12);
+  --ms-crimson-glow: rgba(255, 90, 54, 0.28);
+  --ms-indigo: var(--accent-indigo, #0284c7);
+  --ms-indigo-soft: rgba(2, 132, 199, 0.12);
+  --ms-indigo-glow: rgba(2, 132, 199, 0.28);
+  --ms-emerald: var(--accent-green, #10b981);
+  --ms-emerald-soft: rgba(16, 185, 129, 0.14);
+  --ms-amber: var(--accent-warning, #d97706);
+  --ms-amber-soft: rgba(245, 158, 11, 0.14);
+  --ms-gold: #e5c178;
+  --ms-gold-soft: rgba(229, 193, 120, 0.15);
+  --craftsman-obsidian: #0b101e;
+  --craftsman-gold: #e5c178;
+  --craftsman-amber: #f59e0b;
+  --craftsman-crimson: var(--primary, #ff5a36);
+  --craftsman-indigo: #0284c7;
+  --ms-surface: var(--bg-secondary, #ffffff);
+  --ms-surface-glass: rgba(255, 255, 255, 0.88);
+  --ms-surface-subtle: var(--bg-tertiary, #f1f5f9);
+  --ms-border: var(--border-color, rgba(226, 232, 240, 0.9));
+  --ms-border-focus: var(--primary, #ff5a36);
+  --ms-text: var(--text-primary, #0f172a);
+  --ms-muted: var(--text-secondary, #64748b);
+  --ms-card-bg: var(--bg-secondary, #ffffff);
+  --ms-card-shadow: 0 4px 18px -2px rgba(15, 23, 42, 0.06), 0 2px 6px -1px rgba(15, 23, 42, 0.04);
+  --ms-card-shadow-hover: 0 12px 28px -4px rgba(255, 90, 54, 0.16), 0 4px 10px -2px rgba(15, 23, 42, 0.05);
+  --ms-radius-sm: 8px;
+  --ms-radius-md: 12px;
+  --ms-radius-lg: 16px;
+  --ms-radius-xl: 20px;
+  --ms-radius-pill: 999px;
+  --ms-font-mincho: var(--font-mincho, 'Shippori Mincho', 'Noto Serif JP', 'Hiragino Mincho ProN', Georgia, serif);
+  --ms-transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+[data-theme="dark"],
+body.dark-mode,
+.dark {
+  --ms-crimson: var(--primary, #ff6b4a);
+  --ms-crimson-soft: rgba(255, 107, 74, 0.16);
+  --ms-crimson-glow: rgba(255, 107, 74, 0.35);
+  --ms-indigo: var(--accent-indigo, #38bdf8);
+  --ms-indigo-soft: rgba(56, 189, 248, 0.16);
+  --ms-indigo-glow: rgba(56, 189, 248, 0.32);
+  --ms-emerald: var(--accent-green, #34d399);
+  --ms-emerald-soft: rgba(52, 211, 153, 0.18);
+  --ms-amber: var(--accent-warning, #fbbf24);
+  --ms-amber-soft: rgba(251, 191, 36, 0.18);
+  --ms-gold: #e5c178;
+  --ms-gold-soft: rgba(229, 193, 120, 0.22);
+  --craftsman-crimson: var(--primary, #ff6b4a);
+  --craftsman-indigo: #38bdf8;
+  --ms-surface: var(--bg-secondary, #0d131f);
+  --ms-surface-glass: rgba(13, 19, 31, 0.90);
+  --ms-surface-subtle: var(--bg-tertiary, #162032);
+  --ms-border: var(--border-color, rgba(255, 107, 74, 0.24));
+  --ms-border-focus: var(--primary, #ff6b4a);
+  --ms-text: var(--text-primary, #f8fafc);
+  --ms-muted: var(--text-secondary, #94a3b8);
+  --ms-card-bg: var(--bg-secondary, rgba(13, 19, 31, 0.94));
+  --ms-card-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.55), 0 0 0 1px var(--ms-border);
+  --ms-card-shadow-hover: 0 12px 30px -4px rgba(255, 90, 54, 0.25), 0 0 16px rgba(255, 90, 54, 0.15);
+}
+
+/* --------------------------------------------------------------------------
+   02. MASTER HUB WRAPPER & NEO-EDO HERO STAGE (DARK-ON-DARK RESOLVED)
+   -------------------------------------------------------------------------- */
+.ms-hub-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  padding-bottom: 6.5rem;
+  color: var(--ms-text);
+  box-sizing: border-box;
+}
+
+.ms-hub-hero {
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(135deg, rgba(13, 19, 31, 0.96) 0%, rgba(22, 32, 50, 0.92) 55%, rgba(255, 107, 74, 0.12) 100%);
+  border: 1px solid var(--border-color, rgba(255, 107, 74, 0.28));
+  box-shadow: 0 16px 36px -10px rgba(15, 23, 42, 0.45), 0 0 24px -4px rgba(255, 90, 54, 0.18);
+  border-radius: var(--ms-radius-xl);
+  padding: 1.5rem 1.6rem;
+  color: #ffffff;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+[data-theme="light"] .ms-hub-hero {
+  background: linear-gradient(135deg, #ffffff 0%, #fff7f4 60%, rgba(255, 90, 54, 0.08) 100%);
+  border: 1px solid rgba(255, 90, 54, 0.22);
+  box-shadow: 0 10px 25px -4px rgba(255, 90, 54, 0.10), 0 4px 12px rgba(15, 23, 42, 0.04);
+  color: var(--text-primary, #0f172a);
+}
+
+[data-theme="light"] .ms-hub-title {
+  color: var(--text-primary, #0f172a) !important;
+  text-shadow: none;
+}
+
+[data-theme="light"] .ms-hub-desc {
+  color: var(--text-secondary, #334155) !important;
+}
+
+[data-theme="light"] .ms-kpi-pill {
+  background: rgba(255, 90, 54, 0.06);
+  border: 1px solid rgba(255, 90, 54, 0.18);
+  color: var(--text-secondary, #334155);
+}
+
+[data-theme="light"] .ms-hero-kpis {
+  border-top: 1px solid rgba(255, 90, 54, 0.12);
+}
+
+.ms-hub-hero::before {
+  content: "";
+  position: absolute;
+  top: -40%;
+  right: -20%;
+  width: 280px;
+  height: 280px;
+  background: radial-gradient(circle, rgba(255, 90, 54, 0.22) 0%, transparent 70%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.ms-hub-hero > * {
+  position: relative;
+  z-index: 1;
+}
+
+.ms-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--primary, #ff5a36) !important;
+  background: rgba(255, 90, 54, 0.14);
+  padding: 0.28rem 0.75rem;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 90, 54, 0.32);
+  margin-bottom: 0.5rem;
+}
+
+.ms-hub-title {
+  font-size: 1.45rem;
+  font-weight: 800;
+  margin: 0 0 0.45rem 0;
+  line-height: 1.3;
+  color: #ffffff !important;
+  text-shadow: 0 2px 12px rgba(0, 0, 0, 0.35);
+}
+
+.ms-hub-desc {
+  font-size: 0.94rem;
+  margin: 0;
+  line-height: 1.6;
+  color: #cbd5e1 !important;
+  max-width: 820px;
+}
+
+/* Hero KPI Quick Strip */
+.ms-hero-kpis {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  margin-top: 1rem;
+  padding-top: 0.85rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.ms-kpi-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.35rem 0.85rem;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: #f1f5f9;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  transition: var(--ms-transition);
+}
+
+.ms-kpi-pill strong {
+  color: var(--primary, #ff5a36);
+}
+
+.ms-kpi-pill:hover {
+  background: rgba(255, 255, 255, 0.14);
+  border-color: rgba(255, 90, 54, 0.45);
+}
+
+/* --------------------------------------------------------------------------
+   03. NAVIGATION & MASTER TABS (TOUCH GUARDRAIL 44PX)
+   -------------------------------------------------------------------------- */
+.ms-tabs-nav,
+.ms-subtab-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.55rem;
+}
+
+.ms-tab-btn,
+.ms-subtab-btn {
+  min-height: 44px;
+  flex-shrink: 0 !important;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.6rem 1.1rem;
+  border-radius: var(--ms-radius-md);
+  border: 1px solid var(--ms-border);
+  background: var(--ms-surface);
+  color: var(--ms-text);
+  font-weight: 700;
+  font-size: 0.9rem;
+  cursor: pointer;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+  transition: var(--ms-transition);
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.ms-tab-btn:hover,
+.ms-subtab-btn:hover {
+  border-color: var(--ms-crimson);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(255, 90, 54, 0.16);
+}
+
+.ms-tab-btn.is-active,
+.ms-subtab-btn.is-active {
+  background: linear-gradient(135deg, var(--ms-crimson) 0%, #e04825 100%);
+  color: #ffffff;
+  border-color: #e04825;
+  box-shadow: 0 6px 18px rgba(255, 90, 54, 0.32);
+}
+
+.ms-tab-btn:focus-visible,
+.ms-subtab-btn:focus-visible {
+  outline: 2px solid var(--ms-crimson);
+  outline-offset: 2px;
+}
+
+/* --------------------------------------------------------------------------
+   04. RESPONSIVE BENTO GRID & CARD PRIMITIVES
+   -------------------------------------------------------------------------- */
+.ms-grid-2col {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 310px), 1fr));
+  gap: 1rem;
+}
+
+.ms-card {
+  background: var(--ms-card-bg);
+  border: 1px solid var(--ms-border);
+  border-radius: var(--ms-radius-lg);
+  padding: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+  box-shadow: var(--ms-card-shadow);
+  transition: var(--ms-transition);
+  color: var(--ms-text);
+}
+
+.ms-card:hover {
+  box-shadow: var(--ms-card-shadow-hover);
+  border-color: rgba(255, 90, 54, 0.45);
+}
+
+.ms-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+}
+
+.ms-section-subtitle {
+  font-size: 0.95rem;
+  font-weight: 800;
+  margin: 0.35rem 0 0.15rem 0;
+  color: var(--ms-text);
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+}
+
+/* Status Badges */
+.ms-badge-crimson,
+.ms-badge-indigo,
+.ms-badge-emerald,
+.ms-badge-amber {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.32rem 0.75rem;
+  border-radius: 999px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  line-height: 1.35;
+  max-width: 100%;
+  white-space: normal;
+  word-break: keep-all;
+}
+
+.ms-badge-crimson {
+  background: var(--ms-crimson-soft);
+  color: var(--ms-crimson);
+  border: 1px solid rgba(255, 90, 54, 0.25);
+}
+
+.ms-badge-indigo {
+  background: var(--ms-indigo-soft);
+  color: var(--ms-indigo);
+  border: 1px solid rgba(79, 70, 229, 0.22);
+}
+
+.ms-badge-emerald {
+  background: var(--ms-emerald-soft);
+  color: var(--ms-emerald);
+  border: 1px solid rgba(16, 185, 129, 0.22);
+}
+
+.ms-badge-amber {
+  background: var(--ms-amber-soft);
+  color: var(--ms-amber);
+  border: 1px solid rgba(245, 158, 11, 0.22);
+}
+
+.ms-score-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-weight: 800;
+  font-size: 0.88rem;
+  padding: 0.28rem 0.75rem;
+  border-radius: 999px;
+  background: var(--ms-emerald-soft);
+  color: var(--ms-emerald);
+  border: 1px solid rgba(16, 185, 129, 0.28);
+  max-width: 100%;
+  white-space: normal;
+  word-break: keep-all;
+  line-height: 1.35;
+}
+
+.ms-question-title {
+  font-size: 1.15rem;
+  font-weight: 800;
+  margin: 0;
+  color: var(--ms-text);
+  line-height: 1.45;
+}
+
+.ms-question-title .ms-jp-text,
+.ms-question-title .ms-prompt-highlight {
+  font-family: var(--ms-font-mincho);
+  font-size: 1.34rem;
+  font-weight: 700;
+  letter-spacing: 0.6px;
+  color: var(--ms-crimson);
+  display: inline-block;
+  padding: 0 2px;
+}
+
+.ms-question-title .ms-prompt-form {
+  font-family: var(--ms-font-mincho);
+  font-size: 1.18rem;
+  font-weight: 700;
+  letter-spacing: 0.4px;
+  display: inline-block;
+  padding: 0 2px;
+}
+
+.ms-subtext {
+  font-size: 0.88rem;
+  color: var(--ms-muted);
+  margin: 0;
+  line-height: 1.5;
+}
+
+/* --------------------------------------------------------------------------
+   05. FILTER & MODE BAR COMPONENTS
+   -------------------------------------------------------------------------- */
+.ms-mode-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.55rem;
+  padding: 0.45rem 0.65rem;
+  background: var(--ms-surface-subtle);
+  border: 1px solid var(--ms-border);
+  border-radius: var(--ms-radius-md);
+}
+
+.ms-mode-chip {
+  min-height: 44px;
+  flex-shrink: 0 !important;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  padding: 0.45rem 0.95rem;
+  border-radius: 999px;
+  border: 1px solid var(--ms-border);
+  background: var(--ms-surface);
+  color: var(--ms-text);
+  font-size: 0.84rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: var(--ms-transition);
+}
+
+.ms-mode-chip:hover {
+  border-color: var(--ms-crimson);
+  color: var(--ms-crimson);
+}
+
+.ms-mode-chip.is-active {
+  background: linear-gradient(135deg, var(--ms-crimson) 0%, #e04825 100%);
+  color: #ffffff;
+  border-color: #e04825;
+  box-shadow: 0 4px 12px rgba(255, 90, 54, 0.28);
+}
+
+.ms-select-input,
+.ms-search-input {
+  min-height: 44px;
+  flex-shrink: 0 !important;
+  border-radius: var(--ms-radius-md);
+  border: 1px solid var(--ms-border);
+  background: var(--ms-surface);
+  color: var(--ms-text);
+  padding: 0.5rem 0.9rem;
+  font-size: 0.9rem;
+  font-family: inherit;
+  box-sizing: border-box;
+  transition: var(--ms-transition);
+  outline: none;
+}
+
+.ms-select-input {
+  font-family: var(--ms-font-mincho), var(--font-main), sans-serif;
+}
+
+.ms-select-input:focus,
+.ms-search-input:focus {
+  border-color: var(--ms-crimson);
+  box-shadow: 0 0 0 3px rgba(255, 90, 54, 0.18);
+}
+
+/* --------------------------------------------------------------------------
+   06. TAB 1: CONJUGATION ARENA & INTERACTIVE MATRIX
+   -------------------------------------------------------------------------- */
+.ms-options-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(135px, 1fr));
+  gap: 0.65rem;
+}
+
+.ms-option-btn,
+.ms-primary-btn,
+.ms-secondary-btn,
+.ms-action-btn-sm,
+.ms-icon-btn {
+  min-height: 44px;
+  flex-shrink: 0 !important;
+  border-radius: var(--ms-radius-md);
+  border: 1px solid var(--ms-border);
+  background: var(--ms-surface);
+  color: var(--ms-text);
+  font-weight: 700;
+  padding: 0.5rem 0.95rem;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.45rem;
+  transition: transform 0.14s ease, border-color 0.14s ease, box-shadow 0.14s ease, background-color 0.14s ease;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.ms-option-btn {
+  font-family: var(--ms-font-mincho);
+  font-size: 1.18rem;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+}
+
+.ms-icon-svg,
+.master-icon,
+.icon-svg.master-icon {
+  width: var(--icon-size-tab, 18px);
+  height: var(--icon-size-tab, 18px);
+  display: inline-block;
+  vertical-align: -2px;
+  margin-right: 4px;
+  flex-shrink: 0;
+  color: var(--ms-gold, #e5c178);
+  stroke: currentColor;
+  stroke-width: 1.5;
+  transition: color 0.18s ease, stroke 0.18s ease;
+}
+
+.ms-icon-svg:only-child,
+.master-icon:only-child,
+.icon-svg.master-icon:only-child,
+.accordion-group-icon .master-icon,
+.accordion-group-icon .ms-icon-svg,
+.accordion-group-icon .icon-svg,
+.accordion-group-icon svg,
+.practice-icon-badge .master-icon,
+.stat-card-icon .master-icon,
+.kfc-badge-icon .master-icon,
+.account-header-emblem .master-icon,
+.neo-card-illust .master-icon {
+  margin: 0 !important;
+  display: block !important;
+  vertical-align: middle !important;
+}
+
+.accordion-group-icon .master-icon,
+.accordion-group-icon .ms-icon-svg,
+.accordion-group-icon .icon-svg {
+  width: 14px !important;
+  height: 14px !important;
+}
+
+.ms-primary-btn .ms-icon-svg,
+.ms-primary-btn .master-icon,
+.ms-icon-btn .ms-icon-svg,
+.ms-icon-btn .master-icon {
+  width: var(--icon-size-header, 20px);
+  height: var(--icon-size-header, 20px);
+  stroke-width: var(--icon-stroke-optical, 1.75px);
+}
+
+.ms-tab-btn.is-active .ms-icon-svg,
+.ms-tab-btn.is-active .master-icon,
+.ms-primary-btn .ms-icon-svg,
+.ms-primary-btn .master-icon {
+  color: #ffffff;
+}
+
+.ms-badge-crimson .ms-icon-svg,
+.ms-badge-crimson .master-icon {
+  color: var(--ms-crimson);
+}
+
+.ms-badge-indigo .ms-icon-svg,
+.ms-badge-indigo .master-icon {
+  color: var(--ms-indigo);
+}
+
+.ms-score-pill .ms-icon-svg,
+.ms-score-pill .master-icon {
+  color: var(--ms-emerald);
+}
+
+.ms-option-btn:hover,
+.ms-primary-btn:hover,
+.ms-action-btn-sm:hover,
+.ms-icon-btn:hover {
+  border-color: var(--ms-crimson);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 14px rgba(255, 90, 54, 0.16);
+}
+
+.ms-option-btn:focus-visible,
+.ms-primary-btn:focus-visible,
+.ms-secondary-btn:focus-visible,
+.ms-action-btn-sm:focus-visible,
+.ms-icon-btn:focus-visible {
+  outline: 2px solid var(--ms-crimson);
+  outline-offset: 2px;
+}
+
+.ms-primary-btn {
+  background: linear-gradient(135deg, var(--ms-crimson) 0%, #e04825 100%);
+  color: #ffffff;
+  border-color: #e04825;
+  box-shadow: 0 4px 14px rgba(255, 90, 54, 0.28);
+}
+
+.ms-primary-btn:hover {
+  background: linear-gradient(135deg, #ff7354 0%, var(--ms-crimson) 100%);
+  color: #ffffff;
+}
+
+.ms-secondary-btn {
+  background: var(--ms-surface);
+  color: var(--ms-text);
+  border-color: var(--ms-border);
+}
+
+.ms-secondary-btn:hover {
+  border-color: var(--ms-indigo);
+  color: var(--ms-indigo);
+  transform: translateY(-1px);
+}
+
+.ms-feedback-banner {
+  padding: 0.75rem 1rem;
+  border-radius: var(--ms-radius-md);
+  font-weight: 700;
+  font-size: 0.92rem;
+  line-height: 1.5;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.ms-feedback-banner.is-ok {
+  background: rgba(16, 185, 129, 0.15);
+  color: #059669;
+  border: 1px solid rgba(16, 185, 129, 0.32);
+}
+
+.ms-feedback-banner.is-err {
+  background: rgba(239, 68, 68, 0.12);
+  color: var(--accent-red, #ef4444);
+  border: 1px solid rgba(239, 68, 68, 0.28);
+}
+
+/* Interactive Conjugation Matrix Toolbar */
+.ms-matrix-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.65rem;
+  margin-bottom: 0.75rem;
+}
+
+.ms-verb-quick-pills,
+.ms-verb-Quick-pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+  align-items: center;
+}
+
+.ms-verb-pill {
+  min-height: 44px;
+  flex-shrink: 0 !important;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.45rem 0.85rem;
+  border-radius: var(--ms-radius-md);
+  border: 1px solid var(--ms-border);
+  background: var(--ms-surface);
+  color: var(--ms-text);
+  cursor: pointer;
+  font-weight: 700;
+  font-size: 0.9rem;
+  font-family: var(--ms-font-mincho), var(--font-main), serif;
+  letter-spacing: 0.3px;
+  transition: var(--ms-transition);
+}
+
+.ms-verb-pill:hover {
+  border-color: var(--ms-indigo);
+  color: var(--ms-indigo);
+  transform: translateY(-1px);
+}
+
+.ms-verb-pill.is-active {
+  background: var(--ms-indigo-soft);
+  border-color: var(--ms-indigo);
+  color: var(--ms-indigo);
+  box-shadow: 0 4px 12px rgba(79, 70, 229, 0.2);
+}
+
+.ms-formula-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.28rem 0.65rem;
+  border-radius: var(--ms-radius-sm);
+  font-family: var(--ms-font-mincho), var(--font-mono, monospace);
+  font-size: 0.82rem;
+  font-weight: 700;
+  line-height: 1.4;
+  word-break: keep-all;
+  max-width: 100%;
+  background: var(--ms-indigo-soft);
+  color: var(--ms-indigo);
+  border: 1px dashed rgba(79, 70, 229, 0.35);
+}
+
+/* Editorial Bento Conjugation Matrix & Matrix Table */
+.ms-bento-matrix-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.ms-table.ms-matrix-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.ms-table.ms-matrix-table th {
+  font-weight: 800;
+  font-size: 0.85rem;
+  padding: 0.65rem 0.75rem;
+  background: var(--ms-surface-subtle);
+  color: var(--ms-text);
+  border-bottom: 2px solid var(--ms-border);
+}
+
+.ms-table.ms-matrix-table td {
+  padding: 0.65rem 0.75rem;
+  border-bottom: 1px solid var(--ms-border);
+  vertical-align: middle;
+}
+
+.ms-result-cell,
+.ms-result-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  white-space: nowrap;
+  flex-wrap: nowrap;
+}
+
+.ms-result-cell .ms-jp-text,
+.ms-result-pill .ms-jp-text,
+.ms-result-text {
+  word-break: keep-all;
+  white-space: nowrap;
+  font-size: 1.12rem;
+  font-weight: 800;
+  color: var(--ms-text);
+}
+
+.ms-form-label-main {
+  font-weight: 800;
+  font-size: 0.94rem;
+  color: var(--ms-text);
+  display: block;
+  word-break: keep-all;
+  line-height: 1.35;
+}
+
+.ms-form-label-sub {
+  font-size: 0.78rem;
+  color: var(--ms-muted);
+  display: block;
+  margin-top: 2px;
+  line-height: 1.3;
+}
+
+/* Progressive Disclosure Accordion (Details Drawer) */
+details.ms-details-drawer {
+  margin-top: 0.35rem;
+  border-radius: var(--ms-radius-sm);
+  background: var(--ms-surface-subtle);
+  border: 1px solid rgba(148, 163, 184, 0.2);
+  padding: 0.3rem 0.6rem;
+  transition: var(--ms-transition);
+}
+
+details.ms-details-drawer[open] {
+  border-color: rgba(79, 70, 229, 0.35);
+  box-shadow: 0 2px 8px rgba(79, 70, 229, 0.08);
+}
+
+details.ms-details-drawer > summary.ms-details-summary {
+  cursor: pointer;
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--ms-indigo);
+  list-style: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  user-select: none;
+  min-height: 32px;
+}
+
+details.ms-details-drawer > summary.ms-details-summary::-webkit-details-marker {
+  display: none;
+}
+
+details.ms-details-drawer > summary.ms-details-summary::before {
+  content: "▸";
+  font-size: 0.85rem;
+  transition: transform 0.16s ease;
+  display: inline-block;
+}
+
+details.ms-details-drawer[open] > summary.ms-details-summary::before {
+  content: "▾";
+}
+
+.ms-details-body {
+  padding-top: 0.4rem;
+  margin-top: 0.35rem;
+  border-top: 1px dashed rgba(148, 163, 184, 0.25);
+  font-size: 0.82rem;
+  line-height: 1.5;
+  color: var(--ms-text);
+}
+
+.ms-audio-mini-btn {
+  min-height: 44px;
+  min-width: 44px;
+  flex-shrink: 0 !important;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--ms-radius-sm);
+  border: 1px solid var(--ms-border);
+  background: var(--ms-surface);
+  color: var(--ms-text);
+  cursor: pointer;
+  padding: 0.35rem;
+  transition: var(--ms-transition);
+}
+
+.ms-audio-mini-btn:hover {
+  border-color: var(--ms-crimson);
+  color: var(--ms-crimson);
+}
+
+/* Conjugation Rules Table */
+.ms-table-wrap {
+  overflow-x: auto;
+  border-radius: var(--ms-radius-md);
+  border: 1px solid var(--ms-border);
+}
+
+.ms-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.88rem;
+  background: var(--ms-surface);
+}
+
+.ms-table th,
+.ms-table td {
+  padding: 0.65rem 0.85rem;
+  border-bottom: 1px solid var(--ms-border);
+  text-align: left;
+  line-height: 1.45;
+}
+
+.ms-table th {
+  background: var(--ms-surface-subtle);
+  font-weight: 800;
+  color: var(--ms-text);
+}
+
+.ms-table tbody tr:hover {
+  background: rgba(255, 90, 54, 0.05);
+}
+
+/* --------------------------------------------------------------------------
+   07. TAB 2: SMART NOTEBOOK, SRS MISTAKE BANK & RULE BOX
+   -------------------------------------------------------------------------- */
+.ms-list-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+}
+
+.ms-list-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.85rem;
+  padding: 0.75rem 0.95rem;
+  border-radius: var(--ms-radius-md);
+  border: 1px solid var(--ms-border);
+  background: var(--ms-surface);
+  color: var(--ms-text);
+  transition: var(--ms-transition);
+}
+
+.ms-list-item:hover {
+  border-color: rgba(79, 70, 229, 0.35);
+  box-shadow: 0 4px 12px rgba(15, 23, 42, 0.04);
+}
+
+.ms-list-item.is-mistake {
+  border-color: rgba(255, 90, 54, 0.45);
+  background: rgba(255, 90, 54, 0.06);
+  border-left: 4px solid var(--ms-crimson);
+}
+
+.ms-jp-text {
+  font-family: var(--ms-font-mincho);
+  font-size: 1.12rem;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  color: var(--ms-text);
+}
+
+.ms-reading {
+  font-family: var(--ms-font-mincho);
+  font-size: 0.88rem;
+  letter-spacing: 0.3px;
+  color: var(--ms-muted);
+  margin-left: 0.35rem;
+}
+
+.ms-meaning {
+  font-size: 0.86rem;
+  color: var(--ms-muted);
+  margin: 0.2rem 0 0 0;
+}
+
+/* SRS Redemption Progress Bar */
+.ms-srs-bar {
+  width: 100%;
+  height: 8px;
+  background: rgba(148, 163, 184, 0.25);
+  border-radius: 999px;
+  overflow: hidden;
+  position: relative;
+  margin: 0.3rem 0;
+}
+
+.ms-srs-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--ms-crimson), #10b981);
+  border-radius: 999px;
+  transition: width 0.3s ease;
+}
+
+.ms-risk-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.2rem 0.55rem;
+  border-radius: 999px;
+  font-size: 0.74rem;
+  font-weight: 800;
+  background: rgba(239, 68, 68, 0.15);
+  color: #ef4444;
+  border: 1px solid rgba(239, 68, 68, 0.3);
+}
+
+.ms-empty {
+  text-align: center;
+  padding: 1.8rem 1.2rem;
+  border-radius: var(--ms-radius-md);
+  border: 1px dashed var(--ms-border);
+  color: var(--ms-muted);
+  font-size: 0.9rem;
+  line-height: 1.6;
+  background: var(--ms-surface-subtle);
+}
+
+/* Rule & Explanation Box */
+.ms-rule-box {
+  border-left: 4px solid var(--ms-crimson);
+  background: var(--ms-crimson-soft);
+  color: var(--ms-text);
+  padding: 0.85rem 1.1rem;
+  border-radius: 0 var(--ms-radius-md) var(--ms-radius-md) 0;
+  margin: 0.5rem 0;
+  font-size: 0.88rem;
+  line-height: 1.6;
+}
+
+.ms-rule-box.is-indigo {
+  border-left: 4px solid var(--ms-indigo);
+  background: var(--ms-indigo-soft);
+}
+
+.ms-example-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+  margin-top: 0.65rem;
+}
+
+.ms-example-item {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.65rem;
+  padding: 0.65rem 0.85rem;
+  border-radius: var(--ms-radius-md);
+  border: 1px solid var(--ms-border);
+  background: var(--ms-surface);
+  font-size: 0.86rem;
+  line-height: 1.5;
+}
+
+/* --------------------------------------------------------------------------
+   08. TAB 3: REFERENCE HUB (KANA, COUNTERS, PARTICLES & PAIR MATRICES)
+   -------------------------------------------------------------------------- */
+.ms-kana-grid {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(48px, 1fr));
+  gap: 0.5rem;
+}
+
+.ms-kana-cell {
+  min-height: 48px;
+  flex-shrink: 0 !important;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--ms-radius-md);
+  border: 1px solid var(--ms-border);
+  background: var(--ms-surface);
+  color: var(--ms-text);
+  cursor: pointer;
+  padding: 0.4rem 0.25rem;
+  transition: var(--ms-transition);
+}
+
+.ms-kana-cell:hover {
+  border-color: var(--ms-crimson);
+  background: var(--ms-crimson-soft);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(225, 29, 72, 0.18);
+}
+
+.ms-kana-char {
+  font-size: 1.25rem;
+  font-weight: 800;
+  font-family: var(--ms-font-mincho);
+  line-height: 1.15;
+}
+
+.ms-kana-romaji {
+  font-size: 0.72rem;
+  color: var(--ms-muted);
+  font-weight: 600;
+  margin-top: 2px;
+}
+
+.ms-counter-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.ms-counter-chip {
+  min-height: 44px;
+  flex-shrink: 0 !important;
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 0.4rem 0.75rem;
+  border-radius: var(--ms-radius-md);
+  border: 1px solid var(--ms-border);
+  background: var(--ms-surface);
+  color: var(--ms-text);
+  cursor: pointer;
+  font-size: 0.84rem;
+  transition: var(--ms-transition);
+}
+
+.ms-counter-chip:hover {
+  border-color: var(--ms-indigo);
+  transform: translateY(-1px);
+}
+
+.ms-counter-chip.is-irregular {
+  border-color: var(--ms-crimson);
+  background: var(--ms-crimson-soft);
+  color: var(--ms-crimson);
+}
+
+/* Phonetic Transformation Rules & Rendaku (Tab 3: Counters Sub-Tab) */
+.ms-phonetic-rules-card {
+  grid-column: 1 / -1;
+  background: linear-gradient(135deg, rgba(79, 70, 229, 0.08) 0%, rgba(225, 29, 72, 0.06) 100%);
+  border: 1px solid rgba(225, 29, 72, 0.24);
+  border-radius: var(--ms-radius-lg);
+  padding: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  box-shadow: var(--ms-card-shadow);
+  transition: var(--ms-transition);
+  color: var(--ms-text);
+}
+
+.ms-phonetic-rules-card:hover {
+  border-color: rgba(225, 29, 72, 0.4);
+  box-shadow: var(--ms-card-shadow-hover);
+}
+
+.ms-phonetic-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr));
+  gap: 0.85rem;
+  margin-top: 0.25rem;
+}
+
+.ms-phonetic-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding: 0.95rem 1.05rem;
+  border-radius: var(--ms-radius-md);
+  border: 1px solid var(--ms-border);
+  background: var(--ms-surface);
+  color: var(--ms-text);
+  transition: var(--ms-transition);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.03);
+}
+
+.ms-phonetic-item:hover {
+  border-color: var(--ms-crimson);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 18px rgba(225, 29, 72, 0.15);
+}
+
+.ms-phonetic-title {
+  font-weight: 800;
+  font-size: 0.94rem;
+  color: var(--ms-text);
+  line-height: 1.4;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.ms-phonetic-condition {
+  font-size: 0.82rem;
+  color: var(--ms-muted);
+  line-height: 1.45;
+}
+
+.ms-phonetic-formula {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.3rem 0.65rem;
+  border-radius: var(--ms-radius-sm);
+  font-family: var(--font-mono, monospace);
+  font-size: 0.78rem;
+  font-weight: 700;
+  background: var(--ms-crimson-soft);
+  color: var(--ms-crimson);
+  border: 1px dashed rgba(225, 29, 72, 0.35);
+  line-height: 1.3;
+}
+
+.ms-phonetic-examples {
+  font-size: 0.82rem;
+  color: var(--ms-text);
+  line-height: 1.5;
+  background: var(--ms-surface-subtle);
+  padding: 0.45rem 0.75rem;
+  border-radius: var(--ms-radius-sm);
+  border: 1px solid rgba(148, 163, 184, 0.18);
+}
+
+/* Transitivity & Keigo Pair Matrices */
+.ms-pair-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr));
+  gap: 0.75rem;
+}
+
+.ms-pair-box {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding: 0.85rem 1rem;
+  border-radius: var(--ms-radius-md);
+  border: 1px solid var(--ms-border);
+  background: var(--ms-surface);
+  color: var(--ms-text);
+}
+
+/* --------------------------------------------------------------------------
+   09. TAB 4: GAMIFICATION STREAK, QUESTS & AUDIO PODCAST STAGE
+   -------------------------------------------------------------------------- */
+.ms-rank-banner {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 0.75rem;
+  padding: 1.05rem 1.2rem;
+  box-sizing: border-box;
+  width: 100%;
+  overflow: hidden;
+  border-radius: var(--ms-radius-lg);
+  background: linear-gradient(135deg, rgba(79, 70, 229, 0.16) 0%, rgba(225, 29, 72, 0.12) 100%);
+  border: 1px solid rgba(79, 70, 229, 0.28);
+}
+
+.ms-rank-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  width: 100%;
+}
+
+.ms-rank-title-wrap {
+  flex: 1 1 200px;
+  min-width: 0;
+}
+
+.ms-rank-name {
+  font-size: 1.12rem;
+  font-weight: 800;
+  line-height: 1.35;
+  word-break: keep-all;
+  overflow-wrap: break-word;
+  display: block;
+}
+
+.ms-rank-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.65rem;
+  flex-wrap: wrap;
+  width: 100%;
+}
+
+.ms-rank-banner .ms-action-btn-sm {
+  max-width: 100%;
+  white-space: normal;
+  text-align: center;
+  justify-content: center;
+}
+
+.ms-quest-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+}
+
+.ms-quest-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem 0.65rem;
+  padding: 0.65rem 0.9rem;
+  border-radius: var(--ms-radius-md);
+  background: var(--ms-surface);
+  border: 1px solid var(--ms-border);
+  min-height: 44px;
+  flex-shrink: 0 !important;
+  transition: var(--ms-transition);
+  box-sizing: border-box;
+}
+
+.ms-quest-row.is-done {
+  opacity: 0.85;
+  background: var(--ms-surface-subtle);
+  border-color: rgba(16, 185, 129, 0.35);
+}
+
+.ms-quest-row span:first-child,
+.ms-quest-title {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  font-weight: 700;
+  font-size: 0.88rem;
+  flex: 1 1 auto;
+}
+
+.ms-quest-row .ms-xp-tag {
+  flex-shrink: 0;
+}
+
+.ms-quest-progress {
+  width: 100%;
+  flex-basis: 100%;
+  height: 6px;
+  background: rgba(148, 163, 184, 0.25);
+  border-radius: 999px;
+  overflow: hidden;
+  margin-top: 0.35rem;
+}
+
+.ms-quest-progress-fill {
+  height: 100%;
+  background: var(--ms-emerald);
+  border-radius: 999px;
+  transition: width 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.ms-xp-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.22rem 0.65rem;
+  border-radius: 999px;
+  font-size: 0.78rem;
+  font-weight: 800;
+  background: rgba(245, 158, 11, 0.16);
+  color: #d97706;
+  border: 1px solid rgba(245, 158, 11, 0.28);
+}
+
+.ms-heatmap-grid {
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  gap: 4px;
+  padding: 0.4rem 0;
+}
+
+.ms-heat-cell {
+  display: block;
+  height: 16px;
+  border-radius: 4px;
+  background: rgba(148, 163, 184, 0.2);
+  transition: transform 0.12s ease;
+}
+
+.ms-heat-cell:hover {
+  transform: scale(1.15);
+}
+
+.ms-heat-cell.lv-1 {
+  background: rgba(255, 90, 54, 0.25);
+}
+
+.ms-heat-cell.lv-2 {
+  background: rgba(255, 90, 54, 0.55);
+}
+
+.ms-heat-cell.lv-3 {
+  background: rgba(255, 90, 54, 0.82);
+}
+
+.ms-heat-cell.lv-4 {
+  background: var(--ms-crimson);
+}
+
+.ms-radar-sync-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  flex-wrap: wrap;
+  gap: 1.25rem;
+}
+
+.ms-radar-box,
+.ms-sync-box {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.45rem;
+}
+
+.ms-sync-matrix-svg {
+  filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.08));
+}
+
+.ms-pomodoro-display {
+  font-size: 2.6rem;
+  font-weight: 900;
+  text-align: center;
+  letter-spacing: 0.06em;
+  color: var(--ms-crimson);
+  font-family: var(--font-mono, monospace);
+  padding: 0.5rem 0;
+  text-shadow: 0 2px 10px rgba(225, 29, 72, 0.15);
+}
+
+.ms-btn-row {
+  display: flex;
+  gap: 0.65rem;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+/* Hands-Free Podcast Now-Playing Stage */
+.ms-now-playing-stage {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 1.35rem 1rem;
+  border-radius: var(--ms-radius-lg);
+  background: linear-gradient(180deg, rgba(79, 70, 229, 0.08) 0%, rgba(30, 41, 59, 0.03) 100%);
+  border: 1px dashed var(--ms-border);
+  gap: 0.65rem;
+}
+
+.ms-wave-bars {
+  display: inline-flex;
+  align-items: flex-end;
+  gap: 3px;
+  height: 22px;
+}
+
+.ms-wave-bar {
+  width: 3px;
+  height: 100%;
+  background: var(--ms-indigo);
+  border-radius: 2px;
+  animation: ms-wave 1.2s ease-in-out infinite;
+}
+
+.ms-wave-bar:nth-child(2) {
+  animation-delay: 0.15s;
+}
+
+.ms-wave-bar:nth-child(3) {
+  animation-delay: 0.3s;
+}
+
+.ms-wave-bar:nth-child(4) {
+  animation-delay: 0.45s;
+}
+
+@keyframes ms-wave {
+  0%, 100% {
+    height: 4px;
+  }
+  50% {
+    height: 20px;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   10. TAP-TO-LOOKUP FLOATING POPOVER
+   -------------------------------------------------------------------------- */
+.ms-tap-popover {
+  position: fixed;
+  bottom: 5.5rem;
+  right: 1.2rem;
+  z-index: 9999;
+  max-width: 320px;
+  background: var(--ms-surface);
+  color: var(--ms-text);
+  border: 2px solid var(--ms-crimson);
+  border-radius: var(--ms-radius-lg);
+  padding: 0.95rem 1.1rem;
+  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.32);
+}
+
+.ms-popover-inner {
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+}
+
+.ms-popover-actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+/* --------------------------------------------------------------------------
+   11. DARK MODE EXPLICIT CONTRAST OVERRIDES (DARK-ON-DARK RESOLVED)
+   -------------------------------------------------------------------------- */
+[data-theme="dark"] .ms-card,
+body.dark-mode .ms-card,
+.dark .ms-card {
+  background: rgba(13, 19, 31, 0.94);
+  border-color: rgba(255, 107, 74, 0.24);
+  color: #f8fafc;
+}
+
+[data-theme="dark"] .ms-tab-btn,
+body.dark-mode .ms-tab-btn,
+.dark .ms-tab-btn,
+[data-theme="dark"] .ms-subtab-btn,
+body.dark-mode .ms-subtab-btn,
+.dark .ms-subtab-btn {
+  background: #0d131f;
+  border-color: rgba(255, 255, 255, 0.12);
+  color: #e2e8f0;
+}
+
+[data-theme="dark"] .ms-tab-btn:hover,
+body.dark-mode .ms-tab-btn:hover,
+.dark .ms-tab-btn:hover,
+[data-theme="dark"] .ms-subtab-btn:hover,
+body.dark-mode .ms-subtab-btn:hover,
+.dark .ms-subtab-btn:hover {
+  background: #162032;
+  color: #ffffff;
+  border-color: var(--primary, #ff6b4a);
+  box-shadow: 0 4px 12px rgba(255, 90, 54, 0.2);
+}
+
+[data-theme="dark"] .ms-tab-btn.is-active,
+body.dark-mode .ms-tab-btn.is-active,
+.dark .ms-tab-btn.is-active,
+[data-theme="dark"] .ms-subtab-btn.is-active,
+body.dark-mode .ms-subtab-btn.is-active,
+.dark .ms-subtab-btn.is-active {
+  background: linear-gradient(135deg, #ff6b4a 0%, #e04825 100%);
+  color: #ffffff;
+  border-color: #e04825;
+  box-shadow: 0 6px 18px rgba(255, 90, 54, 0.35);
+}
+
+[data-theme="dark"] .ms-mode-chip,
+body.dark-mode .ms-mode-chip,
+.dark .ms-mode-chip {
+  background: #0d131f;
+  border-color: rgba(255, 255, 255, 0.12);
+  color: #e2e8f0;
+}
+
+[data-theme="dark"] .ms-mode-chip:hover,
+body.dark-mode .ms-mode-chip:hover,
+.dark .ms-mode-chip:hover {
+  background: #162032;
+  border-color: var(--primary, #ff6b4a);
+  color: var(--primary, #ff6b4a);
+}
+
+[data-theme="dark"] .ms-mode-chip.is-active,
+body.dark-mode .ms-mode-chip.is-active,
+.dark .ms-mode-chip.is-active {
+  background: linear-gradient(135deg, #ff6b4a 0%, #e04825 100%);
+  color: #ffffff;
+  border-color: #e04825;
+  box-shadow: 0 4px 12px rgba(255, 90, 54, 0.28);
+}
+
+[data-theme="dark"] .ms-option-btn,
+body.dark-mode .ms-option-btn,
+.dark .ms-option-btn,
+[data-theme="dark"] .ms-secondary-btn,
+body.dark-mode .ms-secondary-btn,
+.dark .ms-secondary-btn,
+[data-theme="dark"] .ms-action-btn-sm,
+body.dark-mode .ms-action-btn-sm,
+.dark .ms-action-btn-sm,
+[data-theme="dark"] .ms-icon-btn,
+body.dark-mode .ms-icon-btn,
+.dark .ms-icon-btn,
+[data-theme="dark"] .ms-audio-mini-btn,
+body.dark-mode .ms-audio-mini-btn,
+.dark .ms-audio-mini-btn {
+  background: #0d131f;
+  border-color: rgba(255, 255, 255, 0.12);
+  color: #f1f5f9;
+}
+
+[data-theme="dark"] .ms-option-btn:hover,
+body.dark-mode .ms-option-btn:hover,
+.dark .ms-option-btn:hover {
+  background: #162032;
+  border-color: var(--primary, #ff6b4a);
+  color: #ffffff;
+}
+
+[data-theme="dark"] .ms-kana-cell,
+body.dark-mode .ms-kana-cell,
+.dark .ms-kana-cell {
+  background: #0d131f;
+  border-color: rgba(255, 255, 255, 0.12);
+  color: #f8fafc;
+}
+
+[data-theme="dark"] .ms-kana-cell:hover,
+body.dark-mode .ms-kana-cell:hover,
+.dark .ms-kana-cell:hover {
+  background: #162032;
+  border-color: var(--primary, #ff6b4a);
+}
+
+[data-theme="dark"] .ms-counter-chip,
+body.dark-mode .ms-counter-chip,
+.dark .ms-counter-chip {
+  background: #0d131f;
+  border-color: rgba(255, 255, 255, 0.12);
+  color: #f8fafc;
+}
+
+[data-theme="dark"] .ms-counter-chip.is-irregular,
+body.dark-mode .ms-counter-chip.is-irregular,
+.dark .ms-counter-chip.is-irregular {
+  background: rgba(255, 107, 74, 0.16);
+  border-color: var(--primary, #ff6b4a);
+  color: var(--primary, #ff6b4a);
+}
+
+[data-theme="dark"] .ms-phonetic-rules-card,
+body.dark-mode .ms-phonetic-rules-card,
+.dark .ms-phonetic-rules-card {
+  background: linear-gradient(135deg, rgba(13, 19, 31, 0.95) 0%, rgba(22, 32, 50, 0.85) 100%);
+  border-color: rgba(255, 107, 74, 0.28);
+  color: #f8fafc;
+}
+
+[data-theme="dark"] .ms-phonetic-item,
+body.dark-mode .ms-phonetic-item,
+.dark .ms-phonetic-item {
+  background: #0d131f;
+  border-color: rgba(255, 255, 255, 0.12);
+  color: #f8fafc;
+}
+
+[data-theme="dark"] .ms-phonetic-item:hover,
+body.dark-mode .ms-phonetic-item:hover,
+.dark .ms-phonetic-item:hover {
+  border-color: var(--primary, #ff6b4a);
+}
+
+[data-theme="dark"] .ms-phonetic-formula,
+body.dark-mode .ms-phonetic-formula,
+.dark .ms-phonetic-formula {
+  background: rgba(255, 107, 74, 0.16);
+  border-color: rgba(255, 107, 74, 0.35);
+  color: var(--primary, #ff6b4a);
+}
+
+[data-theme="dark"] .ms-phonetic-examples,
+body.dark-mode .ms-phonetic-examples,
+.dark .ms-phonetic-examples {
+  background: rgba(7, 11, 20, 0.7);
+  border-color: rgba(255, 255, 255, 0.08);
+  color: #cbd5e1;
+}
+
+[data-theme="dark"] .ms-verb-pill,
+body.dark-mode .ms-verb-pill,
+.dark .ms-verb-pill {
+  background: #0d131f;
+  border-color: rgba(255, 255, 255, 0.12);
+  color: #f8fafc;
+}
+
+[data-theme="dark"] .ms-verb-pill.is-active,
+body.dark-mode .ms-verb-pill.is-active,
+.dark .ms-verb-pill.is-active {
+  background: rgba(56, 189, 248, 0.18);
+  border-color: #38bdf8;
+  color: #38bdf8;
+}
+
+[data-theme="dark"] .ms-quest-row,
+body.dark-mode .ms-quest-row,
+.dark .ms-quest-row {
+  background: #0d131f;
+  border-color: rgba(255, 255, 255, 0.12);
+  color: #f8fafc;
+}
+
+[data-theme="dark"] .ms-list-item,
+body.dark-mode .ms-list-item,
+.dark .ms-list-item {
+  background: #0d131f;
+  border-color: rgba(255, 255, 255, 0.12);
+  color: #f8fafc;
+}
+
+[data-theme="dark"] .ms-list-item.is-mistake,
+body.dark-mode .ms-list-item.is-mistake,
+.dark .ms-list-item.is-mistake {
+  background: rgba(255, 107, 74, 0.08);
+  border-color: rgba(255, 107, 74, 0.45);
+  border-left: 4px solid var(--primary, #ff6b4a);
+}
+
+[data-theme="dark"] .ms-rule-box,
+body.dark-mode .ms-rule-box,
+.dark .ms-rule-box {
+  background: rgba(22, 32, 50, 0.85);
+  border-left: 3px solid var(--primary, #ff6b4a);
+  color: #e2e8f0;
+}
+
+[data-theme="dark"] .ms-pair-box,
+body.dark-mode .ms-pair-box,
+.dark .ms-pair-box {
+  background: #0d131f;
+  border-color: rgba(255, 255, 255, 0.12);
+  color: #f8fafc;
+}
+
+[data-theme="dark"] .ms-select-input,
+body.dark-mode .ms-select-input,
+.dark .ms-select-input,
+[data-theme="dark"] .ms-search-input,
+body.dark-mode .ms-search-input,
+.dark .ms-search-input {
+  background: #0d131f;
+  border-color: rgba(255, 255, 255, 0.14);
+  color: #f8fafc;
+}
+
+[data-theme="dark"] .ms-select-input:focus,
+body.dark-mode .ms-select-input:focus,
+.dark .ms-select-input:focus,
+[data-theme="dark"] .ms-search-input:focus,
+body.dark-mode .ms-search-input:focus,
+.dark .ms-search-input:focus {
+  border-color: var(--primary, #ff6b4a);
+  box-shadow: 0 0 0 3px rgba(255, 107, 74, 0.18);
+}
+
+[data-theme="dark"] .ms-table,
+body.dark-mode .ms-table,
+.dark .ms-table {
+  background: #0d131f;
+}
+
+[data-theme="dark"] .ms-table th,
+body.dark-mode .ms-table th,
+.dark .ms-table th {
+  background: #070b14;
+  color: #cbd5e1;
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+[data-theme="dark"] .ms-table td,
+body.dark-mode .ms-table td,
+.dark .ms-table td {
+  color: #e2e8f0;
+  border-color: rgba(255, 255, 255, 0.08);
+}
+
+[data-theme="dark"] .ms-table tbody tr:hover,
+body.dark-mode .ms-table tbody tr:hover,
+.dark .ms-table tbody tr:hover {
+  background: rgba(255, 107, 74, 0.06);
+}
+
+[data-theme="dark"] .ms-subtext,
+body.dark-mode .ms-subtext,
+.dark .ms-subtext,
+[data-theme="dark"] .ms-meaning,
+body.dark-mode .ms-meaning,
+.dark .ms-meaning,
+[data-theme="dark"] .ms-reading,
+body.dark-mode .ms-reading,
+.dark .ms-reading,
+[data-theme="dark"] .ms-kana-romaji,
+body.dark-mode .ms-kana-romaji,
+.dark .ms-kana-romaji {
+  color: #94a3b8;
+}
+
+[data-theme="dark"] .ms-xp-tag,
+body.dark-mode .ms-xp-tag,
+.dark .ms-xp-tag {
+  color: #fbbf24;
+}
+
+[data-theme="dark"] .ms-badge-amber,
+body.dark-mode .ms-badge-amber,
+.dark .ms-badge-amber {
+  color: #fbbf24;
+}
+
+[data-theme="dark"] .ms-tap-popover,
+body.dark-mode .ms-tap-popover,
+.dark .ms-tap-popover {
+  background: #0d131f;
+  border-color: var(--primary, #ff6b4a);
+  color: #f8fafc;
+}
+
+[data-theme="dark"] .ms-rank-name,
+body.dark-mode .ms-rank-name,
+.dark .ms-rank-name {
+  color: #f8fafc;
+}
+
+[data-theme="dark"] details.ms-details-drawer,
+body.dark-mode details.ms-details-drawer,
+.dark details.ms-details-drawer {
+  background: rgba(30, 41, 59, 0.7);
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+[data-theme="dark"] details.ms-details-drawer > summary.ms-details-summary,
+body.dark-mode details.ms-details-drawer > summary.ms-details-summary,
+.dark details.ms-details-drawer > summary.ms-details-summary {
+  color: #818cf8;
+}
+
+[data-theme="dark"] .ms-details-body,
+body.dark-mode .ms-details-body,
+.dark .ms-details-body {
+  border-top-color: rgba(255, 255, 255, 0.1);
+  color: #e2e8f0;
+}
+
+[data-theme="dark"] .ms-form-label-main,
+body.dark-mode .ms-form-label-main,
+.dark .ms-form-label-main {
+  color: #f8fafc;
+}
+
+[data-theme="dark"] .ms-result-cell .ms-jp-text,
+body.dark-mode .ms-result-cell .ms-jp-text,
+.dark .ms-result-cell .ms-jp-text,
+[data-theme="dark"] .ms-result-pill .ms-jp-text,
+body.dark-mode .ms-result-pill .ms-jp-text,
+.dark .ms-result-pill .ms-jp-text,
+[data-theme="dark"] .ms-result-text,
+body.dark-mode .ms-result-text,
+.dark .ms-result-text {
+  color: #ffffff;
+}
+
+/* --------------------------------------------------------------------------
+   12. MOBILE VIEWPORT BREAKPOINTS & ACCESSIBILITY GUARDRAILS
+   -------------------------------------------------------------------------- */
+@media (max-width: 640px) {
+  .ms-hub-hero {
+    padding: 1.2rem 1.1rem;
+    border-radius: var(--ms-radius-lg);
+  }
+
+  .ms-hub-title {
+    font-size: 1.25rem;
+  }
+
+  .ms-hub-desc {
+    font-size: 0.88rem;
+  }
+
+  .ms-tabs-nav {
+    gap: 0.45rem;
+  }
+
+  .ms-tab-btn,
+  .ms-subtab-btn {
+    flex: 1 1 calc(50% - 0.5rem);
+    font-size: 0.84rem;
+    padding: 0.55rem 0.75rem;
+  }
+
+  .ms-options-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .ms-pomodoro-display {
+    font-size: 2.2rem;
+  }
+
+  .ms-radar-sync-wrap {
+    flex-direction: column;
+  }
+
+  .ms-tap-popover {
+    left: 1rem;
+    right: 1rem;
+    max-width: none;
+    bottom: 5.5rem;
+  }
+}
+
+@media (max-width: 360px) {
+  .ms-tab-btn,
+  .ms-subtab-btn {
+    flex: 1 1 100%;
+  }
+
+  .ms-kana-grid {
+    grid-template-columns: repeat(5, minmax(40px, 1fr));
+    gap: 0.35rem;
+  }
+
+  .ms-kana-cell {
+    min-height: 44px;
+    padding: 0.25rem;
+  }
+
+  .ms-kana-char {
+    font-size: 1.1rem;
+  }
+}
+
+/* ==========================================================================
+   Bento Wireframe & Emblem Hairline Styling
+   Supports viewBox="0 0 24 24" fill="none" with 1.5px hairlines (Gold #e5c178 & Crimson #e11d48)
+   ========================================================================== */
+.bento-emblem-svg {
+  display: block;
+  overflow: visible;
+  transition: transform 0.25s ease;
+}
+
+.bento-emblem-svg[viewBox="0 0 24 24"],
+.bento-sakura-3d[viewBox="0 0 24 24"],
+.neo-medallion-svg[viewBox="0 0 24 24"],
+.bento-emblem-svg[fill="none"],
+.bento-sakura-3d[fill="none"],
+.neo-medallion-svg[fill="none"],
+.bento-wireframe-svg {
+  fill: none;
+}
+
+.bento-emblem-svg[viewBox="0 0 24 24"] path,
+.bento-emblem-svg[viewBox="0 0 24 24"] circle,
+.bento-emblem-svg[viewBox="0 0 24 24"] line,
+.bento-emblem-svg[viewBox="0 0 24 24"] rect,
+.bento-emblem-svg[viewBox="0 0 24 24"] polyline,
+.bento-sakura-3d[viewBox="0 0 24 24"] path,
+.neo-medallion-svg[viewBox="0 0 24 24"] path {
+  stroke-width: 1.5px;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  vector-effect: non-scaling-stroke;
+}
+
+.bento-wireframe-gold,
+.bento-emblem-svg.wireframe-gold,
+.bento-sakura-3d.wireframe-gold,
+.neo-medallion-svg.wireframe-gold,
+.bento-emblem-svg .wireframe-gold,
+.bento-sakura-3d .wireframe-gold,
+.neo-medallion-svg .wireframe-gold,
+.bento-emblem-svg [stroke="#e5c178"],
+.bento-sakura-3d [stroke="#e5c178"],
+.neo-medallion-svg [stroke="#e5c178"] {
+  stroke: #e5c178;
+  fill: none;
+}
+
+.bento-wireframe-crimson,
+.bento-emblem-svg.wireframe-crimson,
+.bento-sakura-3d.wireframe-crimson,
+.neo-medallion-svg.wireframe-crimson,
+.bento-emblem-svg .wireframe-crimson,
+.bento-sakura-3d .wireframe-crimson,
+.neo-medallion-svg .wireframe-crimson,
+.bento-emblem-svg [stroke="#e11d48"],
+.bento-sakura-3d [stroke="#e11d48"],
+.neo-medallion-svg [stroke="#e11d48"],
+.bento-emblem-svg [stroke="#ff5a36"],
+.bento-sakura-3d [stroke="#ff5a36"],
+.neo-medallion-svg [stroke="#ff5a36"] {
+  stroke: var(--primary, #ff5a36);
+  fill: none;
+}
+
+/* Phase 3 Layout Overhaul: Bento & Progressive Disclosure */
+.ms-rank-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  width: 100%;
+}
+
+.ms-rank-title-wrap {
+  min-width: 0;
+  flex: 1;
+}
+
+.ms-rank-name {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--ms-text);
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.25rem;
+}
+
+.ms-form-label-main {
+  font-weight: 700;
+  font-size: 0.98rem;
+  font-family: var(--ms-font-mincho), var(--font-vietnamese), serif;
+  letter-spacing: 0.3px;
+  color: var(--ms-text);
+  display: block;
+}
+
+.ms-form-label-sub {
+  font-size: 0.75rem;
+  color: var(--ms-muted);
+  display: block;
+  margin-top: 1px;
+}
+
+.ms-result-cell {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  white-space: nowrap;
+}
+
+.ms-details-drawer {
+  margin-top: 0.35rem;
+  border-radius: var(--ms-radius-sm);
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px dashed var(--ms-border);
+  padding: 0.25rem 0.45rem;
+  font-size: 0.8rem;
+}
+
+.ms-details-summary {
+  cursor: pointer;
+  color: var(--ms-indigo);
+  font-weight: 600;
+  user-select: none;
+  outline: none;
+  transition: var(--ms-transition);
+}
+
+.ms-details-summary:hover {
+  color: var(--ms-crimson);
+}
+
+.ms-details-body {
+  margin-top: 0.35rem;
+  padding-top: 0.35rem;
+  border-top: 1px solid var(--ms-border);
+  color: var(--ms-muted);
+  line-height: 1.45;
+}
+
