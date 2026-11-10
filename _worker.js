@@ -303,7 +303,7 @@ export default {
       const headers = new Headers(res.headers);
       headers.set(
         'content-security-policy',
-        "default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: https: blob:; media-src 'self' data: blob: https: https://speechgen.io https://translate.google.com https://dict.youdao.com; connect-src 'self' https://mazii.net https://speechgen.io https://inputtools.google.com https://www.google.com https://translate.google.com https://translate.googleapis.com; frame-ancestors 'none'; object-src 'none'; base-uri 'self';"
+        "default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://static.cloudflareinsights.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: https: blob:; media-src 'self' data: blob: https: https://speechgen.io https://translate.google.com https://dict.youdao.com; connect-src 'self' https://mazii.net https://*.mazii.net https://www.mazii.net https://speechgen.io https://api.speechgen.io https://inputtools.google.com https://www.google.com https://translate.google.com https://translate.googleapis.com https://generativelanguage.googleapis.com https://cloudflareinsights.com; frame-ancestors 'none'; object-src 'none'; base-uri 'self';"
       );
       headers.set('strict-transport-security', 'max-age=63072000; includeSubDomains; preload');
       headers.set('x-frame-options', 'DENY');
@@ -1289,6 +1289,20 @@ export default {
     // 5B. HTTP 206 Partial Content Byte-Range Slicing cho tài nguyên âm thanh (iOS/Safari/Android Media Seeking)
     if (isAudioFile && response && response.status === 200) {
       const rangeHeader = request.headers.get('Range') || request.headers.get('range') || '';
+      const rawContentType = (response.headers && typeof response.headers.get === 'function')
+        ? (response.headers.get('Content-Type') || '')
+        : '';
+      if (rangeHeader && rawContentType.toLowerCase().includes('text/html')) {
+        return applySecurityHeaders(
+          new Response('404 Not Found - Audio asset missing.', {
+            status: 404,
+            statusText: 'Not Found',
+            headers: {
+              'Content-Type': 'text/plain; charset=utf-8'
+            }
+          })
+        );
+      }
       if (rangeHeader && typeof response.arrayBuffer === 'function') {
         const fullBuf = await response.arrayBuffer();
         const totalLen = fullBuf.byteLength;

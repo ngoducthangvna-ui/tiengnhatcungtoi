@@ -4,7 +4,7 @@
  */
 'use strict';
 
-const CACHE_VERSION = 'minna-pwa-v20261111_05';
+const CACHE_VERSION = 'minna-pwa-v20261111_06';
 
 const CORE_ASSETS = [
   './',
@@ -56,7 +56,23 @@ function isCacheableRequest(request) {
   try {
     const url = new URL(request.url);
     if (url.protocol !== 'http:' && url.protocol !== 'https:') return false;
+    if (url.pathname.startsWith('/api/')) return false;
     return url.origin === self.location.origin;
+  } catch (_err) {
+    return false;
+  }
+}
+
+// Phase 3 Pure Helper: Detect SPA HTML fallback masquerading as a static asset
+function isInvalidHtmlFallbackForAsset(requestUrl, response) {
+  if (!requestUrl || !response || !response.headers || typeof response.headers.get !== 'function') {
+    return false;
+  }
+  const contentType = (response.headers.get('Content-Type') || '').toLowerCase();
+  if (!contentType.includes('text/html')) return false;
+  try {
+    const pathname = new URL(requestUrl, self.location.origin).pathname.toLowerCase();
+    return /\.(mp3|wav|ogg|json|js|css|svg|png|jpg|jpeg|webp|woff2?)$/.test(pathname);
   } catch (_err) {
     return false;
   }
@@ -75,7 +91,11 @@ async function purgeOutdatedCaches(activeCacheName) {
 async function fetchAndCache(request, cacheName) {
   try {
     const networkResponse = await fetch(request);
-    if (networkResponse && networkResponse.status === 200) {
+    if (
+      networkResponse &&
+      networkResponse.status === 200 &&
+      !isInvalidHtmlFallbackForAsset(request.url, networkResponse)
+    ) {
       const cache = await caches.open(cacheName);
       cache.put(request, networkResponse.clone());
     }
@@ -95,6 +115,15 @@ async function buildRangeResponse(fullResponse, rangeHeader) {
     typeof fullResponse.arrayBuffer !== 'function'
   ) {
     return fullResponse;
+  }
+
+  const contentType = (fullResponse.headers && fullResponse.headers.get && fullResponse.headers.get('Content-Type')) || 'audio/mpeg';
+  if (contentType.toLowerCase().includes('text/html')) {
+    return new Response('404 Not Found', {
+      status: 404,
+      statusText: 'Not Found',
+      headers: { 'Content-Type': 'text/plain; charset=utf-8' }
+    });
   }
 
   const buf = await fullResponse.clone().arrayBuffer();
@@ -122,7 +151,6 @@ async function buildRangeResponse(fullResponse, rangeHeader) {
   }
 
   const sliced = buf.slice(start, end + 1);
-  const contentType = (fullResponse.headers && fullResponse.headers.get && fullResponse.headers.get('Content-Type')) || 'audio/mpeg';
 
   return new Response(sliced, {
     status: 206,

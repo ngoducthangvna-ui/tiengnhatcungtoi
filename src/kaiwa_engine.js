@@ -12,7 +12,7 @@
   'use strict';
 
   const STORAGE_KEY = 'minna_kaiwa_progress_v1';
-  const ASSET_VERSION = '20261111_03';
+  const ASSET_VERSION = '20261111_06';
 
   // Ký hiệu số Zen tối giản phong cách Nhật Bản cho tab Luyện tập C
   const ZEN_CIRCLED_NUMS = ['①', '②', '③', '④', '⑤'];
@@ -104,9 +104,16 @@
   let bsTouchStartY = 0;
   let bsTouchCurrentY = 0;
   const spriteAudioCache = {};
+  const spriteBufferCache = {};
+  const spriteBufferPending = {};
+  let spriteAudioCtx = null;
+  let activeSpriteSource = null;
   let activeSpriteAudio = null;
   let activeSpriteTimer = null;
+  let activeSpriteLoadTimer = null;
   let activeSpriteTimeUpdate = null;
+  let activeSpriteEndHandler = null;
+  let activeSpriteErrHandler = null;
   let currentKaiwaSessionId = 0;
 
   function loadProgress() {
@@ -1743,16 +1750,31 @@
       clearTimeout(activeSpriteTimer);
       activeSpriteTimer = null;
     }
+    if (activeSpriteLoadTimer) {
+      clearTimeout(activeSpriteLoadTimer);
+      activeSpriteLoadTimer = null;
+    }
+    if (activeSpriteSource) {
+      try {
+        activeSpriteSource.onended = null;
+        activeSpriteSource.stop(0);
+        activeSpriteSource.disconnect();
+      } catch (e) {}
+      activeSpriteSource = null;
+    }
     if (activeSpriteAudio) {
       try {
-        if (activeSpriteTimeUpdate && typeof activeSpriteAudio.removeEventListener === 'function') {
-          activeSpriteAudio.removeEventListener('timeupdate', activeSpriteTimeUpdate);
+        if (typeof activeSpriteAudio.removeEventListener === 'function') {
+          if (activeSpriteTimeUpdate) activeSpriteAudio.removeEventListener('timeupdate', activeSpriteTimeUpdate);
+          if (activeSpriteEndHandler) activeSpriteAudio.removeEventListener('ended', activeSpriteEndHandler);
+          if (activeSpriteErrHandler) activeSpriteAudio.removeEventListener('error', activeSpriteErrHandler);
         }
         activeSpriteAudio.pause();
-        activeSpriteAudio.currentTime = 0;
       } catch (e) {}
       activeSpriteAudio = null;
       activeSpriteTimeUpdate = null;
+      activeSpriteEndHandler = null;
+      activeSpriteErrHandler = null;
     }
     if (activeUserAudio) {
       try {
@@ -1776,17 +1798,165 @@
     }
   }
 
+  function getOrCreateSpriteAudioContext() {
+    const AudioCtx = root.AudioContext || root.webkitAudioContext;
+    if (!AudioCtx) return null;
+    if (!spriteAudioCtx) {
+      try {
+        spriteAudioCtx = new AudioCtx();
+      } catch (e) {
+        return null;
+      }
+    }
+    if (spriteAudioCtx && spriteAudioCtx.state === 'suspended' && typeof spriteAudioCtx.resume === 'function') {
+      spriteAudioCtx.resume().catch(function() {});
+    }
+    return spriteAudioCtx;
+  }
+
+  function fetchAndDecodeSpriteBuffer(audioSrc, ctx) {
+    if (!audioSrc || !ctx || typeof root.fetch !== 'function') {
+      return Promise.resolve(null);
+    }
+    if (spriteBufferCache[audioSrc]) {
+      return Promise.resolve(spriteBufferCache[audioSrc]);
+    }
+    if (spriteBufferPending[audioSrc]) {
+      return spriteBufferPending[audioSrc];
+    }
+
+    const pendingPromise = root.fetch(audioSrc)
+      .then(function(res) {
+        const ct = (res && res.headers && typeof res.headers.get === 'function')
+          ? (res.headers.get('content-type') || res.headers.get('Content-Type') || '')
+          : '';
+        if (!res.ok || ct.toLowerCase().includes('text/html')) {
+          throw new Error('Fetch audio sprite failed');
+        }
+        return res.arrayBuffer();
+      })
+      .then(function(arrayBuf) {
+        return new Promise(function(resolve, reject) {
+          const promiseOrVoid = ctx.decodeAudioData(arrayBuf, resolve, reject);
+          if (promiseOrVoid && typeof promiseOrVoid.then === 'function') {
+            promiseOrVoid.then(resolve).catch(reject);
+          }
+        });
+      })
+      .then(function(audioBuffer) {
+        spriteBufferCache[audioSrc] = audioBuffer;
+        delete spriteBufferPending[audioSrc];
+        return audioBuffer;
+      })
+      .catch(function() {
+        delete spriteBufferPending[audioSrc];
+        return null;
+      });
+
+    spriteBufferPending[audioSrc] = pendingPromise;
+    return pendingPromise;
+  }
+
+  function playBufferSpriteSegment(ctx, audioBuffer, startSec, endSec, playbackRate, finishOnce, fallbackOnce) {
+    if (!ctx || !audioBuffer) {
+      if (typeof fallbackOnce === 'function') fallbackOnce();
+      return;
+    }
+    const safeStart = Math.max(0, Number(startSec) || 0);
+    const safeEnd = Math.max(safeStart + 0.08, Number(endSec) || (safeStart + 1.0));
+    const safeRate = playbackRate > 0 ? playbackRate : 1.0;
+    const safeDuration = Math.max(0.08, safeEnd - safeStart);
+    const durationMs = Math.ceil((safeDuration / safeRate) * 1000) + 80;
+
+    try {
+      const source = ctx.createBufferSource();
+      source.buffer = audioBuffer;
+      if (source.playbackRate) source.playbackRate.value = safeRate;
+      source.connect(ctx.destination);
+      activeSpriteSource = source;
+      source.onended = finishOnce;
+      activeSpriteTimer = setTimeout(finishOnce, durationMs);
+      source.start(0, safeStart, safeDuration);
+    } catch (e) {
+      if (typeof fallbackOnce === 'function') fallbackOnce();
+    }
+  }
+
+  function playHtmlAudioSpriteSegment(audioSrc, startSec, endSec, playbackRate, finishOnce, fallbackOnce, sessionId) {
+    let audio = spriteAudioCache[audioSrc];
+    if (!audio) {
+      try {
+        audio = new root.Audio(audioSrc);
+        audio.preload = 'auto';
+        spriteAudioCache[audioSrc] = audio;
+      } catch (err) {
+        if (typeof fallbackOnce === 'function') fallbackOnce();
+        return;
+      }
+    }
+
+    activeSpriteAudio = audio;
+    const durationMs = Math.ceil(((endSec - startSec) / playbackRate) * 1000) + 160;
+
+    activeSpriteTimeUpdate = function() {
+      if (audio.seeking) return;
+      if (audio.currentTime >= endSec - 0.03) {
+        finishOnce();
+      }
+    };
+    activeSpriteEndHandler = finishOnce;
+    activeSpriteErrHandler = fallbackOnce;
+
+    if (typeof audio.addEventListener === 'function') {
+      audio.addEventListener('timeupdate', activeSpriteTimeUpdate);
+      audio.addEventListener('ended', activeSpriteEndHandler, { once: true });
+      audio.addEventListener('error', activeSpriteErrHandler, { once: true });
+    }
+
+    function startHtmlPlayback() {
+      if (sessionId !== currentKaiwaSessionId) return;
+      activeSpriteTimer = setTimeout(finishOnce, durationMs);
+      try {
+        audio.playbackRate = playbackRate;
+        audio.currentTime = startSec;
+        const playPromise = audio.play();
+        if (playPromise && typeof playPromise.catch === 'function') {
+          playPromise.catch(fallbackOnce);
+        }
+      } catch (e) {
+        fallbackOnce();
+      }
+    }
+
+    if (typeof audio.readyState === 'number' && audio.readyState === 0) {
+      activeSpriteLoadTimer = setTimeout(function() {
+        activeSpriteLoadTimer = null;
+        if (sessionId === currentKaiwaSessionId) fallbackOnce();
+      }, 5000);
+      audio.addEventListener('loadedmetadata', function() {
+        if (activeSpriteLoadTimer) {
+          clearTimeout(activeSpriteLoadTimer);
+          activeSpriteLoadTimer = null;
+        }
+        startHtmlPlayback();
+      }, { once: true });
+      return;
+    }
+
+    startHtmlPlayback();
+  }
+
   /**
    * Tầng 1: Phát đoạn âm thanh (Audio Sprite) theo mốc thời gian [startSec, endSec]
    * từ file MP3 đa nhân vật của bài học (audio/kaiwa/lesson_X.mp3).
-   * Tự động fallback sang Tầng 2/3 (speakJapanese) nếu môi trường không có Audio hoặc lỗi tải file.
+   * Ưu tiên Web Audio API (Sprite Buffer) chống giật/trễ, fallback sang HTML5 Audio hoặc TTS.
    */
   function playSpriteSegment(audioSrc, timeRange, onEndCallback, onFallback) {
     if (
       !audioSrc ||
       !Array.isArray(timeRange) ||
       timeRange.length < 2 ||
-      typeof root.Audio !== 'function'
+      (typeof root.Audio !== 'function' && typeof root.AudioContext !== 'function' && typeof root.webkitAudioContext !== 'function')
     ) {
       if (typeof onFallback === 'function') onFallback();
       else if (typeof onEndCallback === 'function') onEndCallback();
@@ -1798,87 +1968,76 @@
     const playbackRate = state.slowAudio ? 0.78 : 1.0;
 
     stopAllKaiwaAudio();
+    const sessionId = ++currentKaiwaSessionId;
 
-    let audio = spriteAudioCache[audioSrc];
-    if (!audio) {
-      try {
-        audio = new root.Audio(audioSrc);
-        audio.preload = 'auto';
-        spriteAudioCache[audioSrc] = audio;
-      } catch (err) {
-        if (typeof onFallback === 'function') onFallback();
-        else if (typeof onEndCallback === 'function') onEndCallback();
-        return;
-      }
-    }
-
-    activeSpriteAudio = audio;
     let settled = false;
-
-    const cleanupListeners = function() {
+    const cleanup = function() {
       if (activeSpriteTimer) {
         clearTimeout(activeSpriteTimer);
         activeSpriteTimer = null;
       }
-      if (activeSpriteTimeUpdate && typeof audio.removeEventListener === 'function') {
-        try { audio.removeEventListener('timeupdate', activeSpriteTimeUpdate); } catch (e) {}
+      if (activeSpriteLoadTimer) {
+        clearTimeout(activeSpriteLoadTimer);
+        activeSpriteLoadTimer = null;
+      }
+      if (activeSpriteSource) {
+        try {
+          activeSpriteSource.onended = null;
+          activeSpriteSource.stop(0);
+          activeSpriteSource.disconnect();
+        } catch (e) {}
+        activeSpriteSource = null;
+      }
+      if (activeSpriteAudio) {
+        if (typeof activeSpriteAudio.removeEventListener === 'function') {
+          try {
+            if (activeSpriteTimeUpdate) activeSpriteAudio.removeEventListener('timeupdate', activeSpriteTimeUpdate);
+            if (activeSpriteEndHandler) activeSpriteAudio.removeEventListener('ended', activeSpriteEndHandler);
+            if (activeSpriteErrHandler) activeSpriteAudio.removeEventListener('error', activeSpriteErrHandler);
+          } catch (e) {}
+        }
+        try { activeSpriteAudio.pause(); } catch (e) {}
+        activeSpriteAudio = null;
       }
       activeSpriteTimeUpdate = null;
+      activeSpriteEndHandler = null;
+      activeSpriteErrHandler = null;
     };
 
     const finishOnce = function() {
       if (settled) return;
       settled = true;
-      cleanupListeners();
-      try { audio.pause(); } catch (e) {}
-      if (activeSpriteAudio === audio) activeSpriteAudio = null;
+      cleanup();
       if (typeof onEndCallback === 'function') onEndCallback();
     };
 
     const fallbackOnce = function() {
       if (settled) return;
       settled = true;
-      cleanupListeners();
-      try { audio.pause(); } catch (e) {}
-      if (activeSpriteAudio === audio) activeSpriteAudio = null;
+      cleanup();
       if (typeof onFallback === 'function') onFallback();
       else if (typeof onEndCallback === 'function') onEndCallback();
     };
 
-    activeSpriteTimeUpdate = function() {
-      if (audio.currentTime >= endSec - 0.03) {
-        finishOnce();
-      }
-    };
+    const ctx = (typeof root.fetch === 'function') ? getOrCreateSpriteAudioContext() : null;
 
-    if (typeof audio.addEventListener === 'function') {
-      audio.addEventListener('timeupdate', activeSpriteTimeUpdate);
-      audio.addEventListener('ended', finishOnce, { once: true });
-      audio.addEventListener('error', fallbackOnce, { once: true });
-      if (typeof audio.readyState === 'number' && audio.readyState === 0) {
-        audio.addEventListener('loadedmetadata', function() {
-          if (!settled) {
-            try { audio.currentTime = startSec; } catch (e) {}
-          }
-        }, { once: true });
+    if (ctx) {
+      if (spriteBufferCache[audioSrc]) {
+        playBufferSpriteSegment(ctx, spriteBufferCache[audioSrc], startSec, endSec, playbackRate, finishOnce, fallbackOnce);
+        return;
       }
+      fetchAndDecodeSpriteBuffer(audioSrc, ctx).then(function(buf) {
+        if (settled || sessionId !== currentKaiwaSessionId) return;
+        if (buf) {
+          playBufferSpriteSegment(ctx, buf, startSec, endSec, playbackRate, finishOnce, fallbackOnce);
+        } else {
+          playHtmlAudioSpriteSegment(audioSrc, startSec, endSec, playbackRate, finishOnce, fallbackOnce, sessionId);
+        }
+      });
+      return;
     }
 
-    const durationMs = Math.ceil(((endSec - startSec) / playbackRate) * 1000) + 160;
-    activeSpriteTimer = setTimeout(finishOnce, durationMs);
-
-    try {
-      audio.playbackRate = playbackRate;
-      audio.currentTime = startSec;
-      const playPromise = audio.play();
-      if (playPromise && typeof playPromise.catch === 'function') {
-        playPromise.catch(function() {
-          fallbackOnce();
-        });
-      }
-    } catch (e) {
-      fallbackOnce();
-    }
+    playHtmlAudioSpriteSegment(audioSrc, startSec, endSec, playbackRate, finishOnce, fallbackOnce, sessionId);
   }
 
   function speakJapanese(text, pitchOpt, onEndCallback, preferredGender, speakerId, rateOpt, contextMeta) {

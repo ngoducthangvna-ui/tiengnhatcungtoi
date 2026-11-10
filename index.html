@@ -42,12 +42,12 @@
   
   <meta http-equiv="Content-Security-Policy" content="
   default-src 'self';
-  script-src 'self' 'unsafe-inline';
+  script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://static.cloudflareinsights.com;
   style-src 'self' 'unsafe-inline' https://fonts.googleapis.com;
   font-src 'self' https://fonts.gstatic.com data:;
   img-src 'self' data: https: blob:;
-  media-src 'self' data: blob: https:;
-  connect-src 'self' https://speechgen.io https://api.speechgen.io https://mazii.net https://*.mazii.net https://www.mazii.net https://inputtools.google.com https://www.google.com https://translate.google.com https://translate.googleapis.com https://generativelanguage.googleapis.com;
+  media-src 'self' data: blob: https: https://speechgen.io https://translate.google.com https://dict.youdao.com;
+  connect-src 'self' https://speechgen.io https://api.speechgen.io https://mazii.net https://*.mazii.net https://www.mazii.net https://inputtools.google.com https://www.google.com https://translate.google.com https://translate.googleapis.com https://generativelanguage.googleapis.com https://cloudflareinsights.com;
   frame-ancestors 'none';
   object-src 'none';
   base-uri 'self';
@@ -68,8 +68,8 @@
   
   
   <link rel="manifest" href="manifest.json">
-  <link rel="stylesheet" href="style.css?v=20261111_05">
-  <link rel="stylesheet" href="src/master_suite_style.css?v=20261111_05">
+  <link rel="stylesheet" href="style.css?v=20261111_06">
+  <link rel="stylesheet" href="src/master_suite_style.css?v=20261111_06">
 </head>
 <body>
   
@@ -1577,39 +1577,39 @@
   </button>
 
   
-  <script src="data/ui_icons.js?v=20261111_01"></script>
-  <script src="data/curriculum_manifest.js?v=20261111_01"></script>
-  <script src="data/exams_manifest.js?v=20261111_01"></script>
-  <script src="data/exam_furigana.js?v=20261111_01"></script>
-  <script src="data/data_normalizer.js?v=20261111_01"></script>
-  <script src="data/audio_prosody_rules.js?v=20261111_05"></script>
-  <script src="data/romaji_kana_map.js?v=20261111_05"></script>
-  <script src="data/kanji_lookalikes.js?v=20261111_05"></script>
-  <script src="data/reference_hub_data.js?v=20261111_05"></script>
+  <script src="data/ui_icons.js?v=20261111_06"></script>
+  <script src="data/curriculum_manifest.js?v=20261111_06"></script>
+  <script src="data/exams_manifest.js?v=20261111_06"></script>
+  <script src="data/exam_furigana.js?v=20261111_06"></script>
+  <script src="data/data_normalizer.js?v=20261111_06"></script>
+  <script src="data/audio_prosody_rules.js?v=20261111_06"></script>
+  <script src="data/romaji_kana_map.js?v=20261111_06"></script>
+  <script src="data/kanji_lookalikes.js?v=20261111_06"></script>
+  <script src="data/reference_hub_data.js?v=20261111_06"></script>
 
   
-  <script src="src/security_engine.js?v=20261111_05"></script>
-  <script src="src/storage_engine.js?v=20261111_05"></script>
-  <script src="src/auth_engine.js?v=20261111_05"></script>
-  <script src="src/audio_engine.js?v=20261111_05"></script>
-  <script src="src/quiz_engine.js?v=20261111_05"></script>
-  <script src="src/kanji_engine.js?v=20261111_05"></script>
-  <script src="src/navigation_engine.js?v=20261111_05"></script>
-  <script src="src/dictionary_engine.js?v=20261111_05"></script>
-  <script src="src/exam_engine.js?v=20261111_05"></script>
-  <script src="src/acoustic_analyzer.js?v=20261111_05"></script>
-  <script src="src/kaiwa_engine.js?v=20261111_05"></script>
-  <script src="src/conjugation_engine.js?v=20261111_05"></script>
-  <script src="src/notebook_engine.js?v=20261111_05"></script>
-  <script src="src/analytics_streak_engine.js?v=20261111_05"></script>
-  <script src="src/study_worker.js?v=20261111_05"></script>
-  <script src="src/domain_services.js?v=20261111_05"></script>
-  <script src="src/study_tools_engine.js?v=20261111_05"></script>
+  <script src="src/security_engine.js?v=20261111_06"></script>
+  <script src="src/storage_engine.js?v=20261111_06"></script>
+  <script src="src/auth_engine.js?v=20261111_06"></script>
+  <script src="src/audio_engine.js?v=20261111_06"></script>
+  <script src="src/quiz_engine.js?v=20261111_06"></script>
+  <script src="src/kanji_engine.js?v=20261111_06"></script>
+  <script src="src/navigation_engine.js?v=20261111_06"></script>
+  <script src="src/dictionary_engine.js?v=20261111_06"></script>
+  <script src="src/exam_engine.js?v=20261111_06"></script>
+  <script src="src/acoustic_analyzer.js?v=20261111_06"></script>
+  <script src="src/kaiwa_engine.js?v=20261111_06"></script>
+  <script src="src/conjugation_engine.js?v=20261111_06"></script>
+  <script src="src/notebook_engine.js?v=20261111_06"></script>
+  <script src="src/analytics_streak_engine.js?v=20261111_06"></script>
+  <script src="src/study_worker.js?v=20261111_06"></script>
+  <script src="src/domain_services.js?v=20261111_06"></script>
+  <script src="src/study_tools_engine.js?v=20261111_06"></script>
 
   
-  <script src="data/lessons_1_5.js?v=20261111_05"></script>
+  <script src="data/lessons_1_5.js?v=20261111_06"></script>
 
   
-  <script src="app.js?v=20261111_05"></script>
+  <script src="app.js?v=20261111_06"></script>
 </body>
 </html>

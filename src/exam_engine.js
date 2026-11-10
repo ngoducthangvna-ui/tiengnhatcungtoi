@@ -105,7 +105,7 @@
     const link = document.createElement('link');
     link.id = 'exam-engine-styles';
     link.rel = 'stylesheet';
-    link.href = 'src/exam_style.css?v=20261111_03';
+    link.href = 'src/exam_style.css?v=20261111_06';
     document.head.appendChild(link);
   }
 
@@ -115,12 +115,12 @@
   function ensureFuriganaMapLoaded() {
     if (root.EXAM_FURIGANA && typeof root.EXAM_FURIGANA === 'object') return Promise.resolve();
     if (root.NavigationEngine && typeof root.NavigationEngine.loadScriptAsync === 'function') {
-      return root.NavigationEngine.loadScriptAsync('data/exam_furigana.js?v=20261101_04');
+      return root.NavigationEngine.loadScriptAsync('data/exam_furigana.js?v=20261111_06');
     }
     return new Promise((resolve) => {
       if (typeof document === 'undefined') return resolve();
       const s = document.createElement('script');
-      s.src = 'data/exam_furigana.js?v=20261101_04';
+      s.src = 'data/exam_furigana.js?v=20261111_06';
       s.onload = () => resolve();
       s.onerror = () => resolve();
       document.head.appendChild(s);
@@ -142,7 +142,7 @@
       return Promise.all(promises);
     }
 
-    const scriptUrl = isN5 ? 'data/exams_n5.js' : 'data/exams_n4.js';
+    const scriptUrl = isN5 ? 'data/exams_n5.js?v=20261111_06' : 'data/exams_n4.js?v=20261111_06';
     if (root.NavigationEngine && typeof root.NavigationEngine.loadScriptAsync === 'function') {
       promises.push(root.NavigationEngine.loadScriptAsync(scriptUrl));
       return Promise.all(promises);
@@ -257,7 +257,7 @@
    * Khởi động đồng hồ đếm ngược
    */
   function startTimer(examCode) {
-    clearInterval(state.timerInterval);
+    clearInterval(state.timerInterval); state.timerInterval = null;
     if (state.examMode !== 'timed') return;
 
     state.timerInterval = setInterval(() => {
@@ -265,7 +265,7 @@
         state.timeRemainingSeconds--;
         updateTimerDisplay();
         if (state.timeRemainingSeconds === 0) {
-          clearInterval(state.timerInterval);
+          clearInterval(state.timerInterval); state.timerInterval = null;
       if (state.autoAdvanceTimeout) {
         clearTimeout(state.autoAdvanceTimeout);
         state.autoAdvanceTimeout = null;
@@ -545,7 +545,7 @@
 
     // 1. Dừng ngay lập tức đồng hồ đếm ngược
     if (state.timerInterval) {
-      clearInterval(state.timerInterval);
+      clearInterval(state.timerInterval); state.timerInterval = null;
       if (state.autoAdvanceTimeout) {
         clearTimeout(state.autoAdvanceTimeout);
         state.autoAdvanceTimeout = null;
@@ -652,7 +652,7 @@
       if (typeof document !== 'undefined' && document.body) {
         document.body.classList.remove('exam-mode-active');
       }
-      clearInterval(state.timerInterval);
+      clearInterval(state.timerInterval); state.timerInterval = null;
       if (state.autoAdvanceTimeout) {
         clearTimeout(state.autoAdvanceTimeout);
         state.autoAdvanceTimeout = null;
@@ -857,7 +857,7 @@
             state.userAnswers[code] = Object.assign({}, lockedRec.answers);
           }
           state.timeRemainingSeconds = 0;
-          clearInterval(state.timerInterval);
+          clearInterval(state.timerInterval); state.timerInterval = null;
       if (state.autoAdvanceTimeout) {
         clearTimeout(state.autoAdvanceTimeout);
         state.autoAdvanceTimeout = null;
@@ -911,6 +911,7 @@
     },
 
     renderRunnerUI(container, exam, isSubmitted) {
+      if (!container || !exam || !Array.isArray(exam.questions)) return;
       const code = exam.code;
       const answers = state.userAnswers[code] || {};
       const answeredCount = Object.keys(answers).length;
@@ -1320,7 +1321,7 @@
       if (typeof document !== 'undefined' && document.body) {
         document.body.classList.remove('exam-mode-active');
       }
-      clearInterval(state.timerInterval);
+      clearInterval(state.timerInterval); state.timerInterval = null;
       if (state.autoAdvanceTimeout) {
         clearTimeout(state.autoAdvanceTimeout);
         state.autoAdvanceTimeout = null;
@@ -1613,7 +1614,7 @@
       if (typeof document !== 'undefined' && document.body) {
         document.body.classList.remove('exam-mode-active');
       }
-      clearInterval(state.timerInterval);
+      clearInterval(state.timerInterval); state.timerInterval = null;
       if (state.autoAdvanceTimeout) {
         clearTimeout(state.autoAdvanceTimeout);
         state.autoAdvanceTimeout = null;
@@ -1636,7 +1637,7 @@
       if (typeof document !== 'undefined' && document.body) {
         document.body.classList.remove('exam-mode-active');
       }
-      clearInterval(state.timerInterval);
+      clearInterval(state.timerInterval); state.timerInterval = null;
       if (state.autoAdvanceTimeout) {
         clearTimeout(state.autoAdvanceTimeout);
         state.autoAdvanceTimeout = null;
@@ -1661,7 +1662,7 @@
           if (state.examMode === 'timed') {
             startTimer(examCode);
           } else {
-            clearInterval(state.timerInterval);
+            clearInterval(state.timerInterval); state.timerInterval = null;
       if (state.autoAdvanceTimeout) {
         clearTimeout(state.autoAdvanceTimeout);
         state.autoAdvanceTimeout = null;
