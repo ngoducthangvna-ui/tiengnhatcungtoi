@@ -4,11 +4,10 @@
  */
 'use strict';
 
-const CACHE_VERSION = 'minna-pwa-v20261111_03';
+const CACHE_VERSION = 'minna-pwa-v20261111_04';
 
 const CORE_ASSETS = [
   './',
-  './index.html',
   './style.css',
   './app.js',
   './manifest.json',
@@ -29,6 +28,27 @@ const CORE_ASSETS = [
   './src/study_tools_engine.js',
   './src/master_suite_style.css'
 ];
+
+// Phase 2 Normalizer: Chuẩn hóa /index.html về root './' để loại bỏ 308 redirect loops
+function normalizeRequest(request) {
+  if (!request || !request.url) return request;
+  try {
+    const url = new URL(request.url);
+    if (url.origin === self.location.origin && (url.pathname === '/index.html' || url.pathname.endsWith('/index.html'))) {
+      const canonicalUrl = new URL('./' + url.search, self.location.origin);
+      return new Request(canonicalUrl.toString(), {
+        method: request.method,
+        headers: request.headers,
+        mode: request.mode === 'navigate' ? 'same-origin' : request.mode,
+        credentials: request.credentials,
+        redirect: 'follow'
+      });
+    }
+  } catch (_err) {
+    // Giữ nguyên request nếu parse URL thất bại
+  }
+  return request;
+}
 
 // Phase 3 Pure Helper: Validate cacheable GET request within same origin
 function isCacheableRequest(request) {
@@ -65,14 +85,21 @@ async function fetchAndCache(request, cacheName) {
   }
 }
 
-// Phase 4 Helper: Stale-While-Revalidate strategy
-async function handleStaleWhileRevalidate(request) {
+// Phase 4 Helper: Stale-While-Revalidate strategy with Safe Navigation Fallback
+async function handleStaleWhileRevalidate(rawRequest) {
+  const request = normalizeRequest(rawRequest);
   const cachedResponse = await caches.match(request, { ignoreSearch: false });
   const networkPromise = fetchAndCache(request, CACHE_VERSION);
   if (cachedResponse) return cachedResponse;
   const freshResponse = await networkPromise;
-  if (freshResponse) return freshResponse;
-  return caches.match('./index.html');
+  if (freshResponse && (freshResponse.status === 200 || freshResponse.type === 'opaque')) {
+    return freshResponse;
+  }
+  if (rawRequest.mode === 'navigate') {
+    const fallback = await caches.match('./');
+    if (fallback) return fallback;
+  }
+  return freshResponse || Response.error();
 }
 
 self.addEventListener('install', (event) => {

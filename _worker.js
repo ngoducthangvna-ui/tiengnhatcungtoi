@@ -343,9 +343,9 @@ export default {
       return applySecurityHeaders(Response.redirect(url.toString(), 301));
     }
 
-    // 2C. Chuyển hướng 301 Permanent Redirect: Hợp nhất trang thi cũ vào /index.html#exam
+    // 2C. Chuyển hướng 301 Permanent Redirect: Hợp nhất trang thi cũ vào /#exam
     if (url.pathname === '/de_thi_jlpt_n5_n4.html' || url.pathname === '/exam' || url.pathname === '/exam/') {
-      const redirectTarget = `https://${url.host}/index.html#exam`;
+      const redirectTarget = `https://${url.host}/#exam`;
       return applySecurityHeaders(Response.redirect(redirectTarget, 301));
     }
 
@@ -1221,11 +1221,19 @@ export default {
     // =========================================================================
     // TẦNG 5: CUNG CẤP TÀI NGUYÊN TĨNH & GẮN ĐẦY ĐỦ 9 HTTP SECURITY HEADERS
     // =========================================================================
+    // 5A. Chuẩn hóa /index.html sang / để tránh Cloudflare Pages trả 308 Permanent Redirect gây lỗi ERR_FAILED trên Service Worker
+    let fetchReq = request;
+    if (url.pathname === '/index.html') {
+      const canonicalUrl = new URL(request.url);
+      canonicalUrl.pathname = '/';
+      fetchReq = new Request(canonicalUrl.toString(), request);
+    }
+
     let response;
     if (env.ASSETS && typeof env.ASSETS.fetch === 'function') {
-      response = await env.ASSETS.fetch(request);
+      response = await env.ASSETS.fetch(fetchReq);
     } else {
-      response = await fetch(request);
+      response = await fetch(fetchReq);
     }
 
     // Gắn đầy đủ 9 HTTP Security Headers chuẩn OWASP / CIS Benchmarks
