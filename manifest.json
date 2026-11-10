@@ -1,0 +1,58 @@
+{
+  "name": "Minna no Nihongo N5-N4 Master Suite",
+  "short_name": "Minna N5-N4",
+  "description": "Nền tảng học tiếng Nhật toàn diện N5-N4: Ngữ pháp, Kanji, Kaiwa, Luyện thi JLPT, Phòng Lab Chia Thể & Sổ Tay Thông Minh.",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#070b14",
+  "theme_color": "#e11d48",
+  "lang": "vi",
+  "dir": "ltr",
+  "categories": ["education", "reference", "productivity"],
+  "icons": [
+    {
+      "src": "icons/favicon-16.svg",
+      "sizes": "16x16",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "icons/favicon-32.svg",
+      "sizes": "32x32",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "icons/favicon-32.svg",
+      "sizes": "48x48",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "icons/icon-192.svg",
+      "sizes": "180x180",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "icons/icon-192.svg",
+      "sizes": "192x192",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "favicon.svg",
+      "sizes": "512x512",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "favicon.svg",
+      "sizes": "512x512",
+      "type": "image/svg+xml",
+      "purpose": "maskable"
+    }
+  ]
+}

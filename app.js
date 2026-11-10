@@ -1,18 +1,6 @@
-/**
- * ==========================================================================
- * TỰ HỌC TIẾNG NHẬT - MINNA NO NIHONGO (BÀI 1 ĐẾN BÀI 50: N5 & N4)
- * File Logic Chính: app.js (Vanilla JavaScript thuần, Data-Driven, Mobile-First)
- * Dữ liệu nạp từ các file module trong thư mục data/:
- *  - data/lessons.js (50 Bài học Minna no Nihongo đầy đủ chuẩn SGK)
- *  - data/dokkai.js (50 Bài đọc hiểu & 250 câu hỏi)
- *  - data/quiz-master.js (50 Bài tập trắc nghiệm 50 câu = 2.500 câu)
- *  - data/radicals_data.js (191 Bộ thủ Kanji kèm hoạt họa nét viết)
- * ==========================================================================
- */
 
-// --------------------------------------------------------------------------
-// 1. CẤU HÌNH, BẢO MẬT STORAGE & TIẾN ĐỘ (PROTOTYPE POLLUTION & QUOTA GUARDS)
-// --------------------------------------------------------------------------
+// ZONE 01: GLOBAL CONSTANTS, STATE REGISTRY & SECURITY GUARDS (FNV-1a Checksum & Anti-Scraping)
+
 const STORAGE_COMPLETED_KEY = 'minna_completed_modules';
 const STORAGE_PRACTICE_KEY = 'minna_practice_answers';
 const STORAGE_DOKKAI_KEY = 'minna_dokkai_answers_v1';
@@ -22,9 +10,7 @@ const STORAGE_FURIGANA_KEY = 'minna_show_furigana';
 const STORAGE_DEVICE_SETTINGS_KEY = 'minna_device_settings';
 const STORAGE_AUTO_ADVANCE_KEY = 'minna_quiz_auto_advance';
 
-// --------------------------------------------------------------------------
-// 1-ROOT. KHỞI TẠO BIẾN TOÀN CỤC CHỐNG LỖI THAM CHIẾU (GLOBAL SCOPE GUARDS)
-// --------------------------------------------------------------------------
+
 const _rootScope = (typeof window !== 'undefined' ? window : (typeof global !== 'undefined' ? global : {}));
 if (typeof _rootScope.lessonsData === 'undefined') _rootScope.lessonsData = [];
 if (typeof _rootScope.practiceQuizData === 'undefined') _rootScope.practiceQuizData = {};
@@ -32,17 +18,12 @@ if (typeof _rootScope.dokkaiData === 'undefined') _rootScope.dokkaiData = [];
 if (typeof _rootScope.radicalsData === 'undefined') _rootScope.radicalsData = [];
 if (typeof _rootScope.kanjiLessonsData === 'undefined') _rootScope.kanjiLessonsData = [];
 
-// --------------------------------------------------------------------------
-// 1A-SEC. BẢO MẬT LỚP 4: KÝ SỐ CHỐNG GAN LẬN TIẾN ĐỘ (TAMPER-PROOF CHECKSUM)
-// Mỗi khi lưu điểm số / tiến độ, hệ thống tạo thêm mã xác thực (Checksum).
-// Nếu học viên mở F12 Console tay sửa điểm trong localStorage, checksum sẽ
-// không khớp và hệ thống sẽ phục hồi an toàn về giá trị gốc hợp lệ.
-// --------------------------------------------------------------------------
 
-/**
- * Tạo checksum đơn giản từ chuỗi dữ liệu (FNV-1a hash 32-bit)
- * Nhanh, không cần crypto API, chạy được cả trên trình duyệt cũ.
- */
+
+
+
+
+
 function _fnv1aHash(str) {
   let h = 0x811c9dc5;
   for (let i = 0; i < str.length; i++) {
@@ -52,15 +33,12 @@ function _fnv1aHash(str) {
   return h.toString(36);
 }
 
-/** Tên khóa lưu checksum đi kèm mỗi key dữ liệu */
+
 function _csKey(storageKey) {
   return storageKey + '_cs';
 }
 
-/**
- * Ghi dữ liệu vào localStorage kèm checksum xác thực.
- * Thay thế trực tiếp safeSetStorage cho các key quan trọng.
- */
+
 function secureSetStorage(key, value) {
   if (typeof StorageEngine !== 'undefined' && typeof StorageEngine.secureSetItem === 'function') {
     StorageEngine.secureSetItem(key, value);
@@ -76,11 +54,7 @@ function secureSetStorage(key, value) {
   }
 }
 
-/**
- * Đọc dữ liệu từ localStorage và xác minh checksum.
- * Nếu checksum không khớp (dữ liệu bị can thiệp thủ công),
- * hệ thống trả về giá trị dự phòng (fallback) an toàn thay vì dữ liệu bị hack.
- */
+
 function secureGetStorage(key, fallback = null) {
   if (typeof StorageEngine !== 'undefined' && typeof StorageEngine.secureGetItem === 'function') {
     return StorageEngine.secureGetItem(key, fallback);
@@ -93,7 +67,7 @@ function secureGetStorage(key, fallback = null) {
     if (storedCs !== null) {
       const expectedCs = _fnv1aHash(String(value) + key);
       if (storedCs !== expectedCs) {
-        // Checksum không khớp → xóa dữ liệu bị can thiệp và trả về fallback
+
         console.warn('[SecureStorage] ⚠️ Phát hiện dữ liệu bị can thiệp tại khóa:', key, '→ Đặt lại an toàn.');
         localStorage.removeItem(key);
         localStorage.removeItem(_csKey(key));
@@ -106,9 +80,7 @@ function secureGetStorage(key, fallback = null) {
   }
 }
 
-/**
- * Đọc JSON an toàn từ secureStorage với xác minh checksum + kiểm tra kiểu.
- */
+
 function secureGetJsonStorage(key, fallback = null, validator = null) {
   if (typeof StorageEngine !== 'undefined' && typeof StorageEngine.secureGetJson === 'function') {
     return StorageEngine.secureGetJson(key, fallback, validator);
@@ -127,12 +99,10 @@ function secureGetJsonStorage(key, fallback = null, validator = null) {
   }
 }
 
-// --------------------------------------------------------------------------
-// 1B-SEC. BẢO MẬT LỚP 5: BẢO VỆ NỘI DUNG BÀI TẬP & PHÁT HIỆN CAN THIỆP
-// - Chặn chuột phải (contextmenu) trên câu hỏi bài tập
-// - Chặn in ấn trái phép bằng phím Ctrl+P / Cmd+P
-// - Chặn tổ hợp phím tắt devtools nguy hiểm (F12, Ctrl+Shift+I, Ctrl+Shift+J)
-// --------------------------------------------------------------------------
+
+
+
+
 (function initContentProtection() {
   'use strict';
   if (typeof document === 'undefined') return;
@@ -153,7 +123,6 @@ function secureGetJsonStorage(key, fallback = null, validator = null) {
     });
   }
 
-  // Chặn chuột phải trên vùng nội dung bài tập
   document.addEventListener('contextmenu', function(e) {
     if (isProtectedTarget(e.target)) {
       e.preventDefault();
@@ -161,14 +130,13 @@ function secureGetJsonStorage(key, fallback = null, validator = null) {
     }
   }, true);
 
-  // Chặn copy bằng phím tắt Ctrl+C / Cmd+C trên vùng nội dung bài tập
   document.addEventListener('copy', function(e) {
     if (isProtectedTarget(document.activeElement) || isProtectedTarget(
       window.getSelection && window.getSelection().anchorNode &&
       window.getSelection().anchorNode.parentElement
     )) {
       const sel = window.getSelection ? window.getSelection().toString() : '';
-      // Chỉ chặn khi đang chọn văn bản trong vùng bảo vệ
+
       if (sel.length > 30) {
         e.preventDefault();
         return false;
@@ -176,7 +144,6 @@ function secureGetJsonStorage(key, fallback = null, validator = null) {
     }
   }, true);
 
-  // Chặn in ấn
   if (typeof window !== 'undefined' && typeof window.addEventListener === 'function') {
     window.addEventListener('beforeprint', function() {
       if (document && document.body) document.body.setAttribute('data-print-blocked', 'true');
@@ -186,28 +153,26 @@ function secureGetJsonStorage(key, fallback = null, validator = null) {
     });
   }
 
-  // Chặn tổ hợp phím mở DevTools (bảo vệ mã nguồn bài tập)
   if (typeof document !== 'undefined' && typeof document.addEventListener === 'function') {
     document.addEventListener('keydown', function(e) {
     const isMac = navigator.platform && navigator.platform.includes('Mac');
     const ctrl = isMac ? e.metaKey : e.ctrlKey;
 
-    // F12 → mở DevTools
     if (e.key === 'F12') {
       e.preventDefault();
       return false;
     }
-    // Ctrl+Shift+I hoặc Ctrl+Shift+J → mở DevTools Console/Inspector
+
     if (ctrl && e.shiftKey && (e.key === 'I' || e.key === 'i' || e.key === 'J' || e.key === 'j')) {
       e.preventDefault();
       return false;
     }
-    // Ctrl+U → xem nguồn trang
+
     if (ctrl && (e.key === 'U' || e.key === 'u')) {
       e.preventDefault();
       return false;
     }
-    // Ctrl+P → in trang
+
     if (ctrl && (e.key === 'P' || e.key === 'p')) {
       e.preventDefault();
       return false;
@@ -216,7 +181,8 @@ function secureGetJsonStorage(key, fallback = null, validator = null) {
   }
 })();
 
-// Hàm mã hóa an toàn HTML chống tấn công DOM XSS
+// ZONE 02: STORAGE & SANITIZATION FACADE (StorageEngine DELEGATION & XSS/PROTOTYPE POLLUTION GUARDS)
+
 function escapeHtml(str) {
   if (typeof StorageEngine !== 'undefined' && typeof StorageEngine.escapeHtml === 'function') {
     return StorageEngine.escapeHtml(str);
@@ -230,12 +196,10 @@ function escapeHtml(str) {
     .replace(/'/g, '&#039;');
 }
 
-// Kiểm tra khóa đối tượng an toàn chống Prototype Pollution
 function isSafeObjectKey(key) {
   return typeof key === 'string' && key !== '__proto__' && key !== 'constructor' && key !== 'prototype';
 }
 
-// Làm sạch đối tượng JSON loại bỏ hoàn toàn các thuộc tính độc hại
 function sanitizeDeepObject(obj) {
   if (!obj || typeof obj !== 'object') return obj;
   if (Array.isArray(obj)) return obj.map(sanitizeDeepObject);
@@ -288,7 +252,6 @@ function safeRemoveStorage(key) {
   } catch (e) {}
 }
 
-// Đọc JSON an toàn với bộ lọc Prototype Pollution và hàm kiểm tra kiểu (Validator)
 function safeGetJsonStorage(key, fallback = null, validator = null) {
   if (typeof StorageEngine !== 'undefined' && typeof StorageEngine.getJson === 'function') {
     return StorageEngine.getJson(key, fallback, validator);
@@ -307,9 +270,8 @@ function safeGetJsonStorage(key, fallback = null, validator = null) {
   }
 }
 
-// --------------------------------------------------------------------------
-// 1B. CÁ NHÂN HÓA THIẾT BỊ, CỠ CHỮ, MẬT ĐỘ & CHẾ ĐỘ LÀM MÁT (THERMAL SAVER)
-// --------------------------------------------------------------------------
+// ZONE 03: DEVICE PERSONALIZATION, THERMAL SAVER, FURIGANA & COMPLETION TRACKING
+
 const DEFAULT_DEVICE_SETTINGS = {
   mode: 'auto',        // 'auto' | 'mobile' | 'tablet' | 'desktop'
   fontSize: 'normal',  // 'small' | 'normal' | 'large' | 'xlarge'
@@ -384,7 +346,6 @@ function triggerHaptic(duration = 12) {
   } catch (e) {}
 }
 
-// Kích hoạt ngay lập tức cấu hình thiết bị khi file app.js được nạp
 try {
   applyDeviceSettings(getDeviceSettings());
 } catch (e) {}
@@ -393,7 +354,6 @@ function initDeviceSettings() {
   const settings = getDeviceSettings();
   applyDeviceSettings(settings);
 
-  // Lắng nghe thay đổi kích thước cửa sổ để cập nhật khi xoay ngang/dọc điện thoại
   if (typeof window !== 'undefined') {
     let resizeTimer = null;
     window.addEventListener('resize', () => {
@@ -416,19 +376,19 @@ function initDeviceSettings() {
   if (!btnOpen || !modal) return;
 
   const syncModalUI = (cfg) => {
-    // Mode pills
+
     document.querySelectorAll('#device-mode-selector .device-pill').forEach(btn => {
       btn.classList.toggle('active', btn.getAttribute('data-mode') === (cfg.mode || 'auto'));
     });
-    // Font pills
+
     document.querySelectorAll('#device-font-selector .device-pill').forEach(btn => {
       btn.classList.toggle('active', btn.getAttribute('data-font') === (cfg.fontSize || 'normal'));
     });
-    // Density pills
+
     document.querySelectorAll('#device-density-selector .device-pill').forEach(btn => {
       btn.classList.toggle('active', btn.getAttribute('data-density') === (cfg.density || 'normal'));
     });
-    // Switches
+
     const thermalToggle = document.getElementById('thermal-saver-toggle');
     if (thermalToggle) thermalToggle.checked = Boolean(cfg.thermalMode);
     const hapticToggle = document.getElementById('haptic-toggle');
@@ -458,7 +418,6 @@ function initDeviceSettings() {
     if (e.target === modal) closeModal();
   });
 
-  // Pill selectors
   const setupPills = (containerId, attrName) => {
     const container = document.getElementById(containerId);
     if (!container) return;
@@ -474,7 +433,6 @@ function initDeviceSettings() {
   setupPills('device-font-selector', 'data-font');
   setupPills('device-density-selector', 'data-density');
 
-  // Nút Lưu
   if (btnSave) {
     btnSave.addEventListener('click', () => {
       const activeModePill = document.querySelector('#device-mode-selector .device-pill.active');
@@ -498,7 +456,6 @@ function initDeviceSettings() {
     });
   }
 
-  // Nút Mặc định
   if (btnReset) {
     btnReset.addEventListener('click', () => {
       saveDeviceSettings({ ...DEFAULT_DEVICE_SETTINGS });
@@ -541,7 +498,6 @@ function initFuriganaToggle() {
       }
     });
 
-    // Tap-to-Reveal Furigana tren thiet bi cam ung (P2-2)
     document.addEventListener('click', (e) => {
       if (!document.body || !document.body.classList.contains('hide-furigana')) return;
       const ruby = e.target && e.target.closest ? e.target.closest('ruby') : null;
@@ -567,7 +523,7 @@ let lastRadicalId = 'radicals-1';
 
 function extractLessonNumber(id) {
   if (!id) return null;
-  const m = String(id).match(/^(?:bai|quiz|dokkai|kanji|kanji-flashcard)-(\d+)$/);
+  const m = String(id).match(/^(?:bai|quiz|kaiwa|dokkai|kanji|kanji-flashcard)-(\d+)$/);
   return m ? parseInt(m[1], 10) : null;
 }
 
@@ -579,7 +535,6 @@ function isModuleCompleted(id) {
   return getCompletedModules().includes(id);
 }
 
-// Hộp thoại xác nhận hiện đại trong trang (Thay thế confirm() của trình duyệt, tương thích 100% Canvas & Mobile)
 function showAppConfirm(title, message, onConfirm) {
   const modal = document.getElementById('app-confirm-modal');
   const titleEl = document.getElementById('confirm-modal-title');
@@ -594,7 +549,7 @@ function showAppConfirm(title, message, onConfirm) {
   }
 
   titleEl.textContent = title || 'Xác nhận thao tác';
-  // Ngăn chặn DOM XSS bằng cách escape toàn bộ thẻ HTML trong thông điệp trước khi chuyển dấu xuống dòng
+
   msgEl.innerHTML = escapeHtml(String(message || '')).replace(/\n/g, '<br>');
   modal.classList.add('show-modal');
   modal.setAttribute('aria-hidden', 'false');
@@ -678,17 +633,13 @@ window.toggleLessonComplete = function(id) {
   }
 };
 
-// --------------------------------------------------------------------------
-// 1B. KIẾN TRÚC CODE-SPLITTING & DYNAMIC LAZY-LOADING DỮ LIỆU CHUẨN HIỆU NĂNG CAO
-// Giảm tải nạp ban đầu từ 5.35MB xuống ~244KB (giảm hơn 95%), tải trang dưới 1s,
-// nạp các module còn lại theo nhu cầu (on-demand) hoặc khi rảnh (idle prefetch).
-// --------------------------------------------------------------------------
+// ZONE 04: DATA SYNCHRONIZATION, ON-DEMAND CHUNK LOADER & IDLE PREFETCH PIPELINE (NavigationEngine DAG)
+
 const TOTAL_CURRICULUM_MODULES = 217; // 50 Bài Minna + 50 Trắc nghiệm + 50 Đọc hiểu + 50 Chữ Hán + 17 Nhóm bộ thủ
 
 function syncLoadedData() {
   const root = (typeof window !== 'undefined' ? window : (typeof global !== 'undefined' ? global : {}));
 
-  // Đồng bộ các chunk bài học Minna (lessons_1_5 đến lessons_46_50)
   const lessonChunks = [
     typeof lessons_1_5 !== 'undefined' ? lessons_1_5 : null,
     typeof lessons_6_10 !== 'undefined' ? lessons_6_10 : null,
@@ -725,7 +676,6 @@ function syncLoadedData() {
     return na - nb;
   });
 
-  // Đồng bộ các chunk trắc nghiệm (quizzes_1_5 đến quizzes_46_50)
   const quizChunks = [
     typeof quizzes_1_5 !== 'undefined' ? quizzes_1_5 : null,
     typeof quizzes_6_10 !== 'undefined' ? quizzes_6_10 : null,
@@ -748,17 +698,14 @@ function syncLoadedData() {
     }
   });
 
-  // Đồng bộ Đọc hiểu Dokkai
   if (typeof dokkaiData !== 'undefined' && Array.isArray(dokkaiData) && dokkaiData.length) {
     root.dokkaiData = dokkaiData;
   }
 
-  // Đồng bộ Bộ thủ Radicals
   if (typeof radicalsData !== 'undefined' && Array.isArray(radicalsData) && radicalsData.length) {
     root.radicalsData = radicalsData;
   }
 
-  // Đồng bộ Kanji Mẹo nhớ (Hỗ trợ cả kanji_data.js nguyên khối lẫn 10 chunks kanji_1_5 đến kanji_46_50)
   const kanjiChunks = [
     typeof kanji_1_5 !== 'undefined' ? kanji_1_5 : null,
     typeof kanji_6_10 !== 'undefined' ? kanji_6_10 : null,
@@ -786,9 +733,24 @@ function syncLoadedData() {
     root.kanjiLessonsData = Array.from(kanjiMap.values()).sort((a, b) => (a.lesson || 0) - (b.lesson || 0));
     if (typeof window !== 'undefined') window.kanjiLessonsData = root.kanjiLessonsData;
   }
+
+  const kaiwaChunks = [
+    typeof kaiwa_1_10 !== 'undefined' ? kaiwa_1_10 : null,
+    typeof kaiwa_11_20 !== 'undefined' ? kaiwa_11_20 : null,
+    typeof kaiwa_21_30 !== 'undefined' ? kaiwa_21_30 : null,
+    typeof kaiwa_31_40 !== 'undefined' ? kaiwa_31_40 : null,
+    typeof kaiwa_41_50 !== 'undefined' ? kaiwa_41_50 : null
+  ];
+  if (!root.KAIWA_DATA || typeof root.KAIWA_DATA !== 'object') {
+    root.KAIWA_DATA = {};
+  }
+  kaiwaChunks.forEach(chunk => {
+    if (chunk && typeof chunk === 'object') {
+      Object.assign(root.KAIWA_DATA, chunk);
+    }
+  });
 }
 
-// Khởi chạy đồng bộ ngay khi nạp file
 syncLoadedData();
 
 const _loadedScriptUrls = new Set();
@@ -813,6 +775,13 @@ function getScriptUrlForModule(id) {
     const start = Math.floor((num - 1) / 5) * 5 + 1;
     const end = start + 4;
     return `data/quizzes_${start}_${end}.js`;
+  }
+  const kaiwaMatch = id.match(/^kaiwa-(\d+)$/);
+  if (kaiwaMatch) {
+    const num = parseInt(kaiwaMatch[1], 10);
+    const start = Math.floor((num - 1) / 10) * 10 + 1;
+    const end = start + 9;
+    return `data/kaiwa_${start}_${end}.js`;
   }
   if (id.startsWith('dokkai')) {
     return 'data/dokkai.js';
@@ -893,6 +862,11 @@ function isModuleDataReady(id) {
     const map = root.practiceQuizData || {};
     return Boolean(map[id] && Array.isArray(map[id]) && map[id].length > 0);
   }
+  const kwm = id.match(/^kaiwa-(\d+)$/);
+  if (kwm) {
+    const kMap = root.KAIWA_DATA || {};
+    return Boolean(kMap[id] && Array.isArray(kMap[id].dialogue) && kMap[id].dialogue.length > 0);
+  }
   if (id.startsWith('dokkai')) {
     const dList = (typeof dokkaiData !== 'undefined' && Array.isArray(dokkaiData)) ? dokkaiData : (root.dokkaiData || []);
     return dList.length > 0;
@@ -937,6 +911,7 @@ function renderLazyLoader(id) {
   if (!content) return;
   const num = extractLessonNumber(id);
   const typeText = id.startsWith('quiz-') ? 'Bài tập Trắc nghiệm'
+    : id.startsWith('kaiwa-') ? 'Hội thoại & Luyện tập C'
     : id.startsWith('dokkai-') ? 'Bài Đọc hiểu'
     : id.startsWith('kanji-') ? 'Chữ Hán & Mẹo nhớ'
     : id.startsWith('radicals-') ? 'Bộ thủ tiếng Nhật'
@@ -961,7 +936,11 @@ function prefetchRemainingDataForSearch() {
     'data/lessons_21_25.js', 'data/lessons_26_30.js', 'data/lessons_31_35.js',
     'data/lessons_36_40.js', 'data/lessons_41_45.js', 'data/lessons_46_50.js',
     'data/dokkai.js', 'data/quizzes_1_5.js', 'data/quizzes_6_10.js',
-    'data/radicals_data.js', 'data/kanji_data.js'
+    'data/radicals_data.js',
+    'data/kanji_1_5.js', 'data/kanji_6_10.js', 'data/kanji_11_15.js',
+    'data/kanji_16_20.js', 'data/kanji_21_25.js', 'data/kanji_26_30.js',
+    'data/kanji_31_35.js', 'data/kanji_36_40.js', 'data/kanji_41_45.js',
+    'data/kanji_46_50.js'
   ];
 
   let i = 0;
@@ -1003,7 +982,16 @@ function startIdlePrefetch() {
     'data/quizzes_36_40.js',
     'data/quizzes_41_45.js',
     'data/quizzes_46_50.js',
-    'data/kanji_data.js'
+    'data/kanji_1_5.js',
+    'data/kanji_6_10.js',
+    'data/kanji_11_15.js',
+    'data/kanji_16_20.js',
+    'data/kanji_21_25.js',
+    'data/kanji_26_30.js',
+    'data/kanji_31_35.js',
+    'data/kanji_36_40.js',
+    'data/kanji_41_45.js',
+    'data/kanji_46_50.js'
   ];
 
   let queueIdx = 0;
@@ -1019,7 +1007,6 @@ function startIdlePrefetch() {
     });
   }
 
-  // Chờ 2.5 giây sau khi tải trang xong mới bắt đầu tải ngầm nhẹ nhàng
   setTimeout(() => {
     if (typeof window.requestIdleCallback === 'function') {
       window.requestIdleCallback(processNextIdle, { timeout: 3000 });
@@ -1037,19 +1024,77 @@ function updateHeaderProgress() {
 
   const sub = document.getElementById('header-goal-subtitle');
   const fill = document.getElementById('header-progress-fill');
-  if (sub) sub.textContent = `Tiến độ: ${count}/${total} mục (${percent}%)`;
+  const wrap = document.getElementById('header-progress-wrap');
+  const progressText = `Tiến độ: ${count}/${total} mục (${percent}%)`;
+  if (sub) sub.textContent = progressText;
   if (fill) fill.style.width = `${percent}%`;
+  if (wrap) wrap.title = `Tiến độ hoàn thành khóa học: ${count}/${total} mục (${percent}%)`;
+
+  if (typeof renderUserAccountChips === 'function') {
+    renderUserAccountChips();
+  }
 }
 
-// --------------------------------------------------------------------------
-// 2. HỆ THỐNG PHÁT ÂM TIẾNG NHẬT — GIỌNG LEDA JP (SPEECHGEN.IO / CHIRP3-HD)
-// --------------------------------------------------------------------------
-const SPEECHGEN_VOICE = 'Leda JP';
-const SPEECHGEN_MODEL = 'ja-JP-Chirp3-HD-Leda';
+// ZONE 05: JAPANESE SPEECH, DIALOGUE VOICES & PROSODY ENGINE (AudioEngine DELEGATION)
+
+const DIALOGUE_DEFAULT_SPEAKER = 'sato'; // Giọng mặc định: chị Sato (Nanami, nữ công sở chuẩn Tokyo)
+const DIALOGUE_SPEAKER_ALIASES = { a: 'sato', b: 'yamada', c: 'miller', d: 'karina', e: 'santos' };
+const DIALOGUE_FALLBACK_PROFILES = {
+  sato:   { id: 'sato',   gender: 'female', speechGenVoice: 'Nanami', pitch: 1.02, rate: 0.96 },
+  yamada: { id: 'yamada', gender: 'male',   speechGenVoice: 'Keita',  pitch: 1.00, rate: 0.96 }
+};
+const SPEECHGEN_VOICE = DIALOGUE_FALLBACK_PROFILES[DIALOGUE_DEFAULT_SPEAKER].speechGenVoice;
+const SPEECHGEN_MODEL = 'ja-JP-NanamiNeural';
+const DEFAULT_USER_SPEED = 0.92;
+const DEFAULT_USER_PITCH = 1.04;
 
 const speechAudioCache = new Map();
 let currentSpeechAudio = null;
-let cachedLedaVoice = null;
+let cachedLedaVoice = null; // Cache giọng hội thoại mặc định (giữ tên biến cũ để tương thích)
+let currentAudioSessionId = 0; // Epoch Counter chống Race Condition phát lặp đa giọng
+let activeOnlineAudioAbort = null; // Bộ dọn dẹp tiến trình Online Audio (Google/Youdao) đang chờ/retry
+let activeSpeechSafetyTimer = null; // Quản lý Timer bảo vệ trạng thái nút bấm
+let lastSpeechClickTime = 0; // Debounce bảo vệ chống spam click phần cứng
+let lastSpeechText = '';
+
+
+function resolveDialogueSpeakerId(speakerKey) {
+  const raw = String(speakerKey || '').toLowerCase().replace(/[^a-z0-9_]/g, '');
+  if (!raw) return DIALOGUE_DEFAULT_SPEAKER;
+  if (DIALOGUE_SPEAKER_ALIASES[raw]) return DIALOGUE_SPEAKER_ALIASES[raw];
+  const profiles = (typeof AudioEngine !== 'undefined' && AudioEngine.CHARACTER_VOICE_PROFILES) || DIALOGUE_FALLBACK_PROFILES;
+  return profiles[raw] ? raw : DIALOGUE_DEFAULT_SPEAKER;
+}
+
+
+function getDialogueVoiceProfile(speakerKey) {
+  const id = resolveDialogueSpeakerId(speakerKey);
+  if (typeof AudioEngine !== 'undefined' && typeof AudioEngine.getCharacterVoiceProfile === 'function') {
+    const p = AudioEngine.getCharacterVoiceProfile(id);
+    if (p) return Object.assign({ id }, p);
+  }
+  return DIALOGUE_FALLBACK_PROFILES[id] || DIALOGUE_FALLBACK_PROFILES[DIALOGUE_DEFAULT_SPEAKER];
+}
+
+
+function computeDialogueProsody(profile, cfg, speechText) {
+  const userSpeed = (cfg && cfg.speed) || DEFAULT_USER_SPEED;
+  const userPitch = (cfg && cfg.pitch) || DEFAULT_USER_PITCH;
+  let baseRate = profile.rate || 0.96;
+  let basePitch = profile.pitch || 1.0;
+
+  if (speechText && typeof AudioEngine !== 'undefined' && typeof AudioEngine.computeExpressiveProsody === 'function') {
+    const exp = AudioEngine.computeExpressiveProsody(speechText, profile.id || DIALOGUE_DEFAULT_SPEAKER, false);
+    if (exp) {
+      baseRate = exp.rate;
+      basePitch = exp.pitch;
+    }
+  }
+
+  const rate = Math.max(0.6, Math.min(1.4, baseRate * (userSpeed / DEFAULT_USER_SPEED)));
+  const pitch = Math.max(0.8, Math.min(1.25, basePitch * (userPitch / DEFAULT_USER_PITCH)));
+  return { rate: Number(rate.toFixed(3)), pitch: Number(pitch.toFixed(3)) };
+}
 
 function cleanSpeechText(text) {
   if (typeof AudioEngine !== 'undefined' && typeof AudioEngine.cleanSpeechText === 'function') {
@@ -1062,7 +1107,6 @@ function cleanSpeechText(text) {
     .trim();
 }
 
-// Hàm chuẩn hóa và tạo nhịp ngắt nghỉ tự nhiên theo ngữ pháp tiếng Nhật (Prosody & Syntactic Phrasing)
 function formatJapaneseGrammarSpeech(text) {
   if (typeof AudioEngine !== 'undefined' && typeof AudioEngine.applyProsody === 'function') {
     return AudioEngine.applyProsody(text);
@@ -1070,11 +1114,9 @@ function formatJapaneseGrammarSpeech(text) {
   if (!text) return '';
   let str = String(text).trim();
 
-  // 1. Loại bỏ các thẻ HTML / Ruby furigana và ký tự escape
   str = str.replace(/<rt>.*?<\/rt>/g, '').replace(/<[^>]*>/g, '');
   str = str.replace(/['"\\]/g, ' ');
 
-  // 2. Chuẩn hóa dấu câu half-width sang full-width tiếng Nhật chuẩn
   str = str.replace(/,/g, '、')
            .replace(/\.(?!\d)/g, '。')
            .replace(/\?/g, '？')
@@ -1082,7 +1124,6 @@ function formatJapaneseGrammarSpeech(text) {
            .replace(/;/g, '、')
            .replace(/:/g, '：');
 
-  // Chuẩn hóa khoảng trắng quanh dấu câu
   str = str.replace(/([、。！？])\s+/g, '$1')
            .replace(/\s+([、。！？])/g, '$1');
 
@@ -1095,7 +1136,6 @@ function formatJapaneseGrammarSpeech(text) {
     return str;
   }
 
-  // 3. Ngắt nghỉ sau liên từ / thán từ ở đầu câu hoặc sau dấu chấm câu (Nạp từ data/audio_prosody_rules.js)
   const discourseWords = (typeof window !== 'undefined' && window.DISCOURSE_PAUSE_WORDS)
     || (typeof global !== 'undefined' && global.DISCOURSE_PAUSE_WORDS)
     || [
@@ -1113,7 +1153,6 @@ function formatJapaneseGrammarSpeech(text) {
   );
   str = str.replace(discoursePattern, '$1$2、');
 
-  // 4. Ngắt nghỉ sau các liên từ nối mệnh đề phụ
   str = str.replace(/([ぁ-んァ-ヶ一-龥]{2,})(たら|だら)(?!(?:[、。！？』」）\\)]|$))(?=[ぁ-んァ-ヶ一-龥A-Za-z0-9])/g, '$1$2、');
   str = str.replace(/(?!さようなら|さよなら)([ぁ-んァ-ヶ一-龥]{2,})(なら)(?!(?:[、。！？』」）\\)]|$))(?=[ぁ-んァ-ヶ一-龥A-Za-z0-9])/g, '$1$2、');
   str = str.replace(/([ぁ-んァ-ヶ一-龥]+)(えば|けば|せば|てば|ねば|べば|めば|れば|いれば|ければ)(?!(?:[、。！？』」）\\)]|$))(?=[ぁ-んァ-ヶ一-龥A-Za-z0-9])/g, '$1$2、');
@@ -1179,9 +1218,11 @@ function getSpeechGenConfig() {
     const email = safeGetStorage('speechgen_email') || (typeof window !== 'undefined' && window.SPEECHGEN_CONFIG && window.SPEECHGEN_CONFIG.email) || '';
     const speed = parseFloat(safeGetStorage('speechgen_speed') || '0.92');
     const pitch = parseFloat(safeGetStorage('speechgen_pitch') || '1.04');
-    return { token, email, speed, pitch, voice: SPEECHGEN_VOICE };
+    const speaker = safeGetStorage('speechgen_speaker') || DIALOGUE_DEFAULT_SPEAKER;
+    const profile = getDialogueVoiceProfile(speaker);
+    return { token, email, speed, pitch, speaker, voice: profile.speechGenVoice || SPEECHGEN_VOICE };
   } catch (e) {
-    return { token: '', email: '', speed: 0.92, pitch: 1.04, voice: SPEECHGEN_VOICE };
+    return { token: '', email: '', speed: 0.92, pitch: 1.04, speaker: DIALOGUE_DEFAULT_SPEAKER, voice: SPEECHGEN_VOICE };
   }
 }
 
@@ -1191,49 +1232,84 @@ function setSpeechGenConfig(cfg) {
     if (cfg.email !== undefined) safeSetStorage('speechgen_email', cfg.email.trim());
     if (cfg.speed !== undefined) safeSetStorage('speechgen_speed', String(cfg.speed));
     if (cfg.pitch !== undefined) safeSetStorage('speechgen_pitch', String(cfg.pitch));
+    if (cfg.speaker !== undefined) safeSetStorage('speechgen_speaker', String(cfg.speaker));
+    cachedLedaVoice = findDialogueJpVoice(cfg.speaker || DIALOGUE_DEFAULT_SPEAKER);
   } catch (e) {}
 }
 window.setSpeechGenConfig = setSpeechGenConfig;
 window.getSpeechGenConfig = getSpeechGenConfig;
 
 function stopAllSpeechAudio() {
-  if (typeof document !== 'undefined' && document.querySelectorAll) {
-    document.querySelectorAll('.is-speaking').forEach(b => {
-      if (b && b.classList) b.classList.remove('is-speaking');
-    });
+
+  currentAudioSessionId++;
+
+  if (activeSpeechSafetyTimer) {
+    clearTimeout(activeSpeechSafetyTimer);
+    activeSpeechSafetyTimer = null;
   }
+
+  if (typeof activeOnlineAudioAbort === 'function') {
+    try {
+      activeOnlineAudioAbort();
+    } catch (e) {}
+    activeOnlineAudioAbort = null;
+  }
+
   if (currentSpeechAudio) {
     try {
       currentSpeechAudio.pause();
       currentSpeechAudio.currentTime = 0;
+      currentSpeechAudio.src = '';
     } catch (e) {}
     currentSpeechAudio = null;
   }
+
   if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
     try {
       window.speechSynthesis.cancel();
     } catch (e) {}
   }
-}
 
-function findLedaJpVoice() {
+  if (typeof document !== 'undefined' && document.querySelectorAll) {
+    document.querySelectorAll('.is-speaking').forEach(b => {
+      if (b && b.classList) b.classList.remove('is-speaking');
+    });
+  }
+
+  if (typeof window !== 'undefined' && window.KaiwaEngine && typeof window.KaiwaEngine.stopAllKaiwaAudio === 'function') {
+    if (!window._suppressKaiwaCrossStop) {
+      try {
+        window._suppressKaiwaCrossStop = true;
+        window.KaiwaEngine.stopAllKaiwaAudio();
+      } catch (e) {
+      } finally {
+        window._suppressKaiwaCrossStop = false;
+      }
+    }
+  }
+}
+window.stopAllSpeechAudio = stopAllSpeechAudio;
+
+
+function findDialogueJpVoice(speakerKey) {
   if (typeof window === 'undefined' || !('speechSynthesis' in window)) return null;
   const voices = window.speechSynthesis.getVoices();
   if (!voices || voices.length === 0) return null;
 
-  let match = voices.find(v => (v.lang === 'ja-JP' || v.lang.startsWith('ja')) && (/leda/i.test(v.name) || /leda/i.test(v.voiceURI)));
-  if (match) return match;
+  const profile = getDialogueVoiceProfile(speakerKey);
+  const speakerId = resolveDialogueSpeakerId(speakerKey);
+  if (typeof AudioEngine !== 'undefined' && typeof AudioEngine.selectBestJapaneseVoice === 'function') {
+    const best = AudioEngine.selectBestJapaneseVoice(voices, profile.gender || null, speakerId);
+    if (best) return best;
+  }
 
-  match = voices.find(v => (v.lang === 'ja-JP' || v.lang.startsWith('ja')) && (/chirp/i.test(v.name) || /chirp/i.test(v.voiceURI)));
-  if (match) return match;
+  const isJa = v => v.lang === 'ja-JP' || (v.lang && v.lang.startsWith('ja'));
+  const genderRe = profile.gender === 'male' ? /(keita|otoya|ichiro|male)/i : /(nanami|kyoko|haruka|female)/i;
+  return voices.find(v => isJa(v) && genderRe.test(v.name)) || voices.find(isJa) || null;
+}
 
-  match = voices.find(v => (v.lang === 'ja-JP' || v.lang.startsWith('ja')) && /(nanami|keiko|kyoko|otoya|natural.*female|female)/i.test(v.name));
-  if (match) return match;
-
-  match = voices.find(v => (v.lang === 'ja-JP' || v.lang.startsWith('ja')) && /google/i.test(v.name));
-  if (match) return match;
-
-  return voices.find(v => v.lang === 'ja-JP' || v.lang.startsWith('ja')) || null;
+function findLedaJpVoice() {
+  return findDialogueJpVoice(DIALOGUE_DEFAULT_SPEAKER);
 }
 
 if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
@@ -1243,13 +1319,14 @@ if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
 }
 
 async function fetchSpeechGenAudio(speechText, cfg) {
-  if (speechAudioCache.has(speechText)) {
-    return speechAudioCache.get(speechText);
+  const sgVoice = (cfg && cfg.voice) || SPEECHGEN_VOICE;
+  const cacheKey = sgVoice + '|' + speechText;
+  if (speechAudioCache.has(cacheKey)) {
+    return speechAudioCache.get(cacheKey);
   }
 
   const pitchVal = Math.round((cfg.pitch - 1.0) * 10);
 
-  // 1. Ưu tiên gọi qua Secure Edge Proxy (/api/speech) của Cloudflare Worker để chống lộ Token & chống cướp API
   if (typeof window !== 'undefined' && window.location && window.location.protocol.startsWith('http')) {
     try {
       const proxyRes = await fetch('/api/speech', {
@@ -1260,6 +1337,7 @@ async function fetchSpeechGenAudio(speechText, cfg) {
         },
         body: JSON.stringify({
           text: speechText,
+          voice: sgVoice,
           speed: cfg.speed || 0.92,
           pitch: pitchVal
         })
@@ -1268,22 +1346,21 @@ async function fetchSpeechGenAudio(speechText, cfg) {
         const data = await proxyRes.json();
         if (data && (data.audioUrl || data.file || data.file_cors)) {
           const audioUrl = data.audioUrl || data.file_cors || data.file;
-          speechAudioCache.set(speechText, audioUrl);
+          speechAudioCache.set(cacheKey, audioUrl);
           return audioUrl;
         }
       }
     } catch (proxyErr) {
-      // Bỏ qua lỗi proxy khi chạy môi trường dev local không có Worker
+
     }
   }
 
-  // 2. Dự phòng: Gọi trực tiếp nếu người dùng có cấu hình token riêng trong trình duyệt
   if (!cfg.token || !cfg.email) return null;
 
   const bodyData = new URLSearchParams({
     token: cfg.token,
     email: cfg.email,
-    voice: SPEECHGEN_VOICE,
+    voice: sgVoice,
     text: speechText,
     format: 'mp3',
     speed: String(cfg.speed || 0.92),
@@ -1302,13 +1379,14 @@ async function fetchSpeechGenAudio(speechText, cfg) {
   const data = await response.json();
   if (data && (data.status === 1 || data.status === '1') && (data.file || data.file_cors)) {
     const audioUrl = data.file_cors || data.file;
-    speechAudioCache.set(speechText, audioUrl);
+    speechAudioCache.set(cacheKey, audioUrl);
     return audioUrl;
   }
   throw new Error((data && data.error) || 'SpeechGen generation failed');
 }
 
-function playOnlineJapaneseAudio(text, stopRelay, safetyTimer) {
+function playOnlineJapaneseAudio(text, stopRelay, safetyTimer, forcedSessionId) {
+  const sessionId = typeof forcedSessionId === 'number' ? forcedSessionId : currentAudioSessionId;
   const clean = cleanSpeechText(text);
   if (!clean) {
     if (safetyTimer) clearTimeout(safetyTimer);
@@ -1316,13 +1394,11 @@ function playOnlineJapaneseAudio(text, stopRelay, safetyTimer) {
     return;
   }
 
-  // Cắt ngắn nếu câu quá dài (> 180 ký tự) để đảm bảo độ trễ tối ưu
   const shortText = clean.length > 180 ? clean.substring(0, 180) : clean;
   const encoded = encodeURIComponent(shortText);
 
-  // Danh sách các nguồn âm thanh tiếng Nhật online chất lượng cao:
-  // 1. Google Translate TTS CDN: Giọng đọc chuẩn quốc tế, hỗ trợ mọi câu ngắn & dài
-  // 2. Youdao Japanese Audio CDN (NetEase): Tương thích 100% điện thoại nội địa Trung Quốc (Xiaomi, Vivo, Oppo, Realme, Huawei), không bị chặn bởi tường lửa GFW
+
+
   const sources = [
     {
       name: 'Google TTS',
@@ -1338,17 +1414,41 @@ function playOnlineJapaneseAudio(text, stopRelay, safetyTimer) {
 
   let srcIdx = 0;
   let finished = false;
+  let sourceTimer = null;
+  let activeAudio = null;
+
+  activeOnlineAudioAbort = function() {
+    finished = true;
+    if (sourceTimer) {
+      clearTimeout(sourceTimer);
+      sourceTimer = null;
+    }
+    if (activeAudio) {
+      try {
+        activeAudio.pause();
+        activeAudio.currentTime = 0;
+        activeAudio.src = '';
+      } catch (e) {}
+      activeAudio = null;
+    }
+  };
 
   function endPlayback() {
     if (finished) return;
     finished = true;
+    if (sourceTimer) {
+      clearTimeout(sourceTimer);
+      sourceTimer = null;
+    }
     if (safetyTimer) clearTimeout(safetyTimer);
     if (stopRelay) stopRelay();
-    if (currentSpeechAudio) currentSpeechAudio = null;
+    if (currentSpeechAudio === activeAudio) currentSpeechAudio = null;
+    if (activeAudio) activeAudio = null;
+    activeOnlineAudioAbort = null;
   }
 
   function tryNextSource() {
-    if (finished) return;
+    if (finished || sessionId !== currentAudioSessionId) return;
     if (srcIdx >= sources.length) {
       endPlayback();
       return;
@@ -1356,6 +1456,9 @@ function playOnlineJapaneseAudio(text, stopRelay, safetyTimer) {
 
     const src = sources[srcIdx++];
     const audio = new Audio();
+    activeAudio = audio;
+    currentSpeechAudio = audio;
+
     if (src.noReferrer) {
       try {
         audio.referrerPolicy = 'no-referrer';
@@ -1364,10 +1467,10 @@ function playOnlineJapaneseAudio(text, stopRelay, safetyTimer) {
     }
     audio.preload = 'auto';
     audio.src = src.url;
-    currentSpeechAudio = audio;
 
-    let sourceTimer = setTimeout(() => {
-      // Nếu sau 4.5s nguồn này chưa phát hoặc bị đơ (thường gặp khi Google bị chặn ở Trung Quốc)
+    sourceTimer = setTimeout(() => {
+      if (finished || sessionId !== currentAudioSessionId) return;
+
       if (!finished && (audio.paused || audio.readyState < 2)) {
         try { audio.pause(); } catch (e) {}
         tryNextSource();
@@ -1375,21 +1478,24 @@ function playOnlineJapaneseAudio(text, stopRelay, safetyTimer) {
     }, 4500);
 
     audio.onended = () => {
-      clearTimeout(sourceTimer);
+      if (sourceTimer) clearTimeout(sourceTimer);
+      if (finished || sessionId !== currentAudioSessionId) return;
       endPlayback();
     };
 
     audio.onerror = () => {
-      clearTimeout(sourceTimer);
+      if (sourceTimer) clearTimeout(sourceTimer);
+      if (finished || sessionId !== currentAudioSessionId) return;
       tryNextSource();
     };
 
     const p = audio.play();
     if (p !== undefined) {
       p.then(() => {
-        clearTimeout(sourceTimer);
+        if (sourceTimer) clearTimeout(sourceTimer);
       }).catch(() => {
-        clearTimeout(sourceTimer);
+        if (sourceTimer) clearTimeout(sourceTimer);
+        if (finished || sessionId !== currentAudioSessionId) return;
         tryNextSource();
       });
     }
@@ -1398,8 +1504,11 @@ function playOnlineJapaneseAudio(text, stopRelay, safetyTimer) {
   tryNextSource();
 }
 
-function speakWithLedaWebSpeech(speechText, stopRelay, safetyTimer, cfg, onFallback) {
+function speakWithLedaWebSpeech(speechText, stopRelay, safetyTimer, cfg, onFallback, speakerKey, forcedSessionId) {
+  const sessionId = typeof forcedSessionId === 'number' ? forcedSessionId : currentAudioSessionId;
+
   if (typeof window === 'undefined' || !('speechSynthesis' in window)) {
+    if (sessionId !== currentAudioSessionId) return;
     if (onFallback) {
       onFallback();
     } else {
@@ -1409,8 +1518,12 @@ function speakWithLedaWebSpeech(speechText, stopRelay, safetyTimer, cfg, onFallb
     return;
   }
 
-  const voice = cachedLedaVoice || findLedaJpVoice();
+  const isDefaultSpeaker = resolveDialogueSpeakerId(speakerKey) === DIALOGUE_DEFAULT_SPEAKER;
+  const voice = isDefaultSpeaker
+    ? (cachedLedaVoice || findLedaJpVoice())
+    : (findDialogueJpVoice(speakerKey) || cachedLedaVoice || findLedaJpVoice());
   if (!voice) {
+    if (sessionId !== currentAudioSessionId) return;
     if (onFallback) {
       onFallback();
     } else {
@@ -1424,18 +1537,32 @@ function speakWithLedaWebSpeech(speechText, stopRelay, safetyTimer, cfg, onFallb
     if (window.speechSynthesis.paused) {
       window.speechSynthesis.resume();
     }
+    const prosody = computeDialogueProsody(getDialogueVoiceProfile(speakerKey), cfg, speechText);
     const utterance = new SpeechSynthesisUtterance(speechText);
     utterance.lang = 'ja-JP';
     utterance.voice = voice;
-    utterance.rate = cfg && cfg.speed ? cfg.speed : 0.92;
-    utterance.pitch = cfg && cfg.pitch ? cfg.pitch : 1.04;
+    utterance.rate = prosody.rate;
+    utterance.pitch = prosody.pitch;
 
     utterance.onend = () => {
+      if (sessionId !== currentAudioSessionId) return;
       clearTimeout(safetyTimer);
       stopRelay();
     };
+
     utterance.onerror = (err) => {
-      console.warn('Web Speech API phát âm lỗi, chuyển sang online audio:', err);
+
+      if (sessionId !== currentAudioSessionId) return;
+
+
+      const errType = (err && err.error) || '';
+      if (errType === 'interrupted' || errType === 'canceled') {
+        clearTimeout(safetyTimer);
+        stopRelay();
+        return;
+      }
+
+      console.warn('Web Speech API phát âm lỗi (mã: ' + errType + '), chuyển sang online audio fallback:', err);
       if (onFallback) {
         onFallback();
       } else {
@@ -1444,8 +1571,25 @@ function speakWithLedaWebSpeech(speechText, stopRelay, safetyTimer, cfg, onFallb
       }
     };
 
-    window.speechSynthesis.speak(utterance);
+    setTimeout(() => {
+      if (sessionId !== currentAudioSessionId) return;
+      try {
+        if (window.speechSynthesis.paused) {
+          window.speechSynthesis.resume();
+        }
+        window.speechSynthesis.speak(utterance);
+      } catch (innerErr) {
+        if (sessionId === currentAudioSessionId && onFallback) {
+          onFallback();
+        } else {
+          clearTimeout(safetyTimer);
+          stopRelay();
+        }
+      }
+    }, 16);
+
   } catch (err) {
+    if (sessionId !== currentAudioSessionId) return;
     if (onFallback) {
       onFallback();
     } else {
@@ -1455,10 +1599,18 @@ function speakWithLedaWebSpeech(speechText, stopRelay, safetyTimer, cfg, onFallb
   }
 }
 
-async function speakJapanese(text, btnElement, ev) {
+
+async function speakJapanese(text, btnElement, ev, speakerKey) {
   if (ev && ev.stopPropagation) {
     ev.stopPropagation();
   }
+
+  const now = Date.now();
+  if (lastSpeechClickTime && (now - lastSpeechClickTime < 160) && text === lastSpeechText) {
+    return;
+  }
+  lastSpeechClickTime = now;
+  lastSpeechText = text;
 
   let btn = btnElement;
   if (!btn && typeof window !== 'undefined' && window.event) {
@@ -1469,6 +1621,7 @@ async function speakJapanese(text, btnElement, ev) {
   }
 
   stopAllSpeechAudio();
+  const sessionId = ++currentAudioSessionId;
 
   const cleanText = cleanSpeechText(text);
   if (!cleanText) {
@@ -1483,6 +1636,7 @@ async function speakJapanese(text, btnElement, ev) {
   }
 
   const stopRelay = () => {
+    if (sessionId !== currentAudioSessionId) return;
     if (btn && btn.classList) {
       btn.classList.remove('is-speaking');
     }
@@ -1490,37 +1644,47 @@ async function speakJapanese(text, btnElement, ev) {
 
   const dynamicDuration = Math.max(6500, cleanText.length * 280);
   const safetyTimer = setTimeout(stopRelay, dynamicDuration);
-  const cfg = getSpeechGenConfig();
+  activeSpeechSafetyTimer = safetyTimer;
 
-  // 1. Kiểm tra xem thiết bị có sẵn gói giọng đọc tiếng Nhật (ja-JP) hay không
-  const jpVoice = cachedLedaVoice || findLedaJpVoice();
+  const appCfg = getSpeechGenConfig();
+  const speakerToUse = speakerKey || appCfg.speaker || DIALOGUE_DEFAULT_SPEAKER;
+  const voiceProfile = getDialogueVoiceProfile(speakerToUse);
+  const cfg = Object.assign({}, appCfg, { voice: voiceProfile.speechGenVoice || SPEECHGEN_VOICE });
 
-  // 2. Nếu người dùng có cấu hình tài khoản SpeechGen riêng (token & email)
+  const jpVoice = findDialogueJpVoice(speakerToUse) || cachedLedaVoice || findLedaJpVoice();
+
   if (cfg.token && cfg.email) {
     try {
       const audioUrl = await fetchSpeechGenAudio(speechText, cfg);
+
+      if (sessionId !== currentAudioSessionId) {
+        return; // Người dùng đã bấm từ khác trong lúc đang tải mạng, hủy bỏ ngay!
+      }
       if (audioUrl) {
         const audio = new Audio(audioUrl);
         currentSpeechAudio = audio;
         audio.onended = () => {
+          if (sessionId !== currentAudioSessionId) return;
           clearTimeout(safetyTimer);
           stopRelay();
           if (currentSpeechAudio === audio) currentSpeechAudio = null;
         };
         audio.onerror = () => {
+          if (sessionId !== currentAudioSessionId) return;
           if (jpVoice) {
-            speakWithLedaWebSpeech(speechText, stopRelay, safetyTimer, cfg, () => playOnlineJapaneseAudio(cleanText, stopRelay, safetyTimer));
+            speakWithLedaWebSpeech(speechText, stopRelay, safetyTimer, cfg, () => playOnlineJapaneseAudio(cleanText, stopRelay, safetyTimer, sessionId), speakerToUse, sessionId);
           } else {
-            playOnlineJapaneseAudio(cleanText, stopRelay, safetyTimer);
+            playOnlineJapaneseAudio(cleanText, stopRelay, safetyTimer, sessionId);
           }
         };
         const p = audio.play();
         if (p !== undefined) {
           p.catch(() => {
+            if (sessionId !== currentAudioSessionId) return;
             if (jpVoice) {
-              speakWithLedaWebSpeech(speechText, stopRelay, safetyTimer, cfg, () => playOnlineJapaneseAudio(cleanText, stopRelay, safetyTimer));
+              speakWithLedaWebSpeech(speechText, stopRelay, safetyTimer, cfg, () => playOnlineJapaneseAudio(cleanText, stopRelay, safetyTimer, sessionId), speakerToUse, sessionId);
             } else {
-              playOnlineJapaneseAudio(cleanText, stopRelay, safetyTimer);
+              playOnlineJapaneseAudio(cleanText, stopRelay, safetyTimer, sessionId);
             }
           });
         }
@@ -1531,34 +1695,36 @@ async function speakJapanese(text, btnElement, ev) {
     }
   }
 
-  // 3. Nếu máy CÓ sẵn giọng đọc tiếng Nhật (như iPhone iOS, Android quốc tế, Windows/Mac) -> dùng Web Speech API siêu mượt
-  const isTouchDevice = typeof window !== 'undefined' && ('ontouchstart' in window || (typeof navigator !== 'undefined' && navigator.maxTouchPoints > 0));
   const hasSpeechSynth = typeof window !== 'undefined' && 'speechSynthesis' in window && typeof SpeechSynthesisUtterance !== 'undefined';
 
   if (jpVoice && hasSpeechSynth) {
     speakWithLedaWebSpeech(speechText, stopRelay, safetyTimer, cfg, () => {
-      playOnlineJapaneseAudio(cleanText, stopRelay, safetyTimer);
-    });
+      playOnlineJapaneseAudio(cleanText, stopRelay, safetyTimer, sessionId);
+    }, speakerToUse, sessionId);
     return;
   }
 
-  // 4. Nếu máy KHÔNG có gói giọng đọc tiếng Nhật (thường gặp trên điện thoại Android nội địa Trung: Xiaomi, Redmi, Vivo, Oppo, Huawei...)
-  // Tự động kích hoạt Bộ phát âm thanh trực tuyến đa tầng (Google Translate TTS + Youdao JP), phát âm thanh ngay lập tức!
   if (!window._warnedNoJpVoice) {
     window._warnedNoJpVoice = true;
-    showToast("Đang phát âm thanh trực tuyến (Điện thoại chưa cài gói giọng tiếng Nhật ja-JP).");
+    if (typeof showToast === 'function') {
+      showToast("Đang phát âm thanh trực tuyến (Điện thoại chưa cài gói giọng tiếng Nhật ja-JP).");
+    }
   }
-  playOnlineJapaneseAudio(cleanText, stopRelay, safetyTimer);
+  playOnlineJapaneseAudio(cleanText, stopRelay, safetyTimer, sessionId);
 }
 
 window.speakJapanese = speakJapanese;
+window.getDialogueVoiceProfile = getDialogueVoiceProfile;
 
-const SPEAKER_ICON_HTML = `<svg class="speaker-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path><path d="M19.07 4.93a10 10 0 0 1 0 14.14"></path></svg>`;
 
-/**
- * HỆ THỐNG BIỂU TƯỢNG VECTOR SVG TINH TẾ & TỐI GIẢN (MINIMALIST & REFINED ICONS)
- * Tách biệt tại data/ui_icons.js (Đồng bộ qua window.APP_ICONS kèm fallback an toàn).
- */
+const _playOnlineJapaneseAudioCore = playOnlineJapaneseAudio;
+window.playOnlineJapaneseAudio = function(text, onEnd, safetyTimer) {
+  _playOnlineJapaneseAudioCore(text, typeof onEnd === 'function' ? onEnd : null, safetyTimer || null);
+};
+
+const SPEAKER_ICON_HTML = `<svg class="speaker-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path><path d="M19.07 4.93a10 10 0 0 1 0 14.14"></path></svg>`;
+
+
 const APP_ICONS = (typeof window !== 'undefined' && window.APP_ICONS)
   || (typeof global !== 'undefined' && global.APP_ICONS)
   || {};
@@ -1630,12 +1796,13 @@ function renderGrammarExamples(examples, fallbackHtml) {
             <div class="dialogue-lines">
               ${(ex.lines || ex.dialogue || []).map(line => {
                 const cleanSpeech = cleanSpeechText(line.rawJp || line.jp);
+                const speakerKey = String(line.speaker || '').toLowerCase().replace(/[^a-z0-9_]/g, '');
                 return `
                   <div class="dialogue-line dialogue-speaker-${line.speaker.toLowerCase()}">
                     <div class="speaker-badge speaker-${line.speaker.toLowerCase()}">${line.speaker}</div>
                     <div class="dialogue-bubble">
                       <div class="dialogue-jp">
-                        <button class="speak-btn" onclick="speakJapanese('${cleanSpeech}', this, event)" title="Nghe câu này (Leda JP)">${SPEAKER_ICON_HTML}</button>
+                        <button class="speak-btn" onclick="speakJapanese('${cleanSpeech}', this, event, '${speakerKey}')" title="Nghe câu này (giọng hội thoại)">${SPEAKER_ICON_HTML}</button>
                         <span class="jp-sentence">${line.jp}</span>
                       </div>
                       <div class="dialogue-vi">${line.vi}</div>
@@ -1657,7 +1824,7 @@ function renderGrammarExamples(examples, fallbackHtml) {
             </div>
             <div class="sentence-box">
               <div class="sentence-jp">
-                <button class="speak-btn" onclick="speakJapanese('${cleanSpeech}', this, event)" title="Nghe câu này (Leda JP)">${SPEAKER_ICON_HTML}</button>
+                <button class="speak-btn" onclick="speakJapanese('${cleanSpeech}', this, event)" title="Nghe câu này (giọng hội thoại)">${SPEAKER_ICON_HTML}</button>
                 <span class="jp-sentence">${ex.jp}</span>
               </div>
               <div class="sentence-vi">
@@ -1688,9 +1855,7 @@ function showToast(message) {
   }, 2600);
 }
 
-// --------------------------------------------------------------------------
-// 2B. HOẠT ẢNH CUỘN TRANG (SCROLL REVEAL BẰNG INTERSECTION OBSERVER)
-// --------------------------------------------------------------------------
+
 let quizScrollObserver = null;
 
 function initScrollReveal() {
@@ -1724,15 +1889,13 @@ function initScrollReveal() {
   }
 }
 
-// --------------------------------------------------------------------------
-// 3. LOGIC RENDER SIDEBAR (BÀI HỌC 1-50, BÀI TẬP 1-50, ĐỌC HIỂU 1-50, BỘ THỦ)
-// --------------------------------------------------------------------------
+// ZONE 06: SIDEBAR SINGLE-ACCORDION, SYNC BAR & LESSON VIEW RENDERER (50 MINNA LESSONS)
+
 function renderSidebar() {
   const sidebarMenu = document.getElementById('sidebar-menu');
   if (!sidebarMenu) return;
 
-  // DOM PATCHING: Nếu thanh bên đã được dựng trước đó, chỉ cập nhật trạng thái completed và active
-  // Tránh innerHTML wipe gây Forced Reflow và mất vị trí cuộn trên di động
+
   const isInitialLoad = !sidebarMenu.children || sidebarMenu.children.length === 0;
   if (!isInitialLoad && sidebarMenu.querySelector && sidebarMenu.querySelector('.accordion-group')) {
     const allItemBtns = sidebarMenu.querySelectorAll ? sidebarMenu.querySelectorAll('.menu-item-btn') : [];
@@ -1741,7 +1904,9 @@ function renderSidebar() {
         const id = btn.getAttribute('data-id');
         if (!id) return;
         const isComp = isModuleCompleted(id);
-        const isCur = (id === currentActiveId);
+        const isCur = (id === currentActiveId) ||
+          (id === 'conjugation-lab' && currentActiveId === 'master-hub') ||
+          (id === 'analytics-hub' && currentActiveId === 'streak-zen');
         btn.classList.toggle('active', isCur);
         const tag = btn.querySelector ? btn.querySelector('.item-tag') : null;
         if (tag) {
@@ -1768,7 +1933,7 @@ function renderSidebar() {
     if (sidebarMenu.querySelectorAll) {
       const openEls = sidebarMenu.querySelectorAll('.accordion-group.open');
       if (openEls && openEls.length) {
-        // Chỉ lưu tối đa 1 nhóm mở gần nhất để luôn đảm bảo nguyên lý Single-Accordion
+
         const lastOpen = openEls[openEls.length - 1];
         if (lastOpen && lastOpen.id) openGroupIds.add(lastOpen.id);
       }
@@ -1778,7 +1943,6 @@ function renderSidebar() {
   sidebarMenu.innerHTML = '';
   const fragment = (typeof document !== 'undefined' && document.createDocumentFragment) ? document.createDocumentFragment() : null;
 
-  // Nút truy cập nhanh Từ Điển trên Sidebar
   const maziiQuickEl = document.createElement('div');
   maziiQuickEl.className = 'sidebar-mazii-quick';
   maziiQuickEl.innerHTML = `
@@ -1796,13 +1960,12 @@ function renderSidebar() {
     sidebarMenu.appendChild(maziiQuickEl);
   }
 
-  // Nút truy cập nhanh Luyện Thi JLPT trên Sidebar
   const examQuickEl = document.createElement('div');
   examQuickEl.className = 'sidebar-exam-quick';
   examQuickEl.innerHTML = `
     <button type="button" class="sidebar-exam-btn ${(currentActiveId === 'exam' || String(currentActiveId).startsWith('exam-')) ? 'active' : ''}" onclick="switchModule('exam')" title="Luyện thi JLPT N5 &amp; N4: 50 đề thi chuẩn">
       <span class="exam-quick-left">
-        <span class="exam-icon">${(typeof APP_ICONS !== 'undefined' && APP_ICONS.torii) ? APP_ICONS.torii : '<svg class="icon-svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 5c4-1 16-1 20 0"></path><line x1="4" y1="8.5" x2="20" y2="8.5"></line><line x1="7" y1="8.5" x2="7" y2="21"></line><line x1="17" y1="8.5" x2="17" y2="21"></line><line x1="12" y1="5.5" x2="12" y2="8.5"></line></svg>'}</span>
+        <span class="exam-icon">${(typeof APP_ICONS !== 'undefined' && APP_ICONS.torii) ? APP_ICONS.torii : '<svg class="icon-svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 6C8 7.2 16 7.2 21 6 M4.5 9H19.5 M12 6.8V9 M7.5 9V21 M16.5 9V21 M6.5 21H8.5 M15.5 21H17.5"></path></svg>'}</span>
         <span class="exam-text-col">
           <span class="exam-title-main">Luyện Thi JLPT</span>
           <span class="exam-title-sub">N5 &bull; N4</span>
@@ -1817,6 +1980,23 @@ function renderSidebar() {
     sidebarMenu.appendChild(examQuickEl);
   }
 
+  const masterHubQuickEl = document.createElement('div');
+  masterHubQuickEl.className = 'sidebar-mazii-quick';
+  masterHubQuickEl.innerHTML = `
+    <button type="button" class="sidebar-mazii-btn ${currentActiveId === 'master-hub' ? 'active' : ''}" onclick="switchModule('master-hub')" title="Đấu trường Chia Thể, Sổ Tay Cá Nhân, Lượng Từ &amp; Chuỗi Ngày Học">
+      <span class="mazii-quick-left">
+        <span class="mazii-icon">${APP_ICONS.bolt || '<svg class="icon-svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M13.5 2.5L5.5 13.5H12L10.5 21.5L18.5 10.5H12L13.5 2.5Z"></path></svg>'}</span>
+        <span class="mazii-title">Phòng Lab &amp; Sổ Tay</span>
+      </span>
+      <span class="mazii-badge">Master V4</span>
+    </button>
+  `;
+  if (fragment) {
+    fragment.appendChild(masterHubQuickEl);
+  } else {
+    sidebarMenu.appendChild(masterHubQuickEl);
+  }
+
   const root = (typeof window !== 'undefined' ? window : (typeof global !== 'undefined' ? global : {}));
   const loadedLessons = Array.isArray(root.lessonsData) ? root.lessonsData : (typeof lessonsData !== 'undefined' && Array.isArray(lessonsData) ? lessonsData : []);
   const loadedQuizzes = (root.practiceQuizData && typeof root.practiceQuizData === 'object') ? root.practiceQuizData : (typeof practiceQuizData !== 'undefined' && practiceQuizData ? practiceQuizData : {});
@@ -1828,6 +2008,7 @@ function renderSidebar() {
     {
       id: "group-lessons",
       title: "Bài Học",
+      icon: APP_ICONS.book || '',
       isOpenDefault: false,
       items: Array.from({ length: 50 }, (_, i) => {
         const num = i + 1;
@@ -1842,8 +2023,27 @@ function renderSidebar() {
       })
     },
     {
+      id: "group-kaiwa",
+      title: "Hội Thoại",
+      icon: (window.ACCOUNT_WA_ICONS && window.ACCOUNT_WA_ICONS.stats && window.ACCOUNT_WA_ICONS.stats.kaiwa) || APP_ICONS.kaiwaWave || APP_ICONS.speaker || '',
+      isOpenDefault: false,
+      items: Array.from({ length: 50 }, (_, i) => {
+        const num = i + 1;
+        const kwId = `kaiwa-${num}`;
+        const kwMap = root.KAIWA_DATA || {};
+        const kw = kwMap[kwId];
+        return {
+          id: kwId,
+          label: kw ? `Hội thoại Bài ${num}: ${kw.titleVi}` : `Hội thoại Bài ${num}`,
+          sub: "Kaiwa • 練習C",
+          isCurrent: kwId === currentActiveId
+        };
+      })
+    },
+    {
       id: "group-quiz",
       title: "Bài Tập",
+      icon: APP_ICONS.bolt || '',
       isOpenDefault: false,
       items: Array.from({ length: 50 }, (_, i) => {
         const num = i + 1;
@@ -1860,6 +2060,7 @@ function renderSidebar() {
     {
       id: "group-dokkai",
       title: "Đọc Hiểu",
+      icon: APP_ICONS.newspaper || APP_ICONS.dokkai || '',
       isOpenDefault: false,
       items: Array.from({ length: 50 }, (_, i) => {
         const num = i + 1;
@@ -1876,6 +2077,7 @@ function renderSidebar() {
     {
       id: "group-kanji",
       title: "Mẹo Nhớ Kanji",
+      icon: APP_ICONS.pen || '',
       isOpenDefault: false,
       items: Array.from({ length: 50 }, (_, i) => {
         const num = i + 1;
@@ -1892,6 +2094,7 @@ function renderSidebar() {
     {
       id: "group-radicals",
       title: "Bộ Thủ",
+      icon: (window.MASTER_SUITE_ICONS && window.MASTER_SUITE_ICONS.reference) || APP_ICONS.radicalsGrid || APP_ICONS.kanjiBadge || '',
       isOpenDefault: false,
       items: Array.from({ length: 17 }, (_, i) => {
         const num = i + 1;
@@ -1906,8 +2109,45 @@ function renderSidebar() {
       })
     },
     {
+      id: "group-master-suite",
+      title: "Trung Tâm Phản Xạ & Sổ Tay",
+      icon: (window.MASTER_SUITE_ICONS && window.MASTER_SUITE_ICONS.torii) || APP_ICONS.torii || '',
+      isOpenDefault: false,
+      items: [
+        {
+          id: 'conjugation-lab',
+          label: 'Đấu Trường Chia Thể',
+          sub: '10 Thể V/A',
+          icon: (window.MASTER_SUITE_ICONS && window.MASTER_SUITE_ICONS.bolt) || APP_ICONS.bolt || '',
+          isCurrent: currentActiveId === 'conjugation-lab' || (currentActiveId === 'master-hub' && (!window.StudyToolsEngine || !window.StudyToolsEngine.state || window.StudyToolsEngine.state.activeTab === 'conjugation'))
+        },
+        {
+          id: 'mistake-notebook',
+          label: 'Sổ Tay & Kho Câu Sai',
+          sub: 'SRS Phục Thù',
+          icon: (window.MASTER_SUITE_ICONS && window.MASTER_SUITE_ICONS.notebook) || APP_ICONS.exercise || '',
+          isCurrent: currentActiveId === 'mistake-notebook' || (currentActiveId === 'master-hub' && window.StudyToolsEngine && window.StudyToolsEngine.state && window.StudyToolsEngine.state.activeTab === 'notebook')
+        },
+        {
+          id: 'reference-hub',
+          label: 'Bảng Tra Cứu Toàn Thư',
+          sub: '5 Chuyên Đề',
+          icon: (window.MASTER_SUITE_ICONS && window.MASTER_SUITE_ICONS.reference) || APP_ICONS.radicalsGrid || '',
+          isCurrent: currentActiveId === 'reference-hub' || (currentActiveId === 'master-hub' && window.StudyToolsEngine && window.StudyToolsEngine.state && window.StudyToolsEngine.state.activeTab === 'reference')
+        },
+        {
+          id: 'analytics-hub',
+          label: 'Streak, Radar & Zen',
+          sub: 'Streak & Zen',
+          icon: (window.MASTER_SUITE_ICONS && window.MASTER_SUITE_ICONS.flame) || APP_ICONS.streakComet || '',
+          isCurrent: currentActiveId === 'analytics-hub' || currentActiveId === 'streak-zen' || (currentActiveId === 'master-hub' && window.StudyToolsEngine && window.StudyToolsEngine.state && window.StudyToolsEngine.state.activeTab === 'analytics')
+        }
+      ]
+    },
+    {
       id: "group-exam",
       title: "Luyện Thi JLPT",
+      icon: APP_ICONS.torii || '',
       isOpenDefault: false,
       items: (root.EXAMS_MANIFEST && Array.isArray(root.EXAMS_MANIFEST.exams) ? root.EXAMS_MANIFEST.exams : []).map(ex => {
         const isCur = (currentActiveId === ex.id || currentActiveId === `exam-${ex.code.toLowerCase()}`);
@@ -1922,7 +2162,7 @@ function renderSidebar() {
   ];
 
   groups.forEach(group => {
-    // Mặc định khi mới vào trang: toàn bộ 5 nhóm đều đóng gọn gàng (collapsed) theo yêu cầu người dùng
+
     const isOpen = openGroupIds.has(group.id);
 
     const groupEl = document.createElement('div');
@@ -1932,11 +2172,12 @@ function renderSidebar() {
     groupEl.innerHTML = `
       <button class="accordion-header" aria-expanded="${isOpen}">
         <div class="accordion-header-left">
+          <span class="accordion-group-icon" aria-hidden="true">${group.icon || ''}</span>
           <span>${group.title}</span>
         </div>
         <div class="accordion-header-right">
           <span class="accordion-badge">${group.items.length}</span>
-          <svg class="accordion-chevron" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <svg class="accordion-chevron" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
             <polyline points="6 9 12 15 18 9"></polyline>
           </svg>
         </div>
@@ -1945,14 +2186,18 @@ function renderSidebar() {
         <ul class="accordion-menu-list">
           ${group.items.map(it => {
             const isComp = isModuleCompleted(it.id);
-            const activeClass = (it.id === currentActiveId) ? 'active' : '';
-            const tagClass = isComp ? 'item-tag completed' : (it.isCurrent ? 'item-tag current' : 'item-tag');
+            const isCur = (it.id === currentActiveId) ||
+              (it.id === 'conjugation-lab' && currentActiveId === 'master-hub') ||
+              (it.id === 'analytics-hub' && currentActiveId === 'streak-zen');
+            const activeClass = isCur ? 'active' : '';
+            const tagClass = isComp ? 'item-tag completed' : (isCur ? 'item-tag current' : 'item-tag');
             const tagLabel = isComp ? 'Đã xong' : it.sub;
 
             return `
               <li>
                 <button class="menu-item-btn ${activeClass}" data-id="${it.id}">
                   <div class="item-left-content">
+                    ${it.icon ? `<span class="menu-item-icon" aria-hidden="true">${it.icon}</span>` : ''}
                     <span>${it.label}</span>
                   </div>
                   <span class="${tagClass}">${tagLabel}</span>
@@ -1970,7 +2215,6 @@ function renderSidebar() {
         if (e && e.preventDefault) e.preventDefault();
         const isCurrentlyOpen = groupEl.classList.contains('open');
 
-        // Cơ chế Single Accordion nghiêm ngặt: Luôn đóng TẤT CẢ các nhóm trước
         const allGroups = sidebarMenu.querySelectorAll ? sidebarMenu.querySelectorAll('.accordion-group') : [];
         if (allGroups && allGroups.forEach) {
           allGroups.forEach(g => {
@@ -1982,7 +2226,6 @@ function renderSidebar() {
           });
         }
 
-        // Nếu nhóm này trước khi bấm chưa mở thì mở lên
         if (!isCurrentlyOpen) {
           groupEl.classList.add('open');
           headerBtn.setAttribute('aria-expanded', 'true');
@@ -2013,9 +2256,7 @@ function renderSidebar() {
   }
 }
 
-// --------------------------------------------------------------------------
-// 3B. THANH ĐỒNG BỘ CÁC CHẾ ĐỘ HỌC TẬP THEO TỪNG BÀI (BÀI HỌC - MẸO NHỚ - FLASHCARD - BÀI TẬP - ĐỌC HIỂU)
-// --------------------------------------------------------------------------
+
 let currentKanjiTab = (typeof window !== 'undefined' && window.currentKanjiTab) ? window.currentKanjiTab : 'list';
 if (typeof window !== 'undefined') window.currentKanjiTab = currentKanjiTab;
 
@@ -2023,7 +2264,7 @@ function renderModuleSyncBar(lessonNum, activeMode) {
   const num = parseInt(lessonNum, 10) || 1;
   const prevNum = num > 1 ? num - 1 : null;
   const nextNum = num < 50 ? num + 1 : null;
-  const modePrefix = activeMode === 'quiz' ? 'quiz' : (activeMode === 'dokkai' ? 'dokkai' : (activeMode === 'kanji' ? 'kanji' : 'bai'));
+  const modePrefix = activeMode === 'quiz' ? 'quiz' : (activeMode === 'kaiwa' ? 'kaiwa' : (activeMode === 'dokkai' ? 'dokkai' : (activeMode === 'kanji' ? 'kanji' : 'bai')));
   const isKanji = activeMode === 'kanji';
   const isFcTab = isKanji && (typeof currentKanjiTab !== 'undefined' && currentKanjiTab === 'flashcard');
   const isListTab = isKanji && !isFcTab;
@@ -2031,25 +2272,29 @@ function renderModuleSyncBar(lessonNum, activeMode) {
   return `
     <div class="module-sync-bar" aria-label="Chuyển nhanh chế độ học Bài ${num}">
       <div class="module-sync-tabs">
-        <button type="button" class="sync-tab-btn ${activeMode === 'lesson' ? 'active' : ''}" onclick="switchModule('bai-${num}')">
+        <button type="button" class="sync-tab-btn ${activeMode === 'lesson' ? 'active' : ''}" onclick="switchModule('bai-${num}')" title="Lý thuyết Bài ${num}" aria-label="Lý thuyết Bài ${num}">
           <span class="sync-tab-icon">${APP_ICONS.book}</span>
-          <span>Lý thuyết Bài ${num}</span>
+          <span class="sync-tab-label">Lý thuyết</span>
         </button>
-        <button type="button" class="sync-tab-btn ${isListTab ? 'active' : ''}" onclick="switchKanjiModule('${num}', 'list')">
+        <button type="button" class="sync-tab-btn ${activeMode === 'kaiwa' ? 'active' : ''}" onclick="switchModule('kaiwa-${num}')" title="Hội thoại Bài ${num}" aria-label="Hội thoại Bài ${num}">
+          <span class="sync-tab-icon">${APP_ICONS.speaker || APP_ICONS.book}</span>
+          <span class="sync-tab-label">Hội thoại</span>
+        </button>
+        <button type="button" class="sync-tab-btn ${isListTab ? 'active' : ''}" onclick="switchKanjiModule('${num}', 'list')" title="Mẹo nhớ Kanji Bài ${num}" aria-label="Mẹo nhớ Kanji Bài ${num}">
           <span class="sync-tab-icon">${APP_ICONS.lightbulb}</span>
-          <span>Mẹo nhớ Kanji</span>
+          <span class="sync-tab-label">Mẹo nhớ Kanji</span>
         </button>
-        <button type="button" class="sync-tab-btn ${isFcTab ? 'active' : ''}" onclick="switchKanjiModule('${num}', 'flashcard')">
+        <button type="button" class="sync-tab-btn ${isFcTab ? 'active' : ''}" onclick="switchKanjiModule('${num}', 'flashcard')" title="Kiểm tra Flashcard Bài ${num}" aria-label="Kiểm tra Flashcard Bài ${num}">
           <span class="sync-tab-icon">${APP_ICONS.cards}</span>
-          <span>Kiểm tra Flashcard</span>
+          <span class="sync-tab-label">Kiểm tra Flashcard</span>
         </button>
-        <button type="button" class="sync-tab-btn ${activeMode === 'quiz' ? 'active' : ''}" onclick="switchModule('quiz-${num}')">
+        <button type="button" class="sync-tab-btn ${activeMode === 'quiz' ? 'active' : ''}" onclick="switchModule('quiz-${num}')" title="Trắc nghiệm Bài ${num} (70 câu)" aria-label="Trắc nghiệm Bài ${num} (70 câu)">
           <span class="sync-tab-icon">${APP_ICONS.pen}</span>
-          <span>Trắc nghiệm (50 câu)</span>
+          <span class="sync-tab-label">Trắc nghiệm</span>
         </button>
-        <button type="button" class="sync-tab-btn ${activeMode === 'dokkai' ? 'active' : ''}" onclick="switchModule('dokkai-${num}')">
+        <button type="button" class="sync-tab-btn ${activeMode === 'dokkai' ? 'active' : ''}" onclick="switchModule('dokkai-${num}')" title="Đọc hiểu Bài ${num}" aria-label="Đọc hiểu Bài ${num}">
           <span class="sync-tab-icon">${APP_ICONS.exercise}</span>
-          <span>Đọc hiểu Bài ${num}</span>
+          <span class="sync-tab-label">Đọc hiểu</span>
         </button>
       </div>
       <div class="module-step-nav">
@@ -2066,127 +2311,128 @@ function renderModuleSyncBar(lessonNum, activeMode) {
     </div>
   `;
 }
+if (typeof window !== 'undefined') window.renderModuleSyncBar = renderModuleSyncBar;
 
 function renderModuleFooterNav(lessonNum, activeMode) {
   const num = parseInt(lessonNum, 10) || 1;
   const prevNum = num > 1 ? num - 1 : null;
   const nextNum = num < 50 ? num + 1 : null;
-  const modePrefix = activeMode === 'quiz' ? 'quiz' : (activeMode === 'dokkai' ? 'dokkai' : (activeMode === 'kanji' ? 'kanji' : 'bai'));
+  const modePrefix = activeMode === 'quiz' ? 'quiz' : (activeMode === 'kaiwa' ? 'kaiwa' : (activeMode === 'dokkai' ? 'dokkai' : (activeMode === 'kanji' ? 'kanji' : 'bai')));
   const isFc = (typeof currentKanjiTab !== 'undefined' && currentKanjiTab === 'flashcard');
 
   return `
     <div class="module-footer-nav">
       <div class="footer-next-steps">
         ${activeMode === 'lesson' ? `
+          <button type="button" class="footer-cta-card accent-sakura" onclick="switchModule('kaiwa-${num}')">
+            <span class="footer-cta-tag">Nghe &amp; nói</span>
+            <strong class="footer-cta-title">Hội thoại Bài ${num} →</strong>
+          </button>
           <button type="button" class="footer-cta-card accent-amber" onclick="switchKanjiModule('${num}', 'list')">
-            <span class="footer-cta-tag">Ghi nhớ chữ Hán</span>
+            <span class="footer-cta-tag">Chữ Hán</span>
             <strong class="footer-cta-title">Mẹo nhớ Kanji Bài ${num} →</strong>
-            <span class="footer-cta-sub">Chiết tự & mẹo nhớ chữ Hán xuất hiện trong bài</span>
           </button>
           <button type="button" class="footer-cta-card accent-sky" onclick="switchModule('quiz-${num}')">
-            <span class="footer-cta-tag">Bước tiếp theo</span>
-            <strong class="footer-cta-title">Làm 50 câu Trắc nghiệm Bài ${num} →</strong>
-            <span class="footer-cta-sub">Kiểm tra ngay từ vựng & ngữ pháp vừa học</span>
+            <span class="footer-cta-tag">Bài tập</span>
+            <strong class="footer-cta-title">Trắc nghiệm Bài ${num} →</strong>
           </button>
           <button type="button" class="footer-cta-card accent-emerald" onclick="switchModule('dokkai-${num}')">
-            <span class="footer-cta-tag">Luyện kỹ năng đọc</span>
-            <strong class="footer-cta-title">Đọc hiểu Dokkai Bài ${num} →</strong>
-            <span class="footer-cta-sub">Đoạn văn thực tế kèm 100% Furigana & âm thanh</span>
+            <span class="footer-cta-tag">Đọc hiểu</span>
+            <strong class="footer-cta-title">Dokkai Bài ${num} →</strong>
+          </button>
+        ` : activeMode === 'kaiwa' ? `
+          <button type="button" class="footer-cta-card accent-sakura" onclick="switchModule('bai-${num}')">
+            <span class="footer-cta-tag">Lý thuyết</span>
+            <strong class="footer-cta-title">← Lý thuyết Bài ${num}</strong>
+          </button>
+          <button type="button" class="footer-cta-card accent-sky" onclick="switchModule('quiz-${num}')">
+            <span class="footer-cta-tag">Bài tập</span>
+            <strong class="footer-cta-title">Trắc nghiệm Bài ${num} →</strong>
+          </button>
+          <button type="button" class="footer-cta-card accent-emerald" onclick="switchModule('dokkai-${num}')">
+            <span class="footer-cta-tag">Đọc hiểu</span>
+            <strong class="footer-cta-title">Dokkai Bài ${num} →</strong>
           </button>
         ` : activeMode === 'quiz' ? `
           <button type="button" class="footer-cta-card accent-amber" onclick="switchKanjiModule('${num}', 'flashcard')">
-            <span class="footer-cta-tag">Củng cố Kanji</span>
-            <strong class="footer-cta-title">Kiểm tra Flashcard Kanji Bài ${num} →</strong>
-            <span class="footer-cta-sub">Lật thẻ 3D & kiểm tra phản xạ chữ Hán</span>
+            <span class="footer-cta-tag">Flashcard</span>
+            <strong class="footer-cta-title">Flashcard Kanji Bài ${num} →</strong>
           </button>
           <button type="button" class="footer-cta-card accent-sakura" onclick="switchModule('bai-${num}')">
-            <span class="footer-cta-tag">Ôn lại kiến thức</span>
-            <strong class="footer-cta-title">← Xem lại Lý thuyết Bài ${num}</strong>
-            <span class="footer-cta-sub">Bảng từ vựng, cấu trúc ngữ pháp & ví dụ</span>
+            <span class="footer-cta-tag">Lý thuyết</span>
+            <strong class="footer-cta-title">← Lý thuyết Bài ${num}</strong>
           </button>
           <button type="button" class="footer-cta-card accent-emerald" onclick="switchModule('dokkai-${num}')">
-            <span class="footer-cta-tag">Bước tiếp theo</span>
-            <strong class="footer-cta-title">Luyện Đọc hiểu Bài ${num} →</strong>
-            <span class="footer-cta-sub">Áp dụng ngữ pháp vào bài đọc thực tế</span>
+            <span class="footer-cta-tag">Đọc hiểu</span>
+            <strong class="footer-cta-title">Dokkai Bài ${num} →</strong>
           </button>
         ` : activeMode === 'dokkai' ? `
           <button type="button" class="footer-cta-card accent-amber" onclick="switchKanjiModule('${num}', 'list')">
-            <span class="footer-cta-tag">Học chữ Hán bài này</span>
+            <span class="footer-cta-tag">Chữ Hán</span>
             <strong class="footer-cta-title">Mẹo nhớ Kanji Bài ${num} →</strong>
-            <span class="footer-cta-sub">Chiết tự dễ thuộc & từ vựng bài đọc</span>
           </button>
           <button type="button" class="footer-cta-card accent-sakura" onclick="switchModule('bai-${num}')">
-            <span class="footer-cta-tag">Ôn tập lý thuyết</span>
-            <strong class="footer-cta-title">← Xem Lý thuyết Bài ${num}</strong>
-            <span class="footer-cta-sub">Tra cứu lại từ vựng & ngữ pháp Bài ${num}</span>
+            <span class="footer-cta-tag">Lý thuyết</span>
+            <strong class="footer-cta-title">← Lý thuyết Bài ${num}</strong>
           </button>
           <button type="button" class="footer-cta-card accent-sky" onclick="switchModule('quiz-${num}')">
-            <span class="footer-cta-tag">Luyện đề JLPT</span>
-            <strong class="footer-cta-title">Làm 50 câu Bài tập Bài ${num} →</strong>
-            <span class="footer-cta-sub">Củng cố toàn diện kiến thức Bài ${num}</span>
+            <span class="footer-cta-tag">Bài tập</span>
+            <strong class="footer-cta-title">Trắc nghiệm Bài ${num} →</strong>
           </button>
         ` : `
           ${isFc ? `
             <button type="button" class="footer-cta-card accent-amber" onclick="switchKanjiTab('list', true)">
-              <span class="footer-cta-tag">Xem lại chiết tự</span>
-              <strong class="footer-cta-title">← Bảng Mẹo nhớ Kanji Bài ${num}</strong>
-              <span class="footer-cta-sub">Tra cứu chi tiết chiết tự bộ thủ và âm On/Kun</span>
+              <span class="footer-cta-tag">Chiết tự</span>
+              <strong class="footer-cta-title">← Mẹo nhớ Kanji Bài ${num}</strong>
             </button>
             <button type="button" class="footer-cta-card accent-sky" onclick="switchModule('quiz-${num}')">
-              <span class="footer-cta-tag">Bước tiếp theo</span>
-              <strong class="footer-cta-title">Làm 50 câu Trắc nghiệm Bài ${num} →</strong>
-              <span class="footer-cta-sub">Kiểm tra khả năng nhận diện Kanji & ngữ pháp</span>
+              <span class="footer-cta-tag">Bài tập</span>
+              <strong class="footer-cta-title">Trắc nghiệm Bài ${num} →</strong>
             </button>
           ` : `
             <button type="button" class="footer-cta-card accent-amber" onclick="switchKanjiTab('flashcard', true)">
-              <span class="footer-cta-tag">Kiểm tra ghi nhớ</span>
-              <strong class="footer-cta-title">Kiểm tra Flashcard Bài ${num} →</strong>
-              <span class="footer-cta-sub">Lật thẻ 3D kiểm tra phản xạ & đánh giá mức độ nhớ</span>
+              <span class="footer-cta-tag">Flashcard</span>
+              <strong class="footer-cta-title">Flashcard Bài ${num} →</strong>
             </button>
             <button type="button" class="footer-cta-card accent-sky" onclick="switchModule('quiz-${num}')">
-              <span class="footer-cta-tag">Luyện đề</span>
-              <strong class="footer-cta-title">Làm 50 câu Trắc nghiệm Bài ${num} →</strong>
-              <span class="footer-cta-sub">Kiểm tra toàn diện từ vựng, ngữ pháp & chữ Hán</span>
+              <span class="footer-cta-tag">Bài tập</span>
+              <strong class="footer-cta-title">Trắc nghiệm Bài ${num} →</strong>
             </button>
           `}
           <button type="button" class="footer-cta-card accent-sakura" onclick="switchModule('bai-${num}')">
-            <span class="footer-cta-tag">Lý thuyết chính</span>
+            <span class="footer-cta-tag">Lý thuyết</span>
             <strong class="footer-cta-title">← Lý thuyết Bài ${num}</strong>
-            <span class="footer-cta-sub">Học từ vựng và cấu trúc ngữ pháp</span>
           </button>
           <button type="button" class="footer-cta-card accent-emerald" onclick="switchModule('dokkai-${num}')">
             <span class="footer-cta-tag">Đọc hiểu</span>
-            <strong class="footer-cta-title">Đọc hiểu Dokkai Bài ${num} →</strong>
-            <span class="footer-cta-sub">Đoạn văn thực tế với Furigana và âm thanh</span>
+            <strong class="footer-cta-title">Dokkai Bài ${num} →</strong>
           </button>
         `}
       </div>
       <div class="footer-lesson-pager">
         ${prevNum ? `
           <button type="button" class="pager-btn pager-prev" onclick="switchModule('${modePrefix}-${prevNum}')">
-            <span>← Bài trước (Bài ${prevNum})</span>
+            <span>← Bài ${prevNum}</span>
           </button>
         ` : `<div></div>`}
         ${nextNum ? `
           <button type="button" class="pager-btn pager-next" onclick="switchModule('${modePrefix}-${nextNum}')">
-            <span>Bài tiếp theo (Bài ${nextNum}) →</span>
+            <span>Bài ${nextNum} →</span>
           </button>
         ` : `<div></div>`}
       </div>
     </div>
   `;
 }
+if (typeof window !== 'undefined') window.renderModuleFooterNav = renderModuleFooterNav;
 
-// --------------------------------------------------------------------------
-// 4. LOGIC RENDER NỘI DUNG CHÍNH (MAIN CONTENT)
-// --------------------------------------------------------------------------
+
 function renderContent(id) {
   const content = document.getElementById('lesson-content');
   if (!content) return;
 
   currentActiveId = id;
 
-  // Dọn dẹp đồng hồ thi nếu không phải màn hình làm bài thi
   const isExamRunnerRoute = (String(id).startsWith('exam-') || String(id).startsWith('de-thi-') || String(id).includes('/'));
   if (!isExamRunnerRoute) {
     if (window.ExamEngine && typeof window.ExamEngine.cleanup === 'function') {
@@ -2194,7 +2440,6 @@ function renderContent(id) {
     }
   }
 
-  // Dọn dẹp widget bài tập nếu không phải màn hình bài tập
   if (!String(id).startsWith('quiz-')) {
     if (typeof removeQuizMiniTimerWidget === 'function') {
       removeQuizMiniTimerWidget();
@@ -2210,7 +2455,6 @@ function renderContent(id) {
 
   syncMobileBottomNav(id);
 
-  // Nếu dữ liệu module chưa sẵn sàng trong bộ nhớ, hiển thị spinner và nạp bất đồng bộ
   if (!isModuleDataReady(id)) {
     renderLazyLoader(id);
     ensureModuleDataLoaded(id).then(() => {
@@ -2236,7 +2480,30 @@ function renderContent(id) {
 
   const isCompleted = isModuleCompleted(id);
 
-  // 1. TRƯỜNG HỢP: BÀI HỌC MINNA NO NIHONGO (bai-1 đến bai-50)
+  if (id === 'master-hub' || id === 'conjugation-lab' || id === 'mistake-notebook' || id === 'reference-hub' || id === 'analytics-hub' || id === 'streak-zen' || String(id).startsWith('master-hub-')) {
+    let initialTab = 'conjugation';
+    if (id === 'mistake-notebook' || id === 'master-hub-notebook') {
+      initialTab = 'notebook';
+    } else if (id === 'reference-hub' || id === 'master-hub-reference') {
+      initialTab = 'reference';
+    } else if (id === 'analytics-hub' || id === 'streak-zen' || id === 'master-hub-analytics') {
+      initialTab = 'analytics';
+    }
+    if (typeof StudyToolsEngine !== 'undefined' && typeof StudyToolsEngine.renderMasterHub === 'function') {
+      StudyToolsEngine.renderMasterHub(content, initialTab);
+    }
+    restoreScrollPosition(getModuleScroll(id));
+    return;
+  }
+
+  if (id.startsWith('kaiwa-')) {
+    if (typeof KaiwaEngine !== 'undefined' && typeof KaiwaEngine.renderKaiwaModule === 'function') {
+      KaiwaEngine.renderKaiwaModule(id, content);
+    }
+    restoreScrollPosition(getModuleScroll(id));
+    return;
+  }
+
   if (id.startsWith('bai-')) {
     const lesson = lessonsData.find(l => l.id === id);
     if (!lesson) return;
@@ -2249,9 +2516,9 @@ function renderContent(id) {
       <div class="lesson-hero-card">
         <div class="hero-top-row">
           <div class="hero-meta">
-            <span class="badge badge-sakura">${lesson.badge || `Bài ${lessonNum} Minna`}</span>
-            <span class="badge badge-green">${lesson.vocabulary.length} Từ vựng chuẩn SGK</span>
-            <span class="badge badge-primary">${lesson.grammar.length} Cấu trúc ngữ pháp</span>
+            <span class="badge badge-sakura">${lesson.badge || `Bài ${lessonNum}`}</span>
+            <span class="badge badge-green">${lesson.vocabulary.length} từ</span>
+            <span class="badge badge-primary">${lesson.grammar.length} ngữ pháp</span>
           </div>
           <button class="btn-complete-icon ${isCompleted ? 'is-completed' : ''}" 
                   onclick="toggleLessonComplete('${lesson.id}')"
@@ -2308,11 +2575,11 @@ function renderContent(id) {
                 return `
                 <tr class="vocab-row" data-cat="${catKey}">
                   <td class="vocab-col-hira">
-                    <button class="speak-btn speak-btn-desktop" onclick="speakJapanese('${speechTarget}', this, event)" title="Phát âm từ này (Leda JP)">${SPEAKER_ICON_HTML}</button>
+                    <button class="speak-btn speak-btn-desktop" onclick="speakJapanese('${speechTarget}', this, event)" title="Phát âm từ này (giọng hội thoại)">${SPEAKER_ICON_HTML}</button>
                     <span class="vocab-hira-text">${v.hiragana}</span>
                   </td>
                   <td class="vocab-col-kanji ${isLongWord ? 'vocab-is-long' : ''}">
-                    <button class="speak-btn speak-btn-mobile" onclick="speakJapanese('${speechTarget}', this, event)" title="Phát âm từ này (Leda JP)">${SPEAKER_ICON_HTML}</button>
+                    <button class="speak-btn speak-btn-mobile" onclick="speakJapanese('${speechTarget}', this, event)" title="Phát âm từ này (giọng hội thoại)">${SPEAKER_ICON_HTML}</button>
                     <div class="vocab-term-group">
                       <strong class="vocab-term-main">${hasKanji ? v.kanji : `<span class="vocab-desktop-no-kanji">—</span><span class="vocab-mobile-no-kanji">${v.hiragana}</span>`}</strong>
                       ${showSubReading ? `<span class="vocab-mobile-hira">${v.hiragana}</span>` : ''}
@@ -2333,41 +2600,48 @@ function renderContent(id) {
 
       <!-- PHẦN 2: CẤU TRÚC NGỮ PHÁP CHUẨN SÁCH & BẪY PHÒNG THI -->
       <section class="section-card">
-        <div class="section-header">
+        <div class="section-header grammar-section-header">
           <div class="section-title-group">
             <h3 class="section-title">Cấu Trúc Ngữ Pháp & Lưu Ý Phòng Thi (${lesson.grammar.length} Chủ điểm)</h3>
           </div>
+          <button type="button" class="btn-tool btn-expand-pill btn-expand-all-grammar" onclick="toggleAllGrammarCards(this)" aria-expanded="false" title="Mở hoặc thu gọn tất cả chủ điểm ngữ pháp">
+            ${APP_ICONS.chevronsDown || '<svg class="icon-svg pill-chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="7 13 12 18 17 13"></polyline><polyline points="7 6 12 11 17 6"></polyline></svg>'}
+            <span>Mở tất cả</span>
+          </button>
         </div>
         <div class="grammar-list">
           ${lesson.grammar.map((g, gIdx) => `
-            <div class="grammar-item-card">
-              <div class="grammar-formula-bar">
+            <div class="grammar-item-card ${gIdx === 0 ? 'is-open' : 'is-collapsed'}" id="grammar-card-${gIdx}">
+              <div class="grammar-formula-bar" role="button" tabindex="0" aria-expanded="${gIdx === 0 ? 'true' : 'false'}" onclick="toggleGrammarCard(${gIdx}, this)" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();toggleGrammarCard(${gIdx}, this);}">
                 <span class="grammar-index-pill">Ngữ pháp ${String(gIdx + 1).padStart(2, '0')}</span>
                 <div class="grammar-formula">${g.structure || g.pattern || g.title || ''}</div>
+                <span class="grammar-accordion-arrow" aria-hidden="true">${APP_ICONS.chevronDown || '<svg class="icon-svg accordion-chevron" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"></polyline></svg>'}</span>
               </div>
-              <div class="grammar-usage">
-                <div class="usage-title">
-                  ${APP_ICONS.lightbulb}
-                  <strong>Ý nghĩa &amp; Cách dùng:</strong>
-                </div>
-                <div class="usage-text">${(g.explanation || '').replace(/\n/g, '<br>')}</div>
-              </div>
-              ${g.caution ? `
-                <div class="grammar-note">
-                  <div class="note-title">
-                    ${APP_ICONS.alert}
-                    <strong>Lưu ý tránh bẫy trong đề thi:</strong>
+              <div class="grammar-card-body">
+                <div class="grammar-usage">
+                  <div class="usage-title">
+                    ${APP_ICONS.lightbulb}
+                    <strong>Ý nghĩa &amp; Cách dùng:</strong>
                   </div>
-                  <div class="note-text">${(g.caution || '').replace(/\n/g, '<br>')}</div>
+                  <div class="usage-text">${(g.explanation || '').replace(/\n/g, '<br>')}</div>
                 </div>
-              ` : ''}
-              
-              <div class="grammar-examples-section">
-                <div class="examples-header">
-                  <span class="examples-header-title">VÍ DỤ MINH HỌA CHUẨN SÁCH:</span>
-                </div>
-                <div class="example-cards-list">
-                  ${renderGrammarExamples(g.examples, g.example_html)}
+                ${g.caution ? `
+                  <div class="grammar-note">
+                    <div class="note-title">
+                      ${APP_ICONS.alert}
+                      <strong>Lưu ý tránh bẫy trong đề thi:</strong>
+                    </div>
+                    <div class="note-text">${(g.caution || '').replace(/\n/g, '<br>')}</div>
+                  </div>
+                ` : ''}
+                
+                <div class="grammar-examples-section">
+                  <div class="examples-header">
+                    <span class="examples-header-title">VÍ DỤ MINH HỌA CHUẨN SÁCH:</span>
+                  </div>
+                  <div class="example-cards-list">
+                    ${renderGrammarExamples(g.examples, g.example_html)}
+                  </div>
                 </div>
               </div>
             </div>
@@ -2393,7 +2667,6 @@ function renderContent(id) {
       ${renderModuleFooterNav(lessonNum, 'lesson')}
     `;
 
-    // Khởi tạo bộ công cụ Flashcard & Kiểm tra Kanji nhanh trong bài (nếu môi trường trình duyệt thực)
     try {
       const mount = document.getElementById('lesson-practice-mount');
       if (mount && typeof mount.appendChild === 'function' && typeof document.createElement === 'function') {
@@ -2404,12 +2677,11 @@ function renderContent(id) {
     return;
   }
 
-  // 2. TRƯỜNG HỢP: BÀI TẬP (50 CÂU TỪ QUIZ-1 ĐẾN QUIZ-50)
   if (id.startsWith('quiz-')) {
     const quizList = practiceQuizData[id] || [];
     const lessonNum = id.replace('quiz-', '');
     const lessonTitle = `Bài Tập - Bài ${lessonNum} Minna`;
-    const lessonDesc = `Bộ 50 câu trắc nghiệm trọng tâm Bài ${lessonNum}. Hãy chọn đáp án cho từng câu và bấm "Nộp Bài" ở cuối trang để xem kết quả và giải thích!`;
+    const lessonDesc = `Bộ ${quizList.length} câu trắc nghiệm trọng tâm Bài ${lessonNum}. Hãy chọn đáp án cho từng câu và bấm "Nộp Bài" ở cuối trang để xem kết quả và giải thích!`;
 
     const isAutoAdvanceActive = typeof window.isQuizAutoAdvanceEnabled === 'function' ? window.isQuizAutoAdvanceEnabled() : true;
 
@@ -2419,8 +2691,8 @@ function renderContent(id) {
       <div class="lesson-hero-card">
         <div class="hero-meta">
           <span class="badge badge-sakura">Luyện Tập JLPT</span>
-          <span class="badge badge-primary">50 Câu Hỏi</span>
-          <button class="btn-redo" onclick="resetPracticeProgress('${id}')" title="Làm lại 50 câu trắc nghiệm này">
+          <span class="badge badge-primary">${quizList.length} Câu Hỏi</span>
+          <button class="btn-redo" onclick="resetPracticeProgress('${id}')" title="Làm lại ${quizList.length} câu trắc nghiệm này">
             <span>↻ Làm lại bài</span>
           </button>
         </div>
@@ -2436,12 +2708,12 @@ function renderContent(id) {
                   onclick="toggleQuizAutoAdvance()" 
                   title="Tự động chuyển câu khi chọn đáp án (${isAutoAdvanceActive ? 'Đang BẬT' : 'Đang TẮT'})"
                   aria-label="Tự chuyển câu">
-            <span class="autoadvance-icon"><svg class="icon-svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg></span>
+            <span class="autoadvance-icon"><svg class="icon-svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg></span>
             <span class="btn-label-text">Tự chuyển</span>
             <strong class="autoadvance-status" id="autoadvance-status-label">${isAutoAdvanceActive ? 'BẬT' : 'TẮT'}</strong>
           </button>
           <button class="quiz-palette-toggle-btn btn-palette-toggle btn-icon-only" onclick="togglePaletteView()" title="Ẩn/Hiện Bảng câu hỏi (1-${quizList.length})" aria-label="Bảng câu hỏi">
-            <svg class="icon-svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+            <svg class="icon-svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
             <span class="btn-label-text">Bảng câu hỏi</span>
           </button>
         </div>
@@ -2449,7 +2721,7 @@ function renderContent(id) {
         <div class="quiz-topbar-actions" id="quizTopBarActions">
           <div class="mini-timer-pill" id="quizMiniTimerPill" onclick="toggleQuizTimer()" title="Đồng hồ làm bài - Bấm để tạm dừng/tiếp tục" aria-label="Đồng hồ đếm ngược">
             <span class="mini-timer-icon">
-              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
                 <circle cx="12" cy="12" r="10"></circle>
                 <polyline points="12 6 12 12 16 14"></polyline>
               </svg>
@@ -2458,7 +2730,7 @@ function renderContent(id) {
             <span class="quiz-timer-display" id="quiz-timer-clock" style="display:none;" aria-hidden="true">30:00</span>
           </div>
           <button type="button" class="mini-btn-submit btn-icon-only" onclick="submitPracticeQuiz('${id}')" title="Nộp bài và xem kết quả" aria-label="Nộp bài">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
               <polyline points="20 6 9 17 4 12"></polyline>
             </svg>
             <span class="btn-label-text">Nộp bài</span>
@@ -2553,14 +2825,12 @@ function renderContent(id) {
     return;
   }
 
-  // 3. TRƯỜNG HỢP: ĐỌC HIỂU TỪNG BÀI (dokkai-1 đến dokkai-50)
   if (id.startsWith('dokkai-')) {
     renderDokkaiRoom(id);
     restoreScrollPosition(getModuleScroll(id));
     return;
   }
 
-  // 4. TRƯỜNG HỢP: MẸO NHỚ CHỮ HÁN 50 BÀI (kanji-1 đến kanji-50 hoặc kanji-flashcard-1 đến kanji-flashcard-50)
   if (id.startsWith('kanji-')) {
     const isFc = id.startsWith('kanji-flashcard-');
     renderKanjiSection(id, isFc ? 'flashcard' : null);
@@ -2568,7 +2838,6 @@ function renderContent(id) {
     return;
   }
 
-  // 5. TRƯỜNG HỢP: BỘ THỦ TIẾNG NHẬT (radicals-1 đến radicals-17 hoặc radicals-flashcard-1 đến radicals-flashcard-17)
   if (id.startsWith('radicals-')) {
     const isFc = id.startsWith('radicals-flashcard-');
     renderRadicalSection(id, isFc ? 'flashcard' : null);
@@ -2576,7 +2845,6 @@ function renderContent(id) {
     return;
   }
 
-  // 6. TRƯỜNG HỢP: TRA TỪ ĐIỂN MAZII & VIẾT TAY (mazii-dict)
   if (id === 'mazii-dict' || id.startsWith('mazii-dict')) {
     const qMatch = id.match(/mazii-dict\?(?:q=([^&]*))?(?:&type=([^&]*))?/);
     const initialQuery = qMatch && qMatch[1] ? decodeURIComponent(qMatch[1]) : '';
@@ -2586,7 +2854,6 @@ function renderContent(id) {
     return;
   }
 
-  // 7. TRƯỜNG HỢP: KHẢO THÍ & LUYỆN ĐỀ JLPT N5 & N4 (exam / exam-n5-01 / exam-n4-25)
   if (id === 'exam' || id.startsWith('exam-') || id.startsWith('de-thi') || id.startsWith('exam/')) {
     if (typeof ExamEngine !== 'undefined' && typeof ExamEngine.render === 'function') {
       ExamEngine.render(content, id);
@@ -2596,13 +2863,8 @@ function renderContent(id) {
   }
 }
 
-// --------------------------------------------------------------------------
-// 4C. MODULE MẸO NHỚ CHỮ HÁN 50 BÀI HỌC (KANJI MNEMONICS)
-// Bố trí hiện đại, tối giản Wa-Modern:
-// - Phân tách riêng biệt từng chữ Hán với đầy đủ Âm On, Âm Kun, Bộ thủ, Nét bút
-// - Loại bỏ khoảng trống thừa, ôm sát nội dung
-// - Nội dung bố trí ngăn nắp, thoáng đãng, tuyệt đối không đè lẫn lên nhau
-// --------------------------------------------------------------------------
+// ZONE 07: KANJI STUDY, KANA-ANCHOR FURIGANA & 3D MNEMONIC FLASHCARDS (KanjiEngine & QuizEngine)
+
 function formatKanjiMnemonic(raw) {
   if (typeof KanjiEngine !== 'undefined' && typeof KanjiEngine.formatMnemonic === 'function') {
     return KanjiEngine.formatMnemonic(raw);
@@ -2636,6 +2898,67 @@ function formatKanjiMnemonic(raw) {
       `;
     }
   }).join('');
+}
+
+function formatKanjiExampleSentence(rawExample, wordOrItem) {
+  if (!rawExample || typeof rawExample !== 'string') return '';
+  let parsed = null;
+  if (typeof KanjiEngine !== 'undefined' && typeof KanjiEngine.formatExample === 'function') {
+    parsed = KanjiEngine.formatExample(rawExample, wordOrItem);
+  }
+  if (!parsed) {
+    const trimmed = rawExample.trim();
+    if (!trimmed) return '';
+    let jpPart = trimmed;
+    let viPart = '';
+    const match = trimmed.match(/^(.*?)\s*\(([^()]+)\)\s*$/);
+    if (match) {
+      jpPart = match[1].trim();
+      viPart = match[2].trim();
+    }
+    const isObj = wordOrItem && typeof wordOrItem === 'object';
+    const rawWord = isObj
+      ? String(wordOrItem.word || wordOrItem.kanji || '')
+      : (typeof wordOrItem === 'string' ? wordOrItem : '');
+    const cleanWord = rawWord.replace(/^[～~/]+|[～~/]+$/g, '').replace(/（.*?）|\(.*?\)/g, '').trim();
+    const rawReading = isObj ? String(wordOrItem.reading || '') : '';
+    const primaryRead = rawReading.replace(/（.*?）|\(.*?\)/g, '').replace(/^[～~/]+|[～~/]+$/g, '').split(/[．.／/]/)[0].replace(/[\s、,]+/g, '');
+    const targetKanjis = Array.from(cleanWord).filter(ch => /[\u4e00-\u9faf]/.test(ch));
+
+    let highlightedJp = jpPart;
+    if (cleanWord && highlightedJp.includes(cleanWord)) {
+      const inner = primaryRead && /[\u4e00-\u9faf]/.test(cleanWord)
+        ? `<ruby>${cleanWord}<rt>${primaryRead}</rt></ruby>`
+        : cleanWord;
+      highlightedJp = highlightedJp.split(cleanWord).join(`<strong class="kcard-example-highlight">${inner}</strong>`);
+    } else if (targetKanjis.length > 0) {
+      for (const kCh of targetKanjis) {
+        if (highlightedJp.includes(kCh)) {
+          highlightedJp = highlightedJp.split(kCh).join(`<strong class="kcard-example-highlight"><ruby>${kCh}<rt>${primaryRead || ''}</rt></ruby></strong>`);
+          break;
+        }
+      }
+    }
+    parsed = { jpRaw: jpPart, jpHtml: highlightedJp, viText: viPart };
+  }
+  const safeAudioText = String(parsed.jpRaw || '')
+    .replace(/（.*?）/g, '')
+    .replace(/\(.*?\)/g, '')
+    .replace(/'/g, "\\'")
+    .trim();
+
+  return `
+    <div class="kcard-example-box">
+      <div class="kcard-example-main">
+        <span class="kcard-example-tag">VD:</span>
+        <span class="kcard-example-jp">${parsed.jpHtml}</span>
+        <button type="button" class="kcard-audio-btn btn-icon-only kcard-example-audio" onclick="speakJapanese('${safeAudioText}', this, event)" title="Nghe phát âm câu ví dụ" aria-label="Nghe phát âm câu ví dụ">
+          <span class="audio-btn-icon">${SPEAKER_ICON_HTML}</span>
+        </button>
+      </div>
+      ${parsed.viText ? `<div class="kcard-example-vi">${parsed.viText}</div>` : ''}
+    </div>
+  `;
 }
 
 function renderKanjiSection(sectionId, forcedTab = null) {
@@ -2673,9 +2996,8 @@ function renderKanjiSection(sectionId, forcedTab = null) {
       <div class="hero-top-row">
         <div class="hero-meta">
           <span class="badge badge-sakura">${lesson.level}</span>
-          <span class="badge badge-primary">${lesson.items.length} Từ Vựng Chữ Hán</span>
-          <span class="badge badge-green">100% Kèm Mẹo Nhớ &amp; Cấu Thành</span>
-          ${learnedCount > 0 ? `<span class="badge badge-amber">Đã nhớ: ${learnedCount}/${lesson.items.length} thẻ</span>` : ''}
+          <span class="badge badge-primary">${lesson.items.length} Kanji</span>
+          ${learnedCount > 0 ? `<span class="badge badge-amber">Đã nhớ: ${learnedCount}/${lesson.items.length}</span>` : ''}
         </div>
         <button class="btn-complete-icon ${isCompleted ? 'is-completed' : ''}" 
                 onclick="toggleLessonComplete('${lesson.id}')"
@@ -2687,8 +3009,8 @@ function renderKanjiSection(sectionId, forcedTab = null) {
       <h2 class="lesson-title">${lesson.title}</h2>
     </div>
 
-    <!-- THANH ĐIỀU HƯỚNG 2 THẺ RIÊNG BIỆT: DANH SÁCH MẸO NHỚ & BÀI KIỂM TRA FLASHCARD -->
-    <div class="kanji-tab-nav-wrapper">
+    <!-- THANH ĐIỀU HƯỚNG 2 THẺ RIÊNG BIỆT: DANH SÁCH MẸO NHỚ & BÀI KIỂM TRA FLASHCARD (ẨN THEO YÊU CẦU NGƯỜI DÙNG) -->
+    <div class="kanji-tab-nav-wrapper" style="display: none !important;" aria-hidden="true">
       <div class="kanji-tab-nav" role="tablist" aria-label="Chế độ học Chữ Hán Bài ${lessonNum}">
         <button type="button" 
                 class="kanji-tab-btn ${currentKanjiTab === 'list' ? 'active' : ''}" 
@@ -2725,18 +3047,22 @@ function renderKanjiSection(sectionId, forcedTab = null) {
                  placeholder="Tìm nhanh từ vựng, âm Hán Việt, cách đọc, mẹo nhớ trong bài này..."
                  oninput="filterLessonKanji(this.value)">
         </div>
-        <div class="kanji-view-stats">
-          <span id="kanji-count-badge" class="badge badge-primary">Hiển thị: ${lesson.items.length}/${lesson.items.length} từ vựng</span>
+        <div class="kanji-view-stats" style="display:flex;align-items:center;gap:8px;">
+          <span id="kanji-count-badge" class="badge badge-primary">Hiển thị: ${lesson.items.length}/${lesson.items.length}</span>
+          <button type="button" class="btn-tool btn-expand-pill btn-expand-all-kanji" onclick="toggleAllKanjiCards(this)" aria-expanded="false" title="Mở hoặc thu gọn tất cả mẹo nhớ chữ Hán">
+            ${APP_ICONS.chevronsDown || '<svg class="icon-svg pill-chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="7 13 12 18 17 13"></polyline><polyline points="7 6 12 11 17 6"></polyline></svg>'}
+            <span>Mở hết mẹo nhớ</span>
+          </button>
         </div>
       </div>
 
-      <!-- Danh sách các thẻ từ vựng: BỐ TRÍ TẬP TRUNG VÀO TỪ VỰNG & MẸO GHI NHỚ -->
+      <!-- Danh sách các thẻ từ vựng: BỐ TRÍ TẬP TRUNG VÀO TỪ VỰNG & MẸO GHI NHỚ (THU GỌN / BUNG RA) -->
       <div class="kanji-cards-container" id="kanji-cards-list">
         ${lesson.items.map((item, idx) => `
-          <article class="kanji-study-card" id="kcard-${item.id}" data-word="${item.word}" data-reading="${item.reading || ''}" data-kanji="${item.kanji || item.word}" data-hanviet="${item.hanViet}" data-meaning="${item.meaning}">
+          <article class="kanji-study-card is-collapsed" id="kcard-${item.id}" data-word="${item.word}" data-reading="${item.reading || ''}" data-kanji="${item.kanji || item.word}" data-hanviet="${item.hanViet}" data-meaning="${item.meaning}">
             
             <!-- DÒNG TRÊN: TIÊU ĐỀ TỪ VỰNG CHỮ HÁN, ÂM HÁN VIỆT & NGHĨA -->
-            <div class="kcard-top-section">
+            <div class="kcard-top-section" role="button" tabindex="0" aria-expanded="false" onclick="toggleKanjiCardDetail('${item.id}', event)" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();toggleKanjiCardDetail('${item.id}', event);}">
               <div class="kcard-header-bar">
                 <div class="kcard-title-group">
                   <h3 class="kcard-word-kanji">${item.word}</h3>
@@ -2747,6 +3073,11 @@ function renderKanjiSection(sectionId, forcedTab = null) {
                   <button type="button" class="kcard-audio-btn btn-icon-only" onclick="speakJapanese('${(item.reading || item.word).replace(/\[.*?\]/g, '').replace(/\(.*?\)/g, '').trim()}', this, event)" title="Nghe phát âm từ: ${item.word}" aria-label="Nghe phát âm từ: ${item.word}">
                     <span class="audio-btn-icon">${SPEAKER_ICON_HTML}</span>
                   </button>
+                  <button type="button" class="kcard-expand-btn" title="Xem Mẹo nhớ &amp; Ví dụ" aria-label="Xem Mẹo nhớ và Ví dụ">
+                    <span class="kcard-expand-icon">${APP_ICONS.lightbulb}</span>
+                    <span class="kcard-expand-label">Mẹo nhớ</span>
+                    <span class="kcard-expand-arrow" aria-hidden="true">${APP_ICONS.chevronDown || '<svg class="icon-svg accordion-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"></polyline></svg>'}</span>
+                  </button>
                 </div>
               </div>
               <div class="kcard-body-bar">
@@ -2756,7 +3087,7 @@ function renderKanjiSection(sectionId, forcedTab = null) {
               </div>
             </div>
 
-            <!-- DÒNG BÊN DƯỚI: TRỌNG TÂM MẸO GHI NHỚ & CẤU THÀNH -->
+            <!-- DÒNG BÊN DƯỚI: TRỌNG TÂM MẸO GHI NHỚ, CẤU THÀNH & CÂU TIẾNG NHẬT GỢI NHỚ -->
             <div class="kcard-bottom-section">
               <div class="kcard-mnemonic-box">
                 <div class="mnemonic-badge-header">
@@ -2767,6 +3098,7 @@ function renderKanjiSection(sectionId, forcedTab = null) {
                   ${formatKanjiMnemonic(item.mnemonic)}
                 </div>
               </div>
+              ${item.example ? formatKanjiExampleSentence(item.example, item) : ''}
             </div>
 
           </article>
@@ -2824,13 +3156,10 @@ function renderKanjiSection(sectionId, forcedTab = null) {
     ${renderModuleFooterNav(lessonNum, 'kanji')}
   `;
 
-  // Khởi tạo Studio Flashcard
   initKanjiFlashcardStudio(lesson);
 }
 
-// --------------------------------------------------------------------------
-// 4D. HỆ THỐNG ĐIỀU KHIỂN & BÀI KIỂM TRA FLASHCARD MẸO NHỚ KANJI
-// --------------------------------------------------------------------------
+
 let currentKfcLesson = null;
 let kfcDeck = [];
 let kfcFilter = 'all'; // 'all' | 'unlearned' | 'learned'
@@ -2885,7 +3214,6 @@ window.switchKanjiTab = function(tabName, shouldScroll = false) {
   if (listPane) listPane.style.display = currentKanjiTab === 'list' ? 'block' : 'none';
   if (fcPane) fcPane.style.display = currentKanjiTab === 'flashcard' ? 'block' : 'none';
 
-  // Đồng bộ trạng thái sync-tab trên Desktop
   const syncTabs = document.querySelectorAll ? document.querySelectorAll('.sync-tab-btn') : [];
   syncTabs.forEach(btn => {
     const text = btn.textContent || '';
@@ -2904,9 +3232,9 @@ window.switchKanjiTab = function(tabName, shouldScroll = false) {
   }
 
   if (shouldScroll) {
-    const nav = document.querySelector('.kanji-tab-nav-wrapper');
-    if (nav && nav.scrollIntoView) {
-      nav.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    const target = (currentKanjiTab === 'flashcard' ? document.getElementById('kanji-tab-pane-flashcard') : document.getElementById('kanji-tab-pane-list')) || document.querySelector('.lesson-hero-card');
+    if (target && target.scrollIntoView) {
+      target.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
   }
 };
@@ -2936,7 +3264,6 @@ function getFilteredKfcDeck() {
 window.initKanjiFlashcardStudio = function(lesson) {
   if (!lesson) return;
 
-  // Khi chuyển sang bài học khác, tự động đặt lại về chế độ Flashcard mặc định (Chữ Hán ➔ Mẹo nhớ)
   if (!currentKfcLesson || currentKfcLesson.lesson !== lesson.lesson) {
     kfcMode = 'kanji-first';
     kfcFilter = 'all';
@@ -3088,7 +3415,6 @@ function renderKfcCard() {
   const filtered = getFilteredKfcDeck();
   const totalInFilter = filtered.length;
 
-  // Cập nhật bộ đếm & nhãn tiến độ
   const total = kfcDeck.length;
   const learnedCount = kfcDeck.filter(it => kfcLearnedSet.has(it.id)).length;
   const unlearnedCount = total - learnedCount;
@@ -3180,7 +3506,7 @@ function renderKfcCard() {
   `;
 
   if (kfcMode === 'mnemonic-first') {
-    // CHẾ ĐỘ 2: NHÌN MẸO NHỚ ➔ ĐOÁN CHỮ HÁN
+
     front.innerHTML = `
       ${statusPillHtml}
       <span class="kfc-face-tag accent-amber">THỬ THÁCH MẸO NHỚ</span>
@@ -3229,13 +3555,19 @@ function renderKfcCard() {
         ${item.type ? `<span class="badge badge-primary">${item.type}</span>` : ''}
       </div>
 
+      ${item.example ? `
+        <div class="kfc-back-example">
+          ${formatKanjiExampleSentence(item.example, item)}
+        </div>
+      ` : ''}
+
       <div class="kfc-flip-hint">
         <span style="display:inline-flex;align-items:center;gap:5px;">${APP_ICONS.flip} <span>Chạm để quay lại mặt trước</span></span>
       </div>
     `;
 
   } else {
-    // CHẾ ĐỘ 1: NHÌN CHỮ HÁN ➔ ĐOÁN MẸO NHỚ & NGHĨA (MẶC ĐỊNH)
+
     front.innerHTML = `
       ${statusPillHtml}
       <span class="kfc-face-tag">TỪ VỰNG CHỮ HÁN</span>
@@ -3284,7 +3616,7 @@ function renderKfcCard() {
 
       ${item.example ? `
         <div class="kfc-back-example">
-          <strong>Ví dụ:</strong> ${item.example}
+          ${formatKanjiExampleSentence(item.example, item)}
         </div>
       ` : ''}
 
@@ -3322,7 +3654,6 @@ window.rateKfcCurrent = function(isLearned) {
 
   saveKanjiLearnedSet(currentKfcLesson.lesson, kfcLearnedSet);
 
-  // Nếu đang lọc theo 'unlearned' hoặc 'learned', danh sách lọc sẽ thay đổi kích thước
   if (kfcFilter !== 'all') {
     const nextFiltered = getFilteredKfcDeck();
     if (kfcIndex >= nextFiltered.length) kfcIndex = 0;
@@ -3378,8 +3709,7 @@ window.filterKfcDeck = function(filterType, btnEl = null) {
     chip.classList.toggle('active', chip.getAttribute('data-filter') === kfcFilter);
   });
 
-  // Nếu đang ở quiz-mode mà bấm chọn bộ lọc flashcard (Tất cả / Chưa thuộc / Đã thuộc),
-  // tự động quay lại chế độ xem Flashcard tương ứng
+
   if (kfcMode === 'quiz-mode') {
     setKfcMode('kanji-first');
   } else {
@@ -3460,17 +3790,12 @@ function handleKfcKeydown(e) {
   }
 }
 
-// --------------------------------------------------------------------------
-// 4E. HỆ THỐNG TRẮC NGHIỆM PHẢN XẠ CHỮ HÁN (25 CÂU MIX KANJI & NGHĨA)
-// --------------------------------------------------------------------------
 
-// Từ điển ánh xạ các chữ Hán có nét/bộ thủ gần giống nhau (Confusable Look-alike Kanji)
-// Tách biệt tại data/kanji_lookalikes.js (Đồng bộ qua window.KANJI_LOOKALIKES_MAP kèm fallback an toàn)
+
 const KANJI_LOOKALIKES_MAP = (typeof window !== 'undefined' && window.KANJI_LOOKALIKES_MAP)
   || (typeof global !== 'undefined' && global.KANJI_LOOKALIKES_MAP)
   || {};
 
-// Hàm sinh 3 chữ Hán gây nhiễu có nét/cách viết gần giống nhau (Look-alike Distractors)
 function getLookalikeKanjiDistractors(item, lessonItems) {
   if (typeof QuizEngine !== 'undefined' && typeof QuizEngine.getLookalikeKanjiDistractors === 'function') {
     return QuizEngine.getLookalikeKanjiDistractors(item, lessonItems);
@@ -3481,7 +3806,6 @@ function getLookalikeKanjiDistractors(item, lessonItems) {
     ? item.kanjis 
     : Array.from(word).filter(ch => /[\u4e00-\u9faf]/.test(ch));
 
-  // 1. Thay thế trực tiếp các Hán tự bằng các chữ viết gần giống từ từ điển KANJI_LOOKALIKES_MAP
   for (const k of kanjis) {
     const lookalikes = (typeof KANJI_LOOKALIKES_MAP !== 'undefined' ? KANJI_LOOKALIKES_MAP[k] : (typeof window !== 'undefined' && window.KANJI_LOOKALIKES_MAP && window.KANJI_LOOKALIKES_MAP[k])) || [];
     for (const sim of lookalikes) {
@@ -3496,7 +3820,6 @@ function getLookalikeKanjiDistractors(item, lessonItems) {
     if (distractors.length >= 3) break;
   }
 
-  // 2. Nếu chưa đủ 3 đáp án nhiễu, tìm các từ khác trong bài có chứa bộ thủ hoặc chữ gần giống
   if (distractors.length < 3 && Array.isArray(lessonItems)) {
     for (const other of lessonItems) {
       const oWord = (other.word || other.kanji || '').trim();
@@ -3509,7 +3832,6 @@ function getLookalikeKanjiDistractors(item, lessonItems) {
     }
   }
 
-  // 3. Fallback: Nếu vẫn chưa đủ 3, lấy các từ bất kỳ khác trong bài
   if (distractors.length < 3 && Array.isArray(lessonItems)) {
     for (const other of lessonItems) {
       const oWord = (other.word || other.kanji || '').trim();
@@ -3520,7 +3842,6 @@ function getLookalikeKanjiDistractors(item, lessonItems) {
     }
   }
 
-  // 4. Fallback toàn cục từ các bài khác nếu bài học có quá ít từ
   if (distractors.length < 3 && typeof kanjiLessonsData !== 'undefined' && Array.isArray(kanjiLessonsData)) {
     for (const kl of kanjiLessonsData) {
       if (!kl.items) continue;
@@ -3538,7 +3859,6 @@ function getLookalikeKanjiDistractors(item, lessonItems) {
   return distractors.slice(0, 3);
 }
 
-// Hàm sinh 3 nghĩa tiếng Việt gây nhiễu cho bài trắc nghiệm
 function getMeaningDistractors(item, lessonItems) {
   const correctMeaning = (item.meaning || '').trim();
   const distractors = [];
@@ -3606,22 +3926,18 @@ function startKfcQuiz() {
     return;
   }
 
-  // TỔNG SỐ LƯỢNG CÂU HỎI: CHUẨN ĐÚNG 25 CÂU
   const TARGET_QUIZ_COUNT = 25;
   const half1 = Math.ceil(TARGET_QUIZ_COUNT / 2); // 13 câu
   const half2 = TARGET_QUIZ_COUNT - half1; // 12 câu
 
-  // Trộn danh sách từ vựng bài học
   const shuffledPool1 = [...items].sort(() => Math.random() - 0.5);
   const shuffledPool2 = [...items].sort(() => Math.random() - 0.5);
 
-  // Chọn 13 từ cho Dạng 1: Chữ Hán ➔ Chọn Nghĩa Tiếng Việt
   const k2mItems = [];
   for (let i = 0; i < half1; i++) {
     k2mItems.push(shuffledPool1[i % shuffledPool1.length]);
   }
 
-  // Chọn 12 từ cho Dạng 2: Nghĩa Tiếng Việt ➔ Chọn Chữ Hán (ưu tiên các từ chưa trùng với Dạng 1)
   const remaining = shuffledPool1.slice(half1);
   const m2kItems = [];
   for (const it of remaining) {
@@ -3636,7 +3952,6 @@ function startKfcQuiz() {
     m2kItems.push(items[m2kItems.length % items.length]);
   }
 
-  // Xây dựng câu hỏi Dạng 1: Chữ Hán ➔ 4 Nghĩa tiếng Việt
   const questionsType1 = k2mItems.map((item) => {
     const correctMeaning = (item.meaning || '').trim();
     const wrongMeanings = getMeaningDistractors(item, items);
@@ -3652,7 +3967,6 @@ function startKfcQuiz() {
     };
   });
 
-  // Xây dựng câu hỏi Dạng 2: Nghĩa Tiếng Việt ➔ 4 Chữ Hán có nét/cách viết gần giống nhau
   const questionsType2 = m2kItems.map((item) => {
     const correctWord = (item.word || '').trim();
     const wrongKanjiWords = getLookalikeKanjiDistractors(item, items);
@@ -3668,7 +3982,6 @@ function startKfcQuiz() {
     };
   });
 
-  // Trộn lẫn xen kẽ cả 2 dạng câu hỏi để tối đa hóa khả năng nhận diện phản xạ
   kfcQuizDeck = [...questionsType1, ...questionsType2]
     .sort(() => Math.random() - 0.5)
     .slice(0, TARGET_QUIZ_COUNT);
@@ -3714,7 +4027,6 @@ function renderKfcQuizQuestion() {
   const item = q.item;
   const isK2M = q.type === 'kanji-to-meaning';
 
-  // Tiêu đề & Thẻ tag nhận diện
   const typeTag = isK2M ? 'Đoán Nghĩa Chữ Hán' : 'Phân Biệt Mặt Chữ Hán';
   const modeTitle = isK2M ? 'Chữ Hán ➔ Nghĩa Tiếng Việt' : 'Nghĩa Tiếng Việt ➔ Chữ Hán';
   const modeSubtitle = isK2M 
@@ -3795,8 +4107,8 @@ function renderKfcQuizQuestion() {
             </div>
 
             ${item.example ? `
-              <div style="margin-top: 10px; padding: 8px 12px; background: var(--bg-tertiary); border-radius: 8px; font-size: 13.5px;">
-                <strong>Ví dụ:</strong> <span style="font-family: var(--font-japanese);">${item.example}</span>
+              <div style="margin-top: 10px;">
+                ${formatKanjiExampleSentence(item.example, item)}
               </div>
             ` : ''}
 
@@ -3847,14 +4159,11 @@ function renderKfcQuizQuestion() {
         });
       }
 
-      // Cập nhật điểm trên thanh tiêu đề
       const scorePill = quizStage.querySelector('.practice-counter-pill');
       if (scorePill) scorePill.textContent = `Đúng: ${kfcQuizScore}/${kfcQuizDeck.length}`;
 
-      // Hiển thị chi tiết cách đọc, Hán Việt, phát âm và mẹo nhớ để củng cố
       if (revealBox) revealBox.style.display = 'block';
 
-      // Tự động chuyển câu sau một khoảng dừng thoải mái hoặc chuyển ngay khi bấm nút Tiếp Theo
       if (kfcQuizAdvanceTimer) clearTimeout(kfcQuizAdvanceTimer);
       kfcQuizAdvanceTimer = setTimeout(() => {
         advanceKfcQuizQuestion();
@@ -3901,11 +4210,10 @@ window.filterLessonKanji = function(query) {
   });
   const countBadge = document.getElementById('kanji-count-badge');
   if (countBadge) {
-    countBadge.textContent = `Hiển thị: ${visibleCount}/${cards.length} từ vựng`;
+    countBadge.textContent = `Hiển thị: ${visibleCount}/${cards.length}`;
   }
 };
 
-// Bộ lọc nhanh từ vựng ngay trong bài học
 let activeVocabCat = 'all';
 window.filterLessonVocab = function(query) {
   const q = normalizeSearch(query || '');
@@ -3930,9 +4238,8 @@ window.filterLessonVocabByCategory = function(cat, btn) {
   window.filterLessonVocab(input ? input.value : '');
 };
 
-// --------------------------------------------------------------------------
-// 4B. MODULE BỘ THỦ TIẾNG NHẬT (KANJI RADICALS) - NGỌC TIỆP MINATO
-// --------------------------------------------------------------------------
+// ZONE 08: 191 RADICALS STUDY & SPACED REPETITION (SRS) ENGINE
+
 let activeRadicalSession = 0;
 
 function sleep(ms) {
@@ -4038,9 +4345,8 @@ function renderRadicalSection(sectionId, forcedTab = null) {
     <div class="lesson-hero-card">
       <div class="hero-top-row">
         <div class="hero-meta">
-          <span class="badge badge-sakura">Bộ Thủ Tiếng Nhật</span>
-          <span class="badge badge-primary">${group.title}</span>
-          <span class="badge badge-green">${group.items.length} Bộ thủ chuẩn</span>
+          <span class="badge badge-sakura">Bộ Thủ</span>
+          <span class="badge badge-green">${group.items.length} bộ</span>
         </div>
         <button class="btn-complete-icon ${isCompleted ? 'is-completed' : ''}" 
                 onclick="toggleLessonComplete('${group.id}')"
@@ -4082,18 +4388,23 @@ function renderRadicalSection(sectionId, forcedTab = null) {
     <div id="radical-tab-pane-list" style="display: ${currentRadicalTab === 'list' ? 'block' : 'none'};">
       
       <!-- TÌM KIẾM BỘ THỦ TRONG PHẦN NÀY -->
-      <div class="radical-filter-bar">
+      <div class="radical-filter-bar" style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;">
         <input type="text" 
                id="radical-filter-input"
                class="vocab-search-input radical-search-input" 
+               style="flex:1;min-width:220px;"
                placeholder="Tìm nhanh bộ thủ trong nhóm này (tên, nghĩa, chữ Hán...)" 
                oninput="filterRadicalsInGroup(this.value)">
+        <button type="button" class="btn-tool btn-expand-pill btn-expand-all-radicals" onclick="toggleAllRadicalCards(this)" aria-expanded="false" title="Mở hoặc thu gọn tất cả ứng dụng bộ thủ">
+          ${APP_ICONS.chevronsDown || '<svg class="icon-svg pill-chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="7 13 12 18 17 13"></polyline><polyline points="7 6 12 11 17 6"></polyline></svg>'}
+          <span>Mở hết ứng dụng</span>
+        </button>
       </div>
 
       <!-- Danh sách các bộ thủ tuân thủ cùng 1 format chuẩn -->
       <div class="radicals-container">
         ${group.items.map(item => `
-          <article class="radical-card" id="card-${item.id}" data-id="${item.id}" data-strokes="${item.strokeCount}">
+          <article class="radical-card is-collapsed" id="card-${item.id}" data-id="${item.id}" data-strokes="${item.strokeCount}">
             
             <!-- 1. CÁCH VIẾT: Ô ĐỦ LỚN & CÁC NÉT TỰ ĐỘNG VIẾT LẶP ĐI LẶP LẠI -->
             <div class="radical-writing-section">
@@ -4141,6 +4452,13 @@ function renderRadicalSection(sectionId, forcedTab = null) {
                   ${item.meaning}
                 </div>
               </div>
+
+              <!-- NÚT BUNG ỨNG DỤNG & CHỮ HÁN VÍ DỤ -->
+              <button type="button" class="radical-expand-toggle" aria-expanded="false" onclick="toggleRadicalCardDetail('${item.id}', this)">
+                <span class="radical-expand-icon">${APP_ICONS.lightbulb}</span>
+                <span class="radical-expand-text">Xem ứng dụng &amp; Ví dụ Kanji (${(item.examples || []).length})</span>
+                <span class="radical-expand-arrow" aria-hidden="true">${APP_ICONS.chevronDown || '<svg class="icon-svg accordion-chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"></polyline></svg>'}</span>
+              </button>
 
               <!-- 4. Ý NGHĨA CỦA BỘ THỦ ĐÓ TRONG KANJI -->
               <div class="radical-field radical-kanji-meaning-field">
@@ -4266,7 +4584,6 @@ function switchRadicalTab(tabName, shouldScroll = false) {
 function initRadicalFlashcardStudio(group) {
   if (!group) return;
 
-  // Khi chuyển sang nhóm bộ thủ khác, reset về chế độ Flashcard mặc định
   if (!currentRadicalGroup || currentRadicalGroup.id !== group.id) {
     rfcMode = 'char-first';
     rfcFilter = 'all';
@@ -4581,7 +4898,7 @@ function renderRfcCard() {
       </div>
     `;
   } else {
-    // meaning-first mode
+
     front.innerHTML = `
       <div class="kfc-front-meta">
         <span class="badge badge-primary">Bộ thủ ${item.strokeCount} nét</span>
@@ -4801,7 +5118,7 @@ function getRadicalMeaningDistractors(targetItem, allPool) {
 function getRadicalCharDistractors(targetItem, allPool) {
   const correctChar = (targetItem.character || '').trim();
   const distractors = [];
-  // Ưu tiên các bộ thủ có cùng hoặc gần số nét
+
   const sameStroke = allPool.filter(it => it.character !== correctChar && Math.abs(it.strokeCount - targetItem.strokeCount) <= 1);
   const shuffledSame = [...sameStroke].sort(() => Math.random() - 0.5);
   for (const other of shuffledSame) {
@@ -4857,7 +5174,6 @@ function startRfcQuiz() {
     m2cItems.push(shuffledPool2[i % shuffledPool2.length]);
   }
 
-  // Dạng 1: Ký tự Bộ thủ ➔ 4 Tên & Ý nghĩa
   const q1 = c2mItems.map(item => {
     const correctText = `${item.name}: ${item.meaning.split(';')[0].trim()}`;
     const wrongItems = getRadicalMeaningDistractors(item, allPool);
@@ -4877,7 +5193,6 @@ function startRfcQuiz() {
     };
   });
 
-  // Dạng 2: Ý nghĩa & Tên Bộ thủ ➔ 4 Ký tự Bộ thủ
   const q2 = m2cItems.map(item => {
     const correctChar = item.character;
     const wrongChars = getRadicalCharDistractors(item, allPool);
@@ -5204,7 +5519,6 @@ function initRadicalStrokeLoops(currentSession) {
       isAnimating = false;
     }
 
-    // Cho phép người dùng chạm/bấm vào chữ để xem lại thứ tự nét bất cứ lúc nào (chỉ chạy khi được yêu cầu)
     if (svg.addEventListener) {
       svg.style.cursor = 'pointer';
       svg.setAttribute('title', 'Chạm để xem hoạt họa thứ tự viết nét');
@@ -5214,7 +5528,6 @@ function initRadicalStrokeLoops(currentSession) {
       });
     }
 
-    // Chỉ chạy hoạt họa nét 1 lần duy nhất khi cuộn tới và tự giải phóng Observer để triệt tiêu tải CPU
     if (typeof IntersectionObserver !== 'undefined') {
       const observer = new IntersectionObserver((entries) => {
         entries.forEach(entry => {
@@ -5233,9 +5546,8 @@ function initRadicalStrokeLoops(currentSession) {
   });
 }
 
-// --------------------------------------------------------------------------
-// 5. PHÒNG ĐỌC HIỂU (MỖI BÀI 1 BÀI ĐỌC & 5 CÂU HỎI ĐI KÈM)
-// --------------------------------------------------------------------------
+// ZONE 09: PRACTICE QUIZ (3,500 QUESTIONS) & DOKKAI READING COMPREHENSION (50 PASSAGES)
+
 function renderDokkaiRoom(dokkaiId) {
   const content = document.getElementById('lesson-content');
   if (!content) return;
@@ -5295,7 +5607,7 @@ function renderDokkaiRoom(dokkaiId) {
                     onclick="toggleQuizAutoAdvance()" 
                     title="Tự động chuyển câu (${isAutoAdvanceActive ? 'Đang BẬT' : 'Đang TẮT'})"
                     aria-label="Tự chuyển câu">
-              <span class="autoadvance-icon"><svg class="icon-svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg></span>
+              <span class="autoadvance-icon"><svg class="icon-svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg></span>
               <span class="btn-label-text">Tự chuyển:</span>
               <strong class="autoadvance-status" id="dokkai-autoadvance-status-label">${isAutoAdvanceActive ? 'BẬT' : 'TẮT'}</strong>
             </button>
@@ -5384,9 +5696,7 @@ window.speakDokkaiQuestion = function(dokkaiId, qId, btn, ev) {
   }
 };
 
-// --------------------------------------------------------------------------
-// 6. QUẢN LÝ LÀM BÀI, NỘP BÀI & GIẢI THÍCH (PRACTICE QUIZ & DOKKAI)
-// --------------------------------------------------------------------------
+
 function getPracticeQuizState(quizId) {
   if (!isSafeObjectKey(quizId)) return { submitted: false, selections: {}, score: null };
   const all = secureGetJsonStorage(STORAGE_PRACTICE_KEY, {}, (d) => typeof d === 'object' && !Array.isArray(d));
@@ -5495,9 +5805,7 @@ window.initQuizTimer = function() {
   if (quizTimerInterval && typeof quizTimerInterval.unref === 'function') quizTimerInterval.unref();
 };
 
-/**
- * ĐỒNG HỒ & NỘP BÀI ĐÃ ĐƯỢC HỢP NHẤT TRONG .quiz-top-bar (1 Ô DUY NHẤT)
- */
+
 window.ensureQuizMiniTimerWidget = function(quizId) {
   if (typeof document === 'undefined') return null;
   removeQuizMiniTimerWidget();
@@ -5514,7 +5822,7 @@ window.removeQuizMiniTimerWidget = function() {
 };
 
 window.setupQuizScrollObserver = function(quizId) {
-  // Thanh .quiz-top-bar có position: sticky; top: 0 cố định tự nhiên khi cuộn, không cần floating widget
+
   removeQuizMiniTimerWidget();
 };
 
@@ -5604,13 +5912,12 @@ window.triggerQuizAutoAdvance = function(moduleId, questionId, isDokkai = false)
 
   let nextTargetQuestion = null;
 
-  // 1. Ưu tiên: Câu kế tiếp ngay sau câu hiện tại nếu chưa làm
   if (currentIdx + 1 < questions.length) {
     const nextQ = questions[currentIdx + 1];
     if (selections[nextQ.id] === undefined) {
       nextTargetQuestion = nextQ;
     } else {
-      // Tìm xuôi từ currentIdx + 2 đến hết danh sách câu chưa làm
+
       for (let i = currentIdx + 2; i < questions.length; i++) {
         if (selections[questions[i].id] === undefined) {
           nextTargetQuestion = questions[i];
@@ -5620,7 +5927,6 @@ window.triggerQuizAutoAdvance = function(moduleId, questionId, isDokkai = false)
     }
   }
 
-  // 2. Nếu từ vị trí hiện tại đến cuối đã làm hết, vòng lại tìm câu bị bỏ sót phía trước
   if (!nextTargetQuestion) {
     for (let i = 0; i < currentIdx; i++) {
       if (selections[questions[i].id] === undefined) {
@@ -5630,14 +5936,13 @@ window.triggerQuizAutoAdvance = function(moduleId, questionId, isDokkai = false)
     }
   }
 
-  // 3. Thực hiện chuyển câu hoặc cuộn tới khung Nộp bài nếu đã làm hết 100%
   if (nextTargetQuestion) {
     window.scrollToQuestion(nextTargetQuestion.id);
   } else {
     const submitSection = document.getElementById('quiz-bottom-panel') || document.getElementById('quiz-submit-section');
     if (submitSection && submitSection.scrollIntoView) {
       submitSection.scrollIntoView({ behavior: 'smooth', block: 'center' });
-      showToast('🎉 Bạn đã chọn đủ tất cả câu hỏi! Hãy nhấn Nộp Bài để xem kết quả.');
+      showToast('Bạn đã chọn đủ tất cả câu hỏi! Hãy nhấn Nộp Bài để xem kết quả.');
     }
   }
 };
@@ -5688,7 +5993,6 @@ window.handleSelectOption = function(moduleId, questionId, optIdx, isDokkai = fa
 
   updateSubmitBarProgress(moduleId, isDokkai);
 
-  // CƠ CHẾ SMART AUTO-ADVANCE (TỰ ĐỘNG CHUYỂN CÂU 1-CHẠM)
   if (quizAutoAdvanceTimeout) {
     clearTimeout(quizAutoAdvanceTimeout);
     quizAutoAdvanceTimeout = null;
@@ -5782,7 +6086,19 @@ function finalizePracticeQuizSubmission(quizId) {
   quizList.forEach(q => {
     const selectedIdx = selections[q.id];
     const isCorrect = (selectedIdx !== undefined && selectedIdx === q.correctIdx);
-    if (isCorrect) correctCount++;
+    if (isCorrect) {
+      correctCount++;
+    } else if (typeof NotebookEngine !== 'undefined' && typeof NotebookEngine.recordMistake === 'function') {
+      NotebookEngine.recordMistake({
+        id: `${quizId}_${q.id}`,
+        question: q.question,
+        correctAnswer: Array.isArray(q.options) ? q.options[q.correctIdx] : String(q.correctIdx),
+        userAnswer: (selectedIdx !== undefined && Array.isArray(q.options)) ? q.options[selectedIdx] : '',
+        category: 'quiz',
+        lessonId: quizId,
+        options: q.options || []
+      });
+    }
 
     const buttons = document.querySelectorAll ? document.querySelectorAll(`[id^="btn-${q.id}-"]`) : [];
     buttons.forEach((btn, idx) => {
@@ -5878,7 +6194,19 @@ function finalizeDokkaiSubmission(dokkaiId) {
   questions.forEach(q => {
     const selectedIdx = selections[q.id];
     const isCorrect = (selectedIdx !== undefined && selectedIdx === q.correctIdx);
-    if (isCorrect) correctCount++;
+    if (isCorrect) {
+      correctCount++;
+    } else if (typeof NotebookEngine !== 'undefined' && typeof NotebookEngine.recordMistake === 'function') {
+      NotebookEngine.recordMistake({
+        id: `${quizId}_${q.id}`,
+        question: q.question,
+        correctAnswer: Array.isArray(q.options) ? q.options[q.correctIdx] : String(q.correctIdx),
+        userAnswer: (selectedIdx !== undefined && Array.isArray(q.options)) ? q.options[selectedIdx] : '',
+        category: 'quiz',
+        lessonId: quizId,
+        options: q.options || []
+      });
+    }
 
     const buttons = document.querySelectorAll ? document.querySelectorAll(`[id^="btn-${q.id}-"]`) : [];
     buttons.forEach((btn, idx) => {
@@ -6079,7 +6407,7 @@ window.resetPracticeProgress = function(quizId = currentActiveId) {
   const targetId = quizId || currentActiveId;
   showAppConfirm(
     'Làm lại bài trắc nghiệm?',
-    'Bạn có chắc muốn làm lại bộ 50 câu trắc nghiệm này không?\nToàn bộ đáp án đã chọn sẽ được xóa để bạn làm lại từ đầu.',
+    'Bạn có chắc muốn làm lại bộ câu hỏi trắc nghiệm này không?\nToàn bộ đáp án đã chọn sẽ được xóa để bạn làm lại từ đầu.',
     () => {
       const wrapper = document.querySelector ? document.querySelector('.quiz-wrapper') : null;
       if (wrapper && wrapper.classList) wrapper.classList.add('quiz-fade-reset');
@@ -6132,9 +6460,8 @@ window.resetDokkaiProgress = function(dokkaiId) {
   );
 };
 
-// --------------------------------------------------------------------------
-// 7. TÌM KIẾM NHANH CTRL + K TOÀN DIỆN TRÊN TOÀN BỘ 50 BÀI
-// --------------------------------------------------------------------------
+// ZONE 10: SCROLL MEMORY, MODULE ROUTER (switchModule), THEME, COVER PAGE & MODALS
+
 function normalizeSearch(str) {
   if (!str) return '';
   return str.normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/đ/g, 'd').replace(/Đ/g, 'D').toLowerCase().trim();
@@ -6274,7 +6601,6 @@ function searchEverything(keyword) {
     });
   }
 
-  // Bổ sung kết quả từ SEARCH_INDEX cho các bài học chưa nạp vào RAM
   if (typeof SEARCH_INDEX !== 'undefined' && Array.isArray(SEARCH_INDEX)) {
     const loadedLessonIds = new Set((Array.isArray(lessonsData) ? lessonsData : []).map(l => l.id));
     SEARCH_INDEX.forEach(([type, lessonId, text1, text2, meaning]) => {
@@ -6300,22 +6626,223 @@ function searchEverything(keyword) {
 }
 
 function initQuickSearch() {
+  const container = document.getElementById('header-search-container');
   const input = document.getElementById('quick-search-input');
   const dropdown = document.getElementById('search-dropdown');
   const list = document.getElementById('search-results-list');
   const label = document.getElementById('search-count-label');
+  const clearBtn = document.getElementById('search-clear-btn');
+  const voiceBtn = document.getElementById('search-voice-btn');
+  const hwBtn = document.getElementById('search-dropdown-hw-btn');
   if (!input || !dropdown || !list) return;
+
+  let headerSpeechRecognition = null;
+  let isHeaderVoiceListening = false;
+  let headerSilenceTimer = null;
+
+  const resetHeaderSilenceTimer = () => {
+    if (headerSilenceTimer) clearTimeout(headerSilenceTimer);
+    headerSilenceTimer = setTimeout(() => {
+      stopHeaderVoiceSearch();
+    }, 5000);
+  };
+
+  const stopHeaderVoiceSearch = () => {
+    isHeaderVoiceListening = false;
+    if (headerSilenceTimer) {
+      clearTimeout(headerSilenceTimer);
+      headerSilenceTimer = null;
+    }
+    if (voiceBtn) {
+      voiceBtn.classList.remove('listening');
+      voiceBtn.title = 'Tra cứu bằng giọng nói (Tiếng Nhật / Tiếng Việt)';
+    }
+    if (headerSpeechRecognition) {
+      try {
+        headerSpeechRecognition.onend = null;
+        headerSpeechRecognition.onerror = null;
+        headerSpeechRecognition.onresult = null;
+        headerSpeechRecognition.stop();
+      } catch (err) {}
+      headerSpeechRecognition = null;
+    }
+  };
+
+  const startHeaderVoiceSearch = () => {
+    const SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (!SpeechRec) {
+      alert('Trình duyệt của bạn chưa hỗ trợ Web Speech API. Bạn có thể sử dụng biểu tượng Micro trên bàn phím ảo hoặc trình duyệt Chrome/Edge.');
+      return;
+    }
+
+    stopHeaderVoiceSearch();
+
+    try {
+      headerSpeechRecognition = new SpeechRec();
+      headerSpeechRecognition.lang = 'ja-JP';
+      headerSpeechRecognition.continuous = true;
+      headerSpeechRecognition.interimResults = true;
+      headerSpeechRecognition.maxAlternatives = 3;
+
+      isHeaderVoiceListening = true;
+      if (voiceBtn) {
+        voiceBtn.classList.add('listening');
+        voiceBtn.title = 'Đang lắng nghe... Bấm để dừng';
+      }
+
+      if (container && window.innerWidth <= 768) {
+        container.classList.add('mobile-active');
+      }
+
+      headerSpeechRecognition.onresult = (event) => {
+        resetHeaderSilenceTimer();
+        let interim = '';
+        let final = '';
+        for (let i = event.resultIndex; i < event.results.length; ++i) {
+          const item = event.results[i];
+          if (item.isFinal) {
+            final += item[0].transcript;
+          } else {
+            interim += item[0].transcript;
+          }
+        }
+        const text = (final || interim).trim();
+        if (text) {
+          input.value = text;
+          if (clearBtn) clearBtn.style.display = 'inline-flex';
+          input.dispatchEvent(new Event('input', { bubbles: true }));
+        }
+      };
+
+      headerSpeechRecognition.onerror = (event) => {
+        console.warn('[HeaderVoiceSearch] Lỗi nhận diện:', event.error);
+        if (event.error === 'no-speech') {
+          return;
+        }
+        stopHeaderVoiceSearch();
+      };
+
+      headerSpeechRecognition.onend = () => {
+        stopHeaderVoiceSearch();
+      };
+
+      headerSpeechRecognition.start();
+      resetHeaderSilenceTimer();
+    } catch (err) {
+      console.warn('[HeaderVoiceSearch] Không thể khởi động mic:', err);
+      stopHeaderVoiceSearch();
+    }
+  };
+
+  if (voiceBtn && voiceBtn.addEventListener) {
+    voiceBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      if (isHeaderVoiceListening) {
+        stopHeaderVoiceSearch();
+      } else {
+        startHeaderVoiceSearch();
+      }
+    });
+  }
+
+  if (hwBtn && hwBtn.addEventListener) {
+    hwBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      stopHeaderVoiceSearch();
+      dropdown.classList.remove('active');
+      if (container) container.classList.remove('mobile-active');
+      const curVal = input.value.trim();
+      if (typeof openMaziiWithQuery === 'function') {
+        openMaziiWithQuery(curVal, 'kanji', true);
+      } else if (typeof switchModule === 'function') {
+        switchModule('mazii-dict');
+      }
+    });
+  }
 
   if (input.addEventListener) {
     input.addEventListener('focus', () => {
       if (typeof SEARCH_INDEX === 'undefined' && typeof NavigationEngine !== 'undefined') {
         NavigationEngine.loadScriptAsync('data/search_index.js');
       }
+      prefetchRemainingDataForSearch();
+      if (window.innerWidth <= 768 && container) {
+        container.classList.add('mobile-active');
+      }
+
+      if (input.value.trim()) {
+        dropdown.classList.add('active');
+      } else {
+        dropdown.classList.remove('active');
+      }
+    });
+
+    input.addEventListener('blur', () => {
+      setTimeout(() => {
+        if (!input.value.trim() && container && !dropdown.classList.contains('active')) {
+          container.classList.remove('mobile-active');
+        }
+      }, 200);
+    });
+  }
+
+  if (clearBtn && clearBtn.addEventListener) {
+    clearBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      stopHeaderVoiceSearch();
+      input.value = '';
+      clearBtn.style.display = 'none';
+      dropdown.classList.remove('active');
+      list.innerHTML = '';
+      if (label) label.textContent = 'Nhập từ khóa để tra cứu';
+      input.focus();
     });
   }
 
   let searchTimer = null;
   let selectedIndex = -1;
+  let searchRequestId = 0;
+
+  const triggerSearchAutoTranslate = (queryText, reqId) => {
+    if (typeof DictionaryEngine === 'undefined' || typeof DictionaryEngine.translateText !== 'function') {
+      return;
+    }
+    DictionaryEngine.translateText(queryText).then(trans => {
+      if (reqId !== searchRequestId) return;
+      if (!trans || !trans.translated) return;
+
+      const safeQuery = queryText.replace(/\\/g, '\\\\').replace(/"/g, '\\"');
+      const meanEl = list.querySelector(`.search-dict-auto-mean[data-query="${safeQuery}"]`);
+      if (meanEl) {
+        let meanHtml = `<span class="search-dict-trans-result" style="color:var(--accent-primary, #ff5a36);font-weight:600;font-size:13.5px;">${escapeHtml(trans.translated)}</span>`;
+        if (trans.transliteration) {
+          meanHtml += `<div style="font-size:11.5px;color:var(--text-muted);margin-top:2px;">Phiên âm: ${escapeHtml(trans.transliteration)}</div>`;
+        }
+        meanEl.innerHTML = meanHtml;
+
+        const card = meanEl.closest('.search-dict-card');
+        if (card) {
+          const audioBtn = card.querySelector('.search-dict-audio-btn');
+          if (audioBtn) {
+            // Luôn ưu tiên phát âm tiếng Nhật chuẩn (nếu dịch sang Nhật thì phát câu dịch, nếu dịch sang Việt thì phát câu gốc)
+            const isJapaneseTarget = trans.targetLang === 'ja';
+            const speakWord = isJapaneseTarget ? trans.translated : trans.original;
+            audioBtn.setAttribute('data-speak-word', speakWord);
+            audioBtn.setAttribute('data-speak-lang', 'ja');
+            audioBtn.setAttribute('title', `Phát âm tiếng Nhật: ${speakWord}`);
+            audioBtn.style.display = 'inline-flex';
+          }
+        }
+      }
+    }).catch(err => {
+      if (reqId !== searchRequestId) return;
+      const safeQuery = queryText.replace(/\\/g, '\\\\').replace(/"/g, '\\"');
+      const meanEl = list.querySelector(`.search-dict-auto-mean[data-query="${safeQuery}"]`);
+      if (meanEl) {
+        meanEl.innerHTML = `<span style="color:var(--text-muted);font-size:12px;">Tra cứu nghĩa đầy đủ, chữ Hán &amp; ngữ pháp trực tuyến</span>`;
+      }
+    });
+  };
 
   const updateSelectedIndex = (items) => {
     items.forEach((item, idx) => {
@@ -6329,11 +6856,52 @@ function initQuickSearch() {
 
   if (list.addEventListener) {
     list.addEventListener('click', (e) => {
+
+      const audioBtn = e.target.closest ? e.target.closest('.search-dict-audio-btn') : null;
+      if (audioBtn) {
+        e.stopPropagation();
+        const wordToSpeak = audioBtn.getAttribute('data-speak-word');
+        const speakLang = audioBtn.getAttribute('data-speak-lang');
+        if (speakLang === 'vi') {
+          if (typeof window !== 'undefined' && window.speechSynthesis) {
+            try {
+              window.speechSynthesis.cancel();
+              const u = new SpeechSynthesisUtterance(wordToSpeak);
+              u.lang = 'vi-VN';
+              window.speechSynthesis.speak(u);
+            } catch (err) {
+              console.warn('[Search] TTS Vi error:', err);
+            }
+          }
+        } else if (wordToSpeak && typeof speakJapanese === 'function') {
+          speakJapanese(wordToSpeak, audioBtn, e);
+        }
+        return;
+      }
+
+      const dictOpenBtn = e.target.closest ? e.target.closest('.search-dict-open-btn') : null;
+      const dictCard = e.target.closest ? e.target.closest('.search-dict-card') : null;
+      if (dictOpenBtn || dictCard) {
+        const query = (dictOpenBtn && dictOpenBtn.getAttribute('data-mazii-query'))
+          || (dictCard && dictCard.getAttribute('data-dict-word'))
+          || input.value.trim();
+        dropdown.classList.remove('active');
+        if (container) container.classList.remove('mobile-active');
+        if (typeof openMaziiWithQuery === 'function') {
+          openMaziiWithQuery(query);
+        } else {
+          switchModule('mazii-dict');
+        }
+        return;
+      }
+
       const item = e.target.closest ? e.target.closest('.search-result-item') : null;
       if (!item) return;
+
       const maziiQuery = item.getAttribute('data-mazii-query');
       if (maziiQuery) {
         dropdown.classList.remove('active');
+        if (container) container.classList.remove('mobile-active');
         if (typeof openMaziiWithQuery === 'function') {
           openMaziiWithQuery(maziiQuery);
         } else {
@@ -6341,65 +6909,227 @@ function initQuickSearch() {
         }
         return;
       }
+
       const targetId = item.getAttribute('data-target');
       const highlight = decodeURIComponent(item.getAttribute('data-highlight') || '');
+      if (container) container.classList.remove('mobile-active');
       handleSearchClick(targetId, highlight);
     });
   }
 
   if (input.addEventListener) {
-    input.addEventListener('focus', () => {
-      prefetchRemainingDataForSearch();
-    });
-
     input.addEventListener('input', (e) => {
       clearTimeout(searchTimer);
       const val = e.target.value.trim();
       selectedIndex = -1;
+
+      if (clearBtn) {
+        clearBtn.style.display = val ? 'inline-flex' : 'none';
+      }
+
       if (!val) {
         dropdown.classList.remove('active');
+        list.innerHTML = '';
+        if (label) label.textContent = 'Nhập từ khóa để tra cứu';
         return;
       }
 
       searchTimer = setTimeout(() => {
-        const res = searchEverything(val);
-        dropdown.classList.add('active');
+        const currentReqId = ++searchRequestId;
 
-        if (res.length === 0) {
-          label.textContent = "Không có trong giáo trình";
-          list.innerHTML = `
-            <div class="search-empty">Không tìm thấy "<strong>${escapeHtml(val)}</strong>" trong 50 bài học.</div>
-            <div class="search-result-item" data-target="mazii-dict" data-mazii-query="${escapeHtml(val)}" style="border-top:1px dashed var(--border-color);margin-top:6px;">
-              <div class="search-item-left">
-                <div class="search-item-main" style="color:#e05244;font-weight:700;display:inline-flex;align-items:center;gap:6px;">
-                  ${APP_ICONS.book}
-                  <span>Tra "${escapeHtml(val)}" trên Từ Điển</span>
-                  ${APP_ICONS.arrowRight}
-                </div>
-                <div class="search-item-sub">Tra cứu từ vựng và chữ Hán trực tuyến</div>
-              </div>
-              <span class="search-badge" style="background:#e05244;color:#fff;">Từ điển</span>
-            </div>
-          `;
-          return;
+        let dictWords = [];
+        let dictKanjis = [];
+        if (typeof searchInternalDictionary === 'function') {
+          const dictRes = searchInternalDictionary(val, 'word');
+          if (dictRes && Array.isArray(dictRes.data)) {
+            dictWords = dictRes.data.slice(0, 3);
+          }
+          const kanjiRes = searchInternalDictionary(val, 'kanji');
+          if (kanjiRes && Array.isArray(kanjiRes.data)) {
+            dictKanjis = kanjiRes.data.slice(0, 2);
+          }
         }
 
-        label.textContent = `Tìm thấy ${res.length} kết quả:`;
-        list.innerHTML = res.slice(0, 30).map((r, idx) => `
-          <div class="search-result-item" data-index="${idx}" data-target="${escapeHtml(r.targetId)}" data-highlight="${encodeURIComponent(r.highlight || '')}">
-            <div class="search-item-left">
-              <div class="search-item-main">${escapeHtml(r.title)}</div>
-              <div class="search-item-sub">${escapeHtml(r.sub)}</div>
+        const lessonResults = searchEverything(val);
+
+        dropdown.classList.add('active');
+
+        const isPhraseOrSentence = /\s+/.test(val) || val.length >= 8;
+        let needAutoTranslate = false;
+
+        const totalMatches = dictWords.length + dictKanjis.length + lessonResults.length + (isPhraseOrSentence ? 1 : 0);
+        if (label) {
+          label.textContent = totalMatches > 0
+            ? `Tìm thấy ${totalMatches} kết quả cho "${val}":`
+            : `Kết quả cho "${val}":`;
+        }
+
+        let html = '';
+
+        html += `
+          <div class="search-section-divider">
+            <div class="search-section-title">
+              <span class="search-section-icon">${APP_ICONS.book || '📖'}</span>
+              <span>Tra Cứu Từ Điển Nhật - Việt</span>
             </div>
-            <span class="search-badge">${escapeHtml(r.category)}</span>
           </div>
-        `).join('');
+        `;
+
+        // Nếu là cụm từ hoặc câu văn (có khoảng trắng hoặc dài >= 8 ký tự): Luôn đưa thẻ dịch tự động lên đầu tiên
+        if (isPhraseOrSentence) {
+          needAutoTranslate = true;
+          html += `
+            <div class="search-dict-card" data-dict-word="${escapeHtml(val)}">
+              <div class="search-dict-main-row">
+                <div class="search-dict-term-wrap">
+                  <span class="search-dict-term">${escapeHtml(val)}</span>
+                </div>
+                <div class="search-dict-actions">
+                  <button type="button" class="search-dict-audio-btn" data-speak-word="" title="Phát âm" aria-label="Phát âm" style="display:none;">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                      <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+                      <path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+                    </svg>
+                  </button>
+                  <button type="button" class="search-dict-open-btn" data-mazii-query="${escapeHtml(val)}" title="Xem chi tiết &amp; nét viết trong Từ điển">Mở từ điển →</button>
+                </div>
+              </div>
+              <div class="search-dict-mean-row search-dict-auto-mean" data-query="${escapeHtml(val)}">
+                <span style="color:var(--text-muted);font-style:italic;">Đang dịch...</span>
+              </div>
+            </div>
+          `;
+        }
+
+        if (dictWords.length > 0 || dictKanjis.length > 0) {
+          dictWords.forEach(dw => {
+            const primaryMean = (dw.means && dw.means[0] && dw.means[0].mean) || '';
+            const kindTag = (dw.means && dw.means[0] && dw.means[0].kind && dw.means[0].kind !== 'Từ vựng') ? `[${dw.means[0].kind}] ` : '';
+            html += `
+              <div class="search-dict-card" data-dict-word="${escapeHtml(dw.word)}">
+                <div class="search-dict-main-row">
+                  <div class="search-dict-term-wrap">
+                    <span class="search-dict-term">${escapeHtml(dw.word)}</span>
+                    ${dw.phonetic && dw.phonetic !== dw.word ? `<span class="search-dict-phonetic">${escapeHtml(dw.phonetic)}</span>` : ''}
+                    ${dw.han ? `<span class="search-dict-han">[${escapeHtml(dw.han)}]</span>` : ''}
+                  </div>
+                  <div class="search-dict-actions">
+                    <button type="button" class="search-dict-audio-btn" data-speak-word="${escapeHtml(dw.word)}" title="Phát âm tiếng Nhật" aria-label="Phát âm">
+                      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+                        <path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+                      </svg>
+                    </button>
+                    <button type="button" class="search-dict-open-btn" data-mazii-query="${escapeHtml(dw.word)}" title="Xem chi tiết &amp; nét viết trong Từ điển">Mở từ điển →</button>
+                  </div>
+                </div>
+                ${primaryMean ? `<div class="search-dict-mean-row">${escapeHtml(kindTag + primaryMean)}</div>` : ''}
+              </div>
+            `;
+          });
+
+          dictKanjis.forEach(dk => {
+            html += `
+              <div class="search-dict-card" data-dict-word="${escapeHtml(dk.kanji)}">
+                <div class="search-dict-main-row">
+                  <div class="search-dict-term-wrap">
+                    <span class="search-dict-term" style="color:var(--accent-primary);font-size:18px;">${escapeHtml(dk.kanji)}</span>
+                    <span class="search-dict-han">Hán-Việt: ${escapeHtml(dk.mean || '')}</span>
+                    ${dk.on ? `<span class="search-dict-phonetic">Âm On: ${escapeHtml(dk.on)}</span>` : ''}
+                  </div>
+                  <div class="search-dict-actions">
+                    <button type="button" class="search-dict-audio-btn" data-speak-word="${escapeHtml(dk.kanji)}" title="Phát âm tiếng Nhật" aria-label="Phát âm">
+                      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+                        <path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+                      </svg>
+                    </button>
+                    <button type="button" class="search-dict-open-btn" data-mazii-query="${escapeHtml(dk.kanji)}" title="Xem cách viết Hán tự trong Từ điển">Nét viết →</button>
+                  </div>
+                </div>
+              </div>
+            `;
+          });
+        } else if (!isPhraseOrSentence) {
+          // Từ đơn lẻ không có trong từ điển nội bộ: kích hoạt dịch tự động cho từ đơn
+          needAutoTranslate = true;
+          html += `
+            <div class="search-dict-card" data-dict-word="${escapeHtml(val)}">
+              <div class="search-dict-main-row">
+                <div class="search-dict-term-wrap">
+                  <span class="search-dict-term">${escapeHtml(val)}</span>
+                </div>
+                <div class="search-dict-actions">
+                  <button type="button" class="search-dict-audio-btn" data-speak-word="" title="Phát âm" aria-label="Phát âm" style="display:none;">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                      <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+                      <path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+                    </svg>
+                  </button>
+                  <button type="button" class="search-dict-open-btn" data-mazii-query="${escapeHtml(val)}" title="Xem chi tiết &amp; nét viết trong Từ điển">Mở từ điển →</button>
+                </div>
+              </div>
+              <div class="search-dict-mean-row search-dict-auto-mean" data-query="${escapeHtml(val)}">
+                <span style="color:var(--text-muted);font-style:italic;">Đang dịch...</span>
+              </div>
+            </div>
+          `;
+        }
+
+        if (lessonResults.length > 0) {
+          html += `
+            <div class="search-section-divider">
+              <div class="search-section-title">
+                <span class="search-section-icon">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+                    <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+                  </svg>
+                </span>
+                <span>Bài Học &amp; Ngữ Pháp Liên Quan (${lessonResults.length})</span>
+              </div>
+            </div>
+          `;
+
+          html += lessonResults.slice(0, 15).map((r, idx) => `
+            <div class="search-result-item" data-index="${idx}" data-target="${escapeHtml(r.targetId)}" data-highlight="${encodeURIComponent(r.highlight || '')}">
+              <div class="search-item-left">
+                <div class="search-item-main">${escapeHtml(r.title)}</div>
+                <div class="search-item-sub">${escapeHtml(r.sub)}</div>
+              </div>
+              <span class="search-badge">${escapeHtml(r.category)}</span>
+            </div>
+          `).join('');
+        } else {
+          html += `
+            <div class="search-empty-sub">Không có bài học giáo trình nào chứa "${escapeHtml(val)}"</div>
+          `;
+        }
+
+        list.innerHTML = html;
+
+        if (needAutoTranslate) {
+          triggerSearchAutoTranslate(val, currentReqId);
+        }
       }, 120);
     });
 
     input.addEventListener('keydown', (e) => {
-      const items = list.querySelectorAll ? list.querySelectorAll('.search-result-item') : [];
-      if (!dropdown.classList.contains('active') || items.length === 0) return;
+      const items = list.querySelectorAll ? list.querySelectorAll('.search-result-item, .search-dict-card') : [];
+      if (!dropdown.classList.contains('active') || items.length === 0) {
+        if (e.key === 'Enter') {
+          const rawVal = input.value.trim();
+          if (rawVal) {
+            e.preventDefault();
+            dropdown.classList.remove('active');
+            if (container) container.classList.remove('mobile-active');
+            if (typeof openMaziiWithQuery === 'function') {
+              openMaziiWithQuery(rawVal);
+            }
+          }
+        }
+        return;
+      }
 
       if (e.key === 'ArrowDown') {
         e.preventDefault();
@@ -6413,8 +7143,15 @@ function initQuickSearch() {
         e.preventDefault();
         if (selectedIndex >= 0 && selectedIndex < items.length) {
           items[selectedIndex].click();
-        } else if (items.length > 0) {
-          items[0].click();
+        } else {
+          const rawVal = input.value.trim();
+          if (rawVal) {
+            dropdown.classList.remove('active');
+            if (container) container.classList.remove('mobile-active');
+            if (typeof openMaziiWithQuery === 'function') {
+              openMaziiWithQuery(rawVal);
+            }
+          }
         }
       }
     });
@@ -6428,13 +7165,19 @@ function initQuickSearch() {
         if (input.select) input.select();
       }
       if (e.key === 'Escape') {
+        stopHeaderVoiceSearch();
         dropdown.classList.remove('active');
+        if (container) container.classList.remove('mobile-active');
       }
     });
 
     document.addEventListener('click', (e) => {
       if (e.target && e.target.closest && !e.target.closest('.header-search-container')) {
+        stopHeaderVoiceSearch();
         dropdown.classList.remove('active');
+        if (container && (!input.value.trim() || window.innerWidth > 768)) {
+          container.classList.remove('mobile-active');
+        }
       }
     });
   }
@@ -6443,7 +7186,11 @@ function initQuickSearch() {
 window.handleSearchClick = function(targetId, highlightText = '') {
   const dropdown = document.getElementById('search-dropdown');
   const input = document.getElementById('quick-search-input');
+  const container = document.getElementById('header-search-container');
+  const clearBtn = document.getElementById('search-clear-btn');
   if (dropdown) dropdown.classList.remove('active');
+  if (container) container.classList.remove('mobile-active');
+  if (clearBtn) clearBtn.style.display = 'none';
   if (input) {
     input.value = '';
     if (input.blur) input.blur();
@@ -6475,7 +7222,6 @@ window.handleSearchClick = function(targetId, highlightText = '') {
   }
 };
 
-// Đồng bộ thanh điều hướng dưới cùng trên điện thoại (Mobile Bottom Bar)
 function syncMobileBottomNav(activeId) {
   const id = String(activeId || currentActiveId || 'bai-1');
   const isExamRunner = id.startsWith('exam-') || id.startsWith('de-thi') || id === 'exam/runner';
@@ -6667,10 +7413,8 @@ window.handleMobileBottomNav = function(targetType) {
   }
 };
 
-// ==========================================================================
-// HỆ THỐNG GHI NHỚ VÀ KHÔI PHỤC VỊ TRÍ NỘI DUNG (MODULE SCROLL POSITION PRESERVATION)
-// Đảm bảo khi chuyển sang bài/mục khác rồi quay lại, trang giữ y nguyên vị trí nội dung
-// ==========================================================================
+
+
 const STORAGE_SCROLL_POSITIONS_KEY = 'minna_module_scroll_pos';
 const moduleScrollPositions = {};
 let isRestoringScroll = false;
@@ -6763,10 +7507,8 @@ function restoreScrollPosition(targetScroll) {
     }
   };
 
-  // Áp dụng tức thì ở Frame 0 để loại bỏ hoàn toàn hiện tượng nhảy/chớp trang
   applyPos();
 
-  // Khôi phục tiếp sau chu kỳ layout của trình duyệt (nếu có fonts hoặc images tải chậm)
   if (typeof requestAnimationFrame === 'function') {
     scrollRestoreRafId = requestAnimationFrame(() => {
       applyPos();
@@ -6787,7 +7529,6 @@ function restoreScrollPosition(targetScroll) {
 window.switchModule = function(targetId, updateHash = true) {
   if (!targetId) return;
 
-  // LƯU VỊ TRÍ CUỘN CỦA TRANG HIỆN TẠI TRƯỚC KHI RỜI ĐI
   if (currentActiveId && currentActiveId !== targetId) {
     const mainContent = document.getElementById('main-content');
     const curScroll = mainContent ? mainContent.scrollTop : (window.scrollY || (document.documentElement && document.documentElement.scrollTop) || 0);
@@ -6804,7 +7545,6 @@ window.switchModule = function(targetId, updateHash = true) {
   const topActions = document.getElementById('quizTopBarActions');
   if (topActions) topActions.style.display = 'none';
 
-  // Kiểm tra rời khỏi bài thi đang làm dở (Anti-Cheat Exit Trigger 1: Điều hướng nội bộ)
   if (window.ExamEngine && window.ExamEngine.state && window.ExamEngine.state.activeExamCode) {
     const activeExam = window.ExamEngine.state.activeExamCode;
     const isSubmitted = window.ExamEngine.state.submittedExams && window.ExamEngine.state.submittedExams[activeExam];
@@ -6817,7 +7557,6 @@ window.switchModule = function(targetId, updateHash = true) {
     }
   }
 
-  // Dọn dẹp đồng hồ thi nếu rời khỏi màn hình làm bài thi
   const isExamRunnerTarget = (String(targetId).startsWith('exam-') || String(targetId).startsWith('de-thi-') || String(targetId).includes('/'));
   if (!isExamRunnerTarget) {
     if (window.ExamEngine && typeof window.ExamEngine.cleanup === 'function') {
@@ -6839,7 +7578,10 @@ window.switchModule = function(targetId, updateHash = true) {
   let targetBtn = null;
   if (document && document.querySelectorAll) {
     document.querySelectorAll('.menu-item-btn').forEach(b => {
-      const isTarget = (b.getAttribute('data-id') === targetId);
+      const bid = b.getAttribute('data-id');
+      const isTarget = (bid === targetId) ||
+        (targetId === 'master-hub' && bid === 'conjugation-lab') ||
+        (targetId === 'streak-zen' && bid === 'analytics-hub');
       b.classList.toggle('active', isTarget);
       if (isTarget) targetBtn = b;
     });
@@ -6856,7 +7598,6 @@ window.switchModule = function(targetId, updateHash = true) {
     }
   }
 
-  // Nếu dữ liệu chưa sẵn sàng trong bộ nhớ, hiển thị spinner và nạp bất đồng bộ
   if (!isModuleDataReady(targetId)) {
     renderLazyLoader(targetId);
     ensureModuleDataLoaded(targetId).then(() => {
@@ -6903,9 +7644,7 @@ if (typeof window !== 'undefined' && typeof window.addEventListener === 'functio
   });
 }
 
-// --------------------------------------------------------------------------
-// 8. KHỞI CHẠY GIAO DIỆN & SỰ KIỆN
-// --------------------------------------------------------------------------
+
 function applyTheme(themeName) {
   if (document.documentElement && document.documentElement.classList) {
     document.documentElement.classList.add('theme-switching');
@@ -6913,9 +7652,21 @@ function applyTheme(themeName) {
   }
   safeSetStorage('minna_theme', themeName);
 
+  const metaTheme = document.querySelector('meta[name="theme-color"]');
+  if (metaTheme) {
+    metaTheme.setAttribute('content', themeName === 'dark' ? '#070b14' : '#faf8f5');
+  }
+
   const label = document.getElementById('theme-label-text');
   if (label) {
     label.textContent = themeName === 'dark' ? 'Giao diện: Tối (Đêm)' : 'Giao diện: Sáng (Ngày)';
+  }
+
+  const sLightBtn = document.getElementById('msheet-theme-light');
+  const sDarkBtn = document.getElementById('msheet-theme-dark');
+  if (sLightBtn && sDarkBtn) {
+    sLightBtn.classList.toggle('active', themeName !== 'dark');
+    sDarkBtn.classList.toggle('active', themeName === 'dark');
   }
 
   safeRAF(() => {
@@ -6943,7 +7694,31 @@ function initThemeToggle() {
   }
 }
 
-// Chế độ Toàn màn hình & Xem tập trung (Focus Mode / Zen Mode)
+
+function toggleTheme() {
+  const cur = (document.documentElement && document.documentElement.getAttribute('data-theme')) || 'light';
+  const nxt = cur === 'dark' ? 'light' : 'dark';
+  applyTheme(nxt);
+  if (typeof showToast === 'function') {
+    showToast(nxt === 'dark' ? 'Đã chuyển sang Giao diện Tối' : 'Đã chuyển sang Giao diện Sáng');
+  }
+}
+
+function toggleFurigana() {
+  const isCurrentlyHidden = document.body && document.body.classList.contains('hide-furigana');
+  const willHide = !isCurrentlyHidden;
+  if (document.body && document.body.classList) {
+    document.body.classList.toggle('hide-furigana', willHide);
+  }
+  safeSetStorage(STORAGE_FURIGANA_KEY, willHide ? 'false' : 'true');
+  if (typeof showToast === 'function') {
+    showToast(willHide ? "Đã ẩn Furigana (Chạm/rê chuột lên Kanji để xem)" : "Đã bật hiển thị Furigana");
+  }
+  if (window.ExamEngine && typeof window.ExamEngine.syncFuriganaState === 'function') {
+    window.ExamEngine.syncFuriganaState();
+  }
+}
+
 function initFullscreenToggle() {
   const btn = document.getElementById('btn-toggle-fullscreen');
   if (!btn || !btn.addEventListener) return;
@@ -7101,7 +7876,6 @@ function initMenuToggle() {
     }, { passive: false });
   }
 
-  // Đóng sidebar khi nhấn hoặc chạm vào lớp phủ backdrop mờ
   if (overlay && overlay.addEventListener) {
     const handleOverlayDismiss = (e) => {
       if (e && e.preventDefault) e.preventDefault();
@@ -7112,7 +7886,6 @@ function initMenuToggle() {
     overlay.addEventListener('touchend', handleOverlayDismiss, { passive: false });
   }
 
-  // Tự động đóng sidebar khi bấm/chạm ra ngoài menu bất kể vị trí nào (Capture phase)
   if (document && document.addEventListener) {
     document.addEventListener('click', (e) => {
       const sb = document.getElementById('sidebar');
@@ -7144,7 +7917,6 @@ function initMenuToggle() {
     });
   }
 
-  // Đóng sidebar khi bấm các nút chức năng chân menu nếu mở modal
   ['btn-reset-progress', 'voice-settings-btn', 'btn-toggle-fullscreen', 'btn-device-settings'].forEach(actionId => {
     const actionEl = document.getElementById(actionId);
     if (actionEl && actionEl.addEventListener) {
@@ -7185,9 +7957,7 @@ function closeMobileSidebar() {
   updateMenuButtonState();
 }
 
-// --------------------------------------------------------------------------
-// 9. TRANG BÌA GIỚI THIỆU PHONG CÁCH NHẬT BẢN (COVER SLIDE SCREEN)
-// --------------------------------------------------------------------------
+
 let selectedCoverTarget = null;
 
 window.enterApp = function(targetHash) {
@@ -7219,7 +7989,7 @@ window.enterApp = function(targetHash) {
 window.handleEnterApp = window.enterApp;
 
 window.selectCoverTarget = function(targetHash, el, label) {
-  // Chạm vào bất kỳ thẻ hoặc danh mục nào trên trang bìa là vào thẳng bài học ngay lập tức
+
   window.enterApp(targetHash);
 };
 
@@ -7233,12 +8003,19 @@ window.returnToCoverPage = function() {
   } catch (e) {}
   const cover = document.getElementById('cover-page-slide');
   if (cover) {
-    cover.style.display = 'block';
+    cover.style.display = 'flex';
     cover.style.pointerEvents = 'auto';
     cover.style.opacity = '1';
     cover.classList.remove('hide-cover');
     cover.scrollTop = 0;
   }
+  try {
+    if (window.history && window.history.replaceState) {
+      window.history.replaceState(null, '', window.location.pathname + window.location.search);
+    } else {
+      window.location.hash = '';
+    }
+  } catch (e) {}
 };
 
 function initCoverPage() {
@@ -7248,23 +8025,25 @@ function initCoverPage() {
 
   if (!cover) return;
 
-  // Kiểm tra nếu người dùng đã có bài học trong URL hash hoặc đã đóng trang bìa trong phiên làm việc
-  let hasHash = false;
-  try {
-    hasHash = window.location && window.location.hash && window.location.hash.length > 2;
-  } catch (e) {}
-
   let isClosedInSession = false;
   try {
     isClosedInSession = sessionStorage.getItem('minna_cover_closed') === 'true';
   } catch (e) {}
 
-  if (hasHash || isClosedInSession) {
+  if (isClosedInSession) {
     cover.classList.add('hide-cover');
     cover.style.display = 'none';
     cover.style.pointerEvents = 'none';
   } else {
+
     cover.classList.remove('hide-cover');
+    cover.style.display = 'flex';
+    cover.style.pointerEvents = 'auto';
+    cover.style.opacity = '1';
+
+    if (window.location && window.location.hash && window.location.hash.length > 2) {
+      selectedCoverTarget = window.location.hash;
+    }
   }
 
   if (document && document.querySelectorAll) {
@@ -7388,11 +8167,20 @@ function initVoiceSettingsModal() {
   const pitchSlider = document.getElementById('voice-pitch-slider');
   const pitchVal = document.getElementById('voice-pitch-val');
   const saveBtn = document.getElementById('save-voice-modal-btn');
+  const testBtn = document.getElementById('btn-test-voice-sample');
 
   if (!modal) return;
 
+  const syncCharacterPills = (speakerId) => {
+    const curSpeaker = speakerId || DIALOGUE_DEFAULT_SPEAKER;
+    document.querySelectorAll('#voice-character-selector .device-pill').forEach(btn => {
+      btn.classList.toggle('active', btn.getAttribute('data-speaker') === curSpeaker);
+    });
+  };
+
   const openModal = () => {
     const cfg = getSpeechGenConfig();
+    syncCharacterPills(cfg.speaker || DIALOGUE_DEFAULT_SPEAKER);
     if (speedSlider) {
       speedSlider.value = cfg.speed || 0.92;
       if (speedVal) speedVal.textContent = (cfg.speed || 0.92) + 'x';
@@ -7430,6 +8218,17 @@ function initVoiceSettingsModal() {
     });
   }
 
+  const charSelector = document.getElementById('voice-character-selector');
+  if (charSelector && charSelector.addEventListener) {
+    charSelector.addEventListener('click', (e) => {
+      const pill = e.target.closest('.device-pill');
+      if (!pill) return;
+      charSelector.querySelectorAll('.device-pill').forEach(p => p.classList.remove('active'));
+      pill.classList.add('active');
+      triggerHaptic(15);
+    });
+  }
+
   if (speedSlider && speedVal && speedSlider.addEventListener) {
     speedSlider.addEventListener('input', () => {
       speedVal.textContent = speedSlider.value + 'x';
@@ -7442,25 +8241,35 @@ function initVoiceSettingsModal() {
     });
   }
 
+  if (testBtn && testBtn.addEventListener) {
+    testBtn.addEventListener('click', (e) => {
+      const activePill = document.querySelector('#voice-character-selector .device-pill.active');
+      const chosenSpeaker = activePill ? activePill.getAttribute('data-speaker') : DIALOGUE_DEFAULT_SPEAKER;
+      speakJapanese("こんにちは！今日も一緒に楽しく勉強しましょう。", testBtn, e, chosenSpeaker);
+    });
+  }
+
   if (saveBtn && saveBtn.addEventListener) {
     saveBtn.addEventListener('click', () => {
+      const activePill = document.querySelector('#voice-character-selector .device-pill.active');
+      const chosenSpeaker = activePill ? activePill.getAttribute('data-speaker') : DIALOGUE_DEFAULT_SPEAKER;
       const newSpeed = speedSlider ? parseFloat(speedSlider.value) : 0.92;
       const newPitch = pitchSlider ? parseFloat(pitchSlider.value) : 1.04;
 
       setSpeechGenConfig({
+        speaker: chosenSpeaker,
         speed: newSpeed,
         pitch: newPitch
       });
 
       closeModal();
-      showToast('Đã lưu cài đặt giọng đọc thành công!');
+      triggerHaptic(20);
+      showToast('Đã lưu cài đặt giọng đọc Hội thoại thành công!');
     });
   }
 }
 
-/**
- * Khởi tạo menu bánh răng cài đặt và tiện ích thu gọn ở chân Sidebar
- */
+
 function initSidebarGearMenu() {
   if (typeof document === 'undefined') return;
   const gearBtn = document.getElementById('btn-sidebar-gear');
@@ -7487,7 +8296,6 @@ function initSidebarGearMenu() {
 
   gearBtn.addEventListener('click', toggleGearPopup);
 
-  // Đóng khi click ra ngoài vùng menu bánh răng
   if (document.addEventListener) {
     document.addEventListener('click', (e) => {
       if (gearWrap.classList.contains('open')) {
@@ -7513,7 +8321,6 @@ function initSidebarGearMenu() {
     });
   }
 
-  // Đóng flyout khi bấm vào bất kỳ tùy chọn nào trong menu
   if (gearPopup && gearPopup.querySelectorAll) {
     const items = gearPopup.querySelectorAll('.gear-menu-item');
     if (items && items.forEach) {
@@ -7528,37 +8335,8 @@ function initSidebarGearMenu() {
   }
 }
 
-if (document && document.addEventListener) {
-  document.addEventListener('DOMContentLoaded', () => {
-    initModuleScrollPositions();
-    initDeviceSettings();
-    initThemeToggle();
-    initFuriganaToggle();
-    initFullscreenToggle();
-    initCoverPage();
-    initMenuToggle();
-    initQuickSearch();
-    initResetProgress();
-    initBackToTop();
-    initVoiceSettingsModal();
-    initSidebarGearMenu();
-    initMobileBottomNavSliderTouch();
+// ZONE 11: IN-LESSON PRACTICE HUB (3D VOCABULARY FLASHCARD + 25 REFLEX QUIZ) & PROGRESSIVE DISCLOSURE
 
-    renderSidebar();
-    updateHeaderProgress();
-
-    const hashId = (typeof window !== 'undefined' && window.location && window.location.hash ? window.location.hash : '').replace('#', '');
-    const savedLastActive = safeGetStorage(STORAGE_LAST_ACTIVE_KEY);
-    const initialId = hashId || savedLastActive || 'bai-1';
-
-    switchModule(initialId, false);
-    startIdlePrefetch();
-  });
-}
-
-// --------------------------------------------------------------------------
-// 10. STUDIO LUYỆN TẬP NHANH TRONG BÀI: FLASHCARD 3D & PHẢN XẠ CHỮ HÁN
-// --------------------------------------------------------------------------
 function renderLessonPractice(vocabList, containerSelector = '#lesson-practice-mount') {
   if (!Array.isArray(vocabList) || vocabList.length === 0) return;
   if (!document || !document.querySelector) return;
@@ -7583,9 +8361,20 @@ function renderLessonPractice(vocabList, containerSelector = '#lesson-practice-m
 
   const hub = document.createElement('section');
   hub.id = 'lesson-practice-hub';
-  hub.className = 'practice-hub';
+  hub.className = 'practice-hub is-collapsed';
 
   hub.innerHTML = `
+    <div class="practice-hub-accordion-bar" role="button" tabindex="0" aria-expanded="false" onclick="toggleLessonPracticeHub(this)" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();toggleLessonPracticeHub(this);}">
+      <div class="practice-hub-bar-left">
+        <span class="practice-icon-badge accent-amber">${APP_ICONS.bolt}</span>
+        <span class="practice-hub-bar-title">Luyện phản xạ nhanh từ vựng bài này</span>
+      </div>
+      <div class="practice-hub-bar-right">
+        <span class="practice-hub-toggle-pill">Bấm để mở</span>
+        <span class="practice-hub-arrow" aria-hidden="true">${APP_ICONS.chevronDown || '<svg class="icon-svg accordion-chevron" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"></polyline></svg>'}</span>
+      </div>
+    </div>
+    <div class="practice-hub-body">
     <div class="practice-box">
       <div class="practice-box-header">
         <div class="practice-box-title">
@@ -7645,6 +8434,7 @@ function renderLessonPractice(vocabList, containerSelector = '#lesson-practice-m
           <span style="display:inline-flex;align-items:center;gap:4px;">${APP_ICONS.shuffle} <span>Đổi Đề Mới (25 câu)</span></span>
         </button>
       </div>
+    </div>
     </div>
   `;
 
@@ -7732,7 +8522,6 @@ function renderLessonPractice(vocabList, containerSelector = '#lesson-practice-m
       return;
     }
 
-    // TỔNG SỐ LƯỢNG CÂU HỎI: CHUẨN 25 CÂU
     const TARGET_QUIZ_COUNT = 25;
     const half1 = Math.ceil(TARGET_QUIZ_COUNT / 2); // 13 câu
     const half2 = TARGET_QUIZ_COUNT - half1; // 12 câu
@@ -7740,13 +8529,11 @@ function renderLessonPractice(vocabList, containerSelector = '#lesson-practice-m
     const shuffledPool1 = [...sourcePool].sort(() => Math.random() - 0.5);
     const shuffledPool2 = [...sourcePool].sort(() => Math.random() - 0.5);
 
-    // Dạng 1: Chữ Hán ➔ Chọn Nghĩa Tiếng Việt
     const k2mItems = [];
     for (let i = 0; i < half1; i++) {
       k2mItems.push(shuffledPool1[i % shuffledPool1.length]);
     }
 
-    // Dạng 2: Nghĩa Tiếng Việt ➔ Chọn Chữ Hán (ưu tiên các từ chưa trùng)
     const remaining = shuffledPool1.slice(half1);
     const m2kItems = [];
     for (const it of remaining) {
@@ -7761,7 +8548,6 @@ function renderLessonPractice(vocabList, containerSelector = '#lesson-practice-m
       m2kItems.push(sourcePool[m2kItems.length % sourcePool.length]);
     }
 
-    // Tạo câu hỏi Dạng 1: Chữ Hán ➔ 4 Nghĩa Tiếng Việt (KHÔNG CÓ CHỮ HIRAGANA)
     const qType1 = k2mItems.map(item => {
       const correctMeaning = (item.meaning || '').trim();
       const wrongMeanings = getMeaningDistractors(item, cleanVocab);
@@ -7777,7 +8563,6 @@ function renderLessonPractice(vocabList, containerSelector = '#lesson-practice-m
       };
     });
 
-    // Tạo câu hỏi Dạng 2: Nghĩa Tiếng Việt ➔ 4 Chữ Hán có nét/cách viết gần giống nhau
     const qType2 = m2kItems.map(item => {
       const correctKanji = (item.kanji || item.word || '').trim();
       const wrongKanjis = getLookalikeKanjiDistractors(item, cleanVocab);
@@ -7793,7 +8578,6 @@ function renderLessonPractice(vocabList, containerSelector = '#lesson-practice-m
       };
     });
 
-    // Trộn lẫn xen kẽ cả 2 dạng câu hỏi
     kqDeck = [...qType1, ...qType2]
       .sort(() => Math.random() - 0.5)
       .slice(0, TARGET_QUIZ_COUNT);
@@ -7905,10 +8689,126 @@ function renderLessonPractice(vocabList, containerSelector = '#lesson-practice-m
 }
 window.renderLessonPractice = renderLessonPractice;
 
-// ==========================================================================
-// MODULE TỪ ĐIỂN MAZII & NHẬN DIỆN CHỮ HÁN VIẾT TAY (MAZII DICTIONARY STUDIO)
-// Kết nối trực tiếp https://mazii.net/vi-VN & Google Handwriting Recognition
-// ==========================================================================
+
+window.toggleLessonPracticeHub = function(barEl) {
+  const hub = document.getElementById('lesson-practice-hub');
+  if (!hub) return;
+  const isCollapsed = hub.classList.toggle('is-collapsed');
+  const isOpen = !isCollapsed;
+  hub.classList.toggle('is-open', isOpen);
+  if (barEl && barEl.setAttribute) {
+    barEl.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+    const pill = barEl.querySelector ? barEl.querySelector('.practice-hub-toggle-pill') : null;
+    if (pill) pill.textContent = isOpen ? 'Thu gọn' : 'Bấm để mở';
+  }
+  triggerHaptic(8);
+};
+
+window.toggleGrammarCard = function(gIdx, barEl) {
+  const card = document.getElementById(`grammar-card-${gIdx}`);
+  if (!card) return;
+  const isCollapsed = card.classList.toggle('is-collapsed');
+  const isOpen = !isCollapsed;
+  card.classList.toggle('is-open', isOpen);
+  if (barEl && barEl.setAttribute) {
+    barEl.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+  }
+  triggerHaptic(8);
+};
+
+window.toggleAllGrammarCards = function(btn) {
+  const cards = document.querySelectorAll ? document.querySelectorAll('.grammar-item-card') : [];
+  if (!cards.length) return;
+  const anyCollapsed = Array.from(cards).some(c => c.classList.contains('is-collapsed'));
+  cards.forEach(c => {
+    c.classList.toggle('is-collapsed', !anyCollapsed);
+    c.classList.toggle('is-open', anyCollapsed);
+    const bar = c.querySelector ? c.querySelector('.grammar-formula-bar') : null;
+    if (bar && bar.setAttribute) bar.setAttribute('aria-expanded', anyCollapsed ? 'true' : 'false');
+  });
+  if (btn) {
+    btn.classList.toggle('is-open', anyCollapsed);
+    btn.setAttribute('aria-expanded', anyCollapsed ? 'true' : 'false');
+    const icon = anyCollapsed
+      ? (APP_ICONS.chevronsUp || '<svg class="icon-svg pill-chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="7 11 12 6 17 11"></polyline><polyline points="7 18 12 13 17 18"></polyline></svg>')
+      : (APP_ICONS.chevronsDown || '<svg class="icon-svg pill-chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="7 13 12 18 17 13"></polyline><polyline points="7 6 12 11 17 6"></polyline></svg>');
+    btn.innerHTML = `${icon}<span>${anyCollapsed ? 'Thu gọn tất cả' : 'Mở tất cả'}</span>`;
+  }
+  triggerHaptic(10);
+};
+
+window.toggleKanjiCardDetail = function(itemId, ev) {
+  if (ev && ev.target && ev.target.closest && ev.target.closest('.kcard-audio-btn')) {
+    return;
+  }
+  const card = document.getElementById(`kcard-${itemId}`);
+  if (!card) return;
+  const isCollapsed = card.classList.toggle('is-collapsed');
+  const isOpen = !isCollapsed;
+  card.classList.toggle('is-open', isOpen);
+  const topSec = card.querySelector ? card.querySelector('.kcard-top-section') : null;
+  if (topSec && topSec.setAttribute) {
+    topSec.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+  }
+  triggerHaptic(8);
+};
+
+window.toggleAllKanjiCards = function(btn) {
+  const cards = document.querySelectorAll ? document.querySelectorAll('.kanji-study-card') : [];
+  if (!cards.length) return;
+  const anyCollapsed = Array.from(cards).some(c => c.classList.contains('is-collapsed'));
+  cards.forEach(c => {
+    c.classList.toggle('is-collapsed', !anyCollapsed);
+    c.classList.toggle('is-open', anyCollapsed);
+    const topSec = c.querySelector ? c.querySelector('.kcard-top-section') : null;
+    if (topSec && topSec.setAttribute) topSec.setAttribute('aria-expanded', anyCollapsed ? 'true' : 'false');
+  });
+  if (btn) {
+    btn.classList.toggle('is-open', anyCollapsed);
+    btn.setAttribute('aria-expanded', anyCollapsed ? 'true' : 'false');
+    const icon = anyCollapsed
+      ? (APP_ICONS.chevronsUp || '<svg class="icon-svg pill-chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="7 11 12 6 17 11"></polyline><polyline points="7 18 12 13 17 18"></polyline></svg>')
+      : (APP_ICONS.chevronsDown || '<svg class="icon-svg pill-chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="7 13 12 18 17 13"></polyline><polyline points="7 6 12 11 17 6"></polyline></svg>');
+    btn.innerHTML = `${icon}<span>${anyCollapsed ? 'Thu gọn mẹo nhớ' : 'Mở hết mẹo nhớ'}</span>`;
+  }
+  triggerHaptic(10);
+};
+
+window.toggleRadicalCardDetail = function(itemId, btn) {
+  const card = document.getElementById(`card-${itemId}`);
+  if (!card) return;
+  const isCollapsed = card.classList.toggle('is-collapsed');
+  const isOpen = !isCollapsed;
+  card.classList.toggle('is-open', isOpen);
+  if (btn && btn.setAttribute) {
+    btn.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+  }
+  triggerHaptic(8);
+};
+
+window.toggleAllRadicalCards = function(btn) {
+  const cards = document.querySelectorAll ? document.querySelectorAll('.radical-card') : [];
+  if (!cards.length) return;
+  const anyCollapsed = Array.from(cards).some(c => c.classList.contains('is-collapsed'));
+  cards.forEach(c => {
+    c.classList.toggle('is-collapsed', !anyCollapsed);
+    c.classList.toggle('is-open', anyCollapsed);
+    const toggleBtn = c.querySelector ? c.querySelector('.radical-expand-toggle') : null;
+    if (toggleBtn && toggleBtn.setAttribute) toggleBtn.setAttribute('aria-expanded', anyCollapsed ? 'true' : 'false');
+  });
+  if (btn) {
+    btn.classList.toggle('is-open', anyCollapsed);
+    btn.setAttribute('aria-expanded', anyCollapsed ? 'true' : 'false');
+    const icon = anyCollapsed
+      ? (APP_ICONS.chevronsUp || '<svg class="icon-svg pill-chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="7 11 12 6 17 11"></polyline><polyline points="7 18 12 13 17 18"></polyline></svg>')
+      : (APP_ICONS.chevronsDown || '<svg class="icon-svg pill-chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="7 13 12 18 17 13"></polyline><polyline points="7 6 12 11 17 6"></polyline></svg>');
+    btn.innerHTML = `${icon}<span>${anyCollapsed ? 'Thu gọn ứng dụng' : 'Mở hết ứng dụng'}</span>`;
+  }
+  triggerHaptic(10);
+};
+
+// ZONE 12: MAZII DICTIONARY STUDIO, AI HANDWRITING RECOGNITION & UNIFIED APPLICATION BOOTSTRAP (DOMContentLoaded)
+
 
 let maziiCurrentTab = 'word'; // 'word' | 'kanji' | 'grammar'
 let maziiCurrentQuery = '';
@@ -7923,7 +8823,6 @@ let maziiSilenceHintTimer = null;
 let maziiLastVoiceText = '';
 const maziiCache = new Map();
 
-// Trạng thái Canvas viết tay
 let hwStrokes = [];
 let hwCurrentStroke = null;
 let hwIsDrawing = false;
@@ -7933,9 +8832,7 @@ let hwDpr = 1;
 let hwTimer = null;
 let hwStartTime = 0;
 
-/**
- * Thuật toán chuyển đổi Romaji sang Hiragana thông minh
- */
+
 function romajiToHiragana(input) {
   if (typeof DictionaryEngine !== 'undefined' && typeof DictionaryEngine.romajiToHiragana === 'function') {
     return DictionaryEngine.romajiToHiragana(input);
@@ -7943,7 +8840,6 @@ function romajiToHiragana(input) {
   if (!input || typeof input !== 'string') return '';
   let str = input.toLowerCase();
 
-  // Bảng ánh xạ Romaji ➔ Hiragana (Nạp từ data/romaji_kana_map.js kèm fallback)
   const map = (typeof window !== 'undefined' && window.ROMAJI_TO_HIRAGANA_MAP)
     || (typeof global !== 'undefined' && global.ROMAJI_TO_HIRAGANA_MAP)
     || {
@@ -7986,9 +8882,7 @@ function romajiToHiragana(input) {
   return str;
 }
 
-/**
- * Phát âm mẫu chuẩn sử dụng hệ thống speakJapanese của website
- */
+
 function speakMaziiAudio(text, btnElement, ev) {
   if (ev && ev.stopPropagation) ev.stopPropagation();
   if (!text) return;
@@ -8016,9 +8910,7 @@ function speakMaziiAudio(text, btnElement, ev) {
 }
 window.speakMaziiAudio = speakMaziiAudio;
 
-/**
- * Gọi API Mazii tra cứu Từ vựng, Chữ Hán, Ngữ pháp
- */
+
 async function fetchMaziiSearch(query, type = 'word') {
   if (typeof DictionaryEngine !== 'undefined' && typeof DictionaryEngine.fetchMaziiSearch === 'function') {
     return DictionaryEngine.fetchMaziiSearch(query, type);
@@ -8048,7 +8940,6 @@ async function fetchMaziiSearch(query, type = 'word') {
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
     const data = await res.json();
 
-    // Nếu tìm từ vựng không thấy và từ khóa có dạng romaji -> thử đổi sang hiragana
     if (type === 'word' && (!data.data || data.data.length === 0)) {
       const kanaQ = romajiToHiragana(q);
       if (kanaQ && kanaQ !== q) {
@@ -8078,9 +8969,7 @@ async function fetchMaziiSearch(query, type = 'word') {
   }
 }
 
-/**
- * Quản lý lịch sử tra cứu Mazii trong storage
- */
+
 function getMaziiHistory() {
   try {
     const raw = (typeof safeGetStorage === 'function') ? safeGetStorage('minna_mazii_history') : localStorage.getItem('minna_mazii_history');
@@ -8103,9 +8992,7 @@ function saveMaziiHistory(query, type) {
   } catch (e) {}
 }
 
-/**
- * Logic Bảng Viết Tay Canvas & Nhận diện nét bút
- */
+
 function initHandwritingPad() {
   hwCanvas = document.getElementById('mazii-canvas');
   if (!hwCanvas) return;
@@ -8113,7 +9000,6 @@ function initHandwritingPad() {
   hwCtx = hwCanvas.getContext('2d');
   hwDpr = (typeof window !== 'undefined' && window.devicePixelRatio) ? window.devicePixelRatio : 1;
 
-  // Cấu hình kích thước vật lý theo DPI
   const rect = hwCanvas.getBoundingClientRect();
   const parentWidth = hwCanvas.parentElement ? hwCanvas.parentElement.clientWidth : 0;
   const cssWidth = Math.round(rect.width || parentWidth || 340);
@@ -8123,7 +9009,6 @@ function initHandwritingPad() {
 
   drawHandwritingGrid();
 
-  // Lắng nghe thay đổi kích thước màn hình để tự động căng tràn canvas tối đa
   if (typeof window !== 'undefined' && !window.__maziiPadResizeBound) {
     window.__maziiPadResizeBound = true;
     window.addEventListener('resize', () => {
@@ -8134,7 +9019,6 @@ function initHandwritingPad() {
     });
   }
 
-  // Bắt sự kiện Pointer (chuột + cảm ứng ngón tay + bút stylus)
   hwCanvas.onpointerdown = (e) => {
     e.preventDefault();
     hwIsDrawing = true;
@@ -8178,7 +9062,6 @@ function initHandwritingPad() {
       hwCurrentStroke = null;
       redrawHandwritingCanvas();
 
-      // Hẹn giờ nhận diện tự động sau 550ms người dùng ngưng vẽ
       clearTimeout(hwTimer);
       hwTimer = setTimeout(() => {
         recognizeHandwritingStrokes();
@@ -8212,7 +9095,6 @@ function drawHandwritingGrid() {
   hwCtx.scale(hwDpr, hwDpr);
   hwCtx.clearRect(0, 0, w, h);
 
-  // Vẽ lưới ô chữ Hán genkouyoushi (dấu thập nét đứt)
   hwCtx.strokeStyle = 'rgba(224, 82, 68, 0.22)';
   hwCtx.lineWidth = 1;
   hwCtx.setLineDash([5, 5]);
@@ -8273,12 +9155,8 @@ function clearHandwritingCanvas() {
   renderCandidates([]);
 }
 
-/**
- * Gửi nét vẽ lên Google Handwriting Recognition API
- */
-/**
- * Chụp hình ảnh nét vẽ trên Canvas sang Base64 PNG (nền trắng nét đen rõ nét cho AI)
- */
+
+
 function getCanvasImageBase64() {
   if (!hwCanvas || hwStrokes.length === 0) return null;
   const tempCanvas = document.createElement('canvas');
@@ -8286,11 +9164,9 @@ function getCanvasImageBase64() {
   tempCanvas.height = hwCanvas.height || 280;
   const tempCtx = tempCanvas.getContext('2d');
 
-  // Vẽ nền trắng tinh
   tempCtx.fillStyle = '#ffffff';
   tempCtx.fillRect(0, 0, tempCanvas.width, tempCanvas.height);
 
-  // Vẽ các nét vẽ của người dùng bằng màu đen đậm rõ nét
   tempCtx.lineCap = 'round';
   tempCtx.lineJoin = 'round';
   tempCtx.lineWidth = Math.round(6 * hwDpr);
@@ -8313,10 +9189,7 @@ function getCanvasImageBase64() {
   return dataUrl.replace(/^data:image\/png;base64,/, '');
 }
 
-/**
- * Nhận diện nét vẽ chữ Hán & Từ mới qua Trí tuệ Nhân tạo (AI Handwriting Recognition Engine)
- * Tự động 100%, kết nối mạng neural không cần cấu hình khóa API.
- */
+
 async function recognizeHandwritingStrokes() {
   if (hwStrokes.length === 0) {
     if (typeof showToast === 'function') showToast('Vui lòng vẽ chữ lên bảng vẽ trước');
@@ -8419,9 +9292,7 @@ async function recognizeHandwritingStrokes() {
   }
 }
 
-/**
- * Xóa 1 ký tự cuối cùng trong ô tìm kiếm Mazii
- */
+
 function backspaceSearchChar() {
   const input = document.getElementById('mazii-search-input');
   if (input && input.value) {
@@ -8466,7 +9337,7 @@ function renderCandidates(candidates) {
       if (input) {
         input.value = (input.value ? input.value + char : char);
         input.focus();
-        // Tự động chuyển sang tab Kanji nếu chỉ chọn 1 ký tự chữ Hán
+
         if (/^[\u4e00-\u9faf]$/.test(char) && maziiCurrentTab === 'grammar') {
           switchMaziiTab('kanji');
         }
@@ -8476,9 +9347,7 @@ function renderCandidates(candidates) {
   });
 }
 
-/**
- * Tiện ích chuẩn hoá chuỗi & Tra cứu từ điển dự phòng ngoại tuyến
- */
+
 function safeTrim(val) {
   if (val === null || val === undefined) return '';
   if (typeof val === 'string') return val.trim();
@@ -8517,8 +9386,7 @@ function scoreDictMatch(text, query, textNoTone, queryNoTone, hasTone) {
   if (!hasTone && textNoTone === queryNoTone) return 150;
   if (t.startsWith(query)) return 120;
   if (!hasTone && textNoTone.startsWith(queryNoTone)) return 100;
-  
-  // Trùng khớp nguyên từ (ví dụ "ăn" trong "ăn cơm", "tôi" trong "của tôi")
+
   const wordRegex = new RegExp('(?:^|[^a-zà-ỹ0-9])' + query.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&') + '(?:$|[^a-zà-ỹ0-9])', 'i');
   if (wordRegex.test(t)) return 110;
 
@@ -8532,10 +9400,7 @@ function scoreDictMatch(text, query, textNoTone, queryNoTone, hasTone) {
   return 0;
 }
 
-/**
- * Tra cứu kho từ vựng, chữ Hán và ngữ pháp 50 bài Minna SGK nội bộ (Offline Fallback Engine)
- * Hoạt động 100% không cần mạng, phản hồi tức thì dưới 10ms.
- */
+
 function searchInternalDictionary(q, type = 'word') {
   if (!q || typeof q !== 'string') return { status: 200, data: [], isInternal: true };
   const query = q.trim();
@@ -8546,7 +9411,6 @@ function searchInternalDictionary(q, type = 'word') {
   const candidates = [];
   const seen = new Set();
 
-  // 1. TỪ VỰNG (type: 'word')
   if (type === 'word') {
     function evaluateWord(word, phonetic, han, meaning, pos) {
       if (!word) return;
@@ -8587,7 +9451,6 @@ function searchInternalDictionary(q, type = 'word') {
       }
     }
 
-    // Tra trong toàn bộ 50 bài học Minna SGK
     const lList = (typeof lessonsData !== 'undefined' && Array.isArray(lessonsData)) ? lessonsData : [];
     for (const l of lList) {
       if (!l.vocabulary) continue;
@@ -8597,7 +9460,6 @@ function searchInternalDictionary(q, type = 'word') {
       }
     }
 
-    // Tra trong kho 1.806 từ vựng chữ Hán Minna
     const klList = (typeof kanjiLessonsData !== 'undefined' && Array.isArray(kanjiLessonsData)) ? kanjiLessonsData : [];
     for (const kl of klList) {
       if (!kl.items) continue;
@@ -8610,7 +9472,6 @@ function searchInternalDictionary(q, type = 'word') {
     return { status: 200, data: candidates.slice(0, 20).map(c => c.item), isInternal: true };
   }
 
-  // 2. CHỮ HÁN (type: 'kanji')
   if (type === 'kanji') {
     const klList = (typeof kanjiLessonsData !== 'undefined' && Array.isArray(kanjiLessonsData)) ? kanjiLessonsData : [];
     for (const kl of klList) {
@@ -8648,7 +9509,6 @@ function searchInternalDictionary(q, type = 'word') {
       }
     }
 
-    // Tra trong 214 Bộ thủ Kanji
     const radList = (typeof radicalsData !== 'undefined' && Array.isArray(radicalsData)) ? radicalsData : [];
     for (const grp of radList) {
       if (!grp.items) continue;
@@ -8689,7 +9549,6 @@ function searchInternalDictionary(q, type = 'word') {
     return { status: 200, results: results, data: results, isInternal: true };
   }
 
-  // 3. NGỮ PHÁP (type: 'grammar')
   if (type === 'grammar') {
     const lList = (typeof lessonsData !== 'undefined' && Array.isArray(lessonsData)) ? lessonsData : [];
     for (const l of lList) {
@@ -8728,9 +9587,7 @@ function searchInternalDictionary(q, type = 'word') {
   return { status: 200, data: [], isInternal: true };
 }
 
-/**
- * Thực thi tìm kiếm Mazii kết hợp cả Từ Vựng và Chữ Hán (Unified Dictionary Engine)
- */
+
 async function executeMaziiSearch(queryOverride = null) {
   const input = document.getElementById('mazii-search-input');
   const query = safeTrim(queryOverride !== null ? queryOverride : (input ? input.value : ''));
@@ -8755,7 +9612,6 @@ async function executeMaziiSearch(queryOverride = null) {
   let kanjiData = null;
   let onlineFailedCount = 0;
 
-  // 1. Gọi song song cả API Từ Vựng (word) và Chữ Hán (kanji)
   const [wordRes, kanjiRes] = await Promise.allSettled([
     fetchMaziiSearch(query, 'word'),
     fetchMaziiSearch(query, 'kanji')
@@ -8773,7 +9629,6 @@ async function executeMaziiSearch(queryOverride = null) {
     onlineFailedCount++;
   }
 
-  // 2. Kiểm tra & Fallback dữ liệu Từ vựng
   let hasWordResults = wordData && Array.isArray(wordData.data) && wordData.data.length > 0;
   if (!hasWordResults) {
     const internalWords = searchInternalDictionary(query, 'word');
@@ -8783,7 +9638,6 @@ async function executeMaziiSearch(queryOverride = null) {
     }
   }
 
-  // 3. Kiểm tra & Fallback dữ liệu Chữ Hán
   let hasKanjiResults = false;
   if (kanjiData) {
     const rawList = Array.isArray(kanjiData.results) ? kanjiData.results : (Array.isArray(kanjiData.data) ? kanjiData.data : []);
@@ -8808,8 +9662,7 @@ async function executeMaziiSearch(queryOverride = null) {
     }
   }
 
-  // Nếu từ khóa chứa ký tự Hán tự (ví dụ: "食べる", "日本語")
-  // ➔ Tự động bóc tách từng chữ Hán trong từ để tra cứu bổ sung đầy đủ chiết tự chữ Hán!
+
   const kanjiChars = query.match(/[\u4e00-\u9faf]/g);
   if (kanjiChars && kanjiChars.length > 0) {
     const uniqueChars = Array.from(new Set(kanjiChars));
@@ -8842,7 +9695,6 @@ async function executeMaziiSearch(queryOverride = null) {
     }
   }
 
-  // 4. Nếu cả 2 đều không tìm thấy kết quả
   if (!hasWordResults && !hasKanjiResults) {
     if (onlineFailedCount === 2) {
       resultsBox.innerHTML = `
@@ -8877,7 +9729,6 @@ async function executeMaziiSearch(queryOverride = null) {
     return;
   }
 
-  // 5. Hiển thị kết quả kết hợp tinh gọn
   try {
     renderCombinedMaziiResults(wordData, kanjiData, query);
   } catch (renderErr) {
@@ -8892,9 +9743,7 @@ async function executeMaziiSearch(queryOverride = null) {
   }
 }
 
-/**
- * Định dạng thẻ Từ Vựng Compact Card
- */
+
 function formatWordCompactCard(w, query) {
   const wordText = safeTrim(w.word || query);
   let phonetic = safeTrim(w.phonetic).split(/\s+/)[0] || '';
@@ -8951,13 +9800,11 @@ function formatWordCompactCard(w, query) {
   `;
 }
 
-/**
- * Định dạng thẻ Chữ Hán Compact Card
- */
+
 function formatKanjiCompactCard(k, query) {
   if (!k || typeof k !== 'object') return '';
   const char = safeTrim(k.kanji || k.word || '');
-  // Chỉ chấp nhận nếu char thực sự chứa ký tự chữ Hán CJK, tuyệt đối không lấy query tiếng Việt
+
   if (!char || !hasKanjiCharacter(char)) {
     return '';
   }
@@ -8993,9 +9840,7 @@ function formatKanjiCompactCard(k, query) {
   `;
 }
 
-/**
- * Render kết quả tra cứu kết hợp cả Từ Vựng và Chữ Hán
- */
+
 function renderCombinedMaziiResults(wordData, kanjiData, query) {
   const resultsBox = document.getElementById('mazii-results-container');
   if (!resultsBox) return;
@@ -9006,8 +9851,7 @@ function renderCombinedMaziiResults(wordData, kanjiData, query) {
   const words = (wordData && Array.isArray(wordData.data)) ? wordData.data : [];
   const rawKanjis = (kanjiData && (Array.isArray(kanjiData.results) ? kanjiData.results : (Array.isArray(kanjiData.data) ? kanjiData.data : []))) || [];
 
-  // LỌC CHẶT CHẼ: Bắt buộc mục Chữ Hán phải có chứa ký tự chữ Hán (CJK ideograph)
-  // Tuyệt đối loại bỏ các câu ví dụ hoặc chuỗi tiếng Việt mà Mazii trả về trong mục kanji
+
   const kanjis = rawKanjis.filter(k => {
     if (!k || typeof k !== 'object') return false;
     const char = safeTrim(k.kanji || k.word || '');
@@ -9030,7 +9874,6 @@ function renderCombinedMaziiResults(wordData, kanjiData, query) {
     return;
   }
 
-  // Khối HTML chữ Hán
   const kanjiHtml = kanjis.length > 0 ? `
     <div class="dict-results-section">
       <div class="dict-section-header">
@@ -9043,7 +9886,6 @@ function renderCombinedMaziiResults(wordData, kanjiData, query) {
     </div>
   ` : '';
 
-  // Khối HTML từ vựng
   const wordHtml = words.length > 0 ? `
     <div class="dict-results-section">
       <div class="dict-section-header">
@@ -9056,18 +9898,15 @@ function renderCombinedMaziiResults(wordData, kanjiData, query) {
     </div>
   ` : '';
 
-  // Ưu tiên hiển thị:
-  // Nếu là 1 chữ Hán đơn lẻ (ví dụ "食", "学"), khối Chữ Hán đứng trước, Từ vựng đứng sau
-  // Ngược lại (từ vựng, câu, romaji, tiếng Việt), Từ vựng đứng trước, Chữ Hán đứng sau
+
+
   const isSingleKanji = /^[\u4e00-\u9faf]$/.test(query);
   const sectionsHtml = isSingleKanji ? (kanjiHtml + wordHtml) : (wordHtml + kanjiHtml);
 
   resultsBox.innerHTML = sourceBadgeHtml + sectionsHtml;
 }
 
-/**
- * Hàm tương thích ngược render kết quả cũ
- */
+
 function renderMaziiResults(data, query, type) {
   if (type === 'word') {
     renderCombinedMaziiResults(data, null, query);
@@ -9080,9 +9919,7 @@ function renderMaziiResults(data, query, type) {
   }
 }
 
-/**
- * Render kết quả Ngữ pháp
- */
+
 function renderGrammarResults(data, query) {
   const resultsBox = document.getElementById('mazii-results-container');
   if (!resultsBox) return;
@@ -9129,9 +9966,7 @@ function renderGrammarResults(data, query) {
   }).join('');
 }
 
-/**
- * Chuyển đổi tab Từ vựng / Chữ Hán / Ngữ pháp
- */
+
 function switchMaziiTab(tab) {
   maziiCurrentTab = tab;
   document.querySelectorAll('.mazii-type-tab').forEach(t => {
@@ -9143,19 +9978,10 @@ function switchMaziiTab(tab) {
   }
 }
 
-/**
- * ==========================================================================
- * TÌM KIẾM TỪ ĐIỂN BẰNG GIỌNG NÓI (VOICE SEARCH ENGINE)
- * Hỗ trợ nhận diện giọng nói Tiếng Nhật (ja-JP) & Tiếng Việt (vi-VN)
- * ==========================================================================
- */
 
-/**
- * Bật / Tắt chế độ tìm kiếm bằng giọng nói
- */
-/**
- * Cập nhật trạng thái hiển thị giao diện Micro (Đang nghe / Tạm dừng)
- */
+
+
+
 function setVoiceMicActiveVisual(isActive) {
   const modalMic = document.getElementById('mazii-voice-modal-mic');
   const voiceBtn = document.getElementById('mazii-btn-voice');
@@ -9169,10 +9995,7 @@ function setVoiceMicActiveVisual(isActive) {
   }
 }
 
-/**
- * Lên lịch tự động khởi động lại phiên nhận diện trên trình duyệt di động
- * (Khắc phục hiện tượng Chrome Android tự động ngắt kết nối sau 1-2s im lặng)
- */
+
 function scheduleVoiceRestart(lang) {
   if (!maziiShouldKeepListening) return;
   clearTimeout(maziiVoiceRestartTimer);
@@ -9195,9 +10018,7 @@ function scheduleVoiceRestart(lang) {
   }, 120);
 }
 
-/**
- * Chốt kết quả nhận diện giọng nói và tự động kích hoạt tra cứu
- */
+
 function commitVoiceSearchResult(transcript, alternatives) {
   if (!transcript) return;
   maziiShouldKeepListening = false;
@@ -9220,23 +10041,23 @@ function commitVoiceSearchResult(transcript, alternatives) {
   }, 200);
 }
 
-/**
- * Bật / Tắt chế độ tìm kiếm bằng giọng nói từ thanh tra cứu
- */
+
 function toggleMaziiVoiceSearch() {
   if (maziiIsVoiceListening || maziiShouldKeepListening) {
-    stopMaziiVoiceSearch(true);
+    if (maziiLastVoiceText) {
+      commitVoiceSearchResult(maziiLastVoiceText, []);
+    } else {
+      stopMaziiVoiceSearch(true);
+    }
   } else {
     startMaziiVoiceSearch(maziiVoiceLang);
   }
 }
 
-/**
- * Chạm vào Micro lớn trong khung Voice Search để bắt đầu / tạm dừng nói
- */
+
 function toggleMaziiVoiceModalMic() {
   if (maziiIsVoiceListening || maziiShouldKeepListening) {
-    // Tạm dừng nghe nhưng giữ nguyên khung
+
     maziiShouldKeepListening = false;
     clearTimeout(maziiVoiceRestartTimer);
     clearTimeout(maziiFinalizeTimer);
@@ -9252,14 +10073,12 @@ function toggleMaziiVoiceModalMic() {
     if (titleEl) titleEl.textContent = 'Đã tạm dừng nghe';
     if (transcriptEl) transcriptEl.textContent = 'Chạm vào biểu tượng Micro khi bạn sẵn sàng nói tiếp.';
   } else {
-    // Bắt đầu nói lại trực tiếp bằng User Gesture
+
     startMaziiVoiceSearch(maziiVoiceLang);
   }
 }
 
-/**
- * Cấp quyền Micro qua getUserMedia khi Chrome yêu cầu xác nhận
- */
+
 async function retryMicrophonePermission() {
   const titleEl = document.getElementById('mazii-voice-title');
   const transcriptEl = document.getElementById('mazii-voice-transcript');
@@ -9300,10 +10119,7 @@ async function retryMicrophonePermission() {
   }
 }
 
-/**
- * Thay đổi ngôn ngữ nhận diện giọng nói (ja-JP hoặc vi-VN)
- * Khởi động lại ngay lập tức với User Gesture đồng bộ
- */
+
 function setMaziiVoiceLang(lang) {
   maziiVoiceLang = lang || 'ja-JP';
   const panel = document.getElementById('mazii-voice-panel');
@@ -9327,13 +10143,10 @@ function setMaziiVoiceLang(lang) {
     }
   }
 
-  // Khởi động phiên nhận diện với ngôn ngữ mới ngay trong sự kiện chạm của người dùng
   startMaziiVoiceSearch(maziiVoiceLang);
 }
 
-/**
- * Bắt đầu nhận diện giọng nói (Khả năng chịu lỗi cao trên di động)
- */
+
 function startMaziiVoiceSearch(lang = 'ja-JP') {
   maziiVoiceLang = lang || 'ja-JP';
   maziiShouldKeepListening = true;
@@ -9346,7 +10159,6 @@ function startMaziiVoiceSearch(lang = 'ja-JP') {
   const titleEl = document.getElementById('mazii-voice-title');
   const transcriptEl = document.getElementById('mazii-voice-transcript');
 
-  // Đóng bảng viết tay nếu đang mở để tránh chồng chéo giao diện
   if (maziiIsHwOpen) {
     toggleHandwritingPanel(false);
   }
@@ -9372,7 +10184,6 @@ function startMaziiVoiceSearch(lang = 'ja-JP') {
     transcriptEl.classList.remove('has-text');
   }
 
-  // Cập nhật giao diện nút bấm active
   if (panel) {
     const btns = panel.querySelectorAll('.mazii-voice-lang-btn');
     btns.forEach(b => {
@@ -9384,14 +10195,13 @@ function startMaziiVoiceSearch(lang = 'ja-JP') {
 
   setVoiceMicActiveVisual(true);
 
-  // Bộ hẹn giờ nhắc nhở nếu người dùng im lặng sau 6 giây
   maziiSilenceHintTimer = setTimeout(() => {
     if (maziiShouldKeepListening && !maziiLastVoiceText && transcriptEl) {
-      transcriptEl.textContent = 'Chưa nghe thấy giọng nói. Hãy nói to hơn vào Micro hoặc chạm vào nút Micro để nói lại.';
+      stopMaziiVoiceSearch(false);
+      transcriptEl.textContent = 'Đã tắt mic do không phát hiện giọng nói trong 5 giây. Chạm vào Micro để nói lại.';
     }
-  }, 6000);
+  }, 5000);
 
-  // Kiểm tra hỗ trợ Web Speech API
   const isSupported = (typeof DictionaryEngine !== 'undefined' && typeof DictionaryEngine.isVoiceSearchSupported === 'function')
     ? DictionaryEngine.isVoiceSearchSupported()
     : Boolean(typeof window !== 'undefined' && (window.SpeechRecognition || window.webkitSpeechRecognition));
@@ -9439,23 +10249,18 @@ function startMaziiVoiceSearch(lang = 'ja-JP') {
           if (clearBtn) clearBtn.style.display = 'flex';
         }
 
-        // Tự động kích hoạt tìm kiếm khi phát hiện dứt câu
-        if (isFinal) {
-          commitVoiceSearchResult(transcript, alternatives);
-        } else {
-          // Cơ chế phòng vệ cho Android Mobile: Tự động hoàn tất sau 1.4 giây ngừng nói
-          // nếu trình duyệt không tự gửi cờ isFinal = true
-          clearTimeout(maziiFinalizeTimer);
-          maziiFinalizeTimer = setTimeout(() => {
-            if (maziiShouldKeepListening && maziiLastVoiceText) {
-              commitVoiceSearchResult(maziiLastVoiceText, alternatives);
-            }
-          }, 1400);
-        }
+        // Cơ chế 5 giây im lặng: Dù là isFinal hay interim, reset bộ đếm 5 giây
+        // Chỉ khi người dùng ngừng nói từ 5 giây trở lên mới tự động chốt kết quả và tắt mic
+        clearTimeout(maziiFinalizeTimer);
+        maziiFinalizeTimer = setTimeout(() => {
+          if (maziiShouldKeepListening && maziiLastVoiceText) {
+            commitVoiceSearchResult(maziiLastVoiceText, alternatives);
+          }
+        }, 5000);
       },
       onError: (err) => {
         console.warn('[VoiceSearch] Thông báo:', err && err.code ? err.code : err);
-        // Lỗi 'no-speech' trên Android thường xảy ra khi người dùng ngập ngừng hoặc yên lặng
+
         if (err && err.code === 'no-speech') {
           if (maziiShouldKeepListening && !maziiIsVoiceListening) {
             scheduleVoiceRestart(maziiVoiceLang);
@@ -9496,7 +10301,7 @@ function startMaziiVoiceSearch(lang = 'ja-JP') {
       },
       onEnd: () => {
         maziiIsVoiceListening = false;
-        // Cơ chế giữ nhịp kết nối (Keep-Alive Watchdog): Tự khởi động lại nếu người dùng chưa bấm Dừng
+
         if (maziiShouldKeepListening) {
           scheduleVoiceRestart(maziiVoiceLang);
         } else {
@@ -9506,12 +10311,12 @@ function startMaziiVoiceSearch(lang = 'ja-JP') {
     };
 
     if (typeof DictionaryEngine !== 'undefined' && typeof DictionaryEngine.createVoiceRecognition === 'function') {
-      maziiVoiceRecognition = DictionaryEngine.createVoiceRecognition(callbacks, maziiVoiceLang, { maxAlternatives: 5 });
+      maziiVoiceRecognition = DictionaryEngine.createVoiceRecognition(callbacks, maziiVoiceLang, { maxAlternatives: 5, continuous: true });
     } else {
       const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
       const rec = new SpeechRecognition();
       rec.lang = maziiVoiceLang || 'ja-JP';
-      rec.continuous = false;
+      rec.continuous = true;
       rec.interimResults = true;
       rec.maxAlternatives = 5;
       rec.onstart = callbacks.onStart;
@@ -9561,9 +10366,7 @@ function startMaziiVoiceSearch(lang = 'ja-JP') {
   }
 }
 
-/**
- * Dừng nhận diện giọng nói
- */
+
 function stopMaziiVoiceSearch(hidePanel = true) {
   maziiShouldKeepListening = false;
   maziiIsVoiceListening = false;
@@ -9589,9 +10392,7 @@ function stopMaziiVoiceSearch(hidePanel = true) {
   }
 }
 
-/**
- * Hiển thị danh sách ứng viên nhận diện AI tối giản
- */
+
 function renderVoiceCandidates(alternatives, currentQuery) {
   const container = document.getElementById('mazii-voice-candidates');
   const panel = document.getElementById('mazii-voice-panel');
@@ -9599,7 +10400,6 @@ function renderVoiceCandidates(alternatives, currentQuery) {
 
   const topRow = panel.querySelector('.mazii-voice-top-row');
 
-  // Lọc danh sách ứng viên hợp lệ và loại bỏ trùng lặp
   const rawList = Array.isArray(alternatives) ? alternatives : [];
   const uniqueList = [];
   rawList.forEach(item => {
@@ -9609,7 +10409,6 @@ function renderVoiceCandidates(alternatives, currentQuery) {
     }
   });
 
-  // Nếu không có từ 2 ứng viên trở lên, đóng panel để nhường chỗ cho kết quả tra cứu
   if (uniqueList.length <= 1) {
     container.innerHTML = '';
     container.style.display = 'none';
@@ -9617,7 +10416,6 @@ function renderVoiceCandidates(alternatives, currentQuery) {
     return;
   }
 
-  // Ẩn hàng điều khiển nghe, chỉ hiển thị dải gợi ý tối giản
   if (topRow) {
     topRow.style.display = 'none';
   }
@@ -9635,7 +10433,7 @@ function renderVoiceCandidates(alternatives, currentQuery) {
 
   container.innerHTML = `
     <div class="mazii-voice-minimal-bar">
-      <span class="mazii-voice-minimal-label">✨ Gợi ý:</span>
+      <span class="mazii-voice-minimal-label">${(window.MASTER_SUITE_ICONS && window.MASTER_SUITE_ICONS.sparkles) || ''} Gợi ý:</span>
       <div class="mazii-voice-candidates-chips">
         ${chipsHtml}
         <a href="${gtUrl}" target="_blank" rel="noopener" class="mazii-voice-candidate-chip gt-chip" title="Mở trên Google Dịch">
@@ -9649,9 +10447,7 @@ function renderVoiceCandidates(alternatives, currentQuery) {
   panel.style.display = 'flex';
 }
 
-/**
- * Chọn nhanh một ứng viên gợi ý từ Google Translate
- */
+
 function selectVoiceCandidate(text) {
   if (!text) return;
   const input = document.getElementById('mazii-search-input');
@@ -9665,9 +10461,7 @@ function selectVoiceCandidate(text) {
   if (panel) panel.style.display = 'none';
 }
 
-/**
- * Bật / tắt bảng vẽ viết tay
- */
+
 function toggleHandwritingPanel(forceOpen = null) {
   const panel = document.getElementById('mazii-hw-panel');
   const btn = document.getElementById('mazii-btn-hw-toggle');
@@ -9694,9 +10488,7 @@ function toggleHandwritingPanel(forceOpen = null) {
   }
 }
 
-/**
- * Render thanh lịch sử tra cứu
- */
+
 function renderHistoryChips() {
   const container = document.getElementById('mazii-history-chips');
   if (!container) return;
@@ -9714,9 +10506,7 @@ function renderHistoryChips() {
   `).join('');
 }
 
-/**
- * Hàm chính Render Module Mazii Dictionary Studio vào #lesson-content
- */
+
 function renderMaziiDictSection(initialQuery = '', initialType = 'word') {
   const content = document.getElementById('lesson-content');
   if (!content) return;
@@ -9849,7 +10639,6 @@ function renderMaziiDictSection(initialQuery = '', initialType = 'word') {
     </div>
   `;
 
-  // Bắt sự kiện bàn phím & input
   const searchInput = document.getElementById('mazii-search-input');
   const clearBtn = document.getElementById('mazii-btn-clear');
 
@@ -9886,22 +10675,22 @@ function renderMaziiDictSection(initialQuery = '', initialType = 'word') {
   }
 }
 
-/**
- * Mở Từ Điển Mazii với từ khóa bất kỳ từ Quick Search hoặc nút liên kết
- */
-window.openMaziiWithQuery = function(query, type = 'word') {
+
+window.openMaziiWithQuery = function(query, type = 'word', autoOpenHw = false) {
   if (typeof switchModule === 'function') {
     switchModule('mazii-dict', true);
     setTimeout(() => {
       switchMaziiTab(type);
       const input = document.getElementById('mazii-search-input');
-      if (input) input.value = query;
-      executeMaziiSearch(query);
+      if (input && query) input.value = query;
+      if (query) executeMaziiSearch(query);
+      if (autoOpenHw && typeof toggleHandwritingPanel === 'function') {
+        toggleHandwritingPanel(true);
+      }
     }, 60);
   }
 };
 
-// Xuất bản các hàm Voice Search ra Window cho tương tác toàn cục
 window.toggleMaziiVoiceSearch = toggleMaziiVoiceSearch;
 window.startMaziiVoiceSearch = startMaziiVoiceSearch;
 window.stopMaziiVoiceSearch = stopMaziiVoiceSearch;
@@ -9910,4 +10699,1113 @@ window.renderVoiceCandidates = renderVoiceCandidates;
 window.selectVoiceCandidate = selectVoiceCandidate;
 window.toggleMaziiVoiceModalMic = toggleMaziiVoiceModalMic;
 window.retryMicrophonePermission = retryMicrophonePermission;
+
+// ZONE 13: MULTI-ACCOUNT AUTH UI, ACHIEVEMENTS DASHBOARD & LEADERBOARD CONTROLLER (WORKER 3)
+
+let authCurrentTab = 'profile';
+let authFormMode = 'register'; // 'register' | 'login'
+let authSelectedRegisterAvatar = 'daruma';
+let authSelectedEditAvatar = 'daruma';
+let _pinModalConfirmCallback = null;
+
+
+function getWaAccountIcon(category, key) {
+  if (window.ACCOUNT_WA_ICONS) {
+    if (category && window.ACCOUNT_WA_ICONS[category]) {
+      return window.ACCOUNT_WA_ICONS[category][key] || '';
+    }
+    return window.ACCOUNT_WA_ICONS[key] || '';
+  }
+  return '';
+}
+
+
+function getRankCrestSvg(rankBadge) {
+  const icons = window.ACCOUNT_WA_ICONS && window.ACCOUNT_WA_ICONS.ranks ? window.ACCOUNT_WA_ICONS.ranks : null;
+  if (!icons) return rankBadge || '';
+  if (rankBadge === '🌱' || rankBadge === 'sprout') return icons.sprout;
+  if (rankBadge === '📖' || rankBadge === 'scroll') return icons.scroll;
+  if (rankBadge === '⚔️' || rankBadge === 'katana') return icons.katana;
+  if (rankBadge === '🏯' || rankBadge === 'castle') return icons.castle;
+  if (rankBadge === '👑' || rankBadge === 'crown') return icons.crown;
+  return icons.sprout;
+}
+
+
+function getAvatarPreset(avatarId) {
+  const presets = (window.AuthEngine && Array.isArray(window.AuthEngine.AVATAR_PRESETS))
+    ? window.AuthEngine.AVATAR_PRESETS
+    : [
+        { id: 'daruma', icon: '🎯', name: 'Daruma May Mắn' },
+        { id: 'samurai', icon: '⚔️', name: 'Võ Sĩ Samurai' },
+        { id: 'sakura', icon: '🌸', name: 'Hoa Anh Đào' },
+        { id: 'kitsune', icon: '🦊', name: 'Cáo Kitsune' },
+        { id: 'neko', icon: '🐱', name: 'Mèo Thần Tài' },
+        { id: 'ninja', icon: '🥷', name: 'Ninja Ám Ảnh' },
+        { id: 'fuji', icon: '🗻', name: 'Núi Phú Sĩ' },
+        { id: 'tanuki', icon: '🦝', name: 'Gấu Trúc Tanuki' }
+      ];
+  const found = presets.find(p => p.id === avatarId);
+  const target = found || presets[0];
+  const svg = (window.ACCOUNT_WA_ICONS && window.ACCOUNT_WA_ICONS.avatars && window.ACCOUNT_WA_ICONS.avatars[target.id])
+    ? window.ACCOUNT_WA_ICONS.avatars[target.id]
+    : (target.svg || target.icon);
+  return { ...target, svg };
+}
+
+
+function renderAvatarGrid(containerId, selectedId, onSelect) {
+  const container = document.getElementById(containerId);
+  if (!container) return;
+
+  const presets = (window.AuthEngine && Array.isArray(window.AuthEngine.AVATAR_PRESETS))
+    ? window.AuthEngine.AVATAR_PRESETS
+    : [];
+
+  container.innerHTML = presets.map(p => {
+    const isSelected = p.id === selectedId;
+    const svgIcon = (window.ACCOUNT_WA_ICONS && window.ACCOUNT_WA_ICONS.avatars && window.ACCOUNT_WA_ICONS.avatars[p.id])
+      ? window.ACCOUNT_WA_ICONS.avatars[p.id]
+      : (p.svg || p.icon);
+    return `
+      <button type="button" class="avatar-preset-item ${isSelected ? 'is-selected' : ''}" data-avatar-id="${p.id}" title="${escapeHtml(p.name)}">
+        <span class="preset-icon" aria-hidden="true">${svgIcon}</span>
+        <span class="preset-name">${escapeHtml(p.name.split(' ')[0])}</span>
+      </button>
+    `;
+  }).join('');
+
+  if (typeof onSelect === 'function') {
+    const btns = container.querySelectorAll('.avatar-preset-item');
+    btns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        const avId = btn.getAttribute('data-avatar-id');
+        onSelect(avId);
+      });
+    });
+  }
+}
+
+
+function renderUserAccountChips() {
+  const user = (window.AuthEngine && typeof window.AuthEngine.getCurrentUser === 'function')
+    ? window.AuthEngine.getCurrentUser()
+    : null;
+  const uid = user ? user.uid : 'guest';
+  const stats = (window.AuthEngine && typeof window.AuthEngine.calculateUserStats === 'function')
+    ? window.AuthEngine.calculateUserStats(uid)
+    : { totalXp: 0, rankBadge: '🌱', rankTitle: 'Tân Binh' };
+
+  const avatarId = user ? user.avatar : 'guest';
+  const isGuest = !user;
+  const guestSvg = (window.ACCOUNT_WA_ICONS && window.ACCOUNT_WA_ICONS.avatars && window.ACCOUNT_WA_ICONS.avatars.guest)
+    ? window.ACCOUNT_WA_ICONS.avatars.guest
+    : '<svg class="wa-avatar-svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"></circle><circle cx="12" cy="8.5" r="3"></circle><path d="M6.5 18c0-3 2.5-5.5 5.5-5.5s5.5 2.5 5.5 5.5"></path></svg>';
+  
+  const avatarPreset = isGuest ? { svg: guestSvg, icon: '👤' } : getAvatarPreset(avatarId);
+  const rankSvg = getRankCrestSvg(stats.rankBadge || '🌱');
+
+  const hAvatar = document.getElementById('header-account-avatar');
+  const hName = document.getElementById('header-account-name');
+  const hBadge = document.getElementById('header-account-badge');
+
+  if (hAvatar) hAvatar.innerHTML = avatarPreset.svg || avatarPreset.icon;
+  if (hName) hName.textContent = user ? user.displayName : 'Khách';
+  if (hBadge) {
+    hBadge.innerHTML = `<span class="header-account-rank-icon" aria-hidden="true">${rankSvg}</span><span class="header-account-xp-text">${stats.totalXp || 0} XP</span>`;
+  }
+
+  const msAvatar = document.getElementById('msheet-account-avatar');
+  const msName = document.getElementById('msheet-account-name');
+  const msBadge = document.getElementById('msheet-account-badge');
+  if (msAvatar) msAvatar.innerHTML = avatarPreset.svg || avatarPreset.icon;
+  if (msName) msName.textContent = user ? (user.displayName || user.username || 'Khách') : 'Khách';
+  if (msBadge) msBadge.textContent = `${stats.totalXp || 0} XP`;
+
+  const cAvatar = document.getElementById('cover-account-avatar');
+  const cName = document.getElementById('cover-account-name');
+  const cXp = document.getElementById('cover-account-xp');
+
+  if (cAvatar) cAvatar.innerHTML = avatarPreset.svg || avatarPreset.icon;
+  if (cName) cName.textContent = user ? user.displayName : 'Tài khoản';
+  if (cXp) cXp.textContent = `${stats.totalXp || 0} XP`;
+
+  const mBadge = document.getElementById('account-status-badge');
+  if (mBadge) {
+    mBadge.textContent = user ? `Học viên: @${user.username}` : 'Chế độ Khách';
+  }
+}
+
+
+function initUserAccountUI() {
+
+  if (window.AuthEngine && typeof window.AuthEngine.onAuthChange === 'function') {
+    window.AuthEngine.onAuthChange((newUser) => {
+      refreshAppOnAccountChange(newUser);
+    });
+  }
+
+  const accModal = document.getElementById('user-account-modal');
+  if (accModal) {
+    accModal.addEventListener('click', (e) => {
+      if (e.target === accModal) {
+        closeUserAccountModal();
+      }
+    });
+  }
+
+  const pinModal = document.getElementById('account-pin-modal');
+  if (pinModal) {
+    pinModal.addEventListener('click', (e) => {
+      if (e.target === pinModal) {
+        closeAccountPinModal();
+      }
+    });
+  }
+
+  const pinInput = document.getElementById('pin-modal-input');
+  if (pinInput) {
+    pinInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        const btn = document.getElementById('pin-modal-confirm-btn');
+        if (btn) btn.click();
+      }
+    });
+  }
+
+  renderUserAccountChips();
+}
+
+
+function openUserAccountModal(initialTab = 'profile') {
+  const modal = document.getElementById('user-account-modal');
+  if (!modal) return;
+  modal.classList.add('show-modal');
+  modal.setAttribute('aria-hidden', 'false');
+  switchAccountModalTab(initialTab);
+  renderUserAccountUI();
+}
+
+
+function closeUserAccountModal() {
+  const modal = document.getElementById('user-account-modal');
+  if (!modal) return;
+  modal.classList.remove('show-modal');
+  modal.setAttribute('aria-hidden', 'true');
+  toggleProfileEditDrawer(false);
+}
+
+
+function computeXpProgressPercent(totalXp) {
+
+  if (typeof totalXp !== 'number' || isNaN(totalXp) || totalXp <= 0) {
+    return 5;
+  }
+
+  const xp = Math.max(0, Math.floor(totalXp));
+
+  let pct = 0;
+  if (xp >= 10000) {
+    pct = 100;
+  } else if (xp >= 5000) {
+    pct = Math.round(75 + ((xp - 5000) / 5000) * 25);
+  } else if (xp >= 2000) {
+    pct = Math.round(50 + ((xp - 2000) / 3000) * 25);
+  } else if (xp >= 500) {
+    pct = Math.round(25 + ((xp - 500) / 1500) * 25);
+  } else {
+    pct = Math.round(5 + (xp / 500) * 20);
+  }
+
+  return Math.min(100, Math.max(5, pct));
+}
+
+
+function toggleAuthFormDrawer(forceOpen) {
+
+  const container = document.getElementById('auth-form-container');
+  const btn = document.getElementById('btn-toggle-auth-form');
+  if (!container) return;
+
+  const isCurrentlyCollapsed = container.classList.contains('is-collapsed');
+  const shouldOpen = typeof forceOpen === 'boolean' ? forceOpen : isCurrentlyCollapsed;
+
+  container.classList.toggle('is-collapsed', !shouldOpen);
+  if (btn) {
+    btn.setAttribute('aria-expanded', shouldOpen ? 'true' : 'false');
+    btn.classList.toggle('active', shouldOpen);
+  }
+}
+
+
+function toggleSyncPasteInput(forceOpen) {
+
+  const drawer = document.getElementById('import-code-drawer');
+  const btn = document.getElementById('btn-toggle-paste-input');
+  if (!drawer) return;
+
+  const isCurrentlyCollapsed = drawer.classList.contains('is-collapsed');
+  const shouldOpen = typeof forceOpen === 'boolean' ? forceOpen : isCurrentlyCollapsed;
+
+  drawer.classList.toggle('is-collapsed', !shouldOpen);
+  if (btn) {
+    btn.setAttribute('aria-expanded', shouldOpen ? 'true' : 'false');
+    btn.classList.toggle('active', shouldOpen);
+  }
+}
+
+
+function switchAccountModalTab(tabId) {
+  const validTabs = ['profile', 'accounts', 'leaderboard', 'sync'];
+  const targetTab = validTabs.includes(tabId) ? tabId : 'profile';
+  authCurrentTab = targetTab;
+
+  const tabBtns = document.querySelectorAll('.account-tab-btn');
+  tabBtns.forEach(btn => {
+    const isCur = btn.getAttribute('data-tab') === targetTab;
+    btn.classList.toggle('active', isCur);
+    btn.setAttribute('aria-selected', isCur ? 'true' : 'false');
+  });
+
+  const panels = document.querySelectorAll('.account-tab-panel');
+  panels.forEach(p => {
+    p.classList.remove('active');
+  });
+
+  const curPanel = document.getElementById(`account-tab-${targetTab}`);
+  if (curPanel) curPanel.classList.add('active');
+
+  if (targetTab === 'profile') {
+    renderProfileTab();
+  } else if (targetTab === 'accounts') {
+    const accounts = (window.AuthEngine && typeof window.AuthEngine.listAccounts === 'function')
+      ? window.AuthEngine.listAccounts()
+      : [];
+    toggleAuthFormDrawer(accounts.length === 0);
+    renderAccountsTab();
+  } else if (targetTab === 'leaderboard') {
+    renderLeaderboardTab();
+  } else if (targetTab === 'sync') {
+    renderSyncTab();
+  }
+}
+
+
+function renderUserAccountUI() {
+  renderUserAccountChips();
+  switchAccountModalTab(authCurrentTab || 'profile');
+}
+
+
+function renderProfileTab() {
+  const user = (window.AuthEngine && typeof window.AuthEngine.getCurrentUser === 'function')
+    ? window.AuthEngine.getCurrentUser()
+    : null;
+  const uid = user ? user.uid : 'guest';
+  const stats = (window.AuthEngine && typeof window.AuthEngine.calculateUserStats === 'function')
+    ? window.AuthEngine.calculateUserStats(uid)
+    : { totalXp: 0, rankTitle: 'Tân Binh Nhập Môn', rankBadge: '🌱' };
+
+  const isGuest = !user;
+  const guestSvg = (window.ACCOUNT_WA_ICONS && window.ACCOUNT_WA_ICONS.avatars && window.ACCOUNT_WA_ICONS.avatars.guest)
+    ? window.ACCOUNT_WA_ICONS.avatars.guest
+    : '<svg class="wa-avatar-svg" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"></circle><circle cx="12" cy="8.5" r="3"></circle><path d="M6.5 18c0-3 2.5-5.5 5.5-5.5s5.5 2.5 5.5 5.5"></path></svg>';
+
+  const avatarPreset = isGuest ? { svg: guestSvg, icon: '👤' } : getAvatarPreset(user.avatar || 'daruma');
+  const rankSvg = getRankCrestSvg(stats.rankBadge || '🌱');
+
+  const avEl = document.getElementById('profile-display-avatar');
+  const nameEl = document.getElementById('profile-display-name');
+  const userEl = document.getElementById('profile-display-username');
+  const levelEl = document.getElementById('profile-display-level');
+  const rankEl = document.getElementById('profile-display-rank');
+  const xpEl = document.getElementById('profile-display-xp');
+
+  if (avEl) avEl.innerHTML = avatarPreset.svg || avatarPreset.icon;
+  if (nameEl) nameEl.textContent = user ? user.displayName : 'Học viên Khách';
+  if (userEl) userEl.textContent = user ? `@${user.username}` : '@guest';
+  if (levelEl) levelEl.textContent = `JLPT ${user ? user.levelGoal : 'N5'}`;
+  if (rankEl) {
+    rankEl.innerHTML = `${rankSvg} <span>${escapeHtml(stats.rankTitle || 'Tân Binh Nhập Môn')}</span>`;
+  }
+  if (xpEl) xpEl.textContent = `${stats.totalXp || 0} XP`;
+
+  const progressFill = document.getElementById('profile-xp-progress-fill');
+  if (progressFill) {
+    const pct = computeXpProgressPercent(stats.totalXp || 0);
+    progressFill.style.width = `${pct}%`;
+  }
+
+  const guestNotice = document.getElementById('guest-welcome-notice');
+  if (guestNotice) guestNotice.style.display = user ? 'none' : 'flex';
+
+  const slEl = document.getElementById('stat-lessons-count');
+  const skEl = document.getElementById('stat-kanji-count');
+  const srEl = document.getElementById('stat-radicals-count');
+  const sqEl = document.getElementById('stat-quiz-count');
+  const skwEl = document.getElementById('stat-kaiwa-count');
+  const seEl = document.getElementById('stat-exam-count');
+
+  if (slEl) slEl.textContent = `${stats.completedModulesCount || 0} / 150`;
+  if (skEl) skEl.textContent = `${stats.learnedKanjiCount || 0} chữ`;
+  if (srEl) srEl.textContent = `${stats.learnedRadicalsCount || 0} / 191`;
+  if (sqEl) sqEl.textContent = `${stats.quizCompletedCount || 0} bài (${stats.quizAvgScore || 0}%)`;
+
+  const starSvg = (window.ACCOUNT_WA_ICONS && window.ACCOUNT_WA_ICONS.starMini)
+    ? window.ACCOUNT_WA_ICONS.starMini
+    : '<svg class="inline-star-svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>';
+  if (skwEl) skwEl.innerHTML = `${stats.kaiwaPracticedCount || 0} câu (${starSvg} ${stats.kaiwaStars || 0})`;
+  if (seEl) seEl.textContent = `${stats.examsTakenCount || 0} đề (${stats.bestExamScore || 0}/20)`;
+
+  const editBtn = document.getElementById('btn-edit-profile-open');
+  const logoutBtn = document.getElementById('btn-logout-account');
+  if (editBtn) editBtn.style.display = user ? 'inline-flex' : 'none';
+  if (logoutBtn) logoutBtn.style.display = user ? 'inline-flex' : 'none';
+}
+
+
+function toggleProfileEditDrawer(show) {
+  const drawer = document.getElementById('profile-edit-drawer');
+  if (!drawer) return;
+
+  if (!show) {
+    drawer.style.display = 'none';
+    return;
+  }
+
+  const user = (window.AuthEngine && typeof window.AuthEngine.getCurrentUser === 'function')
+    ? window.AuthEngine.getCurrentUser()
+    : null;
+  if (!user) {
+    showToast('Chỉ có thể chỉnh sửa hồ sơ khi đã đăng nhập.');
+    return;
+  }
+
+  drawer.style.display = 'flex';
+  const nameInput = document.getElementById('edit-profile-name');
+  const goalSelect = document.getElementById('edit-profile-goal');
+
+  if (nameInput) nameInput.value = user.displayName || '';
+  if (goalSelect) goalSelect.value = user.levelGoal || 'N5';
+  authSelectedEditAvatar = user.avatar || 'daruma';
+
+  renderAvatarGrid('edit-avatar-grid', authSelectedEditAvatar, (newAv) => {
+    authSelectedEditAvatar = newAv;
+    renderAvatarGrid('edit-avatar-grid', authSelectedEditAvatar, null);
+  });
+}
+
+
+function saveProfileChanges() {
+  const user = (window.AuthEngine && typeof window.AuthEngine.getCurrentUser === 'function')
+    ? window.AuthEngine.getCurrentUser()
+    : null;
+  if (!user) return;
+
+  const nameInput = document.getElementById('edit-profile-name');
+  const goalSelect = document.getElementById('edit-profile-goal');
+
+  const newDisplayName = nameInput ? nameInput.value.trim() : '';
+  const newGoal = goalSelect ? goalSelect.value : 'N5';
+
+  if (!newDisplayName) {
+    showToast('Tên hiển thị không được để trống.');
+    return;
+  }
+
+  if (window.AuthEngine && typeof window.AuthEngine.updateProfile === 'function') {
+    const res = window.AuthEngine.updateProfile(user.uid, {
+      displayName: newDisplayName,
+      avatar: authSelectedEditAvatar,
+      levelGoal: newGoal
+    });
+
+    if (res && res.success) {
+      toggleProfileEditDrawer(false);
+      renderUserAccountUI();
+      showToast('Đã lưu thay đổi hồ sơ thành công!');
+    } else {
+      showToast(`Lỗi: ${res ? res.error : 'Không thể cập nhật hồ sơ'}`);
+    }
+  }
+}
+
+
+function renderAccountsTab() {
+  const listEl = document.getElementById('account-switcher-list');
+  const countBadge = document.getElementById('accounts-count-badge');
+  if (!listEl) return;
+
+  const accounts = (window.AuthEngine && typeof window.AuthEngine.listAccounts === 'function')
+    ? window.AuthEngine.listAccounts()
+    : [];
+  const currentUser = (window.AuthEngine && typeof window.AuthEngine.getCurrentUser === 'function')
+    ? window.AuthEngine.getCurrentUser()
+    : null;
+
+  if (countBadge) {
+    countBadge.textContent = `${accounts.length} tài khoản`;
+  }
+
+  let html = '';
+
+  accounts.forEach(acc => {
+    const isActive = currentUser && currentUser.uid === acc.uid;
+    const preset = getAvatarPreset(acc.avatar);
+    const stats = acc.stats || {};
+    const rankSvg = getRankCrestSvg(stats.rankBadge || '🌱');
+
+    html += `
+      <div class="account-switch-item ${isActive ? 'is-active' : ''}">
+        <div class="switch-item-left">
+          <span class="switch-item-avatar" aria-hidden="true">${preset.svg || preset.icon}</span>
+          <div class="switch-item-info">
+            <div class="switch-item-name">${escapeHtml(acc.displayName)} <span style="font-size:11px;font-weight:normal;color:var(--text-muted);">(@${escapeHtml(acc.username)})</span></div>
+            <div class="switch-item-meta">
+              <span>${rankSvg} ${escapeHtml(stats.rankTitle || 'Tân Binh')}</span>
+              <span>•</span>
+              <span style="color:var(--accent-primary);font-weight:700;">${stats.totalXp || 0} XP</span>
+            </div>
+          </div>
+        </div>
+        <div class="switch-item-actions">
+          ${isActive ? `
+            <span class="active-check-badge">Đang dùng ✓</span>
+          ` : `
+            <button type="button" class="btn-switch-account" onclick="handleQuickSwitchAccount('${acc.uid}')">Chuyển sang</button>
+            <button type="button" class="btn-delete-account" onclick="handleDeleteAccountPrompt('${acc.uid}', '${escapeHtml(acc.displayName)}')" title="Xóa tài khoản này">Xóa</button>
+          `}
+        </div>
+      </div>
+    `;
+  });
+
+  const isGuestActive = !currentUser;
+  const guestStats = (window.AuthEngine && typeof window.AuthEngine.calculateUserStats === 'function')
+    ? window.AuthEngine.calculateUserStats('guest')
+    : { totalXp: 0, rankBadge: '🌱', rankTitle: 'Khách' };
+  const guestAvatarSvg = (window.ACCOUNT_WA_ICONS && window.ACCOUNT_WA_ICONS.avatars && window.ACCOUNT_WA_ICONS.avatars.guest)
+    ? window.ACCOUNT_WA_ICONS.avatars.guest
+    : '<svg class="wa-avatar-svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"></circle><circle cx="12" cy="8.5" r="3"></circle><path d="M6.5 18c0-3 2.5-5.5 5.5-5.5s5.5 2.5 5.5 5.5"></path></svg>';
+
+  html += `
+    <div class="account-switch-item ${isGuestActive ? 'is-active' : ''}">
+      <div class="switch-item-left">
+        <span class="switch-item-avatar" aria-hidden="true">${guestAvatarSvg}</span>
+        <div class="switch-item-info">
+          <div class="switch-item-name">Học viên Khách (Guest)</div>
+          <div class="switch-item-meta">
+            <span>Tiến độ cục bộ tạm thời</span>
+            <span>•</span>
+            <span style="color:var(--accent-primary);font-weight:700;">${guestStats.totalXp || 0} XP</span>
+          </div>
+        </div>
+      </div>
+      <div class="switch-item-actions">
+        ${isGuestActive ? `
+          <span class="active-check-badge">Đang dùng ✓</span>
+        ` : `
+          <button type="button" class="btn-switch-account" onclick="handleQuickSwitchAccount('guest')">Chuyển về Khách</button>
+        `}
+      </div>
+    </div>
+  `;
+
+  listEl.innerHTML = html;
+
+  renderAvatarGrid('register-avatar-grid', authSelectedRegisterAvatar, (newAv) => {
+    authSelectedRegisterAvatar = newAv;
+    renderAvatarGrid('register-avatar-grid', authSelectedRegisterAvatar, null);
+  });
+}
+
+
+function setAuthFormMode(mode) {
+  authFormMode = mode;
+  const btnReg = document.getElementById('btn-mode-register');
+  const btnLog = document.getElementById('btn-mode-login');
+  const mainForm = document.getElementById('auth-main-form');
+  const groupName = document.getElementById('group-auth-displayname');
+  const groupAvatar = document.getElementById('group-auth-avatar');
+  const groupGoal = document.getElementById('group-auth-goal');
+  const groupMigrate = document.getElementById('group-auth-migrate');
+  const submitBtn = document.getElementById('btn-auth-submit');
+  const errorAlert = document.getElementById('auth-error-alert');
+
+  if (errorAlert) {
+    errorAlert.textContent = '';
+    errorAlert.style.display = 'none';
+  }
+
+  if (btnReg) btnReg.classList.toggle('active', mode === 'register');
+  if (btnLog) btnLog.classList.toggle('active', mode === 'login');
+
+  const isReg = mode === 'register';
+  if (mainForm) mainForm.classList.toggle('is-login', !isReg);
+  if (groupName) groupName.style.display = isReg ? 'flex' : 'none';
+  if (groupAvatar) groupAvatar.style.display = isReg ? 'flex' : 'none';
+  if (groupGoal) groupGoal.style.display = isReg ? 'flex' : 'none';
+  if (groupMigrate) groupMigrate.style.display = isReg ? 'block' : 'none';
+
+  if (submitBtn) {
+    submitBtn.innerHTML = isReg
+      ? `<span>Đăng Ký &amp; Vào Học Ngay</span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="9 18 15 12 9 6"></polyline></svg>`
+      : `<span>Đăng Nhập Ngay</span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="9 18 15 12 9 6"></polyline></svg>`;
+  }
+}
+
+
+function handleAuthFormSubmit(event) {
+  if (event && event.preventDefault) event.preventDefault();
+
+  const errorEl = document.getElementById('auth-error-alert');
+  const usernameInput = document.getElementById('auth-input-username');
+  const pinInput = document.getElementById('auth-input-pin');
+  const displayNameInput = document.getElementById('auth-input-displayname');
+  const goalSelect = document.getElementById('auth-input-goal');
+  const migrateCheck = document.getElementById('auth-check-migrate');
+
+  if (errorEl) {
+    errorEl.textContent = '';
+    errorEl.style.display = 'none';
+  }
+
+  const username = usernameInput ? usernameInput.value.trim() : '';
+  const pin = pinInput ? pinInput.value.trim() : '';
+
+  if (!username || !pin) {
+    if (errorEl) {
+      errorEl.textContent = 'Vui lòng điền đầy đủ tên đăng nhập và mã PIN.';
+      errorEl.style.display = 'block';
+    }
+    return;
+  }
+
+  if (!window.AuthEngine) {
+    if (errorEl) {
+      errorEl.textContent = 'Động cơ tài khoản chưa sẵn sàng.';
+      errorEl.style.display = 'block';
+    }
+    return;
+  }
+
+  if (authFormMode === 'register') {
+    const displayName = displayNameInput ? displayNameInput.value.trim() : '';
+    const levelGoal = goalSelect ? goalSelect.value : 'N5';
+    const migrateGuestData = migrateCheck ? migrateCheck.checked : true;
+    const avatar = authSelectedRegisterAvatar || 'daruma';
+
+    const res = window.AuthEngine.registerAccount({
+      username,
+      displayName,
+      secretPin: pin,
+      avatar,
+      levelGoal,
+      migrateGuestData
+    });
+
+    if (res && res.success) {
+      if (usernameInput) usernameInput.value = '';
+      if (pinInput) pinInput.value = '';
+      if (displayNameInput) displayNameInput.value = '';
+      switchAccountModalTab('profile');
+      showToast(`Đăng ký thành công! Chào mừng ${res.user.displayName}`);
+    } else {
+      if (errorEl) {
+        errorEl.textContent = res ? res.error : 'Đăng ký thất bại.';
+        errorEl.style.display = 'block';
+      }
+    }
+  } else {
+
+    const res = window.AuthEngine.loginAccount(username, pin);
+    if (res && res.success) {
+      if (usernameInput) usernameInput.value = '';
+      if (pinInput) pinInput.value = '';
+      switchAccountModalTab('profile');
+      showToast(`Đăng nhập thành công! Chào mừng trở lại ${res.user.displayName}`);
+    } else {
+      if (errorEl) {
+        errorEl.textContent = res ? res.error : 'Tên đăng nhập hoặc mã PIN không chính xác.';
+        errorEl.style.display = 'block';
+      }
+    }
+  }
+}
+
+
+function openAccountPinModal(title, desc, onConfirm) {
+  const modal = document.getElementById('account-pin-modal');
+  const titleEl = document.getElementById('pin-modal-title');
+  const descEl = document.getElementById('pin-modal-desc');
+  const inputEl = document.getElementById('pin-modal-input');
+  const errorEl = document.getElementById('pin-modal-error');
+  const confirmBtn = document.getElementById('pin-modal-confirm-btn');
+
+  if (!modal || !inputEl) return;
+
+  if (titleEl) titleEl.textContent = title || 'Xác Nhận Mã PIN';
+  if (descEl) descEl.textContent = desc || 'Vui lòng nhập mã PIN bảo mật:';
+  if (errorEl) {
+    errorEl.textContent = '';
+    errorEl.style.display = 'none';
+  }
+
+  inputEl.value = '';
+  _pinModalConfirmCallback = onConfirm;
+
+  if (confirmBtn) {
+    confirmBtn.onclick = () => {
+      const pin = inputEl.value.trim();
+      if (!pin) {
+        if (errorEl) {
+          errorEl.textContent = 'Vui lòng nhập mã PIN.';
+          errorEl.style.display = 'block';
+        }
+        return;
+      }
+      if (typeof _pinModalConfirmCallback === 'function') {
+        _pinModalConfirmCallback(pin);
+      }
+    };
+  }
+
+  modal.classList.add('show-modal');
+  modal.setAttribute('aria-hidden', 'false');
+  setTimeout(() => inputEl.focus(), 100);
+}
+
+
+function closeAccountPinModal() {
+  const modal = document.getElementById('account-pin-modal');
+  if (modal) {
+    modal.classList.remove('show-modal');
+    modal.setAttribute('aria-hidden', 'true');
+  }
+  _pinModalConfirmCallback = null;
+}
+
+
+function handleQuickSwitchAccount(uid) {
+  if (!uid || uid === 'guest') {
+    if (window.AuthEngine && typeof window.AuthEngine.logoutToGuest === 'function') {
+      window.AuthEngine.logoutToGuest();
+    }
+    return;
+  }
+
+  const accounts = (window.AuthEngine && typeof window.AuthEngine.listAccounts === 'function')
+    ? window.AuthEngine.listAccounts()
+    : [];
+  const acc = accounts.find(a => a.uid === uid);
+  const targetName = acc ? acc.displayName : 'tài khoản';
+
+  openAccountPinModal(
+    'Chuyển Đổi Tài Khoản',
+    `Nhập mã PIN bảo mật để đăng nhập vào tài khoản "${escapeHtml(targetName)}":`,
+    (pin) => {
+      if (!window.AuthEngine || typeof window.AuthEngine.switchAccount !== 'function') return;
+      const res = window.AuthEngine.switchAccount(uid, pin);
+      if (res && res.success) {
+        closeAccountPinModal();
+      } else {
+        const errEl = document.getElementById('pin-modal-error');
+        if (errEl) {
+          errEl.textContent = res ? res.error : 'Mã PIN không đúng.';
+          errEl.style.display = 'block';
+        }
+      }
+    }
+  );
+}
+
+
+function handleDeleteAccountPrompt(uid, name) {
+  openAccountPinModal(
+    'Xóa Tài Khoản',
+    `CẢNH BÁO: Bạn có chắc chắn muốn xóa tài khoản "${escapeHtml(name)}"? Toàn bộ tiến độ học tập và thành tích sẽ bị xóa vĩnh viễn. Nhập mã PIN để xác nhận:`,
+    (pin) => {
+      if (!window.AuthEngine || typeof window.AuthEngine.deleteAccount !== 'function') return;
+      const res = window.AuthEngine.deleteAccount(uid, pin);
+      if (res && res.success) {
+        closeAccountPinModal();
+        showToast(`Đã xóa tài khoản "${name}" thành công.`);
+        renderAccountsTab();
+      } else {
+        const errEl = document.getElementById('pin-modal-error');
+        if (errEl) {
+          errEl.textContent = res ? res.error : 'Mã PIN không chính xác.';
+          errEl.style.display = 'block';
+        }
+      }
+    }
+  );
+}
+
+
+function handleLogoutAccount() {
+  if (window.AuthEngine && typeof window.AuthEngine.logoutToGuest === 'function') {
+    window.AuthEngine.logoutToGuest();
+  }
+}
+
+
+function renderLeaderboardTab() {
+  const listEl = document.getElementById('multi-user-leaderboard-list');
+  if (!listEl) return;
+
+  if (!window.AuthEngine || typeof window.AuthEngine.getMultiUserLeaderboard !== 'function') {
+    listEl.innerHTML = '<div style="padding:16px;text-align:center;color:var(--text-muted);">Đang tải bảng xếp hạng...</div>';
+    return;
+  }
+
+  const leaderboard = window.AuthEngine.getMultiUserLeaderboard();
+  const currentUser = (typeof window.AuthEngine.getCurrentUser === 'function')
+    ? window.AuthEngine.getCurrentUser()
+    : null;
+
+  if (!leaderboard || leaderboard.length === 0) {
+    listEl.innerHTML = '<div style="padding:16px;text-align:center;color:var(--text-muted);">Chưa có dữ liệu học tập nào trên thiết bị.</div>';
+    return;
+  }
+
+  listEl.innerHTML = leaderboard.map((item, idx) => {
+    const isCurrent = (currentUser && currentUser.uid === item.uid) || (!currentUser && item.isGuest);
+    const isGuest = item.isGuest;
+    const guestSvg = (window.ACCOUNT_WA_ICONS && window.ACCOUNT_WA_ICONS.avatars && window.ACCOUNT_WA_ICONS.avatars.guest)
+      ? window.ACCOUNT_WA_ICONS.avatars.guest
+      : '<svg class="wa-avatar-svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"></circle><circle cx="12" cy="8.5" r="3"></circle><path d="M6.5 18c0-3 2.5-5.5 5.5-5.5s5.5 2.5 5.5 5.5"></path></svg>';
+    const preset = isGuest ? { svg: guestSvg, icon: '👤' } : getAvatarPreset(item.avatar);
+    const stats = item.stats || {};
+    const rankSvg = getRankCrestSvg(stats.rankBadge || '🌱');
+
+    let rankHtml = `${idx + 1}`;
+    let rankClass = '';
+    const medals = window.ACCOUNT_WA_ICONS || {};
+    if (idx === 0) { rankHtml = medals.medal1 || '🥇'; rankClass = 'top-1'; }
+    else if (idx === 1) { rankHtml = medals.medal2 || '🥈'; rankClass = 'top-2'; }
+    else if (idx === 2) { rankHtml = medals.medal3 || '🥉'; rankClass = 'top-3'; }
+
+    return `
+      <div class="leaderboard-row ${isCurrent ? 'is-current-user' : ''}">
+        <div class="col-rank">
+          <span class="rank-badge ${rankClass}">${rankHtml}</span>
+        </div>
+        <div class="col-user">
+          <div class="user-cell">
+            <span class="user-cell-avatar" aria-hidden="true">${preset.svg || preset.icon}</span>
+            <div class="user-cell-info">
+              <span class="user-cell-name">
+                ${escapeHtml(item.displayName)}
+                ${isCurrent ? ' <span style="font-size:11px;color:var(--accent-primary);font-weight:700;">(Bạn)</span>' : ''}
+              </span>
+              <span class="user-cell-title">${rankSvg} ${escapeHtml(stats.rankTitle || 'Tân Binh')} • JLPT ${escapeHtml(item.levelGoal || 'N5')}</span>
+            </div>
+          </div>
+        </div>
+        <div class="col-stats stats-cell">
+          <div class="stat-pill-group">
+            <span class="stat-mini-pill">Bài: ${escapeHtml(String(stats.completedModulesCount || 0))}</span>
+            <span class="stat-mini-pill">Hán tự: ${escapeHtml(String(stats.learnedKanjiCount || 0))}</span>
+            <span class="stat-mini-pill">Thi: ${escapeHtml(String(stats.bestExamScore || 0))}/20</span>
+          </div>
+        </div>
+        <div class="col-xp xp-cell">
+          ${stats.totalXp || 0} XP
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+
+function renderSyncTab() {
+  const statusEl = document.getElementById('cloud-sync-status');
+  if (statusEl && statusEl.textContent === 'Đang kết nối máy chủ...') {
+    statusEl.textContent = 'Chưa đồng bộ';
+  }
+}
+
+
+async function handleCloudSync() {
+  const statusEl = document.getElementById('cloud-sync-status');
+  const syncBtn = document.getElementById('btn-cloud-sync');
+
+  if (statusEl) {
+    statusEl.className = 'sync-status-label';
+    statusEl.textContent = 'Đang kết nối máy chủ...';
+  }
+  if (syncBtn) syncBtn.disabled = true;
+
+  try {
+    if (window.AuthEngine && typeof window.AuthEngine.syncWithServer === 'function') {
+      const res = await window.AuthEngine.syncWithServer();
+      if (res && res.success) {
+        if (statusEl) {
+          statusEl.className = 'sync-status-label success';
+          statusEl.textContent = `✓ Đã đồng bộ lúc ${new Date().toLocaleTimeString()}`;
+        }
+        showToast('Đồng bộ tiến độ học tập với máy chủ thành công!');
+        updateHeaderProgress();
+      } else {
+        if (statusEl) {
+          statusEl.className = 'sync-status-label error';
+          statusEl.textContent = `⚠️ ${res.error || 'Lỗi kết nối máy chủ'}`;
+        }
+        showToast(`Đồng bộ máy chủ: ${res.error || 'Chế độ ngoại tuyến'}`);
+      }
+    }
+  } catch (err) {
+    if (statusEl) {
+      statusEl.className = 'sync-status-label error';
+      statusEl.textContent = '⚠️ Ngoại lệ kết nối máy chủ';
+    }
+  } finally {
+    if (syncBtn) syncBtn.disabled = false;
+  }
+}
+
+
+function handleExportSyncCode() {
+  if (!window.AuthEngine || typeof window.AuthEngine.exportSyncCode !== 'function') return;
+  const user = window.AuthEngine.getCurrentUser();
+  const uid = user ? user.uid : 'guest';
+  const code = window.AuthEngine.exportSyncCode(uid);
+
+  const wrapper = document.getElementById('export-code-wrapper');
+  const output = document.getElementById('sync-code-output');
+
+  if (output) output.value = code;
+  if (wrapper) wrapper.style.display = 'flex';
+
+  showToast('Đã tạo mã sao lưu di động thành công!');
+}
+
+
+function handleDownloadBackupFile() {
+  const user = (window.AuthEngine && typeof window.AuthEngine.getCurrentUser === 'function')
+    ? window.AuthEngine.getCurrentUser()
+    : null;
+  const uid = user ? user.uid : 'guest';
+  const se = (typeof StorageEngine !== 'undefined') ? StorageEngine : null;
+  const snapshot = se && typeof se.exportUserProgressSnapshot === 'function'
+    ? se.exportUserProgressSnapshot(uid)
+    : { data: {} };
+
+  const backupData = {
+    app: 'MinnaNoNihongo_JLPT',
+    version: 1,
+    exportedAt: new Date().toISOString(),
+    user: user || { uid: 'guest', username: 'guest', displayName: 'Học viên Khách', avatar: 'tanuki', levelGoal: 'N5' },
+    snapshot: snapshot
+  };
+
+  const jsonStr = JSON.stringify(backupData, null, 2);
+  const blob = new Blob([jsonStr], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `minna_backup_${user ? user.username : 'guest'}_${Date.now()}.json`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  setTimeout(() => URL.revokeObjectURL(url), 2000);
+
+  showToast('Đã tải file sao lưu (.json) thành công!');
+}
+
+
+function handleBackupFileSelected(event) {
+  const file = event.target && event.target.files ? event.target.files[0] : null;
+  const nameLabel = document.getElementById('selected-file-name');
+  if (!file) return;
+
+  if (nameLabel) nameLabel.textContent = file.name;
+
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    const text = String(e.target.result || '').trim();
+    const inputArea = document.getElementById('sync-code-input');
+    if (text.startsWith('MINNA_SYNC_V1:')) {
+      if (inputArea) inputArea.value = text;
+    } else {
+      try {
+        const parsed = JSON.parse(text);
+        if (parsed.snapshot && window.StorageEngine && typeof window.StorageEngine.importUserProgressSnapshot === 'function') {
+          const user = (window.AuthEngine && typeof window.AuthEngine.getCurrentUser === 'function')
+            ? window.AuthEngine.getCurrentUser()
+            : null;
+          const targetUid = user ? user.uid : 'guest';
+          const res = window.StorageEngine.importUserProgressSnapshot(targetUid, parsed.snapshot, true);
+          showToast(`Đã nhập trực tiếp ${res.count || 0} mục tiến độ từ file JSON!`);
+          refreshAppOnAccountChange(user);
+          const statusEl = document.getElementById('import-sync-status');
+          if (statusEl) {
+            statusEl.className = 'sync-status-label success';
+            statusEl.textContent = `✓ Đã nhập thành công ${res.count || 0} mục`;
+          }
+        }
+      } catch (err) {
+        showToast('File JSON không đúng định dạng sao lưu Minna.');
+      }
+    }
+  };
+  reader.readAsText(file);
+}
+
+
+function handleImportSyncData() {
+  const input = document.getElementById('sync-code-input');
+  const statusEl = document.getElementById('import-sync-status');
+  const rawCode = input ? input.value.trim() : '';
+
+  if (!rawCode) {
+    if (statusEl) {
+      statusEl.className = 'sync-status-label error';
+      statusEl.textContent = 'Vui lòng dán mã MINNA_SYNC_V1:...';
+    }
+    showToast('Chưa nhập mã sao lưu.');
+    return;
+  }
+
+  if (!window.AuthEngine || typeof window.AuthEngine.importSyncCode !== 'function') {
+    showToast('Động cơ AuthEngine chưa sẵn sàng.');
+    return;
+  }
+
+  const res = window.AuthEngine.importSyncCode(rawCode, true);
+  if (res && res.success) {
+    if (statusEl) {
+      statusEl.className = 'sync-status-label success';
+      statusEl.textContent = `✓ Đã nhập thành công ${res.importedKeys} mục tiến độ!`;
+    }
+    showToast(`Nhập tiến độ thành công! Đã gộp ${res.importedKeys} mục.`);
+    if (input) input.value = '';
+    const user = window.AuthEngine.getCurrentUser();
+    refreshAppOnAccountChange(user);
+  } else {
+    if (statusEl) {
+      statusEl.className = 'sync-status-label error';
+      statusEl.textContent = `⚠️ ${res ? res.error : 'Nhập thất bại'}`;
+    }
+    showToast(`Lỗi nhập tiến độ: ${res ? res.error : 'Không hợp lệ'}`);
+  }
+}
+
+
+function copySyncCodeToClipboard() {
+  const output = document.getElementById('sync-code-output');
+  if (!output || !output.value) {
+    showToast('Chưa có mã sao lưu để sao chép.');
+    return;
+  }
+  if (navigator && navigator.clipboard && typeof navigator.clipboard.writeText === 'function') {
+    navigator.clipboard.writeText(output.value)
+      .then(() => showToast('Đã sao chép mã sao lưu vào bộ nhớ tạm!'))
+      .catch(() => {
+        output.select();
+        document.execCommand('copy');
+        showToast('Đã sao chép mã sao lưu!');
+      });
+  } else {
+    output.select();
+    document.execCommand('copy');
+    showToast('Đã sao chép mã sao lưu!');
+  }
+}
+
+
+function refreshAppOnAccountChange(newUser) {
+  const user = newUser || (window.AuthEngine && typeof window.AuthEngine.getCurrentUser === 'function' ? window.AuthEngine.getCurrentUser() : null);
+
+  if (typeof renderSidebar === 'function') {
+    renderSidebar();
+  }
+
+  if (typeof updateHeaderProgress === 'function') {
+    updateHeaderProgress();
+  }
+
+  if (typeof switchModule === 'function' && typeof currentActiveId !== 'undefined') {
+    switchModule(currentActiveId, false);
+  }
+
+  renderUserAccountUI();
+
+  const displayName = user ? user.displayName : 'Học viên Khách';
+  showToast(`Đã chuyển sang: ${displayName}`);
+}
+
+window.toggleTheme = toggleTheme;
+window.toggleFurigana = toggleFurigana;
+window.openUserAccountModal = openUserAccountModal;
+window.closeUserAccountModal = closeUserAccountModal;
+window.switchAccountModalTab = switchAccountModalTab;
+window.toggleProfileEditDrawer = toggleProfileEditDrawer;
+window.saveProfileChanges = saveProfileChanges;
+window.setAuthFormMode = setAuthFormMode;
+window.handleAuthFormSubmit = handleAuthFormSubmit;
+window.handleQuickSwitchAccount = handleQuickSwitchAccount;
+window.handleDeleteAccountPrompt = handleDeleteAccountPrompt;
+window.closeAccountPinModal = closeAccountPinModal;
+window.handleLogoutAccount = handleLogoutAccount;
+window.handleCloudSync = handleCloudSync;
+window.handleExportSyncCode = handleExportSyncCode;
+window.handleDownloadBackupFile = handleDownloadBackupFile;
+window.handleBackupFileSelected = handleBackupFileSelected;
+window.handleImportSyncData = handleImportSyncData;
+window.copySyncCodeToClipboard = copySyncCodeToClipboard;
+window.renderUserAccountChips = renderUserAccountChips;
+window.renderUserAccountUI = renderUserAccountUI;
+window.refreshAppOnAccountChange = refreshAppOnAccountChange;
+window.computeXpProgressPercent = computeXpProgressPercent;
+window.toggleAuthFormDrawer = toggleAuthFormDrawer;
+window.toggleSyncPasteInput = toggleSyncPasteInput;
+
+
+if (document && document.addEventListener) {
+  document.addEventListener('DOMContentLoaded', () => {
+
+    if (window.AuthEngine && typeof window.AuthEngine.init === 'function') {
+      try {
+        window.AuthEngine.init();
+      } catch (e) {
+        console.warn('[Bootstrap] Ngoại lệ khởi tạo AuthEngine:', e);
+      }
+    }
+
+    initModuleScrollPositions();
+    initDeviceSettings();
+    initThemeToggle();
+    initFuriganaToggle();
+    initFullscreenToggle();
+    initCoverPage();
+    initMenuToggle();
+    initQuickSearch();
+    initResetProgress();
+    initBackToTop();
+    initVoiceSettingsModal();
+    initSidebarGearMenu();
+    initMobileBottomNavSliderTouch();
+    initUserAccountUI();
+
+    renderSidebar();
+    updateHeaderProgress();
+
+    const hashId = (typeof window !== 'undefined' && window.location && window.location.hash ? window.location.hash : '').replace('#', '');
+    const savedLastActive = safeGetStorage(STORAGE_LAST_ACTIVE_KEY);
+    const initialId = hashId || savedLastActive || 'bai-1';
+
+    switchModule(initialId, false);
+    startIdlePrefetch();
+
+    if (typeof StudyToolsEngine !== 'undefined' && typeof StudyToolsEngine.initTapToLookup === 'function') {
+      try { StudyToolsEngine.initTapToLookup(); } catch (_e) {}
+    }
+    if (typeof navigator !== 'undefined' && 'serviceWorker' in navigator && window.location && /^https?:/.test(window.location.protocol)) {
+      try { navigator.serviceWorker.register('./sw.js').catch(() => {}); } catch (_e) {}
+    }
+  });
+}
+
 

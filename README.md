@@ -9,7 +9,7 @@
 * 📚 **50 Bài Học Chuẩn SGK Minna no Nihongo:** Đầy đủ Từ vựng, Ngữ pháp giải thích chi tiết, Mẫu câu & Hội thoại.
 * ✍️ **50 Bài Chữ Hán (Kanji) & Mẹo Nhớ:** 191 Bộ thủ có phát âm giọng Tokyo và hoạt họa thứ tự nét bút.
 * 📖 **50 Bài Đọc Hiểu (Dokkai):** Kèm bản dịch đối chiếu và từ vựng trọng tâm.
-* 🎯 **2.500 Câu Hỏi Trắc Nghiệm Phản Xạ:** Thuật toán sinh phương án nhiễu thông minh (Lookalike Kanji Distractors).
+* 🎯 **3.500 Câu Hỏi Trắc Nghiệm Phản Xạ:** Thuật toán sinh phương án nhiễu thông minh (Lookalike Kanji Distractors) & 1.000 câu trắc nghiệm vận dụng cao.
 * 🎴 **Flashcard 3D & Lặp Lại Ngắt Quãng (SRS):** Tối ưu hóa ghi nhớ từ vựng dài hạn.
 * 🔍 **Từ Điển Mazii & AI Nhận Diện Chữ Viết Tay:** Tích hợp tra cứu đa năng và nhận diện nét vẽ trực quan trên Canvas.
 * 🛡️ **Bảo Mật Doanh Nghiệp (Defense-in-Depth):** Chống IDOR, XSS, CSRF, ký số Attestation điểm số chống sửa F12, mã hóa AES-256-GCM và 9 HTTP Security Headers trên Cloudflare Worker.

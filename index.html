@@ -3,40 +3,55 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  
+  
+  <script>
+    (function() {
+      try {
+        var savedTheme = localStorage.getItem('minna_theme');
+        var theme = savedTheme;
+        if (!theme) {
+          theme = (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) ? 'dark' : 'light';
+        }
+        document.documentElement.setAttribute('data-theme', theme);
+        var metaTheme = document.querySelector('meta[name="theme-color"]');
+        if (metaTheme) {
+          metaTheme.setAttribute('content', theme === 'dark' ? '#070b14' : '#faf8f5');
+        }
+      } catch (e) {}
+    })();
+  </script>
   <title>Tự Học Tiếng Nhật N5 - N4 | Minna no Nihongo & Luyện Thi JLPT</title>
   
-  <!-- SEO & Social Meta Tags -->
-  <meta name="description" content="Nền tảng tự học tiếng Nhật N5 - N4 toàn diện: 50 bài Minna no Nihongo chuẩn SGK, 2.500 câu trắc nghiệm JLPT, 50 bài đọc hiểu Dokkai và 191 bộ thủ Kanji kèm hoạt họa bút thuận.">
+  
+  <meta name="description" content="Nền tảng tự học tiếng Nhật N5 - N4 toàn diện: 50 bài Minna no Nihongo chuẩn SGK, 3.500 câu trắc nghiệm JLPT, 50 bài đọc hiểu Dokkai và 191 bộ thủ Kanji kèm hoạt họa bút thuận.">
   <meta name="keywords" content="học tiếng nhật, minna no nihongo, tự học tiếng nhật n5, tự học n4, luyện thi jlpt, 191 bộ thủ, dokkai tiếng nhật">
   <meta property="og:title" content="Tự Học Tiếng Nhật N5 - N4 | Minna no Nihongo & Luyện Thi JLPT">
-  <meta property="og:description" content="Khóa học tiếng Nhật N5 & N4 toàn diện: 50 bài học, 2.500 câu trắc nghiệm, 50 bài đọc hiểu và 191 bộ thủ có phát âm giọng Tokyo.">
+  <meta property="og:description" content="Khóa học tiếng Nhật N5 & N4 toàn diện: 50 bài học, 3.500 câu trắc nghiệm, 50 bài đọc hiểu và 191 bộ thủ có phát âm giọng Tokyo.">
   <meta property="og:type" content="website">
-  <meta name="theme-color" content="#ffffff">
+  <meta name="theme-color" content="#070b14">
 
-  <!-- Favicon SVG: Bé búp bê Daruma may mắn Kawaii Nhật Bản mang chữ Nhật 日 (Lucky Kawaii Daruma) -->
-  <link rel="icon" type="image/svg+xml" href="favicon.svg">
-  <link rel="alternate icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMDAgMTAwIj4KICA8ZGVmcz4KICAgIDwhLS0gQmFja2dyb3VuZCBHcmFkaWVudDogQ29yYWwgUmVkIHRvIENyaW1zb24gLS0+CiAgICA8bGluZWFyR3JhZGllbnQgaWQ9ImRhcnVtYUJnIiB4MT0iMCUiIHkxPSIwJSIgeDI9IjEwMCUiIHkyPSIxMDAlIj4KICAgICAgPHN0b3Agb2Zmc2V0PSIwJSIgc3RvcC1jb2xvcj0iI0ZGNUU2MiIvPgogICAgICA8c3RvcCBvZmZzZXQ9IjEwMCUiIHN0b3AtY29sb3I9IiNEMTE5MjgiLz4KICAgIDwvbGluZWFyR3JhZGllbnQ+CiAgICA8IS0tIEdvbGQgR3JhZGllbnQgZm9yIGx1Y2t5IHBhdHRlcm5zIC0tPgogICAgPGxpbmVhckdyYWRpZW50IGlkPSJnb2xkU2hpbmUiIHgxPSIwJSIgeTE9IjAlIiB4Mj0iMTAwJSIgeTI9IjEwMCUiPgogICAgICA8c3RvcCBvZmZzZXQ9IjAlIiBzdG9wLWNvbG9yPSIjRkZGMjc1Ii8+CiAgICAgIDxzdG9wIG9mZnNldD0iNTAlIiBzdG9wLWNvbG9yPSIjRkZEMTUyIi8+CiAgICAgIDxzdG9wIG9mZnNldD0iMTAwJSIgc3RvcC1jb2xvcj0iI0ZGOUYxQyIvPgogICAgPC9saW5lYXJHcmFkaWVudD4KICAgIDwhLS0gS2F3YWlpIEJsdXNoIEdyYWRpZW50IC0tPgogICAgPHJhZGlhbEdyYWRpZW50IGlkPSJibHVzaEdsb3ciIGN4PSI1MCUiIGN5PSI1MCUiIHI9IjUwJSI+CiAgICAgIDxzdG9wIG9mZnNldD0iMCUiIHN0b3AtY29sb3I9IiNGRjQwODEiIHN0b3Atb3BhY2l0eT0iMC44NSIvPgogICAgICA8c3RvcCBvZmZzZXQ9IjYwJSIgc3RvcC1jb2xvcj0iI0ZGNDA4MSIgc3RvcC1vcGFjaXR5PSIwLjQiLz4KICAgICAgPHN0b3Agb2Zmc2V0PSIxMDAlIiBzdG9wLWNvbG9yPSIjRkY0MDgxIiBzdG9wLW9wYWNpdHk9IjAiLz4KICAgIDwvcmFkaWFsR3JhZGllbnQ+CiAgICA8IS0tIFNvZnQgRGVwdGggU2hhZG93IC0tPgogICAgPGZpbHRlciBpZD0iZGFydW1hU2hhZG93IiB4PSItMTAlIiB5PSItMTAlIiB3aWR0aD0iMTIwJSIgaGVpZ2h0PSIxMjUlIj4KICAgICAgPGZlRHJvcFNoYWRvdyBkeD0iMCIgZHk9IjIuNSIgc3RkRGV2aWF0aW9uPSIyLjUiIGZsb29kLWNvbG9yPSIjNkIwMDA4IiBmbG9vZC1vcGFjaXR5PSIwLjM4Ii8+CiAgICA8L2ZpbHRlcj4KICA8L2RlZnM+CgogIDwhLS0gU3F1aXJjbGUgQmFzZSBBcHAgSWNvbiAtLT4KICA8cmVjdCB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgcng9IjI0IiBmaWxsPSJ1cmwoI2RhcnVtYUJnKSIvPgogIDxyZWN0IHg9IjMiIHk9IjMiIHdpZHRoPSI5NCIgaGVpZ2h0PSI5NCIgcng9IjIxIiBmaWxsPSJub25lIiBzdHJva2U9IiNGRkZGRkYiIHN0cm9rZS13aWR0aD0iMS44IiBzdHJva2Utb3BhY2l0eT0iMC4zOCIvPgoKICA8IS0tIEx1Y2t5IEthd2FpaSBTcGFya2xlcyAtLT4KICA8cGF0aCBkPSJNODQgMTAgTDg1LjUgMTMuNSBMODkgMTUgTDg1LjUgMTYuNSBMODQgMjAgTDgyLjUgMTYuNSBMNzkgMTUgTDgyLjUgMTMuNSBaIiBmaWxsPSJ1cmwoI2dvbGRTaGluZSkiLz4KICA8Y2lyY2xlIGN4PSIxNiIgY3k9IjIwIiByPSIxLjgiIGZpbGw9IiNGRkYiIG9wYWNpdHk9IjAuODUiLz4KICA8Y2lyY2xlIGN4PSI4OCIgY3k9IjI4IiByPSIxLjMiIGZpbGw9InVybCgjZ29sZFNoaW5lKSIgb3BhY2l0eT0iMC45Ii8+CgogIDwhLS0gRGFydW1hIEthd2FpaSBCb2R5IEJhc2UgSW5zaWRlIC0tPgogIDwhLS0gQ3V0ZSBTaWRlIEFjY2VudHMgLyBBcm1zIC0tPgogIDxjaXJjbGUgY3g9IjIxIiBjeT0iNDgiIHI9IjYiIGZpbGw9IiNCRDE1MjIiLz4KICA8Y2lyY2xlIGN4PSI3OSIgY3k9IjQ4IiByPSI2IiBmaWxsPSIjQkQxNTIyIi8+CgogIDwhLS0gTWFpbiBSb3VuZCBUdW1ibGVyIEZhY2UgQXJlYSAoSGVhcnQtb3ZhbCBLYXdhaWkgbWFzaykgLS0+CiAgPHBhdGggZD0iTTUwIDE3IEM2NCAxNyA3MyAyNCA3MyAzNyBDNzMgNDkgNjMgNTQgNTAgNTQgQzM3IDU0IDI3IDQ5IDI3IDM3IEMyNyAyNCAzNiAxNyA1MCAxNyBaIiBmaWxsPSIjRkZGREY5IiBmaWx0ZXI9InVybCgjZGFydW1hU2hhZG93KSIvPgoKICA8IS0tIEdvbGRlbiBMdWNreSBTYWt1cmEgQ3Jlc3Qgb24gRm9yZWhlYWQgLS0+CiAgPGNpcmNsZSBjeD0iNTAiIGN5PSIyMSIgcj0iMy4yIiBmaWxsPSJ1cmwoI2dvbGRTaGluZSkiLz4KICA8Y2lyY2xlIGN4PSI1MCIgY3k9IjIxIiByPSIxLjQiIGZpbGw9IiNEMTE5MjgiLz4KCiAgPCEtLSBDdXRlIENodWJieSBDdXJ2ZWQgRXllYnJvd3MgLS0+CiAgPHBhdGggZD0iTTM2IDI2IEMzOCAyNCA0MyAyNSA0NCAyOCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjMkMzRTUwIiBzdHJva2Utd2lkdGg9IjIuNCIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIi8+CiAgPHBhdGggZD0iTTY0IDI2IEM2MiAyNCA1NyAyNSA1NiAyOCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjMkMzRTUwIiBzdHJva2Utd2lkdGg9IjIuNCIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIi8+CgogIDwhLS0gQmlnIFNwYXJrbHkgQW5pbWUgQ2hpYmkgRXllcyAtLT4KICA8Zz4KICAgIDwhLS0gTGVmdCBFeWUgLS0+CiAgICA8Y2lyY2xlIGN4PSI0MSIgY3k9IjM1IiByPSI0LjUiIGZpbGw9IiMxRTI3MkUiLz4KICAgIDxjaXJjbGUgY3g9IjQyLjUiIGN5PSIzMy41IiByPSIxLjgiIGZpbGw9IiNGRkZGRkYiLz4KICAgIDxjaXJjbGUgY3g9IjM5LjIiIGN5PSIzNyIgcj0iMC45IiBmaWxsPSIjRkZGRkZGIi8+CgogICAgPCEtLSBSaWdodCBFeWUgLS0+CiAgICA8Y2lyY2xlIGN4PSI1OSIgY3k9IjM1IiByPSI0LjUiIGZpbGw9IiMxRTI3MkUiLz4KICAgIDxjaXJjbGUgY3g9IjYwLjUiIGN5PSIzMy41IiByPSIxLjgiIGZpbGw9IiNGRkZGRkYiLz4KICAgIDxjaXJjbGUgY3g9IjU3LjIiIGN5PSIzNyIgcj0iMC45IiBmaWxsPSIjRkZGRkZGIi8+CiAgPC9nPgoKICA8IS0tIFJvc3kgS2F3YWlpIEJsdXNoaW5nIENoZWVrcyAtLT4KICA8ZWxsaXBzZSBjeD0iMzMiIGN5PSI0MSIgcng9IjUiIHJ5PSIzIiBmaWxsPSJ1cmwoI2JsdXNoR2xvdykiLz4KICA8ZWxsaXBzZSBjeD0iNjciIGN5PSI0MSIgcng9IjUiIHJ5PSIzIiBmaWxsPSJ1cmwoI2JsdXNoR2xvdykiLz4KICA8bGluZSB4MT0iMzEiIHkxPSI0MCIgeDI9IjMzIiB5Mj0iNDIiIHN0cm9rZT0iI0ZGRiIgc3Ryb2tlLXdpZHRoPSIwLjkiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgb3BhY2l0eT0iMC44Ii8+CiAgPGxpbmUgeDE9IjY3IiB5MT0iNDAiIHgyPSI2OSIgeTI9IjQyIiBzdHJva2U9IiNGRkYiIHN0cm9rZS13aWR0aD0iMC45IiBzdHJva2UtbGluZWNhcD0icm91bmQiIG9wYWNpdHk9IjAuOCIvPgoKICA8IS0tIEhhcHB5IENhdCBDaGliaSBNb3V0aCAtLT4KICA8cGF0aCBkPSJNNDcgNDEgUTUwIDQ0LjUgNTMgNDEiIGZpbGw9Im5vbmUiIHN0cm9rZT0iIzFFMjcyRSIgc3Ryb2tlLXdpZHRoPSIyIiBzdHJva2UtbGluZWNhcD0icm91bmQiLz4KCiAgPCEtLSBHb2xkZW4gQ3JhbmUgQmVsbHkgV2luZ3MgLS0+CiAgPHBhdGggZD0iTTI2IDYxIEMzMyA1NiAzOSA1OCA0MiA2MSIgZmlsbD0ibm9uZSIgc3Ryb2tlPSJ1cmwoI2dvbGRTaGluZSkiIHN0cm9rZS13aWR0aD0iMi41IiBzdHJva2UtbGluZWNhcD0icm91bmQiLz4KICA8cGF0aCBkPSJNNzQgNjEgQzY3IDU2IDYxIDU4IDU4IDYxIiBmaWxsPSJub25lIiBzdHJva2U9InVybCgjZ29sZFNoaW5lKSIgc3Ryb2tlLXdpZHRoPSIyLjUiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIvPgoKICA8IS0tIEJlbGx5IE1lZGFsbGlvbiBmb3IgS2Fuamkg44CM5pel44CNIC0tPgogIDxlbGxpcHNlIGN4PSI1MCIgY3k9IjcxIiByeD0iMTkiIHJ5PSIxNSIgZmlsbD0iI0ZGRkZGRiIgZmlsdGVyPSJ1cmwoI2RhcnVtYVNoYWRvdykiLz4KICA8ZWxsaXBzZSBjeD0iNTAiIGN5PSI3MSIgcng9IjE5IiByeT0iMTUiIGZpbGw9Im5vbmUiIHN0cm9rZT0idXJsKCNnb2xkU2hpbmUpIiBzdHJva2Utd2lkdGg9IjIuMiIvPgoKICA8IS0tIEthbmppIOOAjOaXpeOAjSBDbGVhciwgQm9sZCBhbmQgRnJpZW5kbHkgLS0+CiAgPHRleHQgeD0iNTAiIHk9Ijc4LjUiIGZvbnQtZmFtaWx5PSInTm90byBTYW5zIEpQJywgJ0hpcmFnaW5vIEtha3UgR290aGljIFByb04nLCAnQXJpYWwgUm91bmRlZCBNVCBCb2xkJywgc2Fucy1zZXJpZiIgZm9udC13ZWlnaHQ9IjkwMCIgZm9udC1zaXplPSIyMiIgZmlsbD0iI0MyMTgyNSIgdGV4dC1hbmNob3I9Im1pZGRsZSI+5pelPC90ZXh0Pgo8L3N2Zz4=">
-  <link rel="apple-touch-icon" href="favicon.svg">
   
-  <!-- ===================================================================
-       BẢO MẬT LỚP 1: HTTP SECURITY META TAGS (BROWSER-LEVEL HARDENING)
-       - CSP: Chỉ cho phép tải script/style/font từ các nguồn tin cậy đã khai báo
-       - X-Content-Type-Options: Ngăn trình duyệt tự suy đoán loại file (MIME Sniffing)
-       - Referrer-Policy: Giới hạn thông tin gửi ra ngoài khi điều hướng
-       - Permissions-Policy: Khoá toàn bộ thiết bị nhạy cảm không dùng đến
-  =================================================================== -->
+  <link rel="icon" type="image/svg+xml" href="favicon.svg">
+  <link rel="apple-touch-icon" href="favicon.svg">
+  <link rel="icon" type="image/svg+xml" sizes="16x16" href="icons/favicon-16.svg">
+  <link rel="icon" type="image/svg+xml" sizes="32x32" href="icons/favicon-32.svg">
+  <link rel="icon" type="image/svg+xml" sizes="192x192" href="icons/icon-192.svg">
+  <link rel="apple-touch-icon" href="icons/icon-192.svg">
+  
+  
   <meta http-equiv="Content-Security-Policy" content="
-    default-src 'self';
-    script-src 'self' 'unsafe-inline';
-    style-src 'self' 'unsafe-inline' https://fonts.googleapis.com;
-    font-src 'self' https://fonts.gstatic.com data:;
-    img-src 'self' data: https: blob:;
-    media-src 'self' data: blob: https:;
-    connect-src 'self' https://speechgen.io https://api.speechgen.io https://mazii.net https://*.mazii.net https://www.mazii.net https://inputtools.google.com https://www.google.com https://generativelanguage.googleapis.com;
-    frame-ancestors 'none';
-    object-src 'none';
-    base-uri 'self';
-    form-action 'self';
+  default-src 'self';
+  script-src 'self' 'unsafe-inline';
+  style-src 'self' 'unsafe-inline' https://fonts.googleapis.com;
+  font-src 'self' https://fonts.gstatic.com data:;
+  img-src 'self' data: https: blob:;
+  media-src 'self' data: blob: https:;
+  connect-src 'self' https://speechgen.io https://api.speechgen.io https://mazii.net https://*.mazii.net https://www.mazii.net https://inputtools.google.com https://www.google.com https://translate.google.com https://translate.googleapis.com https://generativelanguage.googleapis.com;
+  frame-ancestors 'none';
+  object-src 'none';
+  base-uri 'self';
+  form-action 'self';
   ">
   <meta http-equiv="X-Content-Type-Options" content="nosniff">
   <meta http-equiv="X-XSS-Protection" content="1; mode=block">
@@ -46,22 +61,24 @@
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
 
-  <!-- Font chữ tiếng Nhật & tiếng Việt chuyên dụng: Be Vietnam Pro (quốc dân cho tiếng Việt) & Shippori Mincho / Zen Kaku Gothic -->
+  
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;600;700;800;900&family=Be+Vietnam+Pro:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400;1,600&family=Noto+Sans+JP:wght@400;500;600;700;800&family=Roboto:ital,wght@0,400;0,500;0,700;1,400&family=Shippori+Mincho:wght@400;500;600;700&family=Zen+Kaku+Gothic+New:wght@400;500;700&display=swap" rel="stylesheet">
   
-  <!-- Giao diện CSS thuần -->
-  <link rel="stylesheet" href="style.css?v=20261103_02">
+  
+  <link rel="manifest" href="manifest.json">
+  <link rel="stylesheet" href="style.css?v=20261111_03">
+  <link rel="stylesheet" href="src/master_suite_style.css?v=20261111_03">
 </head>
 <body>
-  <!-- NỀN GRADIENT HIỆN ĐẠI (Tối ưu GPU: 2 Blob tinh gọn trên Desktop, ẩn hoàn toàn trên Mobile) -->
+  
   <div class="liquid-glass-bg" aria-hidden="true">
-    <div class="glass-blob blob-1"></div>
-    <div class="glass-blob blob-2"></div>
+  <div class="glass-blob blob-1"></div>
+  <div class="glass-blob blob-2"></div>
   </div>
 
-  <!-- SCRIPT KHỞI TẠO TỨC THÌ CHO NÚT VÀO HỌC (FAILSAFE INSTANT DISMISS) -->
+  
   <script>
     function enterApp(targetHash) {
       try {
@@ -95,21 +112,24 @@
       try { sessionStorage.removeItem('minna_cover_closed'); } catch(e) {}
       var cover = document.getElementById('cover-page-slide');
       if (cover) {
-        cover.style.display = 'block';
+        cover.style.display = 'flex';
         cover.style.pointerEvents = 'auto';
         cover.style.opacity = '1';
         cover.classList.remove('hide-cover');
         cover.scrollTop = 0;
       }
+      try {
+        if (window.history && window.history.replaceState) {
+          window.history.replaceState(null, '', window.location.pathname + window.location.search);
+        } else {
+          window.location.hash = '';
+        }
+      } catch (e) {}
     }
     window.returnToCoverPage = returnToCoverPage;
   </script>
 
-  <!-- BẢO MẬT LỚP 2: CHỐNG NHÚNG TRỘM IFRAME (ANTI-CLICKJACKING FRAME-BUSTING)
-       Phát hiện nếu website đang bị nhúng trong một iframe ẩn trên trang lạ.
-       Hacker thường dùng kỹ thuật Clickjacking để lừa học viên bấm nhầm vào
-       các phần tử ẩn đặt đè lên giao diện thật. Đoạn mã này thoát ngay lập tức.
-  -->
+  
   <script>
     (function() {
       'use strict';
@@ -125,761 +145,1471 @@
     })();
   </script>
 
-  <!-- 0. TRANG BÌA GIỚI THIỆU PHONG CÁCH NHẬT BẢN HIỆN ĐẠI (COVER SLIDE SCREEN) -->
+  
   <section id="cover-page-slide" class="cover-page-slide" aria-label="Trang bìa giới thiệu khóa học Tiếng Nhật">
-    <!-- Nền nghệ thuật Nhật Bản: Mặt trời/Mặt trăng, Núi Phú Sĩ, Chùa Gojūnotō, Cổng Torii & Cánh hoa anh đào -->
-    <div class="cover-bg-art" aria-hidden="true">
-      <div class="japan-celestial">
-        <div class="celestial-orb"></div>
-        <div class="celestial-glow"></div>
-        <div class="celestial-ring"></div>
-      </div>
-      
-      <!-- Lớp tinh tú lấp lánh ban đêm -->
-      <div class="cover-stars-layer">
-        <span class="star s1"></span>
-        <span class="star s2"></span>
-        <span class="star s3"></span>
-        <span class="star s4"></span>
-        <span class="star s5"></span>
-        <span class="star s6"></span>
-        <span class="star s7"></span>
-        <span class="star s8"></span>
-      </div>
+  
+  <div class="cover-bg-art" aria-hidden="true">
+  <div class="japan-celestial">
+  <div class="celestial-orb"></div>
+  <div class="celestial-glow"></div>
+  <div class="celestial-ring"></div>
+  </div>
+  
+  
+  <div class="cover-stars-layer">
+  <span class="star s1"></span>
+  <span class="star s2"></span>
+  <span class="star s3"></span>
+  <span class="star s4"></span>
+  <span class="star s5"></span>
+  <span class="star s6"></span>
+  <span class="star s7"></span>
+  <span class="star s8"></span>
+  </div>
 
-      <!-- Tác phẩm phong cảnh Nhật Bản SVG: Núi Phú Sĩ, Chùa 5 tầng, Cổng Torii và mây Kasumi -->
-      <svg class="japan-landscape-svg" viewBox="0 0 1440 420" preserveAspectRatio="none">
-        <defs>
-          <linearGradient id="fujiGradDark" x1="0%" y1="0%" x2="0%" y2="100%">
-            <stop offset="0%" stop-color="#e07020" stop-opacity="0.35"/>
-            <stop offset="50%" stop-color="#1c1612" stop-opacity="0.90"/>
-            <stop offset="100%" stop-color="#0a0807" stop-opacity="0.98"/>
-          </linearGradient>
-          <linearGradient id="fujiGradLight" x1="0%" y1="0%" x2="0%" y2="100%">
-            <stop offset="0%" stop-color="#c45a18" stop-opacity="0.28"/>
-            <stop offset="60%" stop-color="#ded5c9" stop-opacity="0.75"/>
-            <stop offset="100%" stop-color="#b09e8c" stop-opacity="0.90"/>
-          </linearGradient>
-          <linearGradient id="cloudGrad" x1="0%" y1="0%" x2="100%" y2="0%">
-            <stop offset="0%" stop-color="currentColor" stop-opacity="0"/>
-            <stop offset="25%" stop-color="currentColor" stop-opacity="0.18"/>
-            <stop offset="75%" stop-color="currentColor" stop-opacity="0.25"/>
-            <stop offset="100%" stop-color="currentColor" stop-opacity="0"/>
-          </linearGradient>
-        </defs>
+  
+  <svg class="japan-landscape-svg" viewBox="0 0 1440 420" preserveAspectRatio="xMidYMax slice">
+  <defs>
+  <linearGradient id="fujiGradDark" x1="0%" y1="0%" x2="0%" y2="100%">
+  <stop offset="0%" stop-color="#e07020" stop-opacity="0.35"/>
+  <stop offset="50%" stop-color="#1c1612" stop-opacity="0.90"/>
+  <stop offset="100%" stop-color="#0a0807" stop-opacity="0.98"/>
+  </linearGradient>
+  <linearGradient id="fujiGradLight" x1="0%" y1="0%" x2="0%" y2="100%">
+  <stop offset="0%" stop-color="#c45a18" stop-opacity="0.28"/>
+  <stop offset="60%" stop-color="#ded5c9" stop-opacity="0.75"/>
+  <stop offset="100%" stop-color="#b09e8c" stop-opacity="0.90"/>
+  </linearGradient>
+  <linearGradient id="cloudGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+  <stop offset="0%" stop-color="currentColor" stop-opacity="0"/>
+  <stop offset="25%" stop-color="currentColor" stop-opacity="0.18"/>
+  <stop offset="75%" stop-color="currentColor" stop-opacity="0.25"/>
+  <stop offset="100%" stop-color="currentColor" stop-opacity="0"/>
+  </linearGradient>
+  </defs>
 
-        <!-- Dãy núi xa xăm -->
-        <path class="landscape-far-mountains" d="M 0,380 Q 220,310 460,340 T 960,320 T 1440,360 L 1440,420 L 0,420 Z"></path>
+  
+  <path class="landscape-far-mountains" d="M 0,380 Q 220,310 460,340 T 960,320 T 1440,360 L 1440,420 L 0,420 Z"></path>
 
-        <!-- Núi Phú Sĩ hùng vĩ ở trung tâm -->
-        <path class="fuji-base" d="M 180,420 L 480,240 Q 660,130 720,70 Q 780,130 960,240 L 1260,420 Z"></path>
-        <path class="fuji-snow" d="M 660,130 Q 685,160 705,145 Q 720,165 735,145 Q 755,160 780,130 Q 755,100 720,70 Q 685,100 660,130 Z"></path>
+  
+  <path class="fuji-base" d="M 180,420 L 480,240 Q 660,130 720,70 Q 780,130 960,240 L 1260,420 Z"></path>
+  <path class="fuji-snow" d="M 660,130 Q 685,160 705,145 Q 720,165 735,145 Q 755,160 780,130 Q 755,100 720,70 Q 685,100 660,130 Z"></path>
 
-        <!-- Chùa năm tầng (Gojūnotō) bên trái -->
-        <g class="landscape-pagoda">
-          <line x1="160" y1="140" x2="160" y2="185" stroke="currentColor" stroke-width="3"></line>
-          <circle cx="160" cy="138" r="4" fill="currentColor"></circle>
-          <path d="M 135,195 Q 160,185 185,195 L 175,202 L 145,202 Z" fill="currentColor"></path>
-          <path d="M 130,215 Q 160,205 190,215 L 180,222 L 140,222 Z" fill="currentColor"></path>
-          <path d="M 125,238 Q 160,226 195,238 L 185,245 L 135,245 Z" fill="currentColor"></path>
-          <path d="M 120,262 Q 160,248 200,262 L 190,270 L 130,270 Z" fill="currentColor"></path>
-          <path d="M 112,288 Q 160,272 208,288 L 198,298 L 122,298 Z" fill="currentColor"></path>
-          <rect x="135" y="298" width="50" height="85" fill="currentColor" opacity="0.9"></rect>
-          <path d="M 0,360 Q 150,330 320,380 L 320,420 L 0,420 Z" fill="currentColor"></path>
-        </g>
+  
+  <g class="landscape-pagoda">
+  <line x1="160" y1="140" x2="160" y2="185" stroke="currentColor" stroke-width="3"></line>
+  <circle cx="160" cy="138" r="4" fill="currentColor"></circle>
+  <path d="M 135,195 Q 160,185 185,195 L 175,202 L 145,202 Z" fill="currentColor"></path>
+  <path d="M 130,215 Q 160,205 190,215 L 180,222 L 140,222 Z" fill="currentColor"></path>
+  <path d="M 125,238 Q 160,226 195,238 L 185,245 L 135,245 Z" fill="currentColor"></path>
+  <path d="M 120,262 Q 160,248 200,262 L 190,270 L 130,270 Z" fill="currentColor"></path>
+  <path d="M 112,288 Q 160,272 208,288 L 198,298 L 122,298 Z" fill="currentColor"></path>
+  <rect x="135" y="298" width="50" height="85" fill="currentColor" opacity="0.9"></rect>
+  <path d="M 0,360 Q 150,330 320,380 L 320,420 L 0,420 Z" fill="currentColor"></path>
+  </g>
 
-        <!-- Cổng Torii bên phải -->
-        <g class="landscape-torii">
-          <path d="M 1270,305 Q 1315,296 1360,305 L 1357,311 Q 1315,303 1273,311 Z" fill="currentColor"></path>
-          <rect x="1278" y="312" width="74" height="4" fill="currentColor"></rect>
-          <rect x="1276" y="324" width="78" height="5" fill="currentColor"></rect>
-          <rect x="1290" y="312" width="7" height="75" fill="currentColor"></rect>
-          <rect x="1333" y="312" width="7" height="75" fill="currentColor"></rect>
-          <path d="M 1180,390 Q 1320,345 1440,370 L 1440,420 L 1180,420 Z" fill="currentColor"></path>
-        </g>
+  
+  <g class="landscape-torii">
+  <path d="M 1270,305 Q 1315,296 1360,305 L 1357,311 Q 1315,303 1273,311 Z" fill="currentColor"></path>
+  <rect x="1278" y="312" width="74" height="4" fill="currentColor"></rect>
+  <rect x="1276" y="324" width="78" height="5" fill="currentColor"></rect>
+  <rect x="1290" y="312" width="7" height="75" fill="currentColor"></rect>
+  <rect x="1333" y="312" width="7" height="75" fill="currentColor"></rect>
+  <path d="M 1180,390 Q 1320,345 1440,370 L 1440,420 L 1180,420 Z" fill="currentColor"></path>
+  </g>
 
-        <!-- Dải mây Kasumi bồng bềnh uốn lượn -->
-        <path class="landscape-clouds" d="M 0,395 Q 360,360 720,395 T 1440,395 L 1440,420 L 0,420 Z" fill="url(#cloudGrad)"></path>
-      </svg>
+  
+  <path class="landscape-clouds" d="M 0,395 Q 360,360 720,395 T 1440,395 L 1440,420 L 0,420 Z" fill="url(#cloudGrad)"></path>
+  </svg>
 
-      <!-- Cánh hoa anh đào rơi tự nhiên (Tối ưu tải GPU: 6 cánh thanh lịch trên Desktop, ẩn hoàn toàn trên Mobile) -->
-      <div class="sakura-petals-layer" aria-hidden="true">
-        <span class="petal p1"></span>
-        <span class="petal p2"></span>
-        <span class="petal p3"></span>
-        <span class="petal p4"></span>
-        <span class="petal p5"></span>
-        <span class="petal p6"></span>
-      </div>
-    </div>
+  
+  <div class="sakura-petals-layer" aria-hidden="true">
+  <span class="petal p1"></span>
+  <span class="petal p2"></span>
+  <span class="petal p3"></span>
+  <span class="petal p4"></span>
+  <span class="petal p5"></span>
+  <span class="petal p6"></span>
+  </div>
+  </div>
 
-    <!-- Thanh công cụ trên cùng của trang bìa -->
-    <div class="cover-top-bar">
-      <div class="cover-top-badge">
-        <span class="cover-brand-dot">日</span>
-        <span class="cover-top-edition">Minna no Nihongo • JLPT N5 &amp; N4</span>
-      </div>
-      <div class="cover-top-actions">
-        <button class="cover-quick-enter-btn" onclick="enterApp('#bai-1')" title="Bắt đầu vào học ngay">
-          <span>Vào Học Ngay</span>
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-            <polyline points="9 18 15 12 9 6"></polyline>
-          </svg>
-        </button>
-        <button id="cover-theme-toggle" class="cover-theme-toggle" aria-label="Đổi giao diện Sáng / Tối" title="Đổi giao diện Sáng / Tối">
-          <span class="theme-icon light-icon" title="Chuyển sang giao diện Sáng">
-            <svg class="theme-svg sun-svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-              <circle cx="12" cy="12" r="5"></circle>
-              <line x1="12" y1="1" x2="12" y2="3"></line>
-              <line x1="12" y1="21" x2="12" y2="23"></line>
-              <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
-              <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
-              <line x1="1" y1="12" x2="3" y2="12"></line>
-              <line x1="21" y1="12" x2="23" y2="12"></line>
-              <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
-              <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
-            </svg>
-          </span>
-          <span class="theme-icon dark-icon" title="Chuyển sang giao diện Tối">
-            <svg class="theme-svg moon-svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
-            </svg>
-          </span>
-        </button>
-      </div>
-    </div>
+  
+  <div class="cover-top-bar">
+  <div class="cover-top-badge">
+  <span class="cover-brand-dot">日</span>
+  <span class="cover-top-edition">Minna no Nihongo • JLPT N5 &amp; N4</span>
+  <span class="cover-top-edition-short" aria-hidden="true">N5 • N4</span>
+  </div>
+  <div class="cover-top-actions">
+  <button class="cover-quick-enter-btn" onclick="enterApp('#bai-1')" title="Bắt đầu vào học ngay">
+  <span>Vào Học Ngay</span>
+  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+  <polyline points="9 18 15 12 9 6"></polyline>
+  </svg>
+  </button>
+  
+  <button id="cover-account-btn" class="cover-account-btn" onclick="openUserAccountModal()" title="Hồ sơ học viên &amp; Đổi tài khoản" aria-label="Hồ sơ học viên">
+  <span class="cover-account-avatar" id="cover-account-avatar" aria-hidden="true"><svg class="wa-avatar-svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><circle cx="12" cy="8.5" r="3"></circle><path d="M6.5 18c0-3 2.5-5.5 5.5-5.5s5.5 2.5 5.5 5.5"></path></svg></span>
+  <span class="cover-account-name" id="cover-account-name">Tài khoản</span>
+  <span class="cover-account-xp" id="cover-account-xp">0 XP</span>
+  </button>
+  <button id="cover-theme-toggle" class="cover-theme-toggle" aria-label="Đổi giao diện Sáng / Tối" title="Đổi giao diện Sáng / Tối">
+  <span class="theme-icon light-icon" title="Chuyển sang giao diện Sáng">
+  <svg class="theme-svg sun-svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+  <circle cx="12" cy="12" r="4.5"></circle>
+  <line x1="12" y1="2" x2="12" y2="4"></line>
+  <line x1="12" y1="20" x2="12" y2="22"></line>
+  <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+  <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+  <line x1="2" y1="12" x2="4" y2="12"></line>
+  <line x1="20" y1="12" x2="22" y2="12"></line>
+  <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+  <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+  </svg>
+  </span>
+  <span class="theme-icon dark-icon" title="Chuyển sang giao diện Tối">
+  <svg class="theme-svg moon-svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+  <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+  </svg>
+  </span>
+  </button>
+  </div>
+  </div>
 
-    <!-- Khối nội dung trung tâm của trang bìa -->
-    <div class="cover-container">
-      <!-- Cột thư pháp tiếng Nhật bên trái kèm triện đỏ và phát âm -->
-      <div class="cover-vertical-kanji cover-kanji-left">
-        <div class="cover-kanji-card" onclick="speakCoverQuote('千里の道も一歩から', this, event)" role="button" tabindex="0" title="Chạm để nghe phát âm: Vạn dặm khởi đầu từ một bước chân">
-          <span class="kanji-vertical-text">千里の道も一歩から</span>
-          <span class="cover-kanji-audio-btn" aria-label="Nghe câu châm ngôn">
-            <svg class="voice-icon-svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-              <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
-              <path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path>
-              <path d="M19.07 4.93a10 10 0 0 1 0 14.14"></path>
-            </svg>
-          </span>
-          <div class="cover-hanko-seal">努力</div>
-        </div>
-      </div>
+  
+  <div class="cover-container">
+  
+  <div class="cover-vertical-kanji cover-kanji-left">
+  <div class="cover-kanji-card" onclick="speakCoverQuote('千里の道も一歩から', this, event)" role="button" tabindex="0" title="Chạm để nghe phát âm: Vạn dặm khởi đầu từ một bước chân">
+  <span class="kanji-vertical-text">千里の道も一歩から</span>
+  <span class="cover-kanji-audio-btn" aria-label="Nghe câu châm ngôn">
+  <svg class="voice-icon-svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+  <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+  <path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+  <path d="M19.07 4.93a10 10 0 0 1 0 14.14"></path>
+  </svg>
+  </span>
+  <div class="cover-hanko-seal">努力</div>
+  </div>
+  </div>
 
-      <!-- Khối chính trung tâm -->
-      <div class="cover-hero-content">
-        <!-- Huy hiệu phong cách Zen -->
-        <div class="cover-zen-badge">
-          <span class="zen-pulse-dot"></span>
-          <span class="zen-text">HỆ SINH THÁI TỰ HỌC TIẾNG NHẬT N5 & N4 CHUẨN QUỐC TẾ</span>
-        </div>
+  
+  <div class="cover-hero-content neo-edo-stage">
+  
+  <div class="cover-zen-badge neo-sr-badge" aria-hidden="true">
+  <span class="zen-pulse-dot"></span>
+  <span class="zen-text">HỆ SINH THÁI TỰ HỌC TIẾNG NHẬT N5 &amp; N4 CHUẨN QUỐC TẾ</span>
+  </div>
 
-        <h1 class="cover-main-title">
-          <span class="cover-title-hero">日本語の道</span>
-          <span class="cover-title-romaji">NIHONGO NO MICHI</span>
-          <span class="cover-title-desc">Hành Trình Chinh Phục Tiếng Nhật Toàn Diện, Hiện Đại & Đầy Cảm Hứng</span>
-        </h1>
+  
+  <div class="neo-edo-header-row">
+  
+  <div class="neo-hanko-logo-box" aria-hidden="true" title="Ấn triện Nhật Ngữ Chi Đạo">
+  <div class="neo-hanko-inner-grid">
+  <span>日</span><span>本</span>
+  <span>道</span><span>語</span>
+  </div>
+  </div>
 
-        <!-- Thẻ tương tác: Lời chào tiếng Nhật Tokyo -->
-        <div class="cover-greeting-card" onclick="speakTokyoGreeting(this, event)" role="button" tabindex="0" title="Chạm để nghe phát âm giọng chuẩn Tokyo">
-          <div class="greeting-speaker-badge">
-            <svg class="voice-icon-svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-              <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
-              <path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path>
-              <path d="M19.07 4.93a10 10 0 0 1 0 14.14"></path>
-            </svg>
-          </div>
-          <div class="greeting-text-wrap">
-            <span class="greeting-jp">「こんにちは！日本語の世界へようこそ」</span>
-            <span class="greeting-vi">Xin chào! Chào mừng bạn đến với hành trình học Tiếng Nhật</span>
-          </div>
-          <span class="greeting-listen-tag">
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -1px; margin-right: 4px;" aria-hidden="true">
-              <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
-              <path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path>
-              <path d="M19.07 4.93a10 10 0 0 1 0 14.14"></path>
-            </svg>Nghe thử
-          </span>
-        </div>
+  
+  <h1 class="cover-main-title neo-edo-main-title">
+  <span class="cover-title-row">
+  <span class="cover-title-hero">日本語の道</span>
+  <span class="cover-hero-hanko" aria-hidden="true">極意</span>
+  </span>
+  <span class="cover-title-romaji">NIHONGO NO MICHI</span>
+  </h1>
 
-        <!-- Bảng 5 trụ cột tri thức Bento Grid hiện đại (Chạm vào bất kỳ thẻ nào để vào học ngay lập tức) -->
-        <div class="cover-features-grid">
-          <div class="cover-feature-card" data-target="#bai-1" onclick="enterApp('#bai-1')" role="button" tabindex="0" title="Vào học ngay: 50 Bài Minna N5 - N4">
-            <div class="feature-stat-box accent-sakura">
-              <span class="stat-num">50</span>
-              <span class="stat-unit">BÀI HỌC</span>
-            </div>
-            <div class="feature-info">
-              <h3 class="feature-title">50 Bài Học Minna</h3>
-              <p class="feature-desc">2.000+ từ vựng, 150+ ngữ pháp &amp; Flashcard</p>
-            </div>
-          </div>
+  
+  <div class="cover-greeting-card neo-greeting-pill" onclick="speakTokyoGreeting(this, event)" role="button" tabindex="0" title="Chạm để nghe lời chào tiếng Nhật chuẩn giọng Tokyo">
+  <div class="greeting-speaker-badge neo-wave-circle">
+  <div class="greeting-waveform" aria-hidden="true">
+  <span class="wave-bar"></span>
+  <span class="wave-bar"></span>
+  <span class="wave-bar"></span>
+  <span class="wave-bar"></span>
+  <span class="wave-bar"></span>
+  </div>
+  <svg class="voice-icon-svg neo-fallback-speaker" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+  <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+  <path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+  </svg>
+  </div>
+  <div class="greeting-text-wrap">
+  <span class="greeting-vi neo-greeting-prompt">Hôm nay học gì?</span>
+  <span class="greeting-jp">「こんにちは！日本語の世界へようこそ」</span>
+  </div>
+  <span class="greeting-listen-tag">Nghe thử</span>
+  </div>
+  </div>
 
-          <div class="cover-feature-card" data-target="#quiz-1" onclick="enterApp('#quiz-1')" role="button" tabindex="0" title="Làm bài ngay: 2.500 câu trắc nghiệm JLPT">
-            <div class="feature-stat-box accent-sky">
-              <span class="stat-num">2.500</span>
-              <span class="stat-unit">CÂU HỎI</span>
-            </div>
-            <div class="feature-info">
-              <h3 class="feature-title">Trắc Nghiệm JLPT</h3>
-              <p class="feature-desc">50 bộ đề chấm điểm &amp; giải thích chi tiết</p>
-            </div>
-          </div>
+  
+  <div class="neo-edo-horizon-art" aria-hidden="true">
+  <svg class="neo-horizon-svg" viewBox="0 0 600 132" preserveAspectRatio="xMidYMax meet">
+  <defs>
+  <radialGradient id="neoFujiBackGlow" cx="44%" cy="55%" r="52%">
+  <stop offset="0%" stop-color="#818cf8" stop-opacity="0.38"/>
+  <stop offset="55%" stop-color="#312e81" stop-opacity="0.16"/>
+  <stop offset="100%" stop-color="#090d1a" stop-opacity="0"/>
+  </radialGradient>
+  <linearGradient id="neoFujiBodyGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+  <stop offset="0%" stop-color="#6366f1"/>
+  <stop offset="48%" stop-color="#2e3668"/>
+  <stop offset="100%" stop-color="#0f152a"/>
+  </linearGradient>
+  <linearGradient id="neoFujiSnowGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+  <stop offset="0%" stop-color="#ffffff"/>
+  <stop offset="65%" stop-color="#e0e7ff"/>
+  <stop offset="100%" stop-color="#a5b4fc" stop-opacity="0.85"/>
+  </linearGradient>
+  <linearGradient id="neoToriiNeonGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+  <stop offset="0%" stop-color="#ff6b8b"/>
+  <stop offset="45%" stop-color="#f43f5e"/>
+  <stop offset="100%" stop-color="#9f1239"/>
+  </linearGradient>
+  <linearGradient id="neoPetalGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+  <stop offset="0%" stop-color="#ffe4e6"/>
+  <stop offset="55%" stop-color="#fda4af"/>
+  <stop offset="100%" stop-color="#f43f5e"/>
+  </linearGradient>
+  <filter id="neoToriiGlow" x="-25%" y="-25%" width="150%" height="150%">
+  <feDropShadow dx="0" dy="0" stdDeviation="4" flood-color="#f43f5e" flood-opacity="0.75"/>
+  <feDropShadow dx="0" dy="0" stdDeviation="9" flood-color="#e11d48" flood-opacity="0.45"/>
+  </filter>
+  </defs>
 
-          <div class="cover-feature-card" data-target="#dokkai-1" onclick="enterApp('#dokkai-1')" role="button" tabindex="0" title="Vào luyện ngay: 50 bài đọc hiểu Dokkai">
-            <div class="feature-stat-box accent-emerald">
-              <span class="stat-num">50</span>
-              <span class="stat-unit">BÀI ĐỌC</span>
-            </div>
-            <div class="feature-info">
-              <h3 class="feature-title">Đọc Hiểu Dokkai</h3>
-              <p class="feature-desc">100% Furigana, âm thanh &amp; dịch nghĩa</p>
-            </div>
-          </div>
+  
+  <ellipse cx="265" cy="74" rx="220" ry="64" fill="url(#neoFujiBackGlow)"/>
 
-          <div class="cover-feature-card" data-target="#kanji-1" onclick="enterApp('#kanji-1')" role="button" tabindex="0" title="Vào xem ngay: Mẹo nhớ Kanji &amp; Flashcard 50 bài học">
-            <div class="feature-stat-box accent-amber">
-              <span class="stat-num">50</span>
-              <span class="stat-unit">BÀI KANJI</span>
-            </div>
-            <div class="feature-info">
-              <h3 class="feature-title">Mẹo Nhớ &amp; Flashcard Kanji</h3>
-              <p class="feature-desc">Chiết tự, Mẹo nhớ &amp; Thẻ kiểm tra Flashcard 50 bài</p>
-            </div>
-          </div>
+  
+  <path d="M 0,130 Q 110,98 220,118 T 450,108 T 600,124 L 600,132 L 0,132 Z" fill="#131b31" opacity="0.85"/>
 
-          <div class="cover-feature-card" data-target="#exam" onclick="enterApp('#exam')" role="button" tabindex="0" title="Vào thi ngay: 50 Đề Thi JLPT N5 &amp; N4 có đoạn văn">
-            <div class="feature-stat-box accent-sakura" style="background: linear-gradient(135deg, rgba(244, 63, 94, 0.16), rgba(251, 146, 60, 0.18)); color: var(--accent-sakura, #f43f5e);">
-              <span class="stat-num">50</span>
-              <span class="stat-unit">ĐỀ THI</span>
-            </div>
-            <div class="feature-info">
-              <h3 class="feature-title">Luyện Thi JLPT N5 - N4</h3>
-              <p class="feature-desc">1.000 câu hỏi • 50 đoạn văn • Chấm điểm &amp; Đánh giá năng lực</p>
-            </div>
-          </div>
+  
+  <path d="M 38,130 C 128,112 192,66 238,24 L 286,24 C 332,66 396,112 486,130 Z" fill="url(#neoFujiBodyGrad)"/>
+  
+  <path d="M 262,24 L 286,24 C 332,66 396,112 486,130 L 295,130 C 282,92 272,56 262,24 Z" fill="#0d1326" opacity="0.46"/>
+  
+  <path d="M 238,24 L 286,24 C 304,44 322,62 342,75 C 324,72 314,62 304,68 C 294,74 285,58 274,69 C 264,80 256,60 245,67 C 234,74 222,64 202,73 C 216,58 228,40 238,24 Z" fill="url(#neoFujiSnowGrad)"/>
+  
+  <ellipse cx="260" cy="130" rx="285" ry="4" fill="#6366f1" opacity="0.22"/>
 
-          <div class="cover-feature-card" data-target="#radicals-1" onclick="enterApp('#radicals-1')" role="button" tabindex="0" title="Vào tra cứu ngay: 191 Bộ thủ Kanji">
-            <div class="feature-stat-box accent-purple">
-              <span class="stat-num">191</span>
-              <span class="stat-unit">BỘ THỦ</span>
-            </div>
-            <div class="feature-info">
-              <h3 class="feature-title">191 Bộ Thủ Kanji</h3>
-              <p class="feature-desc">Hoạt họa thứ tự nét bút &amp; chữ Hán mẫu</p>
-            </div>
-          </div>
+  
+  <g filter="url(#neoToriiGlow)">
+  
+  <path d="M 402,30 Q 486,42 570,30 L 565,39 Q 486,50 407,39 Z" fill="url(#neoToriiNeonGrad)" stroke="#fda4af" stroke-width="1"/>
+  <path d="M 414,41 Q 486,50 558,41 L 556,47 Q 486,55 416,47 Z" fill="#be123c"/>
+  
+  <rect x="415" y="61" width="142" height="8" rx="3" fill="url(#neoToriiNeonGrad)" stroke="#fda4af" stroke-width="0.8"/>
+  
+  <rect x="480" y="46" width="12" height="17" rx="2" fill="#e11d48" stroke="#fda4af" stroke-width="0.8"/>
+  
+  <path d="M 436,44 L 448,44 L 445,132 L 431,132 Z" fill="url(#neoToriiNeonGrad)" stroke="#fda4af" stroke-width="0.7"/>
+  <path d="M 524,44 L 536,44 L 541,132 L 527,132 Z" fill="url(#neoToriiNeonGrad)" stroke="#fda4af" stroke-width="0.7"/>
+  
+  <rect x="428" y="124" width="20" height="8" rx="2" fill="#881337"/>
+  <rect x="524" y="124" width="20" height="8" rx="2" fill="#881337"/>
+  </g>
 
-          <div class="cover-feature-card" data-target="#mazii-dict" onclick="enterApp('#mazii-dict')" role="button" tabindex="0" title="Tra cứu trực tiếp Từ vựng & Chữ Hán có bảng viết tay">
-            <div class="feature-stat-box accent-sky" style="background: linear-gradient(135deg, rgba(14, 165, 233, 0.16), rgba(99, 102, 241, 0.18)); color: var(--accent-indigo, #0284c7);">
-              <span class="stat-num">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                  <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path>
-                  <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path>
-                </svg>
-              </span>
-              <span class="stat-unit">TỪ ĐIỂN</span>
-            </div>
-            <div class="feature-info">
-              <h3 class="feature-title">Từ Điển &amp; Viết Tay</h3>
-              <p class="feature-desc">Tra từ vựng, chữ Hán, ngữ pháp • Bảng vẽ tay nhận diện Kanji</p>
-            </div>
-          </div>
-        </div>
+  
+  <path d="M 96,46 C 106,38 118,44 112,56 C 106,66 90,62 88,52 C 87,48 92,48 96,46 Z" fill="url(#neoPetalGrad)"/>
+  <path d="M 192,22 C 198,16 206,20 202,28 C 198,35 188,32 187,25 Z" fill="url(#neoPetalGrad)" opacity="0.88"/>
+  <path d="M 332,12 C 338,6 348,10 344,18 C 340,25 328,22 327,15 Z" fill="url(#neoPetalGrad)" opacity="0.92"/>
+  <path d="M 380,82 C 388,75 398,80 393,90 C 388,98 376,94 375,86 Z" fill="url(#neoPetalGrad)"/>
+  <path d="M 562,92 C 572,84 584,90 578,102 C 572,110 556,106 555,96 Z" fill="url(#neoPetalGrad)"/>
+  </svg>
+  </div>
 
-        <!-- Thanh điều hướng nhanh theo mục tiêu -->
-        <div class="cover-target-nav">
-          <span class="target-nav-label">Lộ trình nhanh:</span>
-          <button class="target-chip" data-target="#bai-1" onclick="enterApp('#bai-1')">N5 Cơ Bản (1-25)</button>
-          <button class="target-chip" data-target="#bai-26" onclick="enterApp('#bai-26')">N4 Nâng Cao (26-50)</button>
-          <button class="target-chip" data-target="#quiz-1" onclick="enterApp('#quiz-1')">Luyện Đề JLPT</button>
-          <button class="target-chip" data-target="#dokkai-1" onclick="enterApp('#dokkai-1')">Luyện Đọc Hiểu</button>
-          <button class="target-chip" data-target="#kanji-1" onclick="enterApp('#kanji-1')">Mẹo Nhớ &amp; Flashcard</button>
-          <button class="target-chip" data-target="#radicals-1" onclick="enterApp('#radicals-1')">191 Bộ Thủ</button>
-          <button class="target-chip" data-target="#exam" onclick="enterApp('#exam')" style="border-color: var(--primary); color: var(--primary); font-weight: 700;">
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -2px; margin-right: 5px;" aria-hidden="true">
-              <path d="M2 5c4-1 16-1 20 0"></path>
-              <line x1="4" y1="8.5" x2="20" y2="8.5"></line>
-              <line x1="7" y1="8.5" x2="7" y2="21"></line>
-              <line x1="17" y1="8.5" x2="17" y2="21"></line>
-              <line x1="12" y1="5.5" x2="12" y2="8.5"></line>
-            </svg>50 Đề Thi JLPT
-          </button>
-          <button class="target-chip" data-target="#mazii-dict" onclick="enterApp('#mazii-dict')">
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -2px; margin-right: 5px;" aria-hidden="true">
-              <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path>
-              <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path>
-            </svg>Tra Từ Điển
-          </button>
-        </div>
+  
+  <div class="cover-features-grid neo-edo-bento-grid">
+  
+  <div class="cover-feature-card bento-hero-card" data-target="#bai-1" onclick="enterApp('#bai-1')" role="button" tabindex="0" title="Vào học ngay: 50 Bài Học Minna N5 - N4">
+  <span class="bento-hanko-stamp" aria-hidden="true">初級</span>
 
-        <!-- Nút hành động chính -->
-        <div class="cover-actions-group">
-          <button id="btn-enter-app" class="btn-enter-app" onclick="enterApp()" title="Bắt đầu vào giao diện học tập">
-            <span class="btn-enter-vi">Bắt Đầu Học Ngay</span>
-            <svg class="btn-enter-arrow" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-              <line x1="5" y1="12" x2="19" y2="12"></line>
-              <polyline points="12 5 19 12 12 19"></polyline>
-            </svg>
-          </button>
-          <span class="cover-sub-hint">Miễn phí 100% • Tối ưu cho Điện thoại & Máy tính • Tự động lưu tiến độ</span>
-        </div>
-      </div>
+  
+  <svg class="bento-sakura-3d sakura-top-right" viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+  <g stroke="#e11d48" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+  <path d="M11 9.8 C9.5 7.5 9 5 10 3.5 C10.8 2.8 11.5 3.8 12 4.8 C12.5 3.8 13.2 2.8 14 3.5 C15 5 14.5 7.5 13 9.8"/>
+  <path d="M11 9.8 C9.5 7.5 9 5 10 3.5 C10.8 2.8 11.5 3.8 12 4.8 C12.5 3.8 13.2 2.8 14 3.5 C15 5 14.5 7.5 13 9.8" transform="rotate(72 12 12)"/>
+  <path d="M11 9.8 C9.5 7.5 9 5 10 3.5 C10.8 2.8 11.5 3.8 12 4.8 C12.5 3.8 13.2 2.8 14 3.5 C15 5 14.5 7.5 13 9.8" transform="rotate(144 12 12)"/>
+  <path d="M11 9.8 C9.5 7.5 9 5 10 3.5 C10.8 2.8 11.5 3.8 12 4.8 C12.5 3.8 13.2 2.8 14 3.5 C15 5 14.5 7.5 13 9.8" transform="rotate(216 12 12)"/>
+  <path d="M11 9.8 C9.5 7.5 9 5 10 3.5 C10.8 2.8 11.5 3.8 12 4.8 C12.5 3.8 13.2 2.8 14 3.5 C15 5 14.5 7.5 13 9.8" transform="rotate(288 12 12)"/>
+  </g>
+  <circle cx="12" cy="12" r="2.2" stroke="#e5c178" stroke-width="1.5"/>
+  <circle cx="12" cy="12" r="1" stroke="#e11d48" stroke-width="1.5"/>
+  </svg>
 
-      <!-- Cột thư pháp tiếng Nhật bên phải kèm triện đỏ và phát âm -->
-      <div class="cover-vertical-kanji cover-kanji-right">
-        <div class="cover-kanji-card" onclick="speakCoverQuote('初心忘るべからず', this, event)" role="button" tabindex="0" title="Chạm để nghe phát âm: Chớ quên tâm niệm thuở ban đầu">
-          <span class="kanji-vertical-text">初心忘るべからず</span>
-          <span class="cover-kanji-audio-btn" aria-label="Nghe câu châm ngôn">
-            <svg class="voice-icon-svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-              <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
-              <path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path>
-              <path d="M19.07 4.93a10 10 0 0 1 0 14.14"></path>
-            </svg>
-          </span>
-          <div class="cover-hanko-seal">邁進</div>
-        </div>
-      </div>
-    </div>
+  
+  <svg class="bento-sakura-3d sakura-bottom-left" viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+  <g transform="rotate(18 12 12)" stroke="#e11d48" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+  <path d="M11 9.8 C9.5 7.5 9 5 10 3.5 C10.8 2.8 11.5 3.8 12 4.8 C12.5 3.8 13.2 2.8 14 3.5 C15 5 14.5 7.5 13 9.8"/>
+  <path d="M11 9.8 C9.5 7.5 9 5 10 3.5 C10.8 2.8 11.5 3.8 12 4.8 C12.5 3.8 13.2 2.8 14 3.5 C15 5 14.5 7.5 13 9.8" transform="rotate(72 12 12)"/>
+  <path d="M11 9.8 C9.5 7.5 9 5 10 3.5 C10.8 2.8 11.5 3.8 12 4.8 C12.5 3.8 13.2 2.8 14 3.5 C15 5 14.5 7.5 13 9.8" transform="rotate(144 12 12)"/>
+  <path d="M11 9.8 C9.5 7.5 9 5 10 3.5 C10.8 2.8 11.5 3.8 12 4.8 C12.5 3.8 13.2 2.8 14 3.5 C15 5 14.5 7.5 13 9.8" transform="rotate(216 12 12)"/>
+  <path d="M11 9.8 C9.5 7.5 9 5 10 3.5 C10.8 2.8 11.5 3.8 12 4.8 C12.5 3.8 13.2 2.8 14 3.5 C15 5 14.5 7.5 13 9.8" transform="rotate(288 12 12)"/>
+  </g>
+  <circle cx="12" cy="12" r="2.2" stroke="#e5c178" stroke-width="1.5"/>
+  <circle cx="12" cy="12" r="1" stroke="#e11d48" stroke-width="1.5"/>
+  </svg>
+
+  
+  <div class="feature-info neo-hero-header-info">
+  <span class="bento-sub-badge badge-sakura">TRỌNG TÂM N5 • N4</span>
+  <h3 class="feature-title">50 Bài Học<br>Minna N5-N4</h3>
+  <span class="bento-card-meta"></span>
+  </div>
+
+  
+  <div class="feature-stat-box accent-sakura bento-progress-ring neo-hero-ring-center">
+  <svg class="bento-ring-svg" viewBox="0 0 120 120" aria-hidden="true">
+  <defs>
+  <linearGradient id="neoHeroRingGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+  <stop offset="0%" stop-color="#fde047"/>
+  <stop offset="50%" stop-color="#fb7185"/>
+  <stop offset="100%" stop-color="#f43f5e"/>
+  </linearGradient>
+  </defs>
+  <circle class="ring-track" cx="60" cy="60" r="46" fill="none" stroke-width="8"></circle>
+  <circle class="ring-fill" cx="60" cy="60" r="46" fill="none" stroke="url(#neoHeroRingGrad)" stroke-width="8" stroke-dasharray="208 290" stroke-linecap="round"></circle>
+  </svg>
+  <span class="neo-ring-pct">72%</span>
+  <span class="neo-ring-sub">Complete</span>
+  <span class="stat-num neo-sr-stat">50</span>
+  <span class="stat-unit neo-sr-stat">BÀI HỌC</span>
+  </div>
+
+  
+  <span class="neo-level-pill" aria-hidden="true">N5</span>
+
+  <svg class="feature-card-arrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+  <path d="M9 18l6-6-6-6"></path>
+  </svg>
+  </div>
+
+  
+  <div class="cover-feature-card bento-highlight-card" data-target="#quiz-1" onclick="enterApp('#quiz-1')" role="button" tabindex="0" title="Làm bài ngay: 3.500 Câu Trắc Nghiệm JLPT">
+  <span class="bento-hanko-stamp" aria-hidden="true">特訓</span>
+
+  
+  <div class="neo-medallion-stage" aria-hidden="true">
+  <svg class="neo-medallion-svg" viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+  
+  <circle cx="12" cy="11.5" r="9" stroke="#e5c178" stroke-width="1.5"></circle>
+  <circle cx="12" cy="11.5" r="7" stroke="#e11d48" stroke-width="1.5"></circle>
+  
+  <path d="M7 7.5c2.5-.8 7.5-.8 10 0" stroke="#e5c178" stroke-width="1.5"></path>
+  <line x1="7.8" y1="9.5" x2="16.2" y2="9.5" stroke="#e5c178" stroke-width="1.5"></line>
+  <line x1="12" y1="7.8" x2="12" y2="9.5" stroke="#e11d48" stroke-width="1.5"></line>
+  <line x1="9.2" y1="9.5" x2="9.2" y2="15.5" stroke="#e5c178" stroke-width="1.5"></line>
+  <line x1="14.8" y1="9.5" x2="14.8" y2="15.5" stroke="#e5c178" stroke-width="1.5"></line>
+  <line x1="8.2" y1="15.5" x2="10.2" y2="15.5" stroke="#e11d48" stroke-width="1.5"></line>
+  <line x1="13.8" y1="15.5" x2="15.8" y2="15.5" stroke="#e11d48" stroke-width="1.5"></line>
+  
+  <polygon points="12,18 12.6,19.2 13.8,19.2 12.9,19.9 13.2,21 12,20.3 10.8,21 11.1,19.9 10.2,19.2 11.4,19.2" stroke="#e5c178" stroke-width="1.5" fill="none"></polygon>
+  <polygon points="7.5,18.5 7.9,19.4 8.8,19.4 8.1,20 8.3,20.8 7.5,20.3 6.7,20.8 6.9,20 6.2,19.4 7.1,19.4" stroke="#e11d48" stroke-width="1.5" fill="none"></polygon>
+  <polygon points="16.5,18.5 16.9,19.4 17.8,19.4 17.1,20 17.3,20.8 16.5,20.3 15.7,20.8 15.9,20 15.2,19.4 16.1,19.4" stroke="#e11d48" stroke-width="1.5" fill="none"></polygon>
+  </svg>
+  </div>
+
+  <div class="feature-stat-box accent-amber neo-sr-stat">
+  <span class="stat-num">3.500</span>
+  <span class="stat-unit">CÂU HỎI</span>
+  </div>
+
+  <div class="feature-info neo-highlight-info">
+  <span class="bento-sub-badge badge-amber">PHẢN XẠ JLPT</span>
+  <h3 class="feature-title">3.500 Câu<br>Trắc Nghiệm<br>JLPT</h3>
+  <span class="bento-card-meta"></span>
+  </div>
+
+  <svg class="feature-card-arrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+  <path d="M9 18l6-6-6-6"></path>
+  </svg>
+  </div>
+
+  
+  <div class="cover-feature-card bento-vertical-card bento-accent-amber" data-target="#radicals-1" onclick="enterApp('#radicals-1')" role="button" tabindex="0" title="Vào tra cứu ngay: 191 Bộ Thủ Kanji">
+  <span class="bento-hanko-stamp" aria-hidden="true">部首</span>
+  <div class="neo-card-illust" aria-hidden="true">
+  <svg class="neo-illust-svg bento-emblem-svg" viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+  
+  <path d="M4 3.5l1 .5M3.5 5.5l1.2 .5M3.5 8l1.5-1" stroke="#e11d48" stroke-width="1.5"></path>
+  <path d="M6.5 3.5h3M8 2.5v2M6.5 5.5h3v2.5h-3zM6.5 7h3" stroke="#e5c178" stroke-width="1.5"></path>
+  <path d="M6.5 9.5v.8M4.5 10.3h4M4.5 10.3v1M8.5 10.3v1" stroke="#e11d48" stroke-width="1.5"></path>
+  <path d="M5 12h3l-1.5 1.5h1.5v1.2c0 .4-.3.6-.6.6M4 13.5h5" stroke="#e5c178" stroke-width="1.5"></path>
+  
+  <line x1="11" y1="13" x2="21" y2="3" stroke="#e5c178" stroke-width="1.5"></line>
+  <line x1="10" y1="12" x2="12" y2="14" stroke="#e11d48" stroke-width="1.5"></line>
+  <path d="M11 13c-1.5 2.5-3.5 4.5-6.5 6.5 1.5-3 3.5-5 6.5-6.5z" stroke="#e5c178" stroke-width="1.5"></path>
+  
+  <path d="M4.5 19.5c2.5-1 5 .5 8-.5" stroke="#e11d48" stroke-width="1.5"></path>
+  </svg>
+  </div>
+  <div class="feature-stat-box accent-purple neo-sr-stat">
+  <span class="stat-num">191</span>
+  <span class="stat-unit">BỘ THỦ</span>
+  </div>
+  <div class="feature-info neo-vertical-info">
+  <h3 class="feature-title">191 Bộ Thủ<br>Kanji</h3>
+  <span class="bento-card-meta"></span>
+  </div>
+  <svg class="feature-card-arrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+  <path d="M9 18l6-6-6-6"></path>
+  </svg>
+  </div>
+
+  
+  <div class="cover-feature-card bento-vertical-card bento-accent-sakura" data-target="#kaiwa-1" onclick="enterApp('#kaiwa-1')" role="button" tabindex="0" title="Vào luyện ngay: 50 Bài Hội Thoại &amp; 練習C">
+  <span class="bento-hanko-stamp" aria-hidden="true">会話</span>
+  <div class="neo-card-illust" aria-hidden="true">
+  <svg class="neo-illust-svg bento-emblem-svg" viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+  <line x1="4" y1="10" x2="4" y2="14" stroke="#e5c178" stroke-width="1.5"></line>
+  <line x1="6" y1="8" x2="6" y2="16" stroke="#e5c178" stroke-width="1.5"></line>
+  <line x1="8" y1="6" x2="8" y2="18" stroke="#e11d48" stroke-width="1.5"></line>
+  <line x1="10" y1="4" x2="10" y2="20" stroke="#e5c178" stroke-width="1.5"></line>
+  <line x1="12" y1="2" x2="12" y2="22" stroke="#e11d48" stroke-width="1.5"></line>
+  <line x1="14" y1="4" x2="14" y2="20" stroke="#e5c178" stroke-width="1.5"></line>
+  <line x1="16" y1="6" x2="16" y2="18" stroke="#e11d48" stroke-width="1.5"></line>
+  <line x1="18" y1="8" x2="18" y2="16" stroke="#e5c178" stroke-width="1.5"></line>
+  <line x1="20" y1="10" x2="20" y2="14" stroke="#e5c178" stroke-width="1.5"></line>
+  </svg>
+  </div>
+  <div class="feature-stat-box accent-sky neo-sr-stat">
+  <span class="stat-num">50</span>
+  <span class="stat-unit">HỘI THOẠI</span>
+  </div>
+  <div class="feature-info neo-vertical-info">
+  <h3 class="feature-title">Hội Thoại</h3>
+  <span class="bento-card-meta"></span>
+  </div>
+  <svg class="feature-card-arrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+  <path d="M9 18l6-6-6-6"></path>
+  </svg>
+  </div>
+
+  
+  <div class="cover-feature-card bento-vertical-card bento-accent-rose" data-target="#exam" onclick="enterApp('#exam')" role="button" tabindex="0" title="Vào thi ngay: 50 Đề Thi JLPT N5 &amp; N4">
+  <span class="bento-hanko-stamp" aria-hidden="true">試験</span>
+  <div class="neo-card-illust" aria-hidden="true">
+  <svg class="neo-illust-svg bento-emblem-svg" viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+  
+  <path d="M12 2.5 C6.5 2.5 4 6 4 13 C4 18.5 7.5 21.5 12 21.5 C16.5 21.5 20 18.5 20 13 C20 6 17.5 2.5 12 2.5 Z" stroke="#e11d48" stroke-width="1.5"></path>
+  
+  <path d="M8 8.5 C8 6.5 9.8 5 12 5 C14.2 5 16 6.5 16 8.5 C16 11 14.2 12.5 12 12.5 C9.8 12.5 8 11 8 8.5 Z" stroke="#e5c178" stroke-width="1.5"></path>
+  
+  <path d="M8.8 7 C9.5 6.5 10.3 6.6 10.8 7.2" stroke="#e5c178" stroke-width="1.5"></path>
+  <path d="M15.2 7 C14.5 6.5 13.7 6.6 13.2 7.2" stroke="#e5c178" stroke-width="1.5"></path>
+  <circle cx="10" cy="8.5" r="1.2" stroke="#e5c178" stroke-width="1.5"></circle>
+  <circle cx="14" cy="8.5" r="1.2" stroke="#e5c178" stroke-width="1.5"></circle>
+  
+  <path d="M9.5 11 C10.8 11.8 13.2 11.8 14.5 11" stroke="#e5c178" stroke-width="1.5"></path>
+  
+  <path d="M6.5 15.5 C6 17 6 18 6.5 19.5" stroke="#e5c178" stroke-width="1.5"></path>
+  <path d="M17.5 15.5 C18 17 18 18 17.5 19.5" stroke="#e5c178" stroke-width="1.5"></path>
+  <rect x="9.5" y="15.5" width="5" height="4.5" rx="0.5" stroke="#e5c178" stroke-width="1.5"></rect>
+  <line x1="9.5" y1="17.75" x2="14.5" y2="17.75" stroke="#e5c178" stroke-width="1.5"></line>
+  </svg>
+  </div>
+  <div class="feature-stat-box accent-sakura neo-sr-stat">
+  <span class="stat-num">50</span>
+  <span class="stat-unit">ĐỀ THI</span>
+  </div>
+  <div class="feature-info neo-vertical-info">
+  <h3 class="feature-title">Luyện Thi<br>JLPT</h3>
+  <span class="bento-card-meta"></span>
+  </div>
+  <svg class="feature-card-arrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+  <path d="M9 18l6-6-6-6"></path>
+  </svg>
+  </div>
+
+  
+  <div class="cover-feature-card bento-vertical-card bento-mini-card bento-accent-emerald" data-target="#dokkai-1" onclick="enterApp('#dokkai-1')" role="button" tabindex="0" title="Vào luyện ngay: 50 Bài Đọc Hiểu Dokkai">
+  <span class="bento-hanko-stamp" aria-hidden="true">読解</span>
+  <div class="neo-card-illust" aria-hidden="true">
+  <svg class="neo-illust-svg bento-emblem-svg" viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+  
+  <path d="M12 19 C8 17.5 4 17.5 2 19 V6 C4 4.5 8 4.5 12 6 Z" stroke="#e5c178" stroke-width="1.5"></path>
+  <path d="M12 19 C16 17.5 20 17.5 22 19 V6 C20 4.5 16 4.5 12 6 Z" stroke="#e5c178" stroke-width="1.5"></path>
+  
+  <line x1="4.5" y1="9" x2="9.5" y2="9" stroke="#e5c178" stroke-width="1.5"></line>
+  <line x1="4.5" y1="12" x2="9.5" y2="12" stroke="#e5c178" stroke-width="1.5"></line>
+  <line x1="4.5" y1="15" x2="8" y2="15" stroke="#e11d48" stroke-width="1.5"></line>
+  <line x1="14.5" y1="9" x2="19.5" y2="9" stroke="#e5c178" stroke-width="1.5"></line>
+  <line x1="14.5" y1="12" x2="19.5" y2="12" stroke="#e5c178" stroke-width="1.5"></line>
+  <line x1="14.5" y1="15" x2="19.5" y2="15" stroke="#e5c178" stroke-width="1.5"></line>
+  </svg>
+  </div>
+  <div class="feature-stat-box accent-emerald neo-sr-stat">
+  <span class="stat-num">50</span>
+  <span class="stat-unit">BÀI ĐỌC</span>
+  </div>
+  <div class="feature-info neo-vertical-info">
+  <h3 class="feature-title">Đọc Hiểu Dokkai</h3>
+  <span class="bento-card-meta"></span>
+  </div>
+  <svg class="feature-card-arrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+  <path d="M9 18l6-6-6-6"></path>
+  </svg>
+  </div>
+
+  
+  <div class="cover-feature-card bento-vertical-card bento-mini-card bento-accent-purple" data-target="#kanji-1" onclick="enterApp('#kanji-1')" role="button" tabindex="0" title="Vào xem ngay: Mẹo Nhớ &amp; Flashcard Kanji 50 Bài">
+  <span class="bento-hanko-stamp" aria-hidden="true">漢字</span>
+  <div class="neo-card-illust" aria-hidden="true">
+  <svg class="neo-illust-svg bento-emblem-svg" viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+  
+  <rect x="3" y="3" width="18" height="18" rx="2.5" stroke="#e5c178" stroke-width="1.5"></rect>
+  <line x1="9" y1="3" x2="9" y2="21" stroke="#e5c178" stroke-width="1.5"></line>
+  <line x1="15" y1="3" x2="15" y2="21" stroke="#e5c178" stroke-width="1.5"></line>
+  <line x1="3" y1="9" x2="21" y2="9" stroke="#e5c178" stroke-width="1.5"></line>
+  <line x1="3" y1="15" x2="21" y2="15" stroke="#e5c178" stroke-width="1.5"></line>
+  
+  <path d="M4.5 5.5h3M6 4.5v3M5 7c.5 1 2 1 2.5 0" stroke="#e11d48" stroke-width="1.5"></path>
+  <path d="M10.5 5h2c.8 0 .8 1.2 0 1.5l-1.5 1.5M13.5 5l.5 1" stroke="#e5c178" stroke-width="1.5"></path>
+  <path d="M17 4.5v3.5c0-1.5 2.5-1.5 2.5 0s-1 1.5-2 1.5" stroke="#e5c178" stroke-width="1.5"></path>
+  <path d="M11 10.5v3M10.5 11.5h3l-2 2h1.5" stroke="#e11d48" stroke-width="1.5"></path>
+  <path d="M10.5 18.5l1.5-1.5 2 1.5" stroke="#e5c178" stroke-width="1.5"></path>
+  </svg>
+  </div>
+  <div class="feature-stat-box accent-amber neo-sr-stat">
+  <span class="stat-num">50</span>
+  <span class="stat-unit">KANJI</span>
+  </div>
+  <div class="feature-info neo-vertical-info">
+  <h3 class="feature-title">Flashcard Kanji</h3>
+  <span class="bento-card-meta"></span>
+  </div>
+  <svg class="feature-card-arrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+  <path d="M9 18l6-6-6-6"></path>
+  </svg>
+  </div>
+
+  
+  <div class="cover-feature-card bento-vertical-card bento-mini-card bento-accent-indigo" data-target="#mazii-dict" onclick="enterApp('#mazii-dict')" role="button" tabindex="0" title="Tra cứu trực tiếp Từ vựng &amp; Chữ Hán có bảng viết tay AI">
+  <span class="bento-hanko-stamp" aria-hidden="true">辞書</span>
+  <div class="neo-card-illust" aria-hidden="true">
+  <svg class="neo-illust-svg bento-emblem-svg" viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+  
+  <path d="M2 19c3-1.5 6-1.5 9 0V7c-3-1.5-6-1.5-9 0z" stroke="#e5c178" stroke-width="1.5"></path>
+  <path d="M22 19c-3-1.5-6-1.5-9 0V7c3-1.5 6-1.5 9 0z" stroke="#e5c178" stroke-width="1.5"></path>
+  
+  <line x1="12" y1="10" x2="21" y2="3" stroke="#6366f1" stroke-width="1.5"></line>
+  <line x1="11" y1="9" x2="13" y2="11" stroke="#e5c178" stroke-width="1.5"></line>
+  <path d="M12 10c-1.5 2.5-3.5 4.5-6 6 1.5-2.5 3.5-4.5 6-6z" stroke="#6366f1" stroke-width="1.5"></path>
+  </svg>
+  </div>
+  <div class="feature-stat-box accent-indigo neo-sr-stat">
+  <span class="stat-num">
+  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+  <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path>
+  <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path>
+  </svg>
+  </span>
+  <span class="stat-unit">TỪ ĐIỂN</span>
+  </div>
+  <div class="feature-info neo-vertical-info">
+  <h3 class="feature-title">Từ Điển &amp; Viết Tay</h3>
+  <span class="bento-card-meta"></span>
+  </div>
+  <svg class="feature-card-arrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+  <path d="M9 18l6-6-6-6"></path>
+  </svg>
+  </div>
+  </div>
+  </div>
+
+  
+  <div class="cover-vertical-kanji cover-kanji-right">
+  <div class="cover-kanji-card" onclick="speakCoverQuote('初心忘るべからず', this, event)" role="button" tabindex="0" title="Chạm để nghe phát âm: Chớ quên tâm niệm thuở ban đầu">
+  <span class="kanji-vertical-text">初心忘るべからず</span>
+  <span class="cover-kanji-audio-btn" aria-label="Nghe câu châm ngôn">
+  <svg class="voice-icon-svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+  <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+  <path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+  <path d="M19.07 4.93a10 10 0 0 1 0 14.14"></path>
+  </svg>
+  </span>
+  <div class="cover-hanko-seal">邁進</div>
+  </div>
+  </div>
+  </div>
   </section>
 
-  <!-- 1. THANH HEADER CỐ ĐỊNH TRÊN CÙNG -->
+  
   <header class="app-header">
-    <div class="header-left">
-      <button id="menu-toggle-btn" class="menu-toggle-btn" aria-label="Đóng mở menu" aria-expanded="false" title="Mở menu bài học (Ctrl + B)">
-        <svg class="menu-icon-svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-          <line x1="3" y1="6" x2="21" y2="6"></line>
-          <line x1="3" y1="12" x2="15" y2="12"></line>
-          <line x1="3" y1="18" x2="21" y2="18"></line>
-        </svg>
-        <span class="menu-btn-label">Mục lục</span>
-      </button>
-
-      <button id="btn-return-home" class="header-action-btn btn-return-home" onclick="returnToCoverPage()" aria-label="Về trang chủ giới thiệu" title="Về trang chủ (Trang bìa giới thiệu)">
-        <svg class="home-icon-svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-          <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
-          <polyline points="9 22 9 12 15 12 15 22"></polyline>
-        </svg>
-      </button>
-
-      <!-- Thanh tiến độ tổng thể khóa học -->
-      <div class="header-progress-wrap" id="header-progress-wrap" title="Tiến độ hoàn thành khóa học">
-        <span class="header-goal-subtitle" id="header-goal-subtitle">Tiến độ: 0/150 mục (0%)</span>
-        <div class="header-progress-bar">
-          <div class="header-progress-fill" id="header-progress-fill" style="width: 0%"></div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Thanh tìm kiếm nhanh Ctrl + K -->
-    <div class="header-search-container">
-      <div class="search-box-wrapper">
-        <svg class="search-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-          <circle cx="11" cy="11" r="8"></circle>
-          <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-        </svg>
-        <input 
-          type="text" 
-          id="quick-search-input" 
-          class="quick-search-input" 
-          placeholder="Tìm từ vựng, ngữ pháp, kanji, bài học..." 
-          autocomplete="off" 
-          spellcheck="false"
-        >
-        <div class="search-shortcut">
-          <kbd>Ctrl</kbd><kbd>K</kbd>
-        </div>
-      </div>
-
-      <!-- Dropdown hiển thị kết quả tìm kiếm tức thì -->
-      <div id="search-dropdown" class="search-dropdown">
-        <div class="search-dropdown-header">
-          <span id="search-count-label">Nhập từ khóa để tra cứu</span>
-          <span class="search-hint-esc">ESC để đóng</span>
-        </div>
-        <div id="search-results-list" class="search-results-list"></div>
-      </div>
-    </div>
-
-    <!-- Nhóm nút chức năng phía bên phải Header -->
-    <div class="header-right">
-      <!-- Nút Tra Từ Điển (Chỉ Icon Tinh Tế) -->
-      <button id="btn-open-mazii-dict" class="header-action-btn mazii-header-btn" onclick="switchModule('mazii-dict')" aria-label="Mở Từ Điển &amp; Viết Tay" title="Tra cứu Từ vựng, Chữ Hán &amp; Bảng viết tay">
-        <span class="mazii-badge-icon" aria-hidden="true">
-          <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path>
-            <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path>
-          </svg>
-        </span>
-      </button>
-
-      <!-- Nút Bật/Tắt Furigana (Ruby) -->
-      <button id="btn-toggle-furigana" class="header-action-btn" aria-label="Bật/Tắt Furigana" title="Bật / Ẩn phiên âm Furigana trên chữ Hán (Phím F)">
-        <span class="btn-ruby-badge">あ/漢</span>
-      </button>
-
-      <!-- Chuyển giao diện Sáng / Tối -->
-      <button id="theme-toggle-btn" class="header-action-btn theme-toggle-btn" aria-label="Đổi giao diện Sáng / Tối" title="Đổi giao diện Sáng / Tối">
-        <span class="theme-icon light-icon" title="Chuyển sang giao diện Sáng">
-          <svg class="theme-svg sun-svg" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-            <circle cx="12" cy="12" r="5"></circle>
-            <line x1="12" y1="12" x2="12" y2="3"></line>
-            <line x1="12" y1="21" x2="12" y2="23"></line>
-            <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
-            <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
-            <line x1="1" y1="12" x2="3" y2="12"></line>
-            <line x1="21" y1="12" x2="23" y2="12"></line>
-            <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
-            <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
-          </svg>
-        </span>
-        <span class="theme-icon dark-icon" title="Chuyển sang giao diện Tối">
-          <svg class="theme-svg moon-svg" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
-          </svg>
-        </span>
-      </button>
-    </div>
-  </header>
-
-  <!-- Lớp phủ cho màn hình nhỏ khi mở sidebar mobile -->
-  <div id="sidebar-overlay" class="sidebar-overlay"></div>
-
-  <!-- 2. BỐ CỤC CHÍNH (LAYOUT 2 CỘT HIỆN ĐẠI) -->
-  <div class="app-layout">
-    <!-- Cột bên trái: Sidebar chứa toàn bộ danh mục bài học -->
-    <aside id="sidebar" class="sidebar collapsed">
-      <!-- Header hiển thị riêng trên giao diện điện thoại của Sidebar (Thiết kế tinh tế & tối giản) -->
-      <div class="mobile-sidebar-header">
-        <div class="mobile-sidebar-brand">
-          <span class="brand-badge">日本語</span>
-          <span class="sidebar-heading">Mục lục khóa học</span>
-        </div>
-        <button id="close-sidebar-btn" class="close-sidebar-btn" onclick="closeMobileSidebar()" aria-label="Đóng menu bài học" title="Đóng menu">
-          <svg class="close-icon-svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-            <line x1="18" y1="6" x2="6" y2="18"></line>
-            <line x1="6" y1="6" x2="18" y2="18"></line>
-          </svg>
-        </button>
-      </div>
-
-      <!-- Vùng chứa các nhóm mục lục được render tự động qua JS từ Database -->
-      <nav id="sidebar-menu" class="sidebar-menu" aria-label="Mục lục khóa học">
-        <!-- Render tự động bởi app.js -->
-      </nav>
-
-      <!-- Sidebar Footer: Bánh răng cài đặt & Gợi ý phím tắt -->
-      <div class="sidebar-footer">
-        <!-- Bánh răng cài đặt & tiện ích -->
-        <div class="sidebar-gear-wrap" id="sidebar-bottom-actions">
-          <button id="btn-sidebar-gear" class="sidebar-gear-trigger" aria-label="Cài đặt &amp; Tiện ích" aria-haspopup="true" aria-expanded="false" title="Cài đặt hệ thống &amp; Tiện ích (Làm mới, Âm thanh, Toàn màn hình, Thiết bị)">
-            <svg class="gear-icon-svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <circle cx="12" cy="12" r="3"></circle>
-              <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
-            </svg>
-          </button>
-
-          <!-- Popup menu nổi chứa 4 chức năng: Làm mới, Âm thanh, Toàn màn hình, Thiết bị & Hiệu năng -->
-          <div id="sidebar-gear-popup" class="sidebar-gear-popup" role="menu" aria-label="Menu cài đặt &amp; tiện ích" aria-hidden="true">
-            <!-- 1. Làm mới / Reset -->
-            <button id="btn-reset-progress" class="sidebar-action-item gear-menu-item" role="menuitem" aria-label="Làm mới / Đặt lại tiến độ" title="Tải lại bài học hoặc đặt lại tiến độ / trạng thái tương tác trên trang">
-              <span class="sidebar-action-icon">
-                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                  <polyline points="23 4 23 10 17 10"></polyline>
-                  <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path>
-                </svg>
-              </span>
-              <span class="sidebar-action-label">Làm mới / Reset</span>
-            </button>
-
-            <!-- 2. Âm thanh / Đọc phát âm -->
-            <button id="voice-settings-btn" class="sidebar-action-item voice-settings-btn gear-menu-item" role="menuitem" aria-label="Âm thanh / Đọc phát âm" title="Bật hoặc tắt âm thanh phát âm mẫu, điều chỉnh tốc độ &amp; cao độ giọng">
-              <span class="sidebar-action-icon">
-                <svg class="voice-icon-svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-                  <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
-                  <path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path>
-                  <path d="M19.07 4.93a10 10 0 0 1 0 14.14"></path>
-                </svg>
-              </span>
-              <span class="sidebar-action-label">Âm thanh / Phát âm</span>
-            </button>
-
-            <!-- 3. Toàn màn hình / Thu gọn giao diện -->
-            <button id="btn-toggle-fullscreen" class="sidebar-action-item gear-menu-item" role="menuitem" aria-label="Toàn màn hình / Thu gọn" title="Chuyển đổi chế độ xem tập trung (Focus mode) hoặc bật/tắt toàn màn hình">
-              <span class="sidebar-action-icon font-symbol">▯</span>
-              <span class="sidebar-action-label">Toàn màn hình / Focus</span>
-            </button>
-
-            <!-- 4. Cá nhân hóa thiết bị & Hiệu năng -->
-            <button id="btn-device-settings" class="sidebar-action-item device-settings-btn gear-menu-item" role="menuitem" aria-label="Cá nhân hóa thiết bị &amp; Hiệu năng" title="Cá nhân hóa thiết bị, cỡ chữ &amp; Tiết kiệm pin / Làm mát máy">
-              <span class="sidebar-action-icon">
-                <svg class="device-icon-svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-                  <rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect>
-                  <line x1="12" y1="18" x2="12.01" y2="18"></line>
-                </svg>
-              </span>
-              <span class="sidebar-action-label">Thiết bị &amp; Hiệu năng</span>
-            </button>
-          </div>
-        </div>
-
-        <span class="shortcut-tip">Phím tắt: <strong>Ctrl + K</strong> tìm nhanh • <strong>F</strong> ẩn/hiện Furigana</span>
-      </div>
-    </aside>
-
-    <!-- Cột bên phải: Main Content cuộn được chứa chi tiết bài học / Đề thi -->
-    <main id="main-content" class="main-content">
-      <!-- Vùng chứa nội dung chi tiết được JS tự động nạp vào -->
-      <div id="lesson-content" class="lesson-content">
-        <!-- Render tự động bởi app.js qua hàm renderContent(id) -->
-      </div>
-    </main>
-  </div>
-
-  <!-- THANH ĐIỀU HƯỚNG DƯỚI CÙNG CHO ĐIỆN THOẠI (MOBILE BOTTOM NAVIGATION BAR) -->
-  <nav id="mobile-bottom-nav" class="mobile-bottom-nav" data-active-index="0" aria-label="Điều hướng nhanh trên điện thoại">
-    <!-- Con trượt viên thuốc lướt mượt mà giữa các tab (Sliding Pill Indicator) -->
-    <span class="mobile-nav-slider-pill" id="mobile-nav-slider-pill" aria-hidden="true"></span>
-    <button type="button" class="mobile-nav-item active" data-nav="lesson" onclick="handleMobileBottomNav('lesson')">
-      <span class="mobile-nav-icon-wrap">
-        <svg class="mobile-nav-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
-          <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
-        </svg>
-      </span>
-      <span class="mobile-nav-label" id="mnav-label-lesson">Bài Học</span>
-    </button>
-    <button type="button" class="mobile-nav-item" data-nav="kanji" onclick="handleMobileBottomNav('kanji')">
-      <span class="mobile-nav-icon-wrap">
-        <svg class="mobile-nav-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M4 7h16"></path>
-          <path d="M12 2v5"></path>
-          <path d="M6 12h12"></path>
-          <path d="M12 12v9c0 .8-.5 1.5-1.5 1.5"></path>
-          <path d="M16 15l4 6"></path>
-        </svg>
-      </span>
-      <span class="mobile-nav-label" id="mnav-label-kanji">Kanji</span>
-    </button>
-    <button type="button" class="mobile-nav-item" data-nav="quiz" onclick="handleMobileBottomNav('quiz')">
-      <span class="mobile-nav-icon-wrap">
-        <svg class="mobile-nav-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M9 11l3 3L22 4"></path>
-          <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path>
-        </svg>
-      </span>
-      <span class="mobile-nav-label" id="mnav-label-quiz">Bài Tập</span>
-    </button>
-    <button type="button" class="mobile-nav-item" data-nav="dokkai" onclick="handleMobileBottomNav('dokkai')">
-      <span class="mobile-nav-icon-wrap">
-        <svg class="mobile-nav-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path>
-          <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path>
-        </svg>
-      </span>
-      <span class="mobile-nav-label" id="mnav-label-dokkai">Đọc Hiểu</span>
-    </button>
-    <button type="button" class="mobile-nav-item" data-nav="exam" onclick="handleMobileBottomNav('exam')">
-      <span class="mobile-nav-icon-wrap">
-        <svg class="mobile-nav-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M2 5c4-1 16-1 20 0"></path>
-          <line x1="4" y1="8.5" x2="20" y2="8.5"></line>
-          <line x1="7" y1="8.5" x2="7" y2="21"></line>
-          <line x1="17" y1="8.5" x2="17" y2="21"></line>
-          <line x1="12" y1="5.5" x2="12" y2="8.5"></line>
-        </svg>
-      </span>
-      <span class="mobile-nav-label" id="mnav-label-exam">Thi JLPT</span>
-    </button>
-  </nav>
-
-  <!-- Modal Điều chỉnh Giọng đọc -->
-  <div id="voice-settings-modal" class="voice-modal-backdrop" aria-hidden="true">
-    <div class="voice-modal-card">
-      <div class="voice-modal-header">
-        <div class="voice-modal-title-wrap">
-          <h3 class="voice-modal-title">Điều Chỉnh Giọng Đọc Tiếng Nhật</h3>
-        </div>
-        <button id="close-voice-modal-btn" class="voice-modal-close" aria-label="Đóng" title="Đóng">&times;</button>
-      </div>
-      
-      <div class="voice-modal-body">
-        <div class="voice-slider-group">
-          <div class="voice-slider-item">
-            <div class="slider-header">
-              <label for="voice-speed-slider">Tốc độ phát âm:</label>
-              <strong id="voice-speed-val">0.92x</strong>
-            </div>
-            <input type="range" id="voice-speed-slider" min="0.75" max="1.25" step="0.05" value="0.92">
-          </div>
-          <div class="voice-slider-item">
-            <div class="slider-header">
-              <label for="voice-pitch-slider">Cao độ giọng:</label>
-              <strong id="voice-pitch-val">1.04x</strong>
-            </div>
-            <input type="range" id="voice-pitch-slider" min="0.85" max="1.20" step="0.02" value="1.04">
-          </div>
-        </div>
-      </div>
-
-      <div class="voice-modal-footer">
-        <button id="save-voice-modal-btn" class="btn-save-voice" type="button">Lưu Cài Đặt</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- Modal Xác Nhận Hiện Đại (Thay thế hộp thoại hệ thống trên mọi trình duyệt & điện thoại) -->
-  <div id="app-confirm-modal" class="voice-modal-backdrop confirm-modal-backdrop" aria-hidden="true">
-    <div class="voice-modal-card confirm-modal-card">
-      <div class="voice-modal-header">
-        <h3 id="confirm-modal-title" class="voice-modal-title">Xác nhận thao tác</h3>
-        <button id="confirm-modal-close" class="voice-modal-close" aria-label="Đóng">&times;</button>
-      </div>
-      <div class="voice-modal-body">
-        <p id="confirm-modal-message" class="confirm-modal-message"></p>
-      </div>
-      <div class="voice-modal-footer confirm-modal-actions">
-        <button id="confirm-modal-cancel" class="btn-confirm-cancel" type="button">Hủy bỏ</button>
-        <button id="confirm-modal-ok" class="btn-save-voice btn-confirm-ok" type="button">Đồng ý</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- Modal Cá Nhân Hóa Thiết Bị & Tiết Kiệm Pin / Làm Mát (Thermal Saver) -->
-  <div id="device-settings-modal" class="voice-modal-backdrop" aria-hidden="true">
-    <div class="voice-modal-card device-modal-card">
-      <div class="voice-modal-header">
-        <div class="voice-modal-title-wrap">
-          <h3 class="voice-modal-title">Cá Nhân Hóa Thiết Bị &amp; Hiệu Năng</h3>
-          <span class="device-modal-badge" id="detected-device-badge">Đang nhận diện...</span>
-        </div>
-        <button id="close-device-modal-btn" class="voice-modal-close" aria-label="Đóng" title="Đóng">&times;</button>
-      </div>
-
-      <div class="voice-modal-body">
-        <!-- 1. Chế độ bố cục thiết bị -->
-        <div class="device-setting-group">
-          <div class="device-setting-header">
-            <span class="device-setting-title">Chế độ hiển thị thiết bị</span>
-            <span class="device-setting-hint">Tùy biến bố cục cho kích thước màn hình</span>
-          </div>
-          <div class="device-pill-group" id="device-mode-selector">
-            <button type="button" class="device-pill active" data-mode="auto">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;margin-right:4px;" aria-hidden="true"><rect x="2" y="3" width="20" height="14" rx="2"></rect><line x1="8" y1="21" x2="16" y2="21"></line><line x1="12" y1="17" x2="12" y2="21"></line></svg>Tự động
-            </button>
-            <button type="button" class="device-pill" data-mode="mobile">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;margin-right:4px;" aria-hidden="true"><rect x="5" y="2" width="14" height="20" rx="2"></rect><line x1="12" y1="18" x2="12.01" y2="18"></line></svg>Điện thoại
-            </button>
-            <button type="button" class="device-pill" data-mode="tablet">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;margin-right:4px;" aria-hidden="true"><rect x="4" y="2" width="16" height="20" rx="2"></rect><line x1="12" y1="18" x2="12.01" y2="18"></line></svg>Máy tính bảng
-            </button>
-            <button type="button" class="device-pill" data-mode="desktop">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;margin-right:4px;" aria-hidden="true"><rect x="2" y="3" width="20" height="14" rx="2"></rect><line x1="8" y1="21" x2="16" y2="21"></line><line x1="12" y1="17" x2="12" y2="21"></line></svg>Máy tính
-            </button>
-          </div>
-        </div>
-
-        <!-- 2. Kích thước chữ -->
-        <div class="device-setting-group">
-          <div class="device-setting-header">
-            <span class="device-setting-title">Kích thước chữ</span>
-            <span class="device-setting-hint">Tăng cỡ chữ để dễ nhìn chữ Hán &amp; Furigana</span>
-          </div>
-          <div class="device-pill-group" id="device-font-selector">
-            <button type="button" class="device-pill" data-font="small">Nhỏ (92%)</button>
-            <button type="button" class="device-pill active" data-font="normal">Chuẩn (100%)</button>
-            <button type="button" class="device-pill" data-font="large">Lớn (110%)</button>
-            <button type="button" class="device-pill" data-font="xlarge">Rất lớn (120%)</button>
-          </div>
-        </div>
-
-        <!-- 3. Mật độ hiển thị -->
-        <div class="device-setting-group">
-          <div class="device-setting-header">
-            <span class="device-setting-title">Mật độ bố cục</span>
-            <span class="device-setting-hint">Khoảng cách giữa các phần và thẻ bài học</span>
-          </div>
-          <div class="device-pill-group" id="device-density-selector">
-            <button type="button" class="device-pill" data-density="compact">Thu gọn (Nhiều tin)</button>
-            <button type="button" class="device-pill active" data-density="normal">Chuẩn</button>
-            <button type="button" class="device-pill" data-density="comfort">Rộng rãi (Thoải mái)</button>
-          </div>
-        </div>
-
-        <!-- 4. Chế độ làm mát & tiết kiệm pin (Thermal Saver Mode) -->
-        <div class="device-setting-group device-setting-toggle-row">
-          <div class="device-toggle-info">
-            <span class="device-setting-title">
-              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;margin-right:5px;" aria-hidden="true"><line x1="12" y1="2" x2="12" y2="22"></line><line x1="2" y1="12" x2="22" y2="12"></line><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"></line><line x1="19.07" y1="4.93" x2="4.93" y2="19.07"></line></svg>Chế Độ Làm Mát &amp; Tiết Kiệm Pin
-            </span>
-            <span class="device-setting-hint">Tắt làm mờ GPU (backdrop-filter) &amp; khử animation nặng giúp điện thoại không bị nóng khi học lâu</span>
-          </div>
-          <label class="device-switch" aria-label="Bật/Tắt Chế độ làm mát">
-            <input type="checkbox" id="thermal-saver-toggle">
-            <span class="device-slider"></span>
-          </label>
-        </div>
-
-        <!-- 5. Phản hồi xúc giác (Haptic Feedback) -->
-        <div class="device-setting-group device-setting-toggle-row">
-          <div class="device-toggle-info">
-            <span class="device-setting-title">
-              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;margin-right:5px;" aria-hidden="true"><rect x="6" y="2" width="12" height="20" rx="2"></rect><path d="M2 8v8"></path><path d="M22 8v8"></path></svg>Rung Phản Hồi Xúc Giác (Haptic)
-            </span>
-            <span class="device-setting-hint">Rung nhẹ khi chọn đáp án trắc nghiệm hoặc lật thẻ (trên điện thoại hỗ trợ)</span>
-          </div>
-          <label class="device-switch" aria-label="Bật/Tắt Rung phản hồi">
-            <input type="checkbox" id="haptic-toggle" checked>
-            <span class="device-slider"></span>
-          </label>
-        </div>
-      </div>
-
-      <div class="voice-modal-footer">
-        <button id="reset-device-modal-btn" class="btn-confirm-cancel" type="button">Mặc định</button>
-        <button id="save-device-modal-btn" class="btn-save-voice" type="button">Lưu Cài Đặt</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- Honeypot trap cho bot cào trộm (Anti-Scraping Crawler Trap: hoàn toàn ẩn với người dùng) -->
-  <a href="/hidden-crawler-trap/" rel="nofollow" class="sr-only-crawler-trap" aria-hidden="true" tabindex="-1" style="position:absolute;left:-9999px;top:-9999px;opacity:0;pointer-events:none;width:1px;height:1px;overflow:hidden;">Crawl Sitemap Index</a>
-
-  <!-- Hộp thông báo nhanh Toast Notification -->
-  <div id="toast-notification" class="toast-notification"></div>
-
-  <!-- Nút cuộn nhanh lên đầu trang (Back to top) tối ưu cho điện thoại & máy tính -->
-  <button id="back-to-top-btn" class="back-to-top-btn" aria-label="Cuộn lên đầu trang" title="Lên đầu trang">
-    <span class="back-to-top-glow" aria-hidden="true"></span>
-    <svg class="back-to-top-svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-      <path d="M12 19V5"></path>
-      <polyline points="5 12 12 5 19 12"></polyline>
-    </svg>
+  <div class="header-left">
+  
+  <div class="header-nav-pill-group">
+  <button id="menu-toggle-btn" class="menu-toggle-btn" aria-label="Đóng mở menu" aria-expanded="false" title="Mở menu bài học (Ctrl + B)">
+  <svg class="menu-icon-svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+  <line x1="3" y1="6" x2="21" y2="6"></line>
+  <line x1="3" y1="12" x2="15" y2="12"></line>
+  <line x1="3" y1="18" x2="21" y2="18"></line>
+  </svg>
+  <span class="menu-btn-label">Mục lục</span>
   </button>
 
-  <!-- Tầng Dữ liệu & Quy tắc Độc lập (Data & Rules Layer) -->
-  <script src="data/ui_icons.js?v=20261103_02"></script>
-  <script src="data/curriculum_manifest.js?v=20261103_02"></script>
-  <script src="data/exams_manifest.js?v=20261103_02"></script>
-  <script src="data/exam_furigana.js?v=20261103_02"></script>
-  <script src="data/data_normalizer.js?v=20261103_02"></script>
-  <script src="data/audio_prosody_rules.js?v=20261103_02"></script>
-  <script src="data/romaji_kana_map.js?v=20261103_02"></script>
-  <script src="data/kanji_lookalikes.js?v=20261103_02"></script>
+  <button id="btn-return-home" class="header-action-btn btn-return-home" onclick="returnToCoverPage()" aria-label="Về trang chủ giới thiệu" title="Về trang chủ (Trang bìa giới thiệu)">
+  <svg class="home-icon-svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+  <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+  <polyline points="9 22 9 12 15 12 15 22"></polyline>
+  </svg>
+  </button>
+  </div>
+  </div>
 
-  <!-- Các Động cơ Xử lý Độc lập (Core Logic Engines) -->
-  <script src="src/security_engine.js?v=20261103_02"></script>
-  <script src="src/storage_engine.js?v=20261103_02"></script>
-  <script src="src/audio_engine.js?v=20261103_02"></script>
-  <script src="src/quiz_engine.js?v=20261103_02"></script>
-  <script src="src/kanji_engine.js?v=20261103_02"></script>
-  <script src="src/navigation_engine.js?v=20261103_02"></script>
-  <script src="src/dictionary_engine.js?v=20261103_02"></script>
-  <script src="src/exam_engine.js?v=20261103_02"></script>
+  
+  <div class="header-search-container" id="header-search-container">
+  <div class="search-box-wrapper" id="search-box-wrapper">
+  <svg class="search-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+  <circle cx="11" cy="11" r="8"></circle>
+  <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+  </svg>
+  <input 
+  type="text" 
+  id="quick-search-input" 
+  class="quick-search-input" 
+  placeholder="Tìm bài học hoặc tra từ điển..." 
+  autocomplete="off" 
+  spellcheck="false"
+  >
+  <button type="button" id="search-clear-btn" class="search-clear-btn" aria-label="Xóa tìm kiếm" title="Xóa tìm kiếm" style="display:none;">
+  <svg class="search-clear-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+  <line x1="18" y1="6" x2="6" y2="18"></line>
+  <line x1="6" y1="6" x2="18" y2="18"></line>
+  </svg>
+  </button>
+  <button type="button" id="search-voice-btn" class="search-voice-btn" aria-label="Tìm kiếm bằng giọng nói" title="Tra cứu bằng giọng nói (Tiếng Nhật / Tiếng Việt)">
+  <svg class="search-voice-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+  <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path>
+  <path d="M19 10v2a7 7 0 0 1-14 0v-2"></path>
+  <line x1="12" y1="19" x2="12" y2="23"></line>
+  <line x1="8" y1="23" x2="16" y2="23"></line>
+  </svg>
+  </button>
+  </div>
 
-  <!-- Dữ liệu bài học Minna (Khởi tạo tức thì Bài 1 - 5, các bài khác nạp động theo nhu cầu) -->
-  <script src="data/lessons_1_5.js"></script>
-  <!-- File logic JavaScript thuần: Tích hợp Code-Splitting, Lazy Loading & Đồng bộ dữ liệu -->
-  <script src="app.js?v=20261103_02"></script>
+  
+  <div id="search-dropdown" class="search-dropdown">
+  <div class="search-dropdown-quick-tools" id="search-dropdown-quick-tools">
+  <button type="button" class="search-dropdown-hw-btn" id="search-dropdown-hw-btn" title="Mở bảng vẽ nhận diện chữ viết tay Kanji bằng AI">
+  <span class="hw-icon-wrap" aria-hidden="true">
+  <svg class="icon-svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"></path></svg>
+  </span>
+  <span class="hw-text-col">
+  <span class="hw-title">Bảng Viết Tay Chữ Hán (AI Kanji)</span>
+  <span class="hw-sub">Vẽ nét chữ trực tiếp bằng chuột hoặc cảm ứng</span>
+  </span>
+  <span class="hw-badge">Vẽ chữ →</span>
+  </button>
+  </div>
+  <div id="search-results-list" class="search-results-list"></div>
+  </div>
+  </div>
+
+  
+  <div class="header-right">
+  
+  <button id="header-account-btn" class="header-action-btn header-account-btn" onclick="openUserAccountModal()" aria-label="Hồ sơ học viên &amp; Thành tích" title="Hồ sơ học viên, Bảng xếp hạng &amp; Đổi tài khoản">
+  <span class="header-account-avatar" id="header-account-avatar"><svg class="wa-avatar-svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><circle cx="12" cy="8.5" r="3"></circle><path d="M6.5 18c0-3 2.5-5.5 5.5-5.5s5.5 2.5 5.5 5.5"></path></svg></span>
+  <span class="header-account-name" id="header-account-name">Khách</span>
+  <span class="header-account-badge" id="header-account-badge"><span class="header-account-rank-icon"><svg class="wa-rank-icon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 21v-8"></path><path d="M12 13c-3-4-7-3-8 1 3 1 7-1 8-1z"></path><path d="M12 10c3-4 7-3 8 1-3 1-7-1-8-1z"></path></svg></span><span class="header-account-xp-text">0 XP</span></span>
+  </button>
+
+  
+  <div class="header-tools-segmented-group">
+  
+  <button id="btn-open-master-hub" class="header-action-btn master-hub-header-btn" onclick="switchModule('master-hub')" aria-label="Mở Phòng Lab Chia Thể, Sổ Tay &amp; Phân Tích JLPT" title="Phòng Lab Chia Thể, Sổ Tay Cá Nhân, Bảng Lượng Từ &amp; Chuỗi Ngày Học (Master Suite)">
+  <span class="mazii-badge-icon" aria-hidden="true"><svg class="icon-svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M13.5 2.5L5.5 13.5H12L10.5 21.5L18.5 10.5H12L13.5 2.5Z"></path></svg></span>
+  </button>
+
+  
+  <button id="btn-toggle-furigana" class="header-action-btn" aria-label="Bật/Tắt Furigana" title="Bật / Ẩn phiên âm Furigana trên chữ Hán (Phím F)">
+  <span class="btn-ruby-badge">あ/漢</span>
+  </button>
+
+  
+  <button id="theme-toggle-btn" class="header-action-btn theme-toggle-btn" aria-label="Đổi giao diện Sáng / Tối" title="Đổi giao diện Sáng / Tối">
+  <span class="theme-icon light-icon" title="Chuyển sang giao diện Sáng">
+  <svg class="theme-svg sun-svg" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+  <circle cx="12" cy="12" r="4.5"></circle>
+  <line x1="12" y1="2" x2="12" y2="4"></line>
+  <line x1="12" y1="20" x2="12" y2="22"></line>
+  <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+  <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+  <line x1="2" y1="12" x2="4" y2="12"></line>
+  <line x1="20" y1="12" x2="22" y2="12"></line>
+  <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+  <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+  </svg>
+  </span>
+  <span class="theme-icon dark-icon" title="Chuyển sang giao diện Tối">
+  <svg class="theme-svg moon-svg" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+  <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+  </svg>
+  </span>
+  </button>
+  </div>
+  </div>
+
+  
+  <div class="header-progress-wrap header-slim-progress" id="header-progress-wrap" title="Tiến độ hoàn thành khóa học">
+  <span class="header-goal-subtitle header-progress-tooltip" id="header-goal-subtitle">Tiến độ: 0/150 mục (0%)</span>
+  <div class="header-progress-bar">
+  <div class="header-progress-fill" id="header-progress-fill" style="width: 0%"></div>
+  </div>
+  </div>
+  </header>
+
+  
+  <div id="sidebar-overlay" class="sidebar-overlay"></div>
+
+  
+  <div class="app-layout">
+  
+  <aside id="sidebar" class="sidebar collapsed">
+  
+  <div class="mobile-sidebar-header">
+  <div class="mobile-sidebar-brand" onclick="closeMobileSidebar(); returnToCoverPage();" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();closeMobileSidebar();returnToCoverPage();}" role="button" tabindex="0" aria-label="Về trang chủ giới thiệu" title="Về trang chủ (Trang bìa giới thiệu)">
+  <span class="brand-badge">日本語</span>
+  <span class="sidebar-heading">Mục lục • Trang chủ</span>
+  </div>
+  <button id="close-sidebar-btn" class="close-sidebar-btn" onclick="closeMobileSidebar()" aria-label="Đóng menu bài học" title="Đóng menu">
+  <svg class="close-icon-svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+  <line x1="18" y1="6" x2="6" y2="18"></line>
+  <line x1="6" y1="6" x2="18" y2="18"></line>
+  </svg>
+  </button>
+  </div>
+
+  
+  <nav id="sidebar-menu" class="sidebar-menu" aria-label="Mục lục khóa học">
+  
+  </nav>
+
+  
+  <div class="sidebar-footer">
+  
+  <div class="sidebar-gear-wrap" id="sidebar-bottom-actions">
+  <button id="btn-sidebar-gear" class="sidebar-gear-trigger" aria-label="Cài đặt &amp; Tiện ích" aria-haspopup="true" aria-expanded="false" title="Cài đặt hệ thống &amp; Tiện ích (Làm mới, Âm thanh, Toàn màn hình, Thiết bị)">
+  <svg class="gear-icon-svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+  <circle cx="12" cy="12" r="3"></circle>
+  <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+  </svg>
+  </button>
+
+  
+  <div id="sidebar-gear-popup" class="sidebar-gear-popup" role="menu" aria-label="Menu cài đặt &amp; tiện ích" aria-hidden="true">
+  <button id="sidebar-account-btn" class="sidebar-action-item gear-menu-item" role="menuitem" onclick="openUserAccountModal('profile')" aria-label="Tài khoản / Hồ sơ học viên" title="Hồ sơ học viên, Bảng xếp hạng &amp; Đổi tài khoản">
+  <span class="sidebar-action-icon"><svg class="wa-avatar-svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><circle cx="12" cy="8.5" r="3"></circle><path d="M6.5 18c0-3 2.5-5.5 5.5-5.5s5.5 2.5 5.5 5.5"></path></svg></span>
+  <span class="sidebar-action-label" id="sidebar-account-label">Tài khoản &amp; Hồ sơ</span>
+  </button>
+
+  <button id="sidebar-theme-toggle-btn" class="sidebar-action-item gear-menu-item" role="menuitem" onclick="toggleTheme()" aria-label="Đổi giao diện Sáng / Tối" title="Đổi giao diện Sáng / Tối">
+  <span class="sidebar-action-icon"><svg class="theme-svg sun-svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4.5"></circle><line x1="12" y1="2" x2="12" y2="4"></line><line x1="12" y1="20" x2="12" y2="22"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="2" y1="12" x2="4" y2="12"></line><line x1="20" y1="12" x2="22" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg></span>
+  <span class="sidebar-action-label" id="sidebar-theme-label">Giao diện Sáng / Tối</span>
+  </button>
+
+  <button id="sidebar-furigana-toggle-btn" class="sidebar-action-item gear-menu-item" role="menuitem" onclick="toggleFurigana()" aria-label="Bật/Tắt Furigana" title="Bật / Ẩn phiên âm Furigana trên chữ Hán">
+  <span class="sidebar-action-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 19L10 5L16 19"></path><path d="M6.5 14H13.5"></path><path d="M17 9H21"></path><path d="M19 7V17"></path></svg></span>
+  <span class="sidebar-action-label" id="sidebar-furigana-label">Ẩn / Hiện Furigana</span>
+  </button>
+
+  <button id="btn-reset-progress" class="sidebar-action-item gear-menu-item" role="menuitem" aria-label="Làm mới / Đặt lại tiến độ" title="Tải lại bài học hoặc đặt lại tiến độ / trạng thái tương tác trên trang">
+  <span class="sidebar-action-icon">
+  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+  <polyline points="22 4 22 10 16 10"></polyline>
+  <path d="M20.49 15a9 9 0 1 1-2.12-9.36L22 10"></path>
+  </svg>
+  </span>
+  <span class="sidebar-action-label">Làm mới / Reset</span>
+  </button>
+
+  
+  <button id="voice-settings-btn" class="sidebar-action-item voice-settings-btn gear-menu-item" role="menuitem" aria-label="Âm thanh / Đọc phát âm" title="Bật hoặc tắt âm thanh phát âm mẫu, điều chỉnh tốc độ &amp; cao độ giọng">
+  <span class="sidebar-action-icon">
+  <svg class="voice-icon-svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+  <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+  <path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+  <path d="M19.07 4.93a10 10 0 0 1 0 14.14"></path>
+  </svg>
+  </span>
+  <span class="sidebar-action-label">Âm thanh / Phát âm</span>
+  </button>
+
+  
+  <button id="btn-toggle-fullscreen" class="sidebar-action-item gear-menu-item" role="menuitem" aria-label="Toàn màn hình / Thu gọn" title="Chuyển đổi chế độ xem tập trung (Focus mode) hoặc bật/tắt toàn màn hình">
+  <span class="sidebar-action-icon"><svg class="icon-svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"></path></svg></span>
+  <span class="sidebar-action-label">Toàn màn hình / Focus</span>
+  </button>
+
+  
+  <button id="btn-device-settings" class="sidebar-action-item device-settings-btn gear-menu-item" role="menuitem" aria-label="Cá nhân hóa thiết bị &amp; Hiệu năng" title="Cá nhân hóa thiết bị, cỡ chữ &amp; Tiết kiệm pin / Làm mát máy">
+  <span class="sidebar-action-icon">
+  <svg class="device-icon-svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+  <rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect>
+  <line x1="12" y1="18" x2="12.01" y2="18"></line>
+  </svg>
+  </span>
+  <span class="sidebar-action-label">Thiết bị &amp; Hiệu năng</span>
+  </button>
+  </div>
+  </div>
+
+  <span class="shortcut-tip">Phím tắt: <strong>Ctrl + K</strong> tìm nhanh • <strong>F</strong> ẩn/hiện Furigana</span>
+  </div>
+  </aside>
+
+  
+  <main id="main-content" class="main-content">
+  
+  <div id="lesson-content" class="lesson-content">
+  
+  </div>
+  </main>
+  </div>
+
+  
+  <nav id="mobile-bottom-nav" class="mobile-bottom-nav" data-active-index="0" aria-label="Điều hướng nhanh trên điện thoại">
+  
+  <span class="mobile-nav-slider-pill" id="mobile-nav-slider-pill" aria-hidden="true"></span>
+  <button type="button" class="mobile-nav-item active" data-nav="lesson" onclick="handleMobileBottomNav('lesson')">
+  <span class="mobile-nav-icon-wrap">
+  <svg class="mobile-nav-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 6.2C9.8 4.6 6.2 4.3 2.5 5.2V18.2C6.2 17.3 9.8 17.6 12 19.2C14.2 17.6 17.8 17.3 21.5 18.2V5.2C17.8 4.3 14.2 4.6 12 6.2Z M12 6.2V20.5 M2.5 19.8C6.2 19.0 9.8 19.3 12 20.8C14.2 19.3 17.8 19.0 21.5 19.8 M5.2 8.2C6.8 7.8 8.4 7.9 9.6 8.4 M5.2 10.6C6.8 10.2 8.4 10.3 9.6 10.8 M5.2 13.0C6.8 12.6 8.4 12.7 9.6 13.2 M5.2 15.4C6.8 15.0 8.4 15.1 9.6 15.6 M14.4 8.4C15.6 7.9 17.2 7.8 18.8 8.2 M14.4 10.8C15.6 10.3 17.2 10.2 18.8 10.6 M14.4 13.2C15.6 12.7 17.2 12.6 18.8 13.0 M14.4 15.6C15.6 15.1 17.2 15.0 18.8 15.4"></path></svg>
+  </span>
+  <span class="mobile-nav-label" id="mnav-label-lesson">Bài Học</span>
+  </button>
+  <button type="button" class="mobile-nav-item" data-nav="kanji" onclick="handleMobileBottomNav('kanji')">
+  <span class="mobile-nav-icon-wrap">
+  <svg class="mobile-nav-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3.5 5.2L4.3 5.8 M3.2 7.2L4.1 7.8 M3.3 10.5L4.4 8.8 M5.2 4.2H9.8 M6.4 3.3V5.2 M8.6 3.3V5.2 M5.8 5.6H9.2V7.0H5.8Z M5.4 8.2H9.6 M5.0 9.6H10.0 M7.5 5.6V9.6C7.5 10.6 6.8 11.2 5.6 11.5 M7.7 9.6C8.3 10.4 9.1 11.0 10.1 11.4 M6.5 12.3V13.3 M4.2 13.3H8.8V14.6 M5.2 14.6H7.6L6.6 15.8V18.8C6.6 19.4 6.1 19.6 5.4 19.4 M4.0 16.8H9.2 M12.2 14.6L19.8 6.2C20.5 5.4 21.4 6.3 20.6 7.1L13.5 15.8Z M11.4 15.4L12.7 16.6 M12.2 14.6C10.6 15.2 9.4 16.6 8.8 18.6C8.4 19.8 7.6 20.4 6.8 20.8C8.6 20.6 10.4 19.8 11.6 18.4C12.6 17.3 13.1 16.4 13.5 15.8"></path></svg>
+  </span>
+  <span class="mobile-nav-label" id="mnav-label-kanji">Kanji</span>
+  </button>
+  <button type="button" class="mobile-nav-item" data-nav="quiz" onclick="handleMobileBottomNav('quiz')">
+  <span class="mobile-nav-icon-wrap">
+  <svg class="mobile-nav-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M13.5 2.5L5.5 13.5H12L10.5 21.5L18.5 10.5H12L13.5 2.5Z"></path></svg>
+  </span>
+  <span class="mobile-nav-label" id="mnav-label-quiz">Bài Tập</span>
+  </button>
+  <button type="button" class="mobile-nav-item" data-nav="dokkai" onclick="handleMobileBottomNav('dokkai')">
+  <span class="mobile-nav-icon-wrap">
+  <svg class="mobile-nav-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 21h12a2 2 0 0 0 2-2v-2H10v2a2 2 0 1 1-4 0V5a2 2 0 1 0-4 0v3h4 M19 17V5a2 2 0 0 0-2-2H4 M15 8h-5 M15 12h-5"></path></svg>
+  </span>
+  <span class="mobile-nav-label" id="mnav-label-dokkai">Đọc Hiểu</span>
+  </button>
+  <button type="button" class="mobile-nav-item" data-nav="exam" onclick="handleMobileBottomNav('exam')">
+  <span class="mobile-nav-icon-wrap">
+  <svg class="mobile-nav-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 6C8 7.2 16 7.2 21 6L20.2 8C15.5 9 8.5 9 3.8 8Z M4.2 11H19.8 M4.2 12.5H19.8 M12 8.7V11 M7 8.5V21 M8.6 8.6V21 M15.4 8.6V21 M17 8.5V21 M6.2 21H9.4 M14.6 21H17.8"></path></svg>
+  </span>
+  <span class="mobile-nav-label" id="mnav-label-exam">Thi JLPT</span>
+  </button>
+  </nav>
+
+  
+  <div id="voice-settings-modal" class="voice-modal-backdrop" aria-hidden="true">
+  <div class="voice-modal-card">
+  <div class="voice-modal-header">
+  <div class="voice-modal-title-wrap">
+  <h3 class="voice-modal-title">Điều Chỉnh Giọng Đọc Tiếng Nhật</h3>
+  </div>
+  <button id="close-voice-modal-btn" class="voice-modal-close" aria-label="Đóng" title="Đóng">&times;</button>
+  </div>
+  
+  <div class="voice-modal-body">
+  
+  <div class="device-setting-group">
+  <div class="device-setting-header">
+  <span class="device-setting-title">Giọng đọc nhân vật Hội thoại</span>
+  <span class="device-setting-hint">Đồng bộ giọng đọc toàn bộ bài học, từ vựng, kanji &amp; đề thi</span>
+  </div>
+  <div class="device-pill-group" id="voice-character-selector">
+  <button type="button" class="device-pill active" data-speaker="sato" title="Chị Sato: Giọng Nanami Neural Tokyo chuẩn, công sở, thanh lịch">
+  Chị Sato (Nữ)
+  </button>
+  <button type="button" class="device-pill" data-speaker="yamada" title="Anh Yamada: Giọng Keita Neural Tokyo chuẩn, công sở, điềm đạm">
+  Anh Yamada (Nam)
+  </button>
+  <button type="button" class="device-pill" data-speaker="miller" title="Anh Miller: Giọng Takumi Neural, nam thanh niên trẻ trung">
+  Anh Miller (Nam trẻ)
+  </button>
+  <button type="button" class="device-pill" data-speaker="karina" title="Chị Karina: Giọng Aoi Neural, nữ sinh viên trong trẻo">
+  Chị Karina (Nữ trẻ)
+  </button>
+  </div>
+  </div>
+
+  <div class="voice-slider-group">
+  <div class="voice-slider-item">
+  <div class="slider-header">
+  <label for="voice-speed-slider">Tốc độ phát âm:</label>
+  <strong id="voice-speed-val">0.92x</strong>
+  </div>
+  <input type="range" id="voice-speed-slider" min="0.75" max="1.25" step="0.05" value="0.92">
+  </div>
+  <div class="voice-slider-item">
+  <div class="slider-header">
+  <label for="voice-pitch-slider">Cao độ giọng:</label>
+  <strong id="voice-pitch-val">1.04x</strong>
+  </div>
+  <input type="range" id="voice-pitch-slider" min="0.85" max="1.20" step="0.02" value="1.04">
+  </div>
+  </div>
+
+  
+  <button type="button" class="btn-tool btn-tool-primary btn-test-voice" id="btn-test-voice-sample" style="width:100%;justify-content:center;min-height:44px;gap:8px;margin-top:2px;">
+  <svg class="icon-svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path><path d="M19.07 4.93a10 10 0 0 1 0 14.14"></path></svg>
+  <span>Nghe thử giọng nhân vật đã chọn</span>
+  </button>
+  </div>
+
+  <div class="voice-modal-footer">
+  <button id="save-voice-modal-btn" class="btn-save-voice" type="button">Lưu Cài Đặt</button>
+  </div>
+  </div>
+  </div>
+
+  
+  <div id="app-confirm-modal" class="voice-modal-backdrop confirm-modal-backdrop" aria-hidden="true">
+  <div class="voice-modal-card confirm-modal-card">
+  <div class="voice-modal-header">
+  <h3 id="confirm-modal-title" class="voice-modal-title">Xác nhận thao tác</h3>
+  <button id="confirm-modal-close" class="voice-modal-close" aria-label="Đóng">&times;</button>
+  </div>
+  <div class="voice-modal-body">
+  <p id="confirm-modal-message" class="confirm-modal-message"></p>
+  </div>
+  <div class="voice-modal-footer confirm-modal-actions">
+  <button id="confirm-modal-cancel" class="btn-confirm-cancel" type="button">Hủy bỏ</button>
+  <button id="confirm-modal-ok" class="btn-save-voice btn-confirm-ok" type="button">Đồng ý</button>
+  </div>
+  </div>
+  </div>
+
+  <div id="device-settings-modal" class="voice-modal-backdrop" aria-hidden="true">
+  <div class="voice-modal-card device-modal-card">
+  <div class="voice-modal-header">
+  <div class="voice-modal-title-wrap">
+  <h3 class="voice-modal-title">Cá Nhân Hóa Thiết Bị &amp; Hiệu Năng</h3>
+  <span class="device-modal-badge" id="detected-device-badge">Đang nhận diện...</span>
+  </div>
+  <button id="close-device-modal-btn" class="voice-modal-close" aria-label="Đóng" title="Đóng">&times;</button>
+  </div>
+
+  <div class="voice-modal-body">
+  
+  <div class="device-setting-group">
+  <div class="device-setting-header">
+  <span class="device-setting-title">Chế độ hiển thị thiết bị</span>
+  <span class="device-setting-hint">Tùy biến bố cục cho kích thước màn hình</span>
+  </div>
+  <div class="device-pill-group" id="device-mode-selector">
+  <button type="button" class="device-pill active" data-mode="auto">
+  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;margin-right:4px;" aria-hidden="true"><rect x="2" y="3" width="20" height="14" rx="2"></rect><line x1="8" y1="21" x2="16" y2="21"></line><line x1="12" y1="17" x2="12" y2="21"></line></svg>Tự động
+  </button>
+  <button type="button" class="device-pill" data-mode="mobile">
+  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;margin-right:4px;" aria-hidden="true"><rect x="5" y="2" width="14" height="20" rx="2"></rect><line x1="12" y1="18" x2="12.01" y2="18"></line></svg>Điện thoại
+  </button>
+  <button type="button" class="device-pill" data-mode="tablet">
+  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;margin-right:4px;" aria-hidden="true"><rect x="4" y="2" width="16" height="20" rx="2"></rect><line x1="12" y1="18" x2="12.01" y2="18"></line></svg>Máy tính bảng
+  </button>
+  <button type="button" class="device-pill" data-mode="desktop">
+  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;margin-right:4px;" aria-hidden="true"><rect x="2" y="3" width="20" height="14" rx="2"></rect><line x1="8" y1="21" x2="16" y2="21"></line><line x1="12" y1="17" x2="12" y2="21"></line></svg>Máy tính
+  </button>
+  </div>
+  </div>
+
+  
+  <div class="device-setting-group">
+  <div class="device-setting-header">
+  <span class="device-setting-title">Kích thước chữ</span>
+  <span class="device-setting-hint">Tăng cỡ chữ để dễ nhìn chữ Hán &amp; Furigana</span>
+  </div>
+  <div class="device-pill-group" id="device-font-selector">
+  <button type="button" class="device-pill" data-font="small">Nhỏ (92%)</button>
+  <button type="button" class="device-pill active" data-font="normal">Chuẩn (100%)</button>
+  <button type="button" class="device-pill" data-font="large">Lớn (110%)</button>
+  <button type="button" class="device-pill" data-font="xlarge">Rất lớn (120%)</button>
+  </div>
+  </div>
+
+  
+  <div class="device-setting-group">
+  <div class="device-setting-header">
+  <span class="device-setting-title">Mật độ bố cục</span>
+  <span class="device-setting-hint">Khoảng cách giữa các phần và thẻ bài học</span>
+  </div>
+  <div class="device-pill-group" id="device-density-selector">
+  <button type="button" class="device-pill" data-density="compact">Thu gọn (Nhiều tin)</button>
+  <button type="button" class="device-pill active" data-density="normal">Chuẩn</button>
+  <button type="button" class="device-pill" data-density="comfort">Rộng rãi (Thoải mái)</button>
+  </div>
+  </div>
+
+  
+  <div class="device-setting-group device-setting-toggle-row">
+  <div class="device-toggle-info">
+  <span class="device-setting-title">
+  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;margin-right:5px;" aria-hidden="true"><line x1="12" y1="2" x2="12" y2="22"></line><line x1="2" y1="12" x2="22" y2="12"></line><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"></line><line x1="19.07" y1="4.93" x2="4.93" y2="19.07"></line></svg>Chế Độ Làm Mát &amp; Tiết Kiệm Pin
+  </span>
+  <span class="device-setting-hint">Tắt làm mờ GPU (backdrop-filter) &amp; khử animation nặng giúp điện thoại không bị nóng khi học lâu</span>
+  </div>
+  <label class="device-switch" aria-label="Bật/Tắt Chế độ làm mát">
+  <input type="checkbox" id="thermal-saver-toggle">
+  <span class="device-slider"></span>
+  </label>
+  </div>
+
+  
+  <div class="device-setting-group device-setting-toggle-row">
+  <div class="device-toggle-info">
+  <span class="device-setting-title">
+  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;margin-right:5px;" aria-hidden="true"><rect x="6" y="2" width="12" height="20" rx="2"></rect><path d="M2 8v8"></path><path d="M22 8v8"></path></svg>Rung Phản Hồi Xúc Giác (Haptic)
+  </span>
+  <span class="device-setting-hint">Rung nhẹ khi chọn đáp án trắc nghiệm hoặc lật thẻ (trên điện thoại hỗ trợ)</span>
+  </div>
+  <label class="device-switch" aria-label="Bật/Tắt Rung phản hồi">
+  <input type="checkbox" id="haptic-toggle" checked>
+  <span class="device-slider"></span>
+  </label>
+  </div>
+  </div>
+
+  <div class="voice-modal-footer">
+  <button id="reset-device-modal-btn" class="btn-confirm-cancel" type="button">Mặc định</button>
+  <button id="save-device-modal-btn" class="btn-save-voice" type="button">Lưu Cài Đặt</button>
+  </div>
+  </div>
+  </div>
+
+  
+  <div id="user-account-modal" class="voice-modal-backdrop account-modal-backdrop" aria-hidden="true">
+  <div class="voice-modal-card account-modal-card">
+  <div class="voice-modal-header account-modal-header">
+  <div class="voice-modal-title-wrap">
+  <h3 class="voice-modal-title">
+  <span class="account-header-emblem" aria-hidden="true"><svg class="wa-icon wa-emblem" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3a9 9 0 1 0 8.5 6"></path><path d="M12 7v10M7 12h10"></path><path d="M12 9.5c0 1.38-1.12 2.5-2.5 2.5 1.38 0 2.5 1.12 2.5 2.5 0-1.38 1.12-2.5 2.5-2.5-1.38 0-2.5-1.12-2.5-2.5z"></path></svg></span>
+  <span>Hồ Sơ &amp; Thành Tích Học Viên</span>
+  </h3>
+  <span class="device-modal-badge" id="account-status-badge">Chế độ Khách</span>
+  </div>
+  <button id="close-account-modal-btn" class="voice-modal-close" onclick="closeUserAccountModal()" aria-label="Đóng" title="Đóng">&times;</button>
+  </div>
+
+  
+  <div class="account-nav-tabs" role="tablist" aria-label="Các mục quản lý tài khoản">
+  <button type="button" class="account-tab-btn active" data-tab="profile" onclick="switchAccountModalTab('profile')" role="tab" aria-selected="true" id="tab-btn-profile">
+  <span class="tab-icon" aria-hidden="true"><svg class="wa-icon wa-tab-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="10" cy="7" r="4"></circle><path d="M3 21v-2a5 5 0 0 1 5-5h4a5 5 0 0 1 5 5v2"></path><path d="M19 8c0 .7-.3 1.3-1 1.3.7 0 1 .6 1 1.3 0-.7.3-1.3 1-1.3-.7 0-1-.6-1-1.3z"></path></svg></span>
+  <span class="tab-text">Hồ Sơ &amp; XP</span>
+  </button>
+  <button type="button" class="account-tab-btn" data-tab="accounts" onclick="switchAccountModalTab('accounts')" role="tab" aria-selected="false" id="tab-btn-accounts">
+  <span class="tab-icon" aria-hidden="true"><svg class="wa-icon wa-tab-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="6" width="14" height="14" rx="3"></rect><path d="M8 2h10a3 3 0 0 1 3 3v10"></path><path d="M6 13h6M6 16h4"></path></svg></span>
+  <span class="tab-text">Đổi Tài Khoản</span>
+  </button>
+  <button type="button" class="account-tab-btn" data-tab="leaderboard" onclick="switchAccountModalTab('leaderboard')" role="tab" aria-selected="false" id="tab-btn-leaderboard">
+  <span class="tab-icon" aria-hidden="true"><svg class="wa-icon wa-tab-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6-6 6 6-3 10H9L6 9z"></path><path d="M4 19h16"></path><circle cx="12" cy="11" r="1.5"></circle></svg></span>
+  <span class="tab-text">Bảng Xếp Hạng</span>
+  </button>
+  <button type="button" class="account-tab-btn" data-tab="sync" onclick="switchAccountModalTab('sync')" role="tab" aria-selected="false" id="tab-btn-sync">
+  <span class="tab-icon" aria-hidden="true"><svg class="wa-icon wa-tab-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a9 9 0 0 1-15.3 6.3L3 16"></path><path d="M3 21v-5h5"></path><path d="M3 12a9 9 0 0 1 15.3-6.3L21 8"></path><path d="M21 3v5h-5"></path></svg></span>
+  <span class="tab-text">Sao Lưu &amp; Đồng Bộ</span>
+  </button>
+  </div>
+
+  <div class="voice-modal-body account-modal-body">
+  
+  <div id="account-tab-profile" class="account-tab-panel active" role="tabpanel" aria-labelledby="tab-btn-profile">
+  
+  <div class="profile-hero-card">
+  <div class="profile-hero-main">
+  <div class="profile-hero-left">
+  <div class="profile-avatar-circle" id="profile-display-avatar" title="Hình đại diện"><svg class="wa-avatar-svg" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><circle cx="12" cy="8.5" r="3"></circle><path d="M6.5 18c0-3 2.5-5.5 5.5-5.5s5.5 2.5 5.5 5.5"></path></svg></div>
+  <div class="profile-identity-col">
+  <div class="profile-name-row">
+  <span class="profile-display-name" id="profile-display-name">Học viên Khách</span>
+  <span class="profile-level-badge" id="profile-display-level">JLPT N5</span>
+  </div>
+  <div class="profile-username-tag" id="profile-display-username">@guest</div>
+  <div class="profile-rank-chip" id="profile-display-rank"><svg class="wa-rank-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 21v-8"></path><path d="M12 13c-3-4-7-3-8 1 3 1 7-1 8-1z"></path><path d="M12 10c3-4 7-3 8 1-3 1-7-1-8-1z"></path></svg> <span>Tân Binh Nhập Môn</span></div>
+  </div>
+  </div>
+  <div class="profile-hero-xp">
+  <div class="profile-xp-label">Tổng Điểm XP</div>
+  <div class="profile-xp-value" id="profile-display-xp">0 XP</div>
+  </div>
+  </div>
+  
+  <div class="profile-xp-progress-wrap">
+  <div class="profile-xp-progress-track" aria-label="Tiến độ cấp độ hiện tại">
+  <div id="profile-xp-progress-fill" class="profile-xp-progress-fill" style="width: 15%;"></div>
+  </div>
+  </div>
+  </div>
+
+  
+  <div id="guest-welcome-notice" class="guest-welcome-notice">
+  <div class="notice-icon" aria-hidden="true"><svg class="wa-util-svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 2v4M12 18v4M2 12h4M18 12h4"></path><circle cx="12" cy="12" r="5"></circle></svg></div>
+  <div class="notice-content">
+  <strong>Bạn đang học ở chế độ Khách.</strong> Hãy tạo tài khoản để bảo vệ thành tích cá nhân, mở khóa xếp hạng và học chung với nhiều người trên cùng thiết bị!
+  </div>
+  <button type="button" class="btn-guest-register-cta" onclick="switchAccountModalTab('accounts')">Tạo Tài Khoản / Đăng Nhập</button>
+  </div>
+
+  
+  <div id="profile-edit-drawer" class="profile-edit-drawer" style="display:none;">
+  <div class="profile-drawer-title"><svg class="wa-util-svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M17 3a2.8 2.8 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"></path></svg> <span>Chỉnh Sửa Hồ Sơ Học Viên</span></div>
+  <div class="edit-form-field">
+  <label for="edit-profile-name">Tên hiển thị:</label>
+  <input type="text" id="edit-profile-name" class="account-input" maxlength="40" placeholder="Nhập tên hiển thị">
+  </div>
+  <div class="edit-form-field">
+  <label>Chọn Avatar Nhật Bản:</label>
+  <div class="avatar-preset-grid" id="edit-avatar-grid"></div>
+  </div>
+  <div class="edit-form-field">
+  <label for="edit-profile-goal">Mục tiêu học tập:</label>
+  <select id="edit-profile-goal" class="account-select">
+  <option value="N5">Mục tiêu JLPT N5 (Bài 1 - 25)</option>
+  <option value="N4">Mục tiêu JLPT N4 (Bài 26 - 50)</option>
+  </select>
+  </div>
+  <div class="edit-drawer-actions">
+  <button type="button" class="btn-account-secondary" onclick="toggleProfileEditDrawer(false)">Hủy</button>
+  <button type="button" class="btn-account-primary" onclick="saveProfileChanges()">Lưu Hồ Sơ</button>
+  </div>
+  </div>
+
+  
+  <div class="achievement-section-header">
+  <span class="achievement-section-title"><svg class="wa-util-svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="18" y1="20" x2="18" y2="4"></line><line x1="12" y1="20" x2="12" y2="10"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg> <span>Thành Tích Học Tập Cá Nhân</span></span>
+  </div>
+  <div class="achievement-stats-grid">
+  <div class="achievement-card">
+  <div class="stat-card-icon accent-cyan" aria-hidden="true">
+  <svg class="wa-stat-svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 6C10 4.5 6.5 4.2 3 5V19C6.5 18.2 10 18.5 12 20C14 18.5 17.5 18.2 21 19V5C17.5 4.2 14 4.5 12 6Z M12 6V20 M5.5 8.5H9.5 M5.5 11.5H9.5 M5.5 14.5H9.5 M14.5 8.5H18.5 M14.5 11.5H18.5 M14.5 14.5H18.5"></path></svg>
+  </div>
+  <div class="stat-card-data">
+  <div class="stat-card-value" id="stat-lessons-count">0 / 150</div>
+  <div class="stat-card-label">Bài học hoàn thành</div>
+  </div>
+  </div>
+  <div class="achievement-card">
+  <div class="stat-card-icon accent-gold" aria-hidden="true">
+  <svg class="wa-stat-svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14.5 6.5L19.5 2.5L21.5 4.5L17.5 9.5Z M14.5 6.5L11.5 9.5C9.5 11.5 8.5 14 7.5 16.5C10 15.5 12.5 14.5 14.5 12.5L17.5 9.5 M4 5H9 M6.5 3.5V7.5 M4.5 9.5H8.5 M4 13H9 M6.5 11V16"></path></svg>
+  </div>
+  <div class="stat-card-data">
+  <div class="stat-card-value" id="stat-kanji-count">0 chữ</div>
+  <div class="stat-card-label">Chữ Hán đã thuộc</div>
+  </div>
+  </div>
+  <div class="achievement-card">
+  <div class="stat-card-icon accent-purple" aria-hidden="true">
+  <svg class="wa-stat-svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 3H21V21H3Z M3 9H21 M3 15H21 M9 3V21 M15 3V21 M5 5.5H7 M6 4.5V7.5 M11 5.5H13 M12 4.5V7.5 M17 5.5H19 M5 11.5H7 M11 11.5H13 M17 11.5H19 M5 17.5H7 M11 17.5H13 M17 17.5H19"></path></svg>
+  </div>
+  <div class="stat-card-data">
+  <div class="stat-card-value" id="stat-radicals-count">0 / 191</div>
+  <div class="stat-card-label">Bộ thủ ghi nhớ</div>
+  </div>
+  </div>
+  <div class="achievement-card">
+  <div class="stat-card-icon accent-coral" aria-hidden="true">
+  <svg class="wa-stat-svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><circle cx="12" cy="12" r="5"></circle><circle cx="12" cy="12" r="1.8"></circle><path d="M19 5l-5 5"></path><path d="M19 5h-4M19 5v4"></path></svg>
+  </div>
+  <div class="stat-card-data">
+  <div class="stat-card-value" id="stat-quiz-count">0 bài (0%)</div>
+  <div class="stat-card-label">Trắc nghiệm Minna</div>
+  </div>
+  </div>
+  <div class="achievement-card">
+  <div class="stat-card-icon accent-indigo" aria-hidden="true">
+  <svg class="wa-stat-svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3V21 M9 6V18 M15 6V18 M6 9V15 M18 9V15 M3 11V13 M21 11V13"></path></svg>
+  </div>
+  <div class="stat-card-data">
+  <div class="stat-card-value" id="stat-kaiwa-count">0 câu (<svg class="inline-star-svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg> 0)</div>
+  <div class="stat-card-label">Luyện nói Kaiwa AI</div>
+  </div>
+  </div>
+  <div class="achievement-card">
+  <div class="stat-card-icon accent-sakura" aria-hidden="true">
+  <svg class="wa-stat-svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 6C8 7.2 16 7.2 21 6 M4.5 9H19.5 M12 6.8V9 M7.5 9V21 M16.5 9V21 M6.5 21H8.5 M15.5 21H17.5"></path></svg>
+  </div>
+  <div class="stat-card-data">
+  <div class="stat-card-value" id="stat-exam-count">0 đề (0/20)</div>
+  <div class="stat-card-label">Luyện đề thi JLPT</div>
+  </div>
+  </div>
+  </div>
+
+  
+  <div class="profile-actions-bar" id="profile-actions-bar">
+  <button type="button" class="btn-account-action" id="btn-edit-profile-open" onclick="toggleProfileEditDrawer(true)">
+  <svg class="wa-util-svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M17 3a2.8 2.8 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"></path></svg>
+  <span>Chỉnh sửa hồ sơ</span>
+  </button>
+  <button type="button" class="btn-account-action danger" id="btn-logout-account" onclick="handleLogoutAccount()" style="display:none;">
+  <svg class="wa-util-svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
+  <span>Đăng xuất về Khách</span>
+  </button>
+  </div>
+  </div>
+
+  
+  <div id="account-tab-accounts" class="account-tab-panel" role="tabpanel" aria-labelledby="tab-btn-accounts">
+  
+  <div class="account-section-box">
+  <div class="account-section-header">
+  <span class="section-title"><svg class="wa-util-svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="2" width="14" height="20" rx="2"></rect><line x1="12" y1="18" x2="12.01" y2="18"></line></svg> <span>Danh Sách Tài Khoản Trên Thiết Bị</span></span>
+  <span class="section-badge" id="accounts-count-badge">0 tài khoản</span>
+  </div>
+  <div id="account-switcher-list" class="account-switcher-list"></div>
+  </div>
+
+  
+  <button type="button" id="btn-toggle-auth-form" class="btn-toggle-auth-drawer" onclick="toggleAuthFormDrawer()" aria-expanded="false">
+  <svg class="wa-util-svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+  <line x1="12" y1="5" x2="12" y2="19"></line>
+  <line x1="5" y1="12" x2="19" y2="12"></line>
+  </svg>
+  <span>Thêm hoặc Đăng nhập tài khoản khác</span>
+  </button>
+
+  
+  <div class="account-section-box auth-form-box is-collapsed" id="auth-form-container">
+  <div class="auth-mode-switch-group">
+  <button type="button" id="btn-mode-register" class="auth-mode-btn active" onclick="setAuthFormMode('register')">Đăng Ký Mới</button>
+  <button type="button" id="btn-mode-login" class="auth-mode-btn" onclick="setAuthFormMode('login')">Đăng Nhập</button>
+  </div>
+
+  
+  <div id="auth-error-alert" class="auth-error-alert" style="display:none;" role="alert"></div>
+
+  <form id="auth-main-form" class="auth-form" onsubmit="handleAuthFormSubmit(event)">
+  <div class="auth-form-grid-2col">
+  <div class="auth-field-group">
+  <label for="auth-input-username">Tên đăng nhập (@username):</label>
+  <input type="text" id="auth-input-username" class="account-input" placeholder="Ví dụ: thang_n5" required autocomplete="username" spellcheck="false" autocapitalize="none">
+  <span class="field-hint">Từ 3-24 ký tự chữ, số hoặc dấu . _ -</span>
+  </div>
+
+  <div class="auth-field-group" id="group-auth-displayname">
+  <label for="auth-input-displayname">Tên hiển thị:</label>
+  <input type="text" id="auth-input-displayname" class="account-input" placeholder="Ví dụ: Đức Thắng" maxlength="40" spellcheck="false">
+  <span class="field-hint">Tên xuất hiện trên thanh điều hướng &amp; Bảng xếp hạng</span>
+  </div>
+  </div>
+
+  <div class="auth-form-grid-2col">
+  <div class="auth-field-group">
+  <label for="auth-input-pin">Mã PIN bảo mật (4-12 ký tự):</label>
+  <input type="password" id="auth-input-pin" class="account-input" placeholder="Nhập mã PIN" required maxlength="12" autocomplete="current-password">
+  <span class="field-hint">Dùng để đăng nhập và bảo vệ dữ liệu học tập cá nhân</span>
+  </div>
+
+  <div class="auth-field-group" id="group-auth-goal">
+  <label for="auth-input-goal">Mục tiêu kỳ thi:</label>
+  <select id="auth-input-goal" class="account-select">
+  <option value="N5">Mục tiêu JLPT N5 (Căn bản)</option>
+  <option value="N4">Mục tiêu JLPT N4 (Trung cấp)</option>
+  </select>
+  </div>
+  </div>
+
+  <div class="auth-field-group" id="group-auth-avatar">
+  <label>Chọn Avatar Nhật Bản đại diện:</label>
+  <div class="avatar-preset-grid" id="register-avatar-grid"></div>
+  </div>
+
+  <div class="auth-checkbox-group" id="group-auth-migrate">
+  <label class="custom-checkbox-label">
+  <input type="checkbox" id="auth-check-migrate" checked>
+  <span class="checkbox-box"></span>
+  <span class="checkbox-text">Gộp toàn bộ tiến độ đang học ở chế độ Khách vào tài khoản này</span>
+  </label>
+  </div>
+
+  <div class="auth-submit-row">
+  <button type="submit" id="btn-auth-submit" class="btn-auth-primary">
+  <span>Đăng Ký &amp; Vào Học Ngay</span>
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+  <polyline points="9 18 15 12 9 6"></polyline>
+  </svg>
+  </button>
+  </div>
+  </form>
+  </div>
+  </div>
+
+  
+  <div id="account-tab-leaderboard" class="account-tab-panel" role="tabpanel" aria-labelledby="tab-btn-leaderboard">
+  <div class="leaderboard-intro-card">
+  <span class="intro-icon" aria-hidden="true"><svg class="wa-util-svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 7l4 12h12l4-12-6 5-4-8-4 8z"></path></svg></span>
+  <span class="intro-text"><strong>Bảng Xếp Hạng Học Viên:</strong> So tài điểm XP tích lũy toàn diện qua bài học, Kanji, trắc nghiệm và Kaiwa</span>
+  </div>
+  <div class="leaderboard-container">
+  <div class="leaderboard-table-header">
+  <span class="col-rank">Hạng</span>
+  <span class="col-user">Học Viên</span>
+  <span class="col-stats">Tiến Độ / Điểm</span>
+  <span class="col-xp">Tổng XP</span>
+  </div>
+  <div id="multi-user-leaderboard-list" class="leaderboard-list"></div>
+  </div>
+  </div>
+
+  
+  <div id="account-tab-sync" class="account-tab-panel" role="tabpanel" aria-labelledby="tab-btn-sync">
+  
+  <div class="sync-section-box sync-cloud-hero">
+  <div class="sync-box-header">
+  <div class="sync-header-icon" aria-hidden="true"><svg class="wa-sync-svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9z"></path><path d="M12 13v6m-3-3l3 3 3-3"></path></svg></div>
+  <div class="sync-header-info">
+  <span class="sync-box-title">Đồng Bộ Hai Chiều Với Máy Chủ</span>
+  <span class="sync-box-hint">Tự động đồng bộ tiến độ học tập và thành tích an toàn với máy chủ đám mây</span>
+  </div>
+  </div>
+  <div class="sync-action-row">
+  <button type="button" id="btn-cloud-sync" class="btn-sync-action" onclick="handleCloudSync()">
+  <span class="btn-icon" aria-hidden="true"><svg class="wa-util-svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg></span>
+  <span>Đồng Bộ Tiến Độ Ngay</span>
+  </button>
+  <span id="cloud-sync-status" class="sync-status-label">Chưa đồng bộ</span>
+  </div>
+  </div>
+
+  
+  <div class="sync-offline-grid">
+  
+  <div class="sync-section-box sync-card-compact">
+  <div class="sync-box-header">
+  <div class="sync-header-icon" aria-hidden="true"><svg class="wa-util-svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg></div>
+  <div class="sync-header-info">
+  <span class="sync-box-title">Xuất Dữ Liệu Học Tập</span>
+  <span class="sync-box-hint">Lưu trữ ngoại tuyến hoặc chuyển sang thiết bị khác</span>
+  </div>
+  </div>
+  <div class="sync-button-row">
+  <button type="button" id="btn-download-sync-file" class="btn-sync-secondary" onclick="handleDownloadBackupFile()">
+  <svg class="wa-util-svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path><polyline points="17 21 17 13 7 13 7 21"></polyline><polyline points="7 3 7 8 15 8"></polyline></svg>
+  <span>Tải File (.json)</span>
+  </button>
+  <button type="button" id="btn-export-sync-code" class="btn-sync-secondary" onclick="handleExportSyncCode()">
+  <svg class="wa-util-svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 2l-2 2m-1.5 1.5L14 9a5 5 0 1 0 3 3l2-2v-2h2v-2h2V4l-2-2z"></path></svg>
+  <span>Tạo Mã Sao Lưu</span>
+  </button>
+  </div>
+  <div id="export-code-wrapper" class="code-box-wrapper" style="display:none;">
+  <textarea id="sync-code-output" class="sync-textarea" readonly rows="3" placeholder="Mã sao lưu sẽ xuất hiện ở đây..."></textarea>
+  <button type="button" id="btn-copy-sync-code" class="btn-copy-code" onclick="copySyncCodeToClipboard()">
+  <svg class="wa-util-svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+  <span>Sao Chép Mã</span>
+  </button>
+  </div>
+  </div>
+
+  
+  <div class="sync-section-box sync-card-compact">
+  <div class="sync-box-header">
+  <div class="sync-header-icon" aria-hidden="true"><svg class="wa-util-svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg></div>
+  <div class="sync-header-info">
+  <span class="sync-box-title">Khôi Phục Tiến Độ</span>
+  <span class="sync-box-hint">Nhập file backup JSON hoặc dán mã đồng bộ</span>
+  </div>
+  </div>
+  <div class="import-inputs-col">
+  <div class="import-file-row">
+  <label for="sync-file-input" class="btn-choose-file"><svg class="wa-util-svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path></svg> Chọn file sao lưu (.json)</label>
+  <input type="file" id="sync-file-input" accept=".json,application/json" onchange="handleBackupFileSelected(event)" style="display:none;">
+  <span id="selected-file-name" class="selected-file-label">Chưa chọn file</span>
+  </div>
+  <button type="button" id="btn-toggle-paste-input" class="btn-toggle-paste-code" onclick="toggleSyncPasteInput()" aria-expanded="false">
+  <svg class="wa-util-svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path><rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect></svg>
+  <span>Dán mã sao lưu thủ công</span>
+  </button>
+  <div id="import-code-drawer" class="import-code-drawer is-collapsed">
+  <textarea id="sync-code-input" class="sync-textarea" rows="3" placeholder="Dán mã sao lưu MINNA_SYNC_V1:... vào đây"></textarea>
+  <div class="import-actions-row">
+  <button type="button" id="btn-import-sync-code" class="btn-sync-action import-btn" onclick="handleImportSyncData()">
+  <svg class="wa-util-svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+  <span>Nhập &amp; Gộp Tiến Độ</span>
+  </button>
+  <span id="import-sync-status" class="sync-status-label"></span>
+  </div>
+  </div>
+  </div>
+  </div>
+  </div>
+  </div>
+  </div>
+  </div>
+  </div>
+
+  
+  <div id="account-pin-modal" class="voice-modal-backdrop account-pin-backdrop" aria-hidden="true">
+  <div class="voice-modal-card pin-modal-card">
+  <div class="voice-modal-header">
+  <h3 id="pin-modal-title" class="voice-modal-title">Xác Nhận Mã PIN</h3>
+  <button id="pin-modal-close" class="voice-modal-close" onclick="closeAccountPinModal()" aria-label="Đóng" title="Đóng">&times;</button>
+  </div>
+  <div class="voice-modal-body">
+  <p id="pin-modal-desc" class="pin-modal-desc">Vui lòng nhập mã PIN bảo mật để tiếp tục:</p>
+  <div id="pin-modal-error" class="auth-error-alert" style="display:none;" role="alert"></div>
+  <input type="password" id="pin-modal-input" class="account-input pin-input" maxlength="12" placeholder="Nhập mã PIN" autocomplete="current-password">
+  </div>
+  <div class="voice-modal-footer">
+  <button type="button" class="btn-confirm-cancel" onclick="closeAccountPinModal()">Hủy Bỏ</button>
+  <button type="button" id="pin-modal-confirm-btn" class="btn-save-voice">Xác Nhận</button>
+  </div>
+  </div>
+  </div>
+
+  
+  <a href="/hidden-crawler-trap/" rel="nofollow" class="sr-only-crawler-trap" aria-hidden="true" tabindex="-1" style="position:absolute;left:-9999px;top:-9999px;opacity:0;pointer-events:none;width:1px;height:1px;overflow:hidden;">Crawl Sitemap Index</a>
+
+  
+  <div id="toast-notification" class="toast-notification"></div>
+
+  
+  <button id="back-to-top-btn" class="back-to-top-btn" aria-label="Cuộn lên đầu trang" title="Lên đầu trang">
+  <span class="back-to-top-glow" aria-hidden="true"></span>
+  <svg class="back-to-top-svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+  <path d="M12 19V5"></path>
+  <polyline points="5 12 12 5 19 12"></polyline>
+  </svg>
+  </button>
+
+  
+  <script src="data/ui_icons.js?v=20261111_01"></script>
+  <script src="data/curriculum_manifest.js?v=20261111_01"></script>
+  <script src="data/exams_manifest.js?v=20261111_01"></script>
+  <script src="data/exam_furigana.js?v=20261111_01"></script>
+  <script src="data/data_normalizer.js?v=20261111_01"></script>
+  <script src="data/audio_prosody_rules.js?v=20261111_03"></script>
+  <script src="data/romaji_kana_map.js?v=20261111_03"></script>
+  <script src="data/kanji_lookalikes.js?v=20261111_03"></script>
+  <script src="data/reference_hub_data.js?v=20261111_03"></script>
+
+  
+  <script src="src/security_engine.js?v=20261111_03"></script>
+  <script src="src/storage_engine.js?v=20261111_03"></script>
+  <script src="src/auth_engine.js?v=20261111_03"></script>
+  <script src="src/audio_engine.js?v=20261111_03"></script>
+  <script src="src/quiz_engine.js?v=20261111_03"></script>
+  <script src="src/kanji_engine.js?v=20261111_03"></script>
+  <script src="src/navigation_engine.js?v=20261111_03"></script>
+  <script src="src/dictionary_engine.js?v=20261111_03"></script>
+  <script src="src/exam_engine.js?v=20261111_03"></script>
+  <script src="src/acoustic_analyzer.js?v=20261111_03"></script>
+  <script src="src/kaiwa_engine.js?v=20261111_03"></script>
+  <script src="src/conjugation_engine.js?v=20261111_03"></script>
+  <script src="src/notebook_engine.js?v=20261111_03"></script>
+  <script src="src/analytics_streak_engine.js?v=20261111_03"></script>
+  <script src="src/study_worker.js?v=20261111_03"></script>
+  <script src="src/domain_services.js?v=20261111_03"></script>
+  <script src="src/study_tools_engine.js?v=20261111_03"></script>
+
+  
+  <script src="data/lessons_1_5.js?v=20261111_03"></script>
+
+  
+  <script src="app.js?v=20261111_03"></script>
 </body>
 </html>
