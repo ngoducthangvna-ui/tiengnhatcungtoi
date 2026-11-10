@@ -4,7 +4,7 @@
  */
 'use strict';
 
-const CACHE_VERSION = 'minna-pwa-v20261111_04';
+const CACHE_VERSION = 'minna-pwa-v20261111_05';
 
 const CORE_ASSETS = [
   './',
@@ -85,20 +85,89 @@ async function fetchAndCache(request, cacheName) {
   }
 }
 
-// Phase 4 Helper: Stale-While-Revalidate strategy with Safe Navigation Fallback
+// Phase 3 & 4 Helper: Build Partial Content (206) Response for Range Requests
+async function buildRangeResponse(fullResponse, rangeHeader) {
+  if (
+    !fullResponse ||
+    fullResponse.status !== 200 ||
+    !rangeHeader ||
+    !rangeHeader.startsWith('bytes=') ||
+    typeof fullResponse.arrayBuffer !== 'function'
+  ) {
+    return fullResponse;
+  }
+
+  const buf = await fullResponse.clone().arrayBuffer();
+  const total = buf.byteLength;
+  if (!total) return fullResponse;
+
+  const parts = rangeHeader.replace('bytes=', '').split('-');
+  const start = parseInt(parts[0], 10);
+  let end = (parts[1] && parts[1].trim() !== '') ? parseInt(parts[1], 10) : total - 1;
+
+  if (isNaN(start) || isNaN(end)) {
+    return fullResponse;
+  }
+
+  end = Math.min(end, total - 1);
+
+  if (start < 0 || start > end || start >= total) {
+    return new Response(null, {
+      status: 416,
+      headers: {
+        'Content-Range': 'bytes */' + total,
+        'Accept-Ranges': 'bytes'
+      }
+    });
+  }
+
+  const sliced = buf.slice(start, end + 1);
+  const contentType = (fullResponse.headers && fullResponse.headers.get && fullResponse.headers.get('Content-Type')) || 'audio/mpeg';
+
+  return new Response(sliced, {
+    status: 206,
+    statusText: 'Partial Content',
+    headers: {
+      'Content-Type': contentType,
+      'Accept-Ranges': 'bytes',
+      'Content-Range': 'bytes ' + start + '-' + end + '/' + total,
+      'Content-Length': String(end - start + 1)
+    }
+  });
+}
+
+// Phase 4 Helper: Stale-While-Revalidate strategy with Safe Navigation Fallback & Range Support
 async function handleStaleWhileRevalidate(rawRequest) {
-  const request = normalizeRequest(rawRequest);
+  const rangeHeader = (rawRequest.headers && typeof rawRequest.headers.get === 'function')
+    ? (rawRequest.headers.get('Range') || rawRequest.headers.get('range') || '')
+    : '';
+
+  let request = normalizeRequest(rawRequest);
+  if (rangeHeader) {
+    request = new Request(request.url, {
+      method: 'GET',
+      mode: request.mode,
+      credentials: request.credentials
+    });
+  }
+
   const cachedResponse = await caches.match(request, { ignoreSearch: false });
   const networkPromise = fetchAndCache(request, CACHE_VERSION);
-  if (cachedResponse) return cachedResponse;
+
+  if (cachedResponse) {
+    return rangeHeader ? await buildRangeResponse(cachedResponse, rangeHeader) : cachedResponse;
+  }
+
   const freshResponse = await networkPromise;
   if (freshResponse && (freshResponse.status === 200 || freshResponse.type === 'opaque')) {
-    return freshResponse;
+    return rangeHeader ? await buildRangeResponse(freshResponse, rangeHeader) : freshResponse;
   }
+
   if (rawRequest.mode === 'navigate') {
     const fallback = await caches.match('./');
     if (fallback) return fallback;
   }
+
   return freshResponse || Response.error();
 }
 

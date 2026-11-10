@@ -105,7 +105,7 @@
     const link = document.createElement('link');
     link.id = 'exam-engine-styles';
     link.rel = 'stylesheet';
-    link.href = 'src/exam_style.css?v=20261111_04';
+    link.href = 'src/exam_style.css?v=20261111_05';
     document.head.appendChild(link);
   }
 

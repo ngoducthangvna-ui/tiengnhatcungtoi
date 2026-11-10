@@ -237,6 +237,56 @@ function calculateEdgeStats(prog = {}, acc = {}) {
   };
 }
 
+/**
+ * 4-Phase Pure Helper: parseHttpByteRange
+ * Phân tích và kiểm chuẩn HTTP Byte-Range header (RFC 7233 / RFC 9110)
+ * Hỗ trợ các định dạng: bytes=start-end, bytes=start-, bytes=-suffixLen
+ */
+function parseHttpByteRange(rangeHeader, totalLength) {
+  // Phase 1: Guard Clauses & Fail-Fast
+  if (!rangeHeader || typeof rangeHeader !== 'string' || !rangeHeader.startsWith('bytes=') || !(totalLength > 0)) {
+    return null;
+  }
+
+  // Phase 2: Data Normalization
+  const rawRange = rangeHeader.slice(6).trim();
+  const dashIndex = rawRange.indexOf('-');
+  if (dashIndex === -1) {
+    return { invalid: true, totalLength };
+  }
+
+  const startStr = rawRange.slice(0, dashIndex).trim();
+  const endStr = rawRange.slice(dashIndex + 1).trim();
+
+  // Phase 3: Pure Bounds Resolution & Validation
+  let start = 0;
+  let end = 0;
+
+  if (startStr === '') {
+    const suffixLen = parseInt(endStr, 10);
+    if (isNaN(suffixLen) || suffixLen <= 0) return { invalid: true, totalLength };
+    start = Math.max(0, totalLength - suffixLen);
+    end = totalLength - 1;
+  } else {
+    start = parseInt(startStr, 10);
+    end = endStr === '' ? totalLength - 1 : parseInt(endStr, 10);
+  }
+
+  end = Math.min(end, totalLength - 1);
+
+  if (isNaN(start) || isNaN(end) || start < 0 || start > end || start >= totalLength) {
+    return { invalid: true, totalLength };
+  }
+
+  // Phase 4: Deterministic Return Payload
+  return {
+    start,
+    end,
+    chunkLength: end - start + 1,
+    totalLength
+  };
+}
+
 export default {
   async fetch(request, env, ctx) {
     const url = new URL(request.url);
@@ -253,7 +303,7 @@ export default {
       const headers = new Headers(res.headers);
       headers.set(
         'content-security-policy',
-        "default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: https: blob:; media-src 'self' blob: https://speechgen.io https://translate.google.com https://dict.youdao.com data:; connect-src 'self' https://mazii.net https://speechgen.io https://inputtools.google.com https://www.google.com https://translate.google.com https://translate.googleapis.com; frame-ancestors 'none'; object-src 'none'; base-uri 'self';"
+        "default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: https: blob:; media-src 'self' data: blob: https: https://speechgen.io https://translate.google.com https://dict.youdao.com; connect-src 'self' https://mazii.net https://speechgen.io https://inputtools.google.com https://www.google.com https://translate.google.com https://translate.googleapis.com; frame-ancestors 'none'; object-src 'none'; base-uri 'self';"
       );
       headers.set('strict-transport-security', 'max-age=63072000; includeSubDomains; preload');
       headers.set('x-frame-options', 'DENY');
@@ -1234,6 +1284,48 @@ export default {
       response = await env.ASSETS.fetch(fetchReq);
     } else {
       response = await fetch(fetchReq);
+    }
+
+    // 5B. HTTP 206 Partial Content Byte-Range Slicing cho tài nguyên âm thanh (iOS/Safari/Android Media Seeking)
+    if (isAudioFile && response && response.status === 200) {
+      const rangeHeader = request.headers.get('Range') || request.headers.get('range') || '';
+      if (rangeHeader && typeof response.arrayBuffer === 'function') {
+        const fullBuf = await response.arrayBuffer();
+        const totalLen = fullBuf.byteLength;
+        const rangeInfo = parseHttpByteRange(rangeHeader, totalLen);
+
+        if (rangeInfo && rangeInfo.invalid) {
+          return applySecurityHeaders(
+            new Response(null, {
+              status: 416,
+              statusText: 'Range Not Satisfiable',
+              headers: {
+                'Content-Range': 'bytes */' + totalLen,
+                'Accept-Ranges': 'bytes'
+              }
+            })
+          );
+        }
+
+        if (rangeInfo && !rangeInfo.invalid) {
+          const slicedBuf = fullBuf.slice(rangeInfo.start, rangeInfo.end + 1);
+          return applySecurityHeaders(
+            new Response(slicedBuf, {
+              status: 206,
+              statusText: 'Partial Content',
+              headers: {
+                'Content-Type': response.headers.get('Content-Type') || 'audio/mpeg',
+                'Accept-Ranges': 'bytes',
+                'Content-Range': 'bytes ' + rangeInfo.start + '-' + rangeInfo.end + '/' + totalLen,
+                'Content-Length': String(rangeInfo.chunkLength),
+                'Cache-Control': 'public, max-age=86400'
+              }
+            })
+          );
+        }
+      }
+
+      return applySecurityHeaders(response, { 'Accept-Ranges': 'bytes' });
     }
 
     // Gắn đầy đủ 9 HTTP Security Headers chuẩn OWASP / CIS Benchmarks
