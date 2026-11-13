@@ -4,17 +4,19 @@
  */
 'use strict';
 
-const CACHE_VERSION = 'minna-pwa-v20261113_03';
+const CACHE_VERSION = 'minna-pwa-v20261113_04';
 
 const CORE_ASSETS = [
   './',
   './style.css',
   './app.js',
   './manifest.json',
-  './favicon.svg',
-  './icons/favicon-16.svg',
-  './icons/favicon-32.svg',
-  './icons/icon-192.svg',
+  './icons/shiba-favicon-16.png',
+  './icons/shiba-favicon-32.png',
+  './icons/shiba-180.png',
+  './icons/shiba-192.png',
+  './icons/shiba-512.png',
+  './icons/shiba-maskable-512.png',
   './data/ui_icons.js',
   './data/curriculum_manifest.js',
   './data/reference_hub_data.js',
