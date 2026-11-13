@@ -521,6 +521,7 @@ let currentActiveId = 'bai-1';
 let lastLessonNumber = 1;
 let lastRadicalId = 'radicals-1';
 let moduleNavigationToken = 0;
+let pendingModuleId = null;
 let contentTransitionToken = 0;
 let contentTransitionTimer = null;
 let lastAnimatedRouteId = null;
@@ -948,18 +949,24 @@ function prefetchRemainingDataForSearch() {
   ];
 
   let i = 0;
+  const scheduleNextSearch = () => {
+    if (typeof requestIdleCallback === 'function') {
+      requestIdleCallback(loadNext);
+    } else {
+      setTimeout(loadNext, 120);
+    }
+  };
   function loadNext() {
     if (i >= allUrls.length) return;
+    const quietFor = Date.now() - lastMobileNavInteraction;
+    if (document.hidden || quietFor < 900) {
+      setTimeout(scheduleNextSearch, document.hidden ? 1000 : 900 - quietFor);
+      return;
+    }
     const url = allUrls[i++];
-    loadScriptAsync(url).then(() => {
-      if (typeof requestIdleCallback === 'function') {
-        requestIdleCallback(loadNext, { timeout: 2000 });
-      } else {
-        setTimeout(loadNext, 120);
-      }
-    });
+    loadScriptAsync(url).then(scheduleNextSearch);
   }
-  loadNext();
+  scheduleNextSearch();
 }
 
 function startIdlePrefetch() {
@@ -999,25 +1006,26 @@ function startIdlePrefetch() {
   ];
 
   let queueIdx = 0;
+  const scheduleNextIdle = () => {
+    if (queueIdx >= idleQueue.length) return;
+    if (typeof window.requestIdleCallback === 'function') {
+      window.requestIdleCallback(processNextIdle);
+    } else {
+      setTimeout(processNextIdle, 600);
+    }
+  };
   function processNextIdle() {
     if (queueIdx >= idleQueue.length) return;
+    const quietFor = Date.now() - lastMobileNavInteraction;
+    if (document.hidden || quietFor < 900) {
+      setTimeout(scheduleNextIdle, document.hidden ? 1000 : 900 - quietFor);
+      return;
+    }
     const nextUrl = idleQueue[queueIdx++];
-    loadScriptAsync(nextUrl).then(() => {
-      if (typeof window.requestIdleCallback === 'function') {
-        window.requestIdleCallback(processNextIdle, { timeout: 4000 });
-      } else {
-        setTimeout(processNextIdle, 600);
-      }
-    });
+    loadScriptAsync(nextUrl).then(() => setTimeout(scheduleNextIdle, 300));
   }
 
-  setTimeout(() => {
-    if (typeof window.requestIdleCallback === 'function') {
-      window.requestIdleCallback(processNextIdle, { timeout: 3000 });
-    } else {
-      setTimeout(processNextIdle, 800);
-    }
-  }, 2500);
+  setTimeout(scheduleNextIdle, 2500);
 }
 
 function updateHeaderProgress() {
@@ -2479,6 +2487,7 @@ function renderContent(id) {
   if (!content) return;
 
   currentActiveId = id;
+  if (pendingModuleId === id) pendingModuleId = null;
 
   const isExamRunnerRoute = (String(id).startsWith('exam-') || String(id).startsWith('de-thi-') || String(id).includes('/'));
   if (!isExamRunnerRoute) {
@@ -2508,7 +2517,6 @@ function renderContent(id) {
     ensureModuleDataLoaded(id).then(() => {
       if (navigationToken !== moduleNavigationToken || currentActiveId !== id) return;
       renderContent(id);
-      restoreScrollPosition(getModuleScroll(id));
       updateHeaderProgress();
     }).catch(err => {
       console.warn('[LazyLoader] Lỗi tải dữ liệu module:', id, err);
@@ -7277,6 +7285,28 @@ window.handleSearchClick = function(targetId, highlightText = '') {
 };
 
 let mobileNavPillStep = 0;
+let lastMobileNavInteraction = 0;
+let mobileNavNavigationTimer = null;
+let mobileNavNavigationToken = 0;
+const MOBILE_NAV_TRANSITION = 'transform 0.14s cubic-bezier(0.22, 1, 0.36, 1)';
+
+function setMobileNavVisualIndex(idx, animate = true) {
+  const nav = document.getElementById('mobile-bottom-nav');
+  if (!nav || idx < 0 || idx > 4) return;
+  const oldIndex = nav.getAttribute ? nav.getAttribute('data-active-index') : null;
+  if (oldIndex === String(idx)) return;
+  nav.setAttribute('data-active-index', String(idx));
+  if (nav.style && nav.style.setProperty) nav.style.setProperty('--slider-index', idx);
+  const items = nav.querySelectorAll ? nav.querySelectorAll('.mobile-nav-item') : [];
+  if (items && items.forEach) items.forEach((btn, i) => btn.classList.toggle('active', i === idx));
+  const pill = document.getElementById('mobile-nav-slider-pill');
+  if (pill && pill.style) {
+    pill.style.transition = animate ? MOBILE_NAV_TRANSITION : 'none';
+    if (mobileNavPillStep && pill.style.setProperty) {
+      pill.style.setProperty('--pill-x', `${idx * mobileNavPillStep}px`);
+    }
+  }
+}
 
 function syncMobileBottomNav(activeId) {
   const id = String(activeId || currentActiveId || 'bai-1');
@@ -7311,32 +7341,14 @@ function syncMobileBottomNav(activeId) {
   if (examLabel) examLabel.textContent = `Thi JLPT`;
   if (radicalsLabel) radicalsLabel.textContent = `Bộ Thủ`;
 
-  let activeNav = 'lesson';
   let activeIndex = 0;
-  if (id.startsWith('kanji-')) { activeNav = 'kanji'; activeIndex = 1; }
-  else if (id.startsWith('quiz-')) { activeNav = 'quiz'; activeIndex = 2; }
-  else if (id.startsWith('dokkai-')) { activeNav = 'dokkai'; activeIndex = 3; }
-  else if (id === 'exam' || id.startsWith('exam-') || id.startsWith('de-thi') || id.startsWith('radicals-')) { activeNav = 'exam'; activeIndex = 4; }
+  if (id.startsWith('kanji-')) activeIndex = 1;
+  else if (id.startsWith('quiz-')) activeIndex = 2;
+  else if (id.startsWith('dokkai-')) activeIndex = 3;
+  else if (id === 'exam' || id.startsWith('exam-') || id.startsWith('de-thi') || id.startsWith('radicals-')) activeIndex = 4;
 
-  if (nav) {
-    if (nav.setAttribute) nav.setAttribute('data-active-index', String(activeIndex));
-    if (nav.style) {
-      if (nav.style.setProperty) nav.style.setProperty('--slider-index', activeIndex);
-      else nav.style['--slider-index'] = activeIndex;
-    }
-  }
-
-  if (document && document.querySelectorAll) {
-    const items = document.querySelectorAll('.mobile-nav-item');
-    if (items && items.forEach) {
-      items.forEach(btn => {
-        const navType = btn.getAttribute('data-nav');
-        btn.classList.toggle('active', navType === activeNav);
-      });
-    }
-  }
-
-  updateMobileNavSlider();
+  setMobileNavVisualIndex(activeIndex);
+  if (!mobileNavPillStep) updateMobileNavSlider(false);
 }
 
 function updateMobileNavSlider(animate = true) {
@@ -7364,7 +7376,7 @@ function updateMobileNavSlider(animate = true) {
       if (mobileNavPillStep && pill.style.setProperty) {
         pill.style.setProperty('--pill-x', `${idx * mobileNavPillStep}px`);
       }
-      pill.style.transition = animate ? 'transform 0.3s cubic-bezier(0.22, 1, 0.36, 1)' : 'none';
+      pill.style.transition = animate ? MOBILE_NAV_TRANSITION : 'none';
     }
   }
 }
@@ -7390,42 +7402,27 @@ function initMobileBottomNavSliderTouch() {
     return Math.max(0, Math.min(4, idx));
   };
 
-  const previewPillAtIndex = (idx) => {
+  const previewPillAtIndex = (idx, animate = true) => {
     if (idx < 0 || idx > 4) return;
-    if (nav.setAttribute) nav.setAttribute('data-active-index', String(idx));
-    if (nav.style) {
-      if (nav.style.setProperty) nav.style.setProperty('--slider-index', idx);
-      else nav.style['--slider-index'] = idx;
-    }
-    const items = nav.querySelectorAll ? nav.querySelectorAll('.mobile-nav-item') : [];
-    if (items && items.forEach) {
-      items.forEach((btn, i) => {
-        btn.classList.toggle('active', i === idx);
-      });
-    }
-    const pill = document.getElementById('mobile-nav-slider-pill');
-    if (pill && pill.style) {
-      if (mobileNavPillStep && pill.style.setProperty) {
-        pill.style.setProperty('--pill-x', `${idx * mobileNavPillStep}px`);
-      }
-      pill.style.transition = 'transform 0.22s cubic-bezier(0.22, 1, 0.36, 1)';
-    }
+    setMobileNavVisualIndex(idx, animate);
   };
 
   nav.addEventListener('touchstart', (e) => {
     if (!e.touches || e.touches.length === 0) return;
+    lastMobileNavInteraction = Date.now();
     touchNavRect = nav.getBoundingClientRect();
     const idx = getIndexFromTouch(e.touches[0]);
     if (idx >= 0) {
       isDragging = true;
       startIndex = idx;
       lastHoveredIndex = idx;
-      previewPillAtIndex(idx);
+      previewPillAtIndex(idx, false);
     }
   }, { passive: true });
 
   nav.addEventListener('touchmove', (e) => {
     if (!isDragging || !e.touches || e.touches.length === 0) return;
+    lastMobileNavInteraction = Date.now();
     const idx = getIndexFromTouch(e.touches[0]);
     if (idx >= 0 && idx !== lastHoveredIndex) {
       lastHoveredIndex = idx;
@@ -7473,20 +7470,34 @@ window.handleMobileBottomNav = function(targetType) {
     if (menuBtn && menuBtn.click) menuBtn.click();
     return;
   }
-  closeMobileSidebar();
+  let targetId = null;
   if (targetType === 'lesson') {
-    switchModule(`bai-${num}`);
+    targetId = `bai-${num}`;
   } else if (targetType === 'kanji') {
-    switchModule(`kanji-${num}`);
+    targetId = `kanji-${num}`;
   } else if (targetType === 'quiz') {
-    switchModule(`quiz-${num}`);
+    targetId = `quiz-${num}`;
   } else if (targetType === 'dokkai') {
-    switchModule(`dokkai-${num}`);
+    targetId = `dokkai-${num}`;
   } else if (targetType === 'radicals') {
-    switchModule(lastRadicalId || 'radicals-1');
+    targetId = lastRadicalId || 'radicals-1';
   } else if (targetType === 'exam') {
-    switchModule('exam');
+    targetId = 'exam';
   }
+  if (!targetId) return;
+
+  lastMobileNavInteraction = Date.now();
+  ++moduleNavigationToken;
+  syncMobileBottomNav(targetId);
+  closeMobileSidebar();
+  clearTimeout(mobileNavNavigationTimer);
+  const navigationToken = ++mobileNavNavigationToken;
+  const reduceMotion = typeof window.matchMedia === 'function' && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  mobileNavNavigationTimer = setTimeout(() => {
+    if (navigationToken !== mobileNavNavigationToken) return;
+    mobileNavNavigationTimer = null;
+    switchModule(targetId);
+  }, reduceMotion ? 0 : 150);
 };
 
 
@@ -7619,7 +7630,11 @@ function restoreScrollPosition(targetScroll) {
 
 window.switchModule = function(targetId, updateHash = true) {
   if (!targetId) return;
+  clearTimeout(mobileNavNavigationTimer);
+  mobileNavNavigationTimer = null;
+  ++mobileNavNavigationToken;
   const navigationToken = ++moduleNavigationToken;
+  pendingModuleId = targetId;
 
   if (currentActiveId && currentActiveId !== targetId) {
     const mainContent = document.getElementById('main-content');
@@ -7695,7 +7710,6 @@ window.switchModule = function(targetId, updateHash = true) {
     ensureModuleDataLoaded(targetId).then(() => {
       if (navigationToken !== moduleNavigationToken) return;
       renderContent(targetId);
-      restoreScrollPosition(getModuleScroll(targetId));
       updateHeaderProgress();
     }).catch(err => {
       if (navigationToken !== moduleNavigationToken) return;
@@ -7706,7 +7720,6 @@ window.switchModule = function(targetId, updateHash = true) {
   }
 
   renderContent(targetId);
-  restoreScrollPosition(getModuleScroll(targetId));
 };
 
 if (typeof window !== 'undefined' && typeof window.addEventListener === 'function') {
@@ -7727,7 +7740,7 @@ if (typeof window !== 'undefined' && typeof window.addEventListener === 'functio
   window.addEventListener('hashchange', () => {
     const newHash = (window.location && window.location.hash ? window.location.hash : '').replace('#', '');
     handleExamBrowserNav(newHash);
-    if (newHash && newHash !== currentActiveId) {
+    if (newHash && newHash !== currentActiveId && newHash !== pendingModuleId) {
       switchModule(newHash, false);
     }
   });
