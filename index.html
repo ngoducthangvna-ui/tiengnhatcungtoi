@@ -68,8 +68,8 @@
   
   
   <link rel="manifest" href="manifest.json">
-  <link rel="stylesheet" href="style.css?v=20261111_06">
-  <link rel="stylesheet" href="src/master_suite_style.css?v=20261111_06">
+  <link rel="stylesheet" href="style.css?v=20261113_02">
+  <link rel="stylesheet" href="src/master_suite_style.css?v=20261113_02">
 </head>
 <body>
   
@@ -1023,17 +1023,26 @@
   <span class="device-setting-hint">Đồng bộ giọng đọc toàn bộ bài học, từ vựng, kanji &amp; đề thi</span>
   </div>
   <div class="device-pill-group" id="voice-character-selector">
-  <button type="button" class="device-pill active" data-speaker="sato" title="Chị Sato: Giọng Nanami Neural Tokyo chuẩn, công sở, thanh lịch">
+  <button type="button" class="device-pill active" data-speaker="rotate" aria-pressed="true" style="grid-column: 1 / -1; width: 100%; justify-content: center; font-weight: 700;" title="Chế độ Lớp học Minna: Tự động phân vai và xoay tua 6 nhân vật (Sato, Miller, Karina, Yamada, Maria, Santos)">
+  👥 Lớp học Minna (Tự động xoay tua 6 giọng)
+  </button>
+  <button type="button" class="device-pill" data-speaker="sato" aria-pressed="false" title="Chị Sato: Nữ công sở, giọng chuẩn điềm đạm">
   Chị Sato (Nữ)
   </button>
-  <button type="button" class="device-pill" data-speaker="yamada" title="Anh Yamada: Giọng Keita Neural Tokyo chuẩn, công sở, điềm đạm">
-  Anh Yamada (Nam)
+  <button type="button" class="device-pill" data-speaker="karina" aria-pressed="false" title="Chị Karina: Nữ sinh viên, giọng cao trong trẻo">
+  Chị Karina (Nữ trẻ)
   </button>
-  <button type="button" class="device-pill" data-speaker="miller" title="Anh Miller: Giọng Takumi Neural, nam thanh niên trẻ trung">
+  <button type="button" class="device-pill" data-speaker="maria" aria-pressed="false" title="Chị Maria: Nữ đằm thắm, giọng trầm ấm">
+  Chị Maria (Nữ trầm)
+  </button>
+  <button type="button" class="device-pill" data-speaker="miller" aria-pressed="false" title="Anh Miller: Nam thanh niên, giọng sáng trẻ trung">
   Anh Miller (Nam trẻ)
   </button>
-  <button type="button" class="device-pill" data-speaker="karina" title="Chị Karina: Giọng Aoi Neural, nữ sinh viên trong trẻo">
-  Chị Karina (Nữ trẻ)
+  <button type="button" class="device-pill" data-speaker="yamada" aria-pressed="false" title="Anh Yamada: Nam công sở, giọng chững chạc">
+  Anh Yamada (Nam)
+  </button>
+  <button type="button" class="device-pill" data-speaker="santos" aria-pressed="false" title="Anh Santos: Nam giọng trầm ấm">
+  Anh Santos (Nam trầm)
   </button>
   </div>
   </div>
@@ -1042,16 +1051,16 @@
   <div class="voice-slider-item">
   <div class="slider-header">
   <label for="voice-speed-slider">Tốc độ phát âm:</label>
-  <strong id="voice-speed-val">0.92x</strong>
+  <strong id="voice-speed-val">0.96x</strong>
   </div>
-  <input type="range" id="voice-speed-slider" min="0.75" max="1.25" step="0.05" value="0.92">
+  <input type="range" id="voice-speed-slider" min="0.75" max="1.25" step="0.01" value="0.96">
   </div>
   <div class="voice-slider-item">
   <div class="slider-header">
   <label for="voice-pitch-slider">Cao độ giọng:</label>
-  <strong id="voice-pitch-val">1.04x</strong>
+  <strong id="voice-pitch-val">1x</strong>
   </div>
-  <input type="range" id="voice-pitch-slider" min="0.85" max="1.20" step="0.02" value="1.04">
+  <input type="range" id="voice-pitch-slider" min="0.85" max="1.20" step="0.01" value="1.00">
   </div>
   </div>
 
@@ -1577,39 +1586,36 @@
   </button>
 
   
-  <script src="data/ui_icons.js?v=20261111_06"></script>
-  <script src="data/curriculum_manifest.js?v=20261111_06"></script>
-  <script src="data/exams_manifest.js?v=20261111_06"></script>
-  <script src="data/exam_furigana.js?v=20261111_06"></script>
-  <script src="data/data_normalizer.js?v=20261111_06"></script>
-  <script src="data/audio_prosody_rules.js?v=20261111_06"></script>
-  <script src="data/romaji_kana_map.js?v=20261111_06"></script>
-  <script src="data/kanji_lookalikes.js?v=20261111_06"></script>
-  <script src="data/reference_hub_data.js?v=20261111_06"></script>
+  <script src="data/ui_icons.js?v=20261113_02"></script>
+  <script src="data/curriculum_manifest.js?v=20261113_02"></script>
+  <script src="data/exams_manifest.js?v=20261113_02"></script>
+  <script src="data/exam_furigana.js?v=20261113_02"></script>
+  <script src="data/data_normalizer.js?v=20261113_02"></script>
+  <script src="data/audio_prosody_rules.js?v=20261113_02"></script>
+  <script src="data/romaji_kana_map.js?v=20261113_02"></script>
+  <script src="data/kanji_lookalikes.js?v=20261113_02"></script>
+  <script src="data/reference_hub_data.js?v=20261113_02"></script>
 
-  
-  <script src="src/security_engine.js?v=20261111_06"></script>
-  <script src="src/storage_engine.js?v=20261111_06"></script>
-  <script src="src/auth_engine.js?v=20261111_06"></script>
-  <script src="src/audio_engine.js?v=20261111_06"></script>
-  <script src="src/quiz_engine.js?v=20261111_06"></script>
-  <script src="src/kanji_engine.js?v=20261111_06"></script>
-  <script src="src/navigation_engine.js?v=20261111_06"></script>
-  <script src="src/dictionary_engine.js?v=20261111_06"></script>
-  <script src="src/exam_engine.js?v=20261111_06"></script>
-  <script src="src/acoustic_analyzer.js?v=20261111_06"></script>
-  <script src="src/kaiwa_engine.js?v=20261111_06"></script>
-  <script src="src/conjugation_engine.js?v=20261111_06"></script>
-  <script src="src/notebook_engine.js?v=20261111_06"></script>
-  <script src="src/analytics_streak_engine.js?v=20261111_06"></script>
-  <script src="src/study_worker.js?v=20261111_06"></script>
-  <script src="src/domain_services.js?v=20261111_06"></script>
-  <script src="src/study_tools_engine.js?v=20261111_06"></script>
+  <script src="src/security_engine.js?v=20261113_02"></script>
+  <script src="src/storage_engine.js?v=20261113_02"></script>
+  <script src="src/auth_engine.js?v=20261113_02"></script>
+  <script src="src/audio_engine.js?v=20261113_02"></script>
+  <script src="src/quiz_engine.js?v=20261113_02"></script>
+  <script src="src/kanji_engine.js?v=20261113_02"></script>
+  <script src="src/navigation_engine.js?v=20261113_02"></script>
+  <script src="src/dictionary_engine.js?v=20261113_02"></script>
+  <script src="src/exam_engine.js?v=20261113_02"></script>
+  <script src="src/acoustic_analyzer.js?v=20261113_02"></script>
+  <script src="src/kaiwa_engine.js?v=20261113_02"></script>
+  <script src="src/conjugation_engine.js?v=20261113_02"></script>
+  <script src="src/notebook_engine.js?v=20261113_02"></script>
+  <script src="src/analytics_streak_engine.js?v=20261113_02"></script>
+  <script src="src/study_worker.js?v=20261113_02"></script>
+  <script src="src/domain_services.js?v=20261113_02"></script>
+  <script src="src/study_tools_engine.js?v=20261113_02"></script>
 
-  
-  <script src="data/lessons_1_5.js?v=20261111_06"></script>
+  <script src="data/lessons_1_5.js?v=20261113_02"></script>
 
-  
-  <script src="app.js?v=20261111_06"></script>
+  <script src="app.js?v=20261113_02"></script>
 </body>
 </html>

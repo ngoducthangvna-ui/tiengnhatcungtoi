@@ -105,7 +105,7 @@
     const link = document.createElement('link');
     link.id = 'exam-engine-styles';
     link.rel = 'stylesheet';
-    link.href = 'src/exam_style.css?v=20261111_06';
+    link.href = 'src/exam_style.css?v=20261111_12';
     document.head.appendChild(link);
   }
 
@@ -115,12 +115,12 @@
   function ensureFuriganaMapLoaded() {
     if (root.EXAM_FURIGANA && typeof root.EXAM_FURIGANA === 'object') return Promise.resolve();
     if (root.NavigationEngine && typeof root.NavigationEngine.loadScriptAsync === 'function') {
-      return root.NavigationEngine.loadScriptAsync('data/exam_furigana.js?v=20261111_06');
+      return root.NavigationEngine.loadScriptAsync('data/exam_furigana.js?v=20261111_12');
     }
     return new Promise((resolve) => {
       if (typeof document === 'undefined') return resolve();
       const s = document.createElement('script');
-      s.src = 'data/exam_furigana.js?v=20261111_06';
+      s.src = 'data/exam_furigana.js?v=20261111_12';
       s.onload = () => resolve();
       s.onerror = () => resolve();
       document.head.appendChild(s);
@@ -142,7 +142,7 @@
       return Promise.all(promises);
     }
 
-    const scriptUrl = isN5 ? 'data/exams_n5.js?v=20261111_06' : 'data/exams_n4.js?v=20261111_06';
+    const scriptUrl = isN5 ? 'data/exams_n5.js?v=20261111_12' : 'data/exams_n4.js?v=20261111_12';
     if (root.NavigationEngine && typeof root.NavigationEngine.loadScriptAsync === 'function') {
       promises.push(root.NavigationEngine.loadScriptAsync(scriptUrl));
       return Promise.all(promises);
@@ -334,31 +334,31 @@
    * Khi cuộn trang, thanh runnerStickyHud luôn cố định sticky ở đỉnh màn hình
    */
   function setupStickyHudScrollObserver() {
-    const handleScroll = () => {
-      // KIỂM TRA TUYỆT ĐỐI: Chỉ xử lý khi đang ở trong màn hình làm bài thi (examRunnerView & exam-mode-active)
-      const runnerView = document.getElementById('examRunnerView');
-      const isExamActive = Boolean(document.body && document.body.classList.contains('exam-mode-active'));
-      if (!runnerView || !isExamActive) {
-        removeMiniTimerWidget();
-        return;
-      }
-
+    let scrollFramePending = false;
+    const updateHud = () => {
+      scrollFramePending = false;
+      if (!document.body || !document.body.classList.contains('exam-mode-active')) return;
+      if (!document.getElementById('examRunnerView')) return;
       const hud = document.getElementById('runnerStickyHud');
-      removeMiniTimerWidget();
       if (!hud) return;
-
       const mainContent = document.getElementById('main-content') || document.querySelector('.main-content');
       const scrollY = (mainContent ? mainContent.scrollTop : 0) || (window.pageYOffset || document.documentElement.scrollTop || 0);
-
-      if (hud) {
-        if (scrollY > 20) {
-          hud.classList.add('is-scrolled');
-        } else {
-          hud.classList.remove('is-scrolled');
-        }
+      const shouldBeScrolled = scrollY > 20;
+      if (hud.classList.contains('is-scrolled') !== shouldBeScrolled) {
+        hud.classList.toggle('is-scrolled', shouldBeScrolled);
+      }
+    };
+    const handleScroll = () => {
+      if (scrollFramePending) return;
+      scrollFramePending = true;
+      if (typeof window.requestAnimationFrame === 'function') {
+        window.requestAnimationFrame(updateHud);
+      } else {
+        setTimeout(updateHud, 16);
       }
     };
 
+    removeMiniTimerWidget();
     const mainContent = document.getElementById('main-content') || document.querySelector('.main-content');
     if (mainContent && !mainContent._hasExamScrollListener) {
       mainContent._hasExamScrollListener = true;

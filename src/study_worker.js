@@ -32,7 +32,7 @@
       root.AnalyticsStreakEngine
     );
   }
-})(typeof self !== 'undefined' ? self : this, function (root, refData, noteEngine, analyticsEngine) {
+})(typeof globalThis !== 'undefined' ? globalThis : (typeof self !== 'undefined' ? self : this), function (root, refData, noteEngine, analyticsEngine) {
   'use strict';
 
   // ==========================================================================
@@ -168,17 +168,44 @@
   }
 
   /**
-   * Speak Japanese text using Web Speech API
+   * Speak Japanese text using Unified Kaiwa-Grade AudioEngine & Web Speech API (4-Phase)
    */
-  function speakPodcastText(text, lang = 'ja-JP', rate = 0.92) {
+  function speakPodcastText(text, lang = 'ja-JP', rate = 0.96) {
+    // Phase 1: Fail-fast guard
+    const raw = String(text || '').trim();
+    if (!raw) return false;
+
+    // Phase 2 & 3: Normalization & Expressive Prosody via AudioEngine
+    const ae = root.AudioEngine || null;
+    const normalized = (lang === 'ja-JP' && ae && typeof ae.buildNaturalSpeechText === 'function')
+      ? ae.buildNaturalSpeechText(raw)
+      : raw;
+
+    // Phase 4: Imperative Shell playback
+    if (lang === 'ja-JP' && typeof root.speakJapanese === 'function') {
+      root.speakJapanese(normalized);
+      return true;
+    }
+
     try {
       if (!root.speechSynthesis || typeof root.SpeechSynthesisUtterance !== 'function') {
         return false;
       }
       root.speechSynthesis.cancel();
-      const utterance = new root.SpeechSynthesisUtterance(String(text || ''));
+      const utterance = new root.SpeechSynthesisUtterance(normalized);
       utterance.lang = lang;
-      utterance.rate = rate;
+      if (lang === 'ja-JP' && ae && typeof ae.computeExpressiveProsody === 'function') {
+        const prosody = ae.computeExpressiveProsody(normalized, 'sato', false);
+        utterance.rate = prosody ? prosody.rate : rate;
+        utterance.pitch = prosody ? prosody.pitch : 1.02;
+      } else {
+        utterance.rate = rate;
+      }
+      if (lang === 'ja-JP' && ae && typeof ae.selectBestJapaneseVoice === 'function' && typeof root.speechSynthesis.getVoices === 'function') {
+        const voices = root.speechSynthesis.getVoices() || [];
+        const bestVoice = ae.selectBestJapaneseVoice(voices, 'female', 'sato');
+        if (bestVoice) utterance.voice = bestVoice;
+      }
       root.speechSynthesis.speak(utterance);
       return true;
     } catch (_e) {
@@ -376,7 +403,7 @@
       if (!state.isPlaying || state.queue.length === 0) return;
       const item = state.queue[state.currentIndex];
       if (item) {
-        speakPodcastText(item.reading || item.jp, 'ja-JP', 0.92);
+        speakPodcastText(item.reading || item.jp, 'ja-JP', 0.96);
       }
       if (typeof onStep === 'function') {
         onStep(getState());

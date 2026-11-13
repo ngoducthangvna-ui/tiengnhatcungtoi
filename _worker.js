@@ -489,13 +489,18 @@ export default {
           );
         }
 
+        // Chuẩn hóa văn bản trước khi gửi sang SpeechGen (loại bỏ thẻ XML nếu là chuỗi SSML)
+        const textForSpeechGen = (typeof speechText === 'string' && speechText.trim().startsWith('<speak'))
+          ? speechText.replace(/<[^>]+>/g, '').trim()
+          : speechText;
+
         // Gọi sang SpeechGen API với Secret lưu tại Cloudflare Worker (không lộ ra client)
         const speechGenUrl = 'https://speechgen.io/index.php?r=api/text';
         const params = new URLSearchParams({
           token: token,
           email: email,
           voice: voiceName,
-          text: speechText,
+          text: textForSpeechGen,
           format: 'mp3',
           speed: String(speed),
           pitch: String(pitch),

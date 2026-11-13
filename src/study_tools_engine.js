@@ -28,7 +28,7 @@
       root.DomainServices
     );
   }
-})(typeof self !== 'undefined' ? self : this, function (root, refData, conjEngine, noteEngine, analyticsEngine, studyWorker, domainServices) {
+})(typeof globalThis !== 'undefined' ? globalThis : (typeof self !== 'undefined' ? self : this), function (root, refData, conjEngine, noteEngine, analyticsEngine, studyWorker, domainServices) {
   'use strict';
 
   const pomodoroState = {
@@ -228,13 +228,39 @@
     }));
   }
 
-  function speakItem(text, lang = 'ja-JP') {
+  function speakItem(text, lang = 'ja-JP', btnEl = null, ev = null) {
+    // Phase 1: Fail-fast guard
+    const raw = String(text || '').trim();
+    if (!raw) return false;
+
+    // Phase 2 & 3: Delegate to unified Kaiwa-grade pipeline when speakJapanese is active
+    if (lang === 'ja-JP' && typeof root.speakJapanese === 'function') {
+      root.speakJapanese(raw, btnEl, ev);
+      return true;
+    }
+
+    // Phase 4: Web Speech fallback with AudioEngine prosody & Neural voice selection
     try {
       if (root.speechSynthesis && typeof root.SpeechSynthesisUtterance === 'function') {
         root.speechSynthesis.cancel();
-        const u = new root.SpeechSynthesisUtterance(String(text || ''));
+        const ae = root.AudioEngine || null;
+        const normalized = (lang === 'ja-JP' && ae && typeof ae.buildNaturalSpeechText === 'function')
+          ? ae.buildNaturalSpeechText(raw)
+          : raw;
+        const u = new root.SpeechSynthesisUtterance(normalized);
         u.lang = lang;
-        u.rate = lang === 'ja-JP' ? 0.92 : 1.0;
+        if (lang === 'ja-JP' && ae && typeof ae.computeExpressiveProsody === 'function') {
+          const prosody = ae.computeExpressiveProsody(normalized, 'sato', false);
+          u.rate = prosody ? prosody.rate : 0.96;
+          u.pitch = prosody ? prosody.pitch : 1.02;
+        } else {
+          u.rate = lang === 'ja-JP' ? 0.96 : 1.0;
+        }
+        if (lang === 'ja-JP' && ae && typeof ae.selectBestJapaneseVoice === 'function' && typeof root.speechSynthesis.getVoices === 'function') {
+          const voices = root.speechSynthesis.getVoices() || [];
+          const bestVoice = ae.selectBestJapaneseVoice(voices, 'female', 'sato');
+          if (bestVoice) u.voice = bestVoice;
+        }
         root.speechSynthesis.speak(u);
         return true;
       }
@@ -1624,7 +1650,7 @@
       return true;
     }
     if (action === 'speak-jp') {
-      speakItem(actionBtn.getAttribute('data-jp'), 'ja-JP');
+      speakItem(actionBtn.getAttribute('data-jp'), 'ja-JP', actionBtn);
       return true;
     }
     if (action === 'pomo-mode' || action === 'pomo-set-mode') {
@@ -1856,7 +1882,7 @@
       popover.style.display = 'block';
 
       const speakBtn = document.getElementById('ms-pop-speak');
-      if (speakBtn) speakBtn.onclick = () => speakItem(top.reading || top.jp, 'ja-JP');
+      if (speakBtn) speakBtn.onclick = (ev) => speakItem(top.reading || top.jp, 'ja-JP', speakBtn, ev);
       const saveBtn = document.getElementById('ms-pop-save');
       if (saveBtn && ne) {
         saveBtn.onclick = () => {

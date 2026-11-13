@@ -33,9 +33,9 @@
 
   // Ma trận hồ sơ giọng 25 nhân vật (13 mô hình giọng Neural độc lập + biên độ Pitch tự nhiên [0.93 - 1.05])
   const CHARACTER_VOICE_PROFILES = {
-    sato:      { gender: 'female', voice: 'ja-JP-NanamiNeural',             speechGenVoice: 'Nanami',    pitch: 1.02, rate: 0.96, voiceName: 'Nanami (Nữ công sở chuẩn Tokyo)' },
-    karina:    { gender: 'female', voice: 'en-US-EmmaMultilingualNeural',   speechGenVoice: 'Emma',      pitch: 1.05, rate: 0.98, voiceName: 'Emma (Nữ sinh viên trẻ trung)' },
-    maria:     { gender: 'female', voice: 'en-US-AvaMultilingualNeural',    speechGenVoice: 'Ava',       pitch: 0.97, rate: 0.94, voiceName: 'Ava (Nữ đằm thắm, ấm áp)' },
+    sato:      { gender: 'female', voice: 'ja-JP-NanamiNeural',             speechGenVoice: 'Nanami',    pitch: 1.00, rate: 0.95, voiceHints: /nanami|kyoko|google\s*日本語/i, voiceName: 'Nanami (Nữ công sở chuẩn Tokyo)' },
+    karina:    { gender: 'female', voice: 'en-US-EmmaMultilingualNeural',   speechGenVoice: 'Emma',      pitch: 1.18, rate: 1.04, voiceHints: /haruka|sayaka|ayumi|aoi|mayu|emma/i, voiceName: 'Emma (Nữ sinh viên trẻ trung)' },
+    maria:     { gender: 'female', voice: 'en-US-AvaMultilingualNeural',    speechGenVoice: 'Ava',       pitch: 0.90, rate: 0.94, voiceHints: /shiori|ava|mizuki/i, voiceName: 'Ava (Nữ đằm thắm, ấm áp)' },
     kimura:    { gender: 'female', voice: 'de-DE-SeraphinaMultilingualNeural', speechGenVoice: 'Seraphina', pitch: 1.04, rate: 0.97, voiceName: 'Seraphina (Nữ phát thanh viên)' },
     suzuki:    { gender: 'female', voice: 'fr-FR-VivienneMultilingualNeural',  speechGenVoice: 'Vivienne',  pitch: 1.03, rate: 0.96, voiceName: 'Vivienne (Nữ đồng nghiệp)' },
     watanabe:  { gender: 'female', voice: 'pt-BR-ThalitaMultilingualNeural',   speechGenVoice: 'Thalita',   pitch: 0.99, rate: 0.95, voiceName: 'Thalita (Nữ thanh lịch)' },
@@ -44,9 +44,9 @@
     kanrinin:  { gender: 'female', voice: 'de-DE-SeraphinaMultilingualNeural', speechGenVoice: 'Seraphina', pitch: 0.95, rate: 0.92, voiceName: 'Seraphina-Calm (Quản lý điềm đạm)' },
     barber:    { gender: 'female', voice: 'ja-JP-NanamiNeural',             speechGenVoice: 'Nanami',    pitch: 1.04, rate: 0.97, voiceName: 'Nanami-Stylist (Thợ salon thân thiện)' },
     lee:       { gender: 'female', voice: 'pt-BR-ThalitaMultilingualNeural',   speechGenVoice: 'Thalita',   pitch: 1.00, rate: 0.95, voiceName: 'Thalita-Scholar (Nữ nghiên cứu viên)' },
-    yamada:    { gender: 'male',   voice: 'ja-JP-KeitaNeural',              speechGenVoice: 'Keita',     pitch: 1.00, rate: 0.96, voiceName: 'Keita (Nam công sở chuẩn Tokyo)' },
-    miller:    { gender: 'male',   voice: 'en-US-BrianMultilingualNeural',  speechGenVoice: 'Brian',     pitch: 1.04, rate: 0.95, voiceName: 'Brian (Nam thanh niên trẻ)' },
-    santos:    { gender: 'male',   voice: 'en-US-AndrewMultilingualNeural', speechGenVoice: 'Andrew',    pitch: 0.95, rate: 0.94, voiceName: 'Andrew (Nam trầm ấm)' },
+    yamada:    { gender: 'male',   voice: 'ja-JP-KeitaNeural',              speechGenVoice: 'Keita',     pitch: 0.86, rate: 0.93, voiceHints: /keita|otoya|ichiro/i, voiceName: 'Keita (Nam công sở chuẩn Tokyo)' },
+    miller:    { gender: 'male',   voice: 'en-US-BrianMultilingualNeural',  speechGenVoice: 'Brian',     pitch: 1.06, rate: 1.02, voiceHints: /takumi|daichi|naoki|brian/i, voiceName: 'Brian (Nam thanh niên trẻ)' },
+    santos:    { gender: 'male',   voice: 'en-US-AndrewMultilingualNeural', speechGenVoice: 'Andrew',    pitch: 0.80, rate: 0.92, voiceHints: /hattori|andrew/i, voiceName: 'Andrew (Nam trầm ấm)' },
     wang:      { gender: 'male',   voice: 'ko-KR-HyunsuMultilingualNeural', speechGenVoice: 'Hyunsu',    pitch: 1.02, rate: 0.95, voiceName: 'Hyunsu (Bác sĩ trẻ điềm tĩnh)' },
     watt:      { gender: 'male',   voice: 'en-AU-WilliamMultilingualNeural', speechGenVoice: 'William',   pitch: 0.94, rate: 0.93, voiceName: 'William (Giáo sư đĩnh đạc)' },
     matsumoto: { gender: 'male',   voice: 'en-AU-WilliamMultilingualNeural', speechGenVoice: 'William',   pitch: 0.93, rate: 0.92, voiceName: 'William-Senior (Trưởng phòng uy nghiêm)' },
@@ -58,6 +58,30 @@
     schmidt:   { gender: 'male',   voice: 'de-DE-FlorianMultilingualNeural', speechGenVoice: 'Florian',   pitch: 0.95, rate: 0.94, voiceName: 'Florian-Engineer (Kỹ sư trầm chắc)' },
     gupta:     { gender: 'male',   voice: 'fr-FR-RemyMultilingualNeural',   speechGenVoice: 'Remy',      pitch: 1.03, rate: 0.96, voiceName: 'Remy (Nam nhiệt tình)' },
     thang:     { gender: 'male',   voice: 'it-IT-GiuseppeMultilingualNeural', speechGenVoice: 'Giuseppe',  pitch: 1.05, rate: 0.97, voiceName: 'Giuseppe (Nam kỹ sư trẻ)' }
+  };
+
+  // Danh sách 6 nhân vật cốt lõi cho chế độ "Lớp học Minna (Tự động xoay tua đa giọng)"
+  const ROTATION_CHARACTERS = ['sato', 'miller', 'karina', 'yamada', 'maria', 'santos'];
+
+  // Mẫu giọng Studio Neural thật (cắt từ Audio Sprite Kaiwa) dùng cho nút "Nghe thử" trong bảng Cài đặt giọng
+  const VOICE_PREVIEW_SAMPLES = {
+    rotate: { src: 'audio/kaiwa/lesson_1.mp3',  start: 0,    end: 3.41, text: 'みなさん、こんにちは！マイク・ミラーです。' },
+    sato:   { src: 'audio/kaiwa/lesson_6.mp3',  start: 2.81, end: 5.06, text: 'あした 友だちと お花見を します。' },
+    karina: { src: 'audio/kaiwa/lesson_14.mp3', start: 0,    end: 1.87, text: '梅田まで 行って ください。' },
+    maria:  { src: 'audio/kaiwa/lesson_3.mp3',  start: 0,    end: 2.81, text: 'すみません。ワイン売り場は どこですか。' },
+    yamada: { src: 'audio/kaiwa/lesson_1.mp3',  start: 3.41, end: 6.41, text: '佐藤さん、こちらは マイク・ミラーさんです。' },
+    miller: { src: 'audio/kaiwa/lesson_4.mp3',  start: 2.64, end: 6.6,  text: 'すみません。そちらは 何時から 何時までですか。' },
+    santos: { src: 'audio/kaiwa/lesson_2.mp3',  start: 4.54, end: 6.62, text: 'こんにちは。サントスです。' }
+  };
+
+  // Bảng ánh xạ phong cách cảm xúc biểu cảm (Neural Expressive Styles) theo từng nhân vật
+  const CHARACTER_EXPRESSIVE_STYLES = {
+    karina: { style: 'cheerful', styledegree: '1.2' },
+    sato:   { style: 'calm',     styledegree: '1.0' },
+    maria:  { style: 'calm',     styledegree: '1.0' },
+    miller: { style: 'chat',     styledegree: '1.1' },
+    yamada: { style: 'chat',     styledegree: '1.1' },
+    santos: { style: 'friendly', styledegree: '1.0' }
   };
 
   function getProsodyRules() {
@@ -76,12 +100,41 @@
     VOICE: SPEECHGEN_VOICE,
     MODEL: SPEECHGEN_MODEL,
     CHARACTER_VOICE_PROFILES,
+    VOICE_PREVIEW_SAMPLES,
+    ROTATION_CHARACTERS,
+
+    /**
+     * Thuật toán phân vai tự động xoay tua (Round-Robin Deterministic Mapping)
+     * Xác định nhân vật phát âm dựa trên băm chuỗi văn bản, giúp mỗi từ vựng / câu có một "giáo viên" cố định, sinh động
+     */
+    getRotatingSpeaker(text) {
+      const clean = String(text || '').trim();
+      if (!clean) return 'sato';
+      let hash = 0;
+      for (let i = 0; i < clean.length; i++) {
+        hash = ((hash << 5) - hash) + clean.charCodeAt(i);
+        hash |= 0;
+      }
+      const idx = Math.abs(hash) % ROTATION_CHARACTERS.length;
+      return ROTATION_CHARACTERS[idx];
+    },
+
+    /**
+     * Lấy mẫu giọng Studio Neural thật của nhân vật (null nếu không có)
+     */
+    getVoicePreviewSample(speakerId) {
+      const key = String(speakerId || '').toLowerCase().trim();
+      return VOICE_PREVIEW_SAMPLES[key] || null;
+    },
 
     /**
      * Truy xuất hồ sơ giọng chuẩn của nhân vật hội thoại theo speakerId hoặc giới tính
      */
     getCharacterVoiceProfile(speakerId, fallbackGender = null) {
       const key = String(speakerId || '').toLowerCase().trim();
+      if (key === 'rotate') {
+        return CHARACTER_VOICE_PROFILES.sato;
+      }
       if (key && CHARACTER_VOICE_PROFILES[key]) {
         return CHARACTER_VOICE_PROFILES[key];
       }
@@ -116,6 +169,12 @@
 
       // Khử chú thích Hán tự trùng âm đứng ngay sau ngoặc kép như 「たちいりきんし」(立入禁止)
       text = text.replace(/(「[^」]+」)\s*[\(（][一-龯々]+[\)）]/g, '$1');
+
+      // Khử chú thích loại từ của tính từ đuôi な như かんたん（な） hoặc きれい(な)
+      text = text.replace(/[\(（]\s*な\s*[\)）]/g, '');
+
+      // Khử ký hiệu tiền tố/hậu tố ngữ pháp ～ hoặc ~ ở đầu/cuối từ vựng (như ～にん, ～さい)
+      text = text.replace(/^[～~]+|[～~]+$/g, '');
 
       // Khử các tiền tố đánh số ví dụ: 1., 2., a., b.
       text = text.replace(/^\s*\d+[\.\、\)]\s*/, '');
@@ -196,6 +255,8 @@
         } else if (preferredVoiceHint && lower.includes(preferredVoiceHint)) {
           score += 38;
         }
+        // Ưu tiên sub-voice riêng của nhân vật để 2 nhân vật cùng giới tính không trùng giọng
+        if (profile && profile.voiceHints && profile.voiceHints.test(name)) score += 75;
 
         if (targetGender === 'male') {
           if (/keita|otoya|ichiro|hattori|daichi|naoki|male|takumi|brian|andrew|william|hyunsu|florian|remy|giuseppe/i.test(lower)) score += 25;
@@ -216,12 +277,12 @@
      */
     isQuestionClause(clauseText) {
       if (!clauseText) return false;
-      const clean = String(clauseText).replace(/[。、！？\s「」『』（）]/g, '');
+      const clean = String(clauseText).replace(/<[^>]+>/g, '').replace(/[。、！？\s「」『』（）]/g, '');
       if (!clean) return false;
       if (/？|\?/.test(clauseText)) return true;
       // "そうですか" / "そうなんですか" / "そうだったんですか" khi đứng riêng thường là câu cảm thán xác nhận (hạ hoặc ngang giọng),
       // trừ khi đi kèm từ để hỏi
-      if (/^(?:ああ|あ|えっ|へえ|ほう)?(?:そうですか|そうなんですか|そうだったんですか)$/.test(clean)) {
+      if (/^(?:ああ|あ|ええ|はい|えっ|へえ|ほう)?(?:そうですか|そうなんですか|そうだったんですか)$/.test(clean)) {
         return false;
       }
       if (/(?:ですか|ますか|でしょうか|ませんか|ましょうか|ないか|んですか|のですか|ますかね|ですかね|かい|だい)$/.test(clean)) {
@@ -452,7 +513,7 @@
       const basePitch = profile.pitch || 1.0;
 
       const finalRate = Math.max(0.70, Math.min(1.18, Number((baseRate * (emo.webRateFactor || 1.0)).toFixed(3))));
-      const finalPitch = Math.max(0.86, Math.min(1.16, Number((basePitch * (emo.webPitchFactor || 1.0)).toFixed(3))));
+      const finalPitch = Math.max(0.72, Math.min(1.28, Number((basePitch * (emo.webPitchFactor || 1.0)).toFixed(3))));
 
       return {
         emotion: emotionKey,
@@ -515,15 +576,24 @@
       });
 
       // 2. Mệnh đề điều kiện (たら, なら, えば)
-      str = str.replace(/([ぁ-んァ-ヶ一-龥]{2,})(たら|だら)(?!(?:[、。！？』」）\\)]|$))(?=[ぁ-んァ-ヶ一-龥A-Za-z0-9])/g, '$1$2、');
-      str = str.replace(/(?!さようなら|さよなら)([ぁ-んァ-ヶ一-龥]{2,})(なら)(?!(?:[、。！？』」）\\)]|$))(?=[ぁ-んァ-ヶ一-龥A-Za-z0-9])/g, '$1$2、');
-      str = str.replace(/([ぁ-んァ-ヶ一-龥]+)(えば|けば|せば|てば|ねば|べば|めば|れば)(?!(?:[、。！？』」）\\)]|$))(?=[ぁ-んァ-ヶ一-龥A-Za-z0-9])/g, '$1$2、');
+      str = str.replace(/([ぁ-んァ-ヶ一-龥]{2,})(たら|だら)(?!(?:[、。！？』」）\\)]|$))(?=\s*[ぁ-んァ-ヶ一-龥A-Za-z0-9])/g, '$1$2、');
+      str = str.replace(/(?!さようなら|さよなら)([ぁ-んァ-ヶ一-龥]{2,})(なら)(?!(?:[、。！？』」）\\)]|$))(?=\s*[ぁ-んァ-ヶ一-龥A-Za-z0-9])/g, '$1$2、');
+      str = str.replace(/([ぁ-んァ-ヶ一-龥]+)(えば|けば|せば|てば|ねば|べば|めば|れば)(?!(?:[、。！？』」）\\)]|$))(?=\s*[ぁ-んァ-ヶ一-龥A-Za-z0-9])/g, '$1$2、');
 
-      // 3. Mệnh đề chỉ lý do & nhượng bộ (から, ので, のに, ですが, ますが, けど)
-      str = str.replace(/([ぁ-んァ-ヶ一-龥]+(?:ます|です|ました|でした|だ|た|ない|る|い))から(?!(?:です|だ|ね|よ|[、。！？』」）\\)]|$))(?=[ぁ-んァ-ヶ一-龥A-Za-z0-9])/g, '$1から、');
-      str = str.replace(/([ぁ-んァ-ヶ一-龥]{2,})ので(?!(?:す|だ|[、。！？』」）\\)]|$))(?=[ぁ-んァ-ヶ一-龥A-Za-z0-9])/g, '$1ので、');
-      str = str.replace(/([ぁ-んァ-ヶ一-龥]{2,})のに(?!(?:[、。！？』」）\\)]|$))(?=[ぁ-んァ-ヶ一-龥A-Za-z0-9])/g, '$1のに、');
-      str = str.replace(/([ぁ-んァ-ヶ一-龥]+(?:ですが|ますが|でしたが|ましたが))(?!(?:[、。！？…』」）\\)]|$))(?=[ぁ-んァ-ヶ一-龥A-Za-z0-9])/g, '$1、');
+      // 3. Mệnh đề chỉ lý do & nhượng bộ (から, ので, のに, ですが, ますが, ても, でも, けど, けれど)
+      str = str.replace(/([ぁ-んァ-ヶ一-龥]+(?:ます|ません|です|ました|でした|だ|た|ない|る|い|かった))から(?!(?:です|だ|ね|よ|[、。！？』」）\\)]|$))(?=\s*[ぁ-んァ-ヶ一-龥A-Za-z0-9])/g, '$1から、');
+      str = str.replace(/([ぁ-んァ-ヶ一-龥]{2,})ので(?!(?:す|だ|[、。！？』」）\\)]|$))(?=\s*[ぁ-んァ-ヶ一-龥A-Za-z0-9])/g, '$1ので、');
+      str = str.replace(/([ぁ-んァ-ヶ一-龥]{2,})のに(?!(?:[、。！？』」）\\)]|$))(?=\s*[ぁ-んァ-ヶ一-龥A-Za-z0-9])/g, '$1のに、');
+      str = str.replace(/([ぁ-んァ-ヶ一-龥]{2,})(ても|でも)(?!(?:[、。！？』」）\\)]|$))(?=\s*[ぁ-んァ-ヶ一-龥A-Za-z0-9])/g, '$1$2、');
+      str = str.replace(/([ぁ-んァ-ヶ一-龥]+)(けど|けれど|けれども)(?!(?:[、。！？』」）\\)]|$))(?=\s*[ぁ-んァ-ヶ一-龥A-Za-z0-9])/g, '$1$2、');
+      str = str.replace(/([ぁ-んァ-ヶ一-龥]+(?:ですが|ますが|でしたが|ましたが))(?!(?:[、。！？…』」）\\)]|$))(?=\s*[ぁ-んァ-ヶ一-龥A-Za-z0-9])/g, '$1、');
+
+      // 3b. Chèn dấu ngắt nghỉ '、' sau trợ từ chỉ chủ đề 'は' trong các câu văn dài đa mệnh đề
+      // để trình duyệt ngắt hơi tự nhiên khi phát âm offline qua Web Speech.
+      // BẤT BIẾN TƯƠNG THÍCH NGƯỢC: Tuyệt đối KHÔNG chèn '、' vào câu ngắn đơn giản (như お国はどちらですか？, わたしはがくせいですか？)
+      if (rawClean.length >= 18 && !isQuestion) {
+        str = str.replace(/(?<=[一-龯々]|[ぁ-んァ-ヶ]{2,})は(?!(?:い|は|ず|な|し|たら|ち|る|じ|こ|つ|っ|ん|れ|[、。！？…』」）\)]|$))(?=\s*[ぁ-んァ-ヶ一-龥A-Za-z0-9])/g, 'は、');
+      }
 
       // 4. Khử khoảng trắng sách giáo khoa giữa các ký tự tiếng Nhật để câu đọc liền mạch tự nhiên
       str = str.replace(/([ぁ-んァ-ヶー一-龯々。、！？「」『』（）])\s+(?=[ぁ-んァ-ヶー一-龯々0-9A-Za-z「『（])/g, '$1');
@@ -549,6 +619,148 @@
                .trim();
 
       return str;
+    },
+
+    /**
+     * Chuẩn hóa toàn diện văn bản tiếng Nhật theo chuẩn Kaiwa (4-Phase Unified Prosody Pipeline):
+     * - Phase 1: Guard Clauses (kiểm tra rỗng)
+     * - Phase 2: Data Normalization (cleanSpeechText + naturalizePhonetics)
+     * - Phase 3: Pure Prosody & Pacing (prepareProsodyPacedJapaneseSpeech - xóa khoảng trắng SGK, đổi か。 -> か？)
+     * - Phase 4: Return chuỗi sẵn sàng đưa vào bộ tổng hợp giọng nói
+     */
+    buildNaturalSpeechText(rawText) {
+      if (!rawText) return '';
+      const clean = AudioEngine.cleanSpeechText(rawText);
+      if (!clean) return '';
+      const naturalized = AudioEngine.naturalizePhonetics(clean);
+      return AudioEngine.prepareProsodyPacedJapaneseSpeech(naturalized);
+    },
+
+    /**
+     * Alias chuẩn hóa ngữ điệu cho toàn bộ các phân hệ (Từ vựng, Ngữ pháp, Bài tập, Đọc hiểu, Master Suite)
+     */
+    applyProsody(rawText) {
+      return AudioEngine.buildNaturalSpeechText(rawText);
+    },
+
+    /**
+     * Định dạng phần thân SSML biểu cảm (Pure Functional Prosody Core):
+     * - Chèn ngắt lấy hơi ngắn 160ms (<break time="160ms"/>) sau trợ từ chỉ chủ đề/chủ ngữ (は, が).
+     * - Chèn ngắt vế 260ms (<break time="260ms"/>) sau liên từ & mệnh đề (から, ので, たら, ても, けど, 、).
+     * - Uốn cong ngữ điệu câu hỏi (+18% pitch) ở âm tiết nghi vấn cuối cùng (<prosody pitch="+18%">か？</prosody>).
+     * - Phòng thủ tuyệt đối chống ngắt nhầm từ ghép (はい, はは, めがね, てがみ, がくせい...).
+     */
+    formatExpressiveSSMLBody(naturalizedText) {
+      if (!naturalizedText || typeof naturalizedText !== 'string') return '';
+      const isQuestion = AudioEngine.isQuestionClause(naturalizedText);
+      let str = naturalizedText.trim();
+
+      // Chuẩn hóa dấu câu half-width sang full-width
+      str = str.replace(/,/g, '、')
+               .replace(/\.(?!\d)/g, '。')
+               .replace(/\?/g, '？')
+               .replace(/!/g, '！');
+
+      // Khử khoảng trắng SGK giữa các ký tự tiếng Nhật
+      str = str.replace(/([ぁ-んァ-ヶー一-龯々。、！？「」『』（）])\s+(?=[ぁ-んァ-ヶー一-龯々0-9A-Za-z「『（])/g, '$1')
+               .replace(/([0-9A-Za-z])\s+(?=[ぁ-んァ-ヶー一-龯々])/g, '$1');
+
+      // Escape an toàn ký tự XML đặc biệt
+      str = str.replace(/&/g, '&amp;')
+               .replace(/</g, '&lt;')
+               .replace(/>/g, '&gt;')
+               .replace(/"/g, '&quot;');
+
+      // 1. Liên từ / Thán từ dẫn nhập đầu câu (260ms)
+      str = str.replace(/(^|[。！？\n])\s*(そして|それから|それに|ですから|だから|しかし|でも|では)(?!(?:[、。！？…』」）\)]|<break|$))/g, '$1$2<break time="260ms"/>');
+
+      // 2. Mệnh đề nguyên nhân, điều kiện, nhượng bộ (260ms)
+      str = str.replace(/([ぁ-んァ-ヶ一-龥]+(?:ます|ません|です|ました|でした|だ|た|ない|る|い|かった))から(?!(?:です|だ|ね|よ|[、。！？』」）\)]|<break|$))/g, '$1から<break time="260ms"/>');
+      str = str.replace(/([ぁ-んァ-ヶ一-龥]{2,})ので(?!(?:す|だ|[、。！？』」）\)]|<break|$))/g, '$1ので<break time="260ms"/>');
+      str = str.replace(/([ぁ-んァ-ヶ一-龥]{2,})(たら|だら)(?!(?:[、。！？』」）\)]|<break|$))/g, '$1$2<break time="260ms"/>');
+      str = str.replace(/([ぁ-んァ-ヶ一-龥]{2,})(ても|でも)(?!(?:[、。！？』」）\)]|<break|$))/g, '$1$2<break time="260ms"/>');
+      str = str.replace(/([ぁ-んァ-ヶ一-龥]+)(けど|けれど|けれども)(?!(?:[、。！？』」）\)]|<break|$))/g, '$1$2<break time="260ms"/>');
+      str = str.replace(/([ぁ-んァ-ヶ一-龥]+(?:ですが|ますが|でしたが|ましたが))(?!(?:[、。！？…』」）\)]|<break|$))/g, '$1<break time="260ms"/>');
+
+      // 3. Dấu phẩy '、' bổ sung ngắt nghỉ 260ms
+      str = str.replace(/、(?!\s*<break)/g, '、<break time="260ms"/>');
+
+      // 4. Trợ từ chủ đề 'は' & chủ ngữ 'が' (160ms breath pause)
+      // Negative lookahead/lookbehind chống ngắt nhầm từ ghép (はい, はは, はじめまして, めがね, てがみ, がくせい...)
+      str = str.replace(/(?<=[一-龯々]|[ぁ-んァ-ヶ]{2,})は(?!(?:い|は|ず|な|し|たら|ち|る|じ|こ|つ|っ|ん|れ|[、。！？…』」）\)]|<break|$))/g, 'は<break time="160ms"/>');
+      str = str.replace(/(?<=[一-龯々]|[ぁ-んァ-ヶ]{2,})が(?!(?:っ|く|ね|み|ら|り|る|ん|な|い|つ|が|わ|き|を|に|で|と|の|は|も|へ|[、。！？…』」）\)]|<break|$))/g, 'が<break time="160ms"/>');
+
+      // 5. Gom gọn các thẻ break lân cận
+      str = str.replace(/(?:<break time="[^"]*"\/>\s*)+/g, (match) => match.includes('260ms') ? '<break time="260ms"/>' : '<break time="160ms"/>');
+
+      // 6. Ngữ điệu câu hỏi: Âm tiết nghi vấn cuối cùng nâng cao độ +18%
+      if (isQuestion) {
+        if (/か[。？\?]?$/.test(str)) {
+          str = str.replace(/か[。？\?]?$/, '<prosody pitch="+18%">か？</prosody>');
+        } else if (/[。！？]$/.test(str)) {
+          str = str.replace(/。$/, '？');
+        } else {
+          str += '？';
+        }
+      } else if (!/[。！？…]$/.test(str)) {
+        str += '。';
+      }
+
+      // Xóa break nằm ngay trước dấu kết câu
+      str = str.replace(/<break time="[^"]*"\/>(?=[。！？])/g, '').trim();
+
+      return str;
+    },
+
+    /**
+     * Tạo chuỗi SSML biểu cảm hoàn chỉnh chuẩn Azure / Edge Neural TTS (4-Phase Linear Function Anatomy):
+     * - Phase 1: Guard Clauses & Fail-Fast (rỗng, không phải chuỗi -> return '')
+     * - Phase 2: Data Normalization (Phân giải nhân vật, hồ sơ giọng, phong cách cảm xúc, clean + naturalize)
+     * - Phase 3: Pure Prosody Core (Bunsetsu Phrasing & Question Pitch Contour)
+     * - Phase 4: Imperative Shell (Đóng gói thẻ XML <speak> <voice> <mstts:express-as> <prosody>)
+     */
+    buildExpressiveSSML(text, speakerId, speed, pitch) {
+      // Phase 1: Guard Clauses & Fail-Fast
+      if (!text || typeof text !== 'string' || !text.trim()) {
+        return '';
+      }
+
+      // Phase 2: Data Normalization
+      let resolvedSpeaker = speakerId || 'sato';
+      if (resolvedSpeaker === 'rotate') {
+        resolvedSpeaker = (typeof AudioEngine.getRotatingSpeaker === 'function')
+          ? AudioEngine.getRotatingSpeaker(text)
+          : 'sato';
+      }
+      const profile = AudioEngine.getCharacterVoiceProfile(resolvedSpeaker) || AudioEngine.getCharacterVoiceProfile('sato');
+      const voiceName = (profile && profile.voice) || 'ja-JP-NanamiNeural';
+      const styleObj = CHARACTER_EXPRESSIVE_STYLES[resolvedSpeaker] || { style: 'chat', styledegree: '1.0' };
+
+      const clean = AudioEngine.cleanSpeechText(text);
+      if (!clean) return '';
+      const naturalized = AudioEngine.naturalizePhonetics(clean);
+
+      // Phase 3: Pure Prosody Core
+      const ssmlBody = AudioEngine.formatExpressiveSSMLBody(naturalized);
+
+      const rateVal = (speed !== undefined && speed !== null) ? speed : ((profile && profile.rate) || 0.96);
+      const ratePercent = Math.round((rateVal - 1.0) * 100);
+      const rateStr = ratePercent >= 0 ? `+${ratePercent}%` : `${ratePercent}%`;
+
+      const pitchVal = (pitch !== undefined && pitch !== null) ? pitch : ((profile && profile.pitch) || 1.0);
+      const pitchPercent = Math.round((pitchVal - 1.0) * 100);
+      const pitchStr = pitchPercent >= 0 ? `+${pitchPercent}%` : `${pitchPercent}%`;
+
+      // Phase 4: Imperative Shell (XML Assembly)
+      return `<speak version="1.0" xmlns="http://www.w3.org/2001/10/synthesis" xmlns:mstts="http://www.w3.org/2001/mstts" xml:lang="ja-JP">` +
+        `<voice name="${voiceName}">` +
+        `<mstts:express-as style="${styleObj.style}" styledegree="${styleObj.styledegree}">` +
+        `<prosody rate="${rateStr}" pitch="${pitchStr}">` +
+        ssmlBody +
+        `</prosody>` +
+        `</mstts:express-as>` +
+        `</voice>` +
+        `</speak>`;
     },
 
     /**
@@ -617,6 +829,8 @@
       }
     }
   };
+
+  AudioEngine.CHARACTER_EXPRESSIVE_STYLES = CHARACTER_EXPRESSIVE_STYLES;
 
   // Bảo đảm tương thích toàn cầu
   if (typeof window !== 'undefined') window.AudioEngine = AudioEngine;

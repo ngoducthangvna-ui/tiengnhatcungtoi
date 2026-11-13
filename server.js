@@ -328,6 +328,187 @@ function readJsonBody(req) {
   });
 }
 
+const speechServerCache = new Map();
+
+// ==============================================================================
+// EDGE NEURAL TTS SYNTHESIZER (MICROSOFT V2 SEC-MS-GEC TOKEN HANDSHAKE)
+// ==============================================================================
+const EDGE_COPYRIGHT = "Copyright (C) Microsoft Corporation. All rights reserved.";
+const SWAP_FIRST_WORD = { swappedWord: 0xEF0569FB, swappedSum: 0x76F50F34, swappedProduct: 0xC3EFEA97 };
+const SWAP_SECOND_WORD = { swappedWord: 0xC31713DB, swappedSum: 0x1881CE3C, swappedProduct: 0x35BD1EC9 };
+const MIX_FIRST_WORD = [0xCF98B111, 0x87085B9F, 0x12CEB96D, 0x257E1D83];
+const MIX_SECOND_WORD = [0xA27416F5, 0xD38396FF, 0x7C932B89, 0xBFA49F69];
+
+async function hashSecMsGecV2(ticksAndToken) {
+  const message = new TextEncoder().encode(EDGE_COPYRIGHT + ticksAndToken);
+  const subtle = (globalThis.crypto && globalThis.crypto.subtle) || crypto.webcrypto.subtle;
+  const digest = new Uint8Array(await subtle.digest("SHA-256", message));
+  return `${toUpperHex(cs64(message, digest))}-${toUpperHex(digest)}`;
+}
+
+function cs64(message, digest) {
+  const digestView = new DataView(digest.buffer, digest.byteOffset, digest.byteLength);
+  const firstKey = (digestView.getUint32(0, true) | 1) >>> 0;
+  const secondKey = (digestView.getUint32(4, true) | 1) >>> 0;
+  const padded = new Uint8Array(Math.ceil(message.length / 8) * 8);
+  padded.set(message);
+  const words = new DataView(padded.buffer);
+
+  let swapSum = 0;
+  let lastSwap = 0;
+  let mix = 0;
+  let mixSum = 0;
+  for (let offset = 0; offset < padded.length; offset += 8) {
+    const firstWord = words.getUint32(offset, true);
+    const secondWord = words.getUint32(offset + 4, true);
+
+    const firstSwap = swapTerm(firstWord, firstKey, SWAP_FIRST_WORD);
+    lastSwap = swapTerm(secondWord, secondKey, SWAP_SECOND_WORD);
+    swapSum = (swapSum + firstSwap + lastSwap) >>> 0;
+
+    mix = swapAndMultiply(Math.imul(mix + firstWord, firstKey), MIX_FIRST_WORD);
+    mixSum = (mixSum + mix) >>> 0;
+    mix = swapAndMultiply(Math.imul(mix + secondWord, secondKey), MIX_SECOND_WORD);
+    mixSum = (mixSum + mix) >>> 0;
+  }
+
+  const checksum = new Uint8Array(8);
+  const checksumView = new DataView(checksum.buffer);
+  checksumView.setUint32(0, lastSwap ^ mix, true);
+  checksumView.setUint32(4, swapSum ^ mixSum, true);
+  return checksum;
+}
+
+function swapTerm(word, key, multipliers) {
+  const sum = Math.imul(word, key) + Math.imul(swapHalves(word), multipliers.swappedWord);
+  const product = Math.imul(swapHalves(sum), multipliers.swappedSum) >>> 0;
+  return (Math.imul(swapHalves(product), multipliers.swappedProduct) + product) >>> 0;
+}
+
+function swapAndMultiply(value, multipliers) {
+  for (const multiplier of multipliers) {
+    value = Math.imul(swapHalves(value), multiplier) >>> 0;
+  }
+  return value;
+}
+
+function swapHalves(value) {
+  return ((value << 16) | (value >>> 16)) >>> 0;
+}
+
+function toUpperHex(bytes) {
+  return Array.from(bytes, b => b.toString(16).padStart(2, "0")).join("").toUpperCase();
+}
+
+const NEURAL_VOICE_MAP = {
+  sato:   'ja-JP-NanamiNeural',
+  karina: 'en-US-EmmaMultilingualNeural',
+  maria:  'en-US-AvaMultilingualNeural',
+  yamada: 'ja-JP-KeitaNeural',
+  miller: 'en-US-BrianMultilingualNeural',
+  santos: 'en-US-AndrewMultilingualNeural',
+  nanami: 'ja-JP-NanamiNeural',
+  keita:  'ja-JP-KeitaNeural',
+  emma:   'en-US-EmmaMultilingualNeural',
+  ava:    'en-US-AvaMultilingualNeural',
+  brian:  'en-US-BrianMultilingualNeural',
+  andrew: 'en-US-AndrewMultilingualNeural',
+  aoi:    'en-US-EmmaMultilingualNeural',
+  mayu:   'en-US-AvaMultilingualNeural',
+  daichi: 'en-US-BrianMultilingualNeural',
+  naoki:  'en-US-AndrewMultilingualNeural'
+};
+
+async function synthesizeEdgeNeuralTTS(text, voiceOrSpeaker, speed = 0.96, pitch = 0) {
+  const vKey = String(voiceOrSpeaker || '').toLowerCase().trim();
+  const selectedVoice = NEURAL_VOICE_MAP[vKey] || 'ja-JP-NanamiNeural';
+
+  const TRUSTED_CLIENT_TOKEN = "6A5AA1D4EAFF4E9FB37E23D68491D6F4";
+  const ticks = Math.floor(Date.now() / 1000) + 11644473600;
+  const rounded = ticks - (ticks % 300);
+  const windowsTicks = rounded * 10000000;
+  const secMsGec = await hashSecMsGecV2(`${windowsTicks}${TRUSTED_CLIENT_TOKEN}`);
+  const reqId = crypto.randomUUID().replace(/-/g, '');
+  const url = `wss://speech.platform.bing.com/consumer/speech/synthesize/readaloud/edge/v1?TrustedClientToken=${TRUSTED_CLIENT_TOKEN}&Sec-MS-GEC=${secMsGec}&Sec-MS-GEC-Version=2-143.0.3650.96&ConnectionId=${reqId}`;
+
+  const ratePercent = Math.round((speed - 1.0) * 100);
+  const rateStr = ratePercent >= 0 ? `+${ratePercent}%` : `${ratePercent}%`;
+  const pitchHz = Math.round(pitch * 2);
+  const pitchStr = pitchHz >= 0 ? `+${pitchHz}Hz` : `${pitchHz}Hz`;
+
+  const ws = new WebSocket(url, {
+    headers: {
+      'Pragma': 'no-cache',
+      'Cache-Control': 'no-cache',
+      'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36 Edg/143.0.0.0',
+      'Origin': 'chrome-extension://jdiccldimpdaibmpdkjnbmckianbfold'
+    }
+  });
+
+  return new Promise((resolve, reject) => {
+    const audioChunks = [];
+    ws.onopen = () => {
+      const configMsg = 'Content-Type:application/json; charset=utf-8\r\nPath:speech.config\r\n\r\n' + JSON.stringify({
+        context: {
+          synthesis: {
+            audio: {
+              metadataoptions: { sentenceBoundaryEnabled: 'false', wordBoundaryEnabled: 'false' },
+              outputFormat: 'audio-24khz-48kbitrate-mono-mp3'
+            }
+          }
+        }
+      });
+      ws.send(configMsg);
+
+      const escapeXml = (str) => String(str || '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&apos;');
+
+      const isCompleteSSML = typeof text === 'string' && text.trim().startsWith('<speak');
+      const ssml = isCompleteSSML
+        ? text.trim()
+        : `<speak version='1.0' xmlns='http://www.w3.org/2001/10/synthesis' xmlns:mstts='http://www.w3.org/2001/mstts' xml:lang='ja-JP'><voice name='${selectedVoice}'><prosody pitch='${pitchStr}' rate='${rateStr}'>${escapeXml(text)}</prosody></voice></speak>`;
+      const ssmlMsg = `X-RequestId:${reqId}\r\nContent-Type:application/ssml+xml\r\nPath:ssml\r\n\r\n${ssml}`;
+      ws.send(ssmlMsg);
+    };
+
+    ws.onmessage = async (evt) => {
+      if (typeof evt.data === 'string') {
+        if (evt.data.includes('Path:turn.end')) {
+          try { ws.close(); } catch (e) {}
+          resolve(Buffer.concat(audioChunks));
+        }
+      } else if (evt.data instanceof Blob) {
+        const ab = await evt.data.arrayBuffer();
+        const buf = Buffer.from(ab);
+        if (buf.length > 2) {
+          const hLen = buf.readUInt16BE(0);
+          if (buf.length > 2 + hLen) audioChunks.push(buf.subarray(2 + hLen));
+        }
+      } else if (Buffer.isBuffer(evt.data)) {
+        if (evt.data.length > 2) {
+          const hLen = evt.data.readUInt16BE(0);
+          if (evt.data.length > 2 + hLen) audioChunks.push(evt.data.subarray(2 + hLen));
+        }
+      }
+    };
+
+    ws.onerror = (err) => {
+      try { ws.close(); } catch (e) {}
+      reject(err);
+    };
+
+    setTimeout(() => {
+      try { ws.close(); } catch (e) {}
+      if (audioChunks.length > 0) resolve(Buffer.concat(audioChunks));
+      else reject(new Error('Edge TTS WebSocket synthesis timeout'));
+    }, 5000);
+  });
+}
+
 /**
  * Xử lý Request chính
  */
@@ -435,17 +616,44 @@ async function handleRequest(req, res) {
       const email = process.env.SPEECHGEN_EMAIL;
 
       if (!token || !email) {
-        return sendResponse(res, 500, { 'Content-Type': 'application/json' },
-          JSON.stringify({ error: 'SpeechGen credentials not configured on server' })
-        );
+        try {
+          const cacheKey = (body.speaker || voiceName) + '|' + speechText;
+          if (speechServerCache.has(cacheKey)) {
+            return sendResponse(res, 200, {
+              'Content-Type': 'application/json',
+              'Cache-Control': 'public, max-age=86400',
+              'Access-Control-Allow-Origin': `https://${CANONICAL_DOMAIN}`
+            }, JSON.stringify({ audioUrl: speechServerCache.get(cacheKey) }));
+          }
+
+          const audioBuf = await synthesizeEdgeNeuralTTS(speechText, body.speaker || voiceName, speed, pitch);
+          const dataUrl = 'data:audio/mp3;base64,' + audioBuf.toString('base64');
+          if (speechServerCache.size < 500) {
+            speechServerCache.set(cacheKey, dataUrl);
+          }
+          return sendResponse(res, 200, {
+            'Content-Type': 'application/json',
+            'Cache-Control': 'public, max-age=86400',
+            'Access-Control-Allow-Origin': `https://${CANONICAL_DOMAIN}`
+          }, JSON.stringify({ audioUrl: dataUrl, source: 'edge-neural-tts' }));
+        } catch (edgeErr) {
+          console.warn('[Server Speech] Edge TTS fallback:', edgeErr.message);
+          return sendResponse(res, 503, { 'Content-Type': 'application/json' },
+            JSON.stringify({ error: 'Edge TTS unavailable', detail: edgeErr.message })
+          );
+        }
       }
 
       // Proxy đến SpeechGen an toàn với Secret được bảo vệ phía máy chủ
+      const textForSpeechGen = (typeof speechText === 'string' && speechText.trim().startsWith('<speak'))
+        ? speechText.replace(/<[^>]+>/g, '').trim()
+        : speechText;
+
       const postData = new URLSearchParams({
         token,
         email,
         voice: voiceName,
-        text: speechText,
+        text: textForSpeechGen,
         format: 'mp3',
         speed: String(speed),
         pitch: String(pitch),

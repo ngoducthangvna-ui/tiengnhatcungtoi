@@ -12,7 +12,7 @@
   'use strict';
 
   const STORAGE_KEY = 'minna_kaiwa_progress_v1';
-  const ASSET_VERSION = '20261111_06';
+  const ASSET_VERSION = '20261111_12';
 
   // Ký hiệu số Zen tối giản phong cách Nhật Bản cho tab Luyện tập C
   const ZEN_CIRCLED_NUMS = ['①', '②', '③', '④', '⑤'];
@@ -173,6 +173,9 @@
    */
   function buildNaturalSpeechText(htmlOrRaw) {
     if (!htmlOrRaw) return '';
+    if (root.AudioEngine && typeof root.AudioEngine.buildNaturalSpeechText === 'function') {
+      return root.AudioEngine.buildNaturalSpeechText(htmlOrRaw);
+    }
     let text = String(htmlOrRaw)
       .replace(/<ruby[^>]*>\s*([A-Z]{2,})\s*<rt[^>]*>(.*?)<\/rt>\s*<\/ruby>/g, '$2')
       .replace(/<ruby[^>]*>\s*何\s*<rt[^>]*>(いく)<\/rt>\s*<\/ruby>/g, '$1')
@@ -2822,7 +2825,18 @@
     }
     const line = findLineById(lineId);
     if (line) {
-      speakJapanese(line.rawJp || line.jp, 1.05);
+      const spkId = line.speakerId || 'sato';
+      const prof = (root.AudioEngine && typeof root.AudioEngine.getCharacterVoiceProfile === 'function')
+        ? root.AudioEngine.getCharacterVoiceProfile(spkId)
+        : null;
+      speakJapanese(
+        line.jp || line.rawJp,
+        prof ? prof.pitch : 1.02,
+        null,
+        prof ? prof.gender : null,
+        spkId,
+        prof ? prof.rate : 0.96
+      );
     }
   }
 
@@ -3066,9 +3080,20 @@
     rerender();
   }
 
-  function speakRawText(encodedText) {
+  function speakRawText(encodedText, speakerId) {
     const text = decodeURIComponent(encodedText || '');
-    speakJapanese(text, 1.0);
+    const spkId = speakerId || 'sato';
+    const prof = (root.AudioEngine && typeof root.AudioEngine.getCharacterVoiceProfile === 'function')
+      ? root.AudioEngine.getCharacterVoiceProfile(spkId)
+      : null;
+    speakJapanese(
+      text,
+      prof ? prof.pitch : 1.02,
+      null,
+      prof ? prof.gender : 'female',
+      spkId,
+      prof ? prof.rate : 0.96
+    );
   }
 
   function answerQuiz(questionId, optionIdx) {
