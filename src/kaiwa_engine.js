@@ -88,6 +88,9 @@
   let masterTimer = null;
   let roleplayTimer = null;
   let activeRecognition = null;
+  let activeRecognitionEndTimer = null;
+  const recognitionOnlyLines = new Set();
+  const latestRecordingByLine = new Map();
   let activeMediaRecorder = null;
   let activeMediaStream = null;
   let activeUserAudio = null;
@@ -117,16 +120,26 @@
   let currentKaiwaSessionId = 0;
 
   function loadProgress() {
+    const empty = { scores: {}, evalData: {} };
     try {
+      let progress;
       if (root.StorageEngine && typeof root.StorageEngine.secureGetJson === 'function') {
-        return root.StorageEngine.secureGetJson(STORAGE_KEY, { scores: {}, evalData: {} }) || { scores: {}, evalData: {} };
-      }
-      if (root.localStorage) {
+        progress = root.StorageEngine.secureGetJson(STORAGE_KEY, empty);
+      } else if (root.localStorage) {
         const raw = root.localStorage.getItem(STORAGE_KEY);
-        if (raw) return JSON.parse(raw);
+        if (raw) progress = JSON.parse(raw);
       }
+      if (!progress) return empty;
+      // Older versions stored recognition errors as zero-point attempts.
+      for (const [lineId, result] of Object.entries(progress.evalData || {})) {
+        if (result?.score === 0 && result.errorCode) {
+          delete progress.evalData[lineId];
+          if (progress.scores?.[lineId] === 0) delete progress.scores[lineId];
+        }
+      }
+      return progress;
     } catch (e) {}
-    return { scores: {}, evalData: {} };
+    return empty;
   }
 
   function saveProgress() {
@@ -2386,6 +2399,8 @@
   }
 
   function cleanupAudioCapture() {
+    clearTimeout(activeRecognitionEndTimer);
+    activeRecognitionEndTimer = null;
     if (activeSilenceTimer) {
       clearTimeout(activeSilenceTimer);
       activeSilenceTimer = null;
@@ -2407,6 +2422,7 @@
       } catch (e) {}
       try { activeMediaRecorder.stop(); } catch (e) {}
     }
+    activeMediaRecorder = null;
     if (activeAudioCtx) {
       try { activeAudioCtx.close(); } catch (e) {}
       activeAudioCtx = null;
@@ -2441,22 +2457,18 @@
       return null;
     }
 
-    if (state.recordingLineId === lineId) {
-      if (typeof activeFinishRecording === 'function') {
-        const finishedRes = activeFinishRecording();
-        if (finishedRes) return finishedRes;
-      }
-      state.recordingLineId = null;
-      if (activeRecognition) {
-        try { activeRecognition.stop(); } catch (e) {}
-      }
-      cleanupAudioCapture();
-      rerender();
-      if (typeof onComplete === 'function') onComplete(null);
+    if (state.recordingLineId !== null) {
+      if (state.recordingLineId === lineId && activeFinishRecording) activeFinishRecording();
       return null;
     }
 
     state.recordingLineId = lineId;
+    stopAllKaiwaAudio();
+    if (activeUserAudio) {
+      try { activeUserAudio.pause(); } catch (e) {}
+      activeUserAudio = null;
+      state.playingUserVoiceLineId = null;
+    }
     capturedPitchSamples = [];
     const recordStartTime = Date.now();
     rerender();
@@ -2471,16 +2483,27 @@
         let latestOfflineReport = null;
         let bestCapturedTranscript = '';
         let bestCapturedAlternatives = [];
-        let handled = false;
+        let stopping = false;
+        let errorCode = '';
+        let recordStopTime = null;
+        const lessonId = state.currentLessonId;
+        const recordingKey = lessonId + ':' + lineId;
+        const recognitionOnly = /Android/i.test(ua) && recognitionOnlyLines.has(recordingKey);
+        const rec = new SpeechRec();
+        activeRecognition = rec;
+        latestRecordingByLine.set(recordingKey, rec);
+        const isCurrent = () => activeRecognition === rec && state.recordingLineId === lineId;
+        const samples = capturedPitchSamples;
 
         const resetSilenceTimer = function() {
+          if (!isCurrent() || stopping) return;
           if (activeSilenceTimer) clearTimeout(activeSilenceTimer);
           activeSilenceTimer = setTimeout(finishRecordingDueToSilence, SILENCE_TIMEOUT_MS);
         };
 
         const finalizeEvaluation = function() {
           const userDurationSec = recordStartTime
-            ? Math.max(0.4, Number(((Date.now() - recordStartTime) / 1000).toFixed(2)))
+            ? Math.max(0.4, Number((((recordStopTime ?? Date.now()) - recordStartTime) / 1000).toFixed(2)))
             : null;
           const targetDurationSec = (line.time && line.time[1] > line.time[0])
             ? Number((line.time[1] - line.time[0]).toFixed(2))
@@ -2488,15 +2511,23 @@
 
           if (!bestCapturedTranscript) {
             state.recordingLineId = null;
+            const canRetryWithoutRecorder = /Android/i.test(ua) && !recognitionOnly &&
+              (!errorCode || errorCode === 'no-speech' || errorCode === 'audio-capture');
+            if (canRetryWithoutRecorder) recognitionOnlyLines.add(recordingKey);
             if (typeof root.showToast === 'function') {
-              root.showToast('Chưa nghe rõ giọng nói. Hãy đọc to và rõ hơn vào Micro nhé!');
+              if (errorCode === 'network') {
+                root.showToast('Chưa chấm được: dịch vụ nhận giọng không kết nối được. Hãy kiểm tra mạng rồi thử lại.');
+              } else if (errorCode === 'not-allowed' || errorCode === 'service-not-allowed') {
+                root.showToast('Chưa chấm được: trình duyệt chặn nhận giọng. Hãy kiểm tra quyền micro.');
+              } else if (canRetryWithoutRecorder) {
+                root.showToast('Chưa nhận được lời nói để chấm. Chạm mic đọc lại để chấm ở chế độ chỉ nhận giọng.');
+              } else {
+                root.showToast('Chưa nhận được lời nói để chấm. Hãy chạm mic và đọc lại.');
+              }
             }
-            const zeroRes = applyLineEvaluation(lineId, '', {
-              targetRubyHtml: line.jp,
-              errorCode: 'no-speech'
-            });
-            if (typeof onComplete === 'function') onComplete(zeroRes);
-            return zeroRes;
+            rerender();
+            if (typeof onComplete === 'function') onComplete(null);
+            return null;
           }
 
           let bestEval = null;
@@ -2517,7 +2548,7 @@
               line.endPitch,
               {
                 targetRubyHtml: line.jp,
-                measuredPitchSamples: capturedPitchSamples,
+                measuredPitchSamples: samples,
                 acousticReport: latestOfflineReport,
                 userDurationSec,
                 targetDurationSec,
@@ -2535,7 +2566,7 @@
 
           const evalOpts = {
             targetRubyHtml: line.jp,
-            measuredPitchSamples: capturedPitchSamples,
+            measuredPitchSamples: samples,
             acousticReport: latestOfflineReport,
             userDurationSec,
             targetDurationSec,
@@ -2552,23 +2583,27 @@
           return finalRes;
         };
 
-        const finishRecordingDueToSilence = function() {
-          if (handled) return null;
-          handled = true;
-          if (activeSilenceTimer) {
-            clearTimeout(activeSilenceTimer);
-            activeSilenceTimer = null;
-          }
-          if (activeMaxRecordTimer) {
-            clearTimeout(activeMaxRecordTimer);
-            activeMaxRecordTimer = null;
-          }
-          activeFinishRecording = null;
-          if (activeRecognition) {
-            try { activeRecognition.stop(); } catch (e) {}
-          }
+        const completeRecognition = function() {
+          if (!isCurrent()) return;
+          activeRecognition = null;
           cleanupAudioCapture();
-          return finalizeEvaluation();
+          if (state.currentLessonId === lessonId) return finalizeEvaluation();
+          state.recordingLineId = null;
+          rerender();
+          if (typeof onComplete === 'function') onComplete(null);
+        };
+
+        const finishRecordingDueToSilence = function() {
+          if (!isCurrent() || stopping) return;
+          stopping = true;
+          recordStopTime = Date.now();
+          cleanupAudioCapture();
+          activeRecognitionEndTimer = setTimeout(() => {
+            completeRecognition();
+            try { rec.abort(); } catch (e) {}
+          }, 2000);
+          // stop() can produce a final result before onend.
+          try { rec.stop(); } catch (e) { completeRecognition(); }
         };
 
         activeFinishRecording = function() {
@@ -2576,8 +2611,13 @@
         };
 
         // Thu âm qua MediaRecorder (Desktop & Android) + Giải mã Offline DSP (YIN + RMS + DTW) sau khi dừng nói
-        if (!isIOSUA && root.navigator && root.navigator.mediaDevices && root.navigator.mediaDevices.getUserMedia) {
+        if (!recognitionOnly && !isIOSUA && root.navigator && root.navigator.mediaDevices && root.navigator.mediaDevices.getUserMedia &&
+            (typeof root.MediaRecorder === 'function' || (!isMobileUA && (root.AudioContext || root.webkitAudioContext)))) {
           root.navigator.mediaDevices.getUserMedia({ audio: true }).then(stream => {
+            if (!isCurrent() || stopping) {
+              stream.getTracks().forEach(t => t.stop());
+              return;
+            }
             activeMediaStream = stream;
             // 1. Trên Desktop, hỗ trợ thêm bộ thu mẫu F0 dự phòng
             const AudioCtxClass = root.AudioContext || root.webkitAudioContext;
@@ -2623,10 +2663,12 @@
                 ? new root.MediaRecorder(stream, { mimeType })
                 : new root.MediaRecorder(stream);
 
-              activeMediaRecorder.ondataavailable = e => { if (e.data && e.data.size > 0) chunks.push(e.data); };
-              activeMediaRecorder.onstop = () => {
+              const recorder = activeMediaRecorder;
+              recorder.ondataavailable = e => { if (e.data && e.data.size > 0) chunks.push(e.data); };
+              recorder.onstop = () => {
                 try {
-                  const finalMime = (activeMediaRecorder && activeMediaRecorder.mimeType) || mimeType || 'audio/webm';
+                  if (!chunks.length || state.currentLessonId !== lessonId || latestRecordingByLine.get(recordingKey) !== rec) return;
+                  const finalMime = recorder.mimeType || mimeType || 'audio/webm';
                   const blob = new Blob(chunks, { type: finalMime });
                   if (state.userBlobs[lineId] && typeof URL !== 'undefined' && typeof URL.revokeObjectURL === 'function') {
                     try { URL.revokeObjectURL(state.userBlobs[lineId]); } catch (e) {}
@@ -2645,28 +2687,34 @@
                       modelCurve: line.pitchCurve,
                       targetMoras: targetMorasForLine
                     }).then(report => {
-                      if (!report) return;
+                      if (!report || state.currentLessonId !== lessonId || latestRecordingByLine.get(recordingKey) !== rec) return;
                       latestOfflineReport = report;
                       if (pendingOfflineEval && pendingOfflineEval.bestTranscript) {
-                        applyLineEvaluation(lineId, pendingOfflineEval.bestTranscript, Object.assign({}, pendingOfflineEval.opts, {
-                          acousticReport: report
-                        }));
+                        const opts = Object.assign({}, pendingOfflineEval.opts, { acousticReport: report });
+                        state.progress.evalData[lineId] = evaluatePronunciation(
+                          line.rawJp || line.jp, pendingOfflineEval.bestTranscript, line.pitchCurve, line.endPitch, opts
+                        );
+                        state.progress.scores[lineId] = state.progress.evalData[lineId].score;
+                        saveProgress();
+                        rerender();
                       }
                     }).catch(() => {});
                   }
-                } catch (err) {}
-                stream.getTracks().forEach(t => t.stop());
-                if (activeMediaStream === stream) activeMediaStream = null;
+                } catch (err) {} finally {
+                  if (activeMediaStream === stream) {
+                    stream.getTracks().forEach(t => t.stop());
+                    activeMediaStream = null;
+                  }
+                }
               };
-              activeMediaRecorder.start(250);
+              recorder.start(250);
             }
           }).catch(() => {});
         }
 
-        const rec = new SpeechRec();
-        activeRecognition = rec;
         rec.lang = 'ja-JP';
         rec.continuous = true;
+        if (recognitionOnly) rec.continuous = false;
         rec.interimResults = true;
         rec.maxAlternatives = 3;
 
@@ -2683,6 +2731,7 @@
         };
 
         rec.onresult = function(event) {
+          if (!isCurrent()) return;
           resetSilenceTimer();
           let currentInterim = '';
           let currentFinal = '';
@@ -2711,72 +2760,40 @@
             }
           }
 
-          const combined = (currentFinal || currentInterim || '').trim();
+          const combined = (currentFinal + currentInterim).trim();
           if (combined) {
             bestCapturedTranscript = combined;
-            bestCapturedAlternatives = alts;
+            bestCapturedAlternatives = event.results.length === 1 ? alts : [
+              { transcript: combined, confidence: 0.85 }
+            ];
           }
         };
 
         rec.onerror = function(ev) {
-          const errCode = (ev && ev.error) || 'unknown';
-          if (errCode === 'no-speech') {
-            // Không coi no-speech tức thì là ngắt mic; tiếp tục chờ bộ đếm 5 giây im lặng
-            return;
-          }
-          if (!handled) {
-            handled = true;
-            if (activeSilenceTimer) {
-              clearTimeout(activeSilenceTimer);
-              activeSilenceTimer = null;
-            }
-            if (activeMaxRecordTimer) {
-              clearTimeout(activeMaxRecordTimer);
-              activeMaxRecordTimer = null;
-            }
-            activeFinishRecording = null;
-            cleanupAudioCapture();
-            state.recordingLineId = null;
-            if (errCode === 'not-allowed' || errCode === 'service-not-allowed') {
-              if (typeof root.showToast === 'function') {
-                root.showToast('Micro đang bị chặn. Vui lòng cấp quyền Micro trên trình duyệt để chấm điểm phát âm.');
-              }
-              rerender();
-              if (typeof onComplete === 'function') onComplete(null);
-              return;
-            }
-            if (errCode === 'aborted') {
-              rerender();
-              if (typeof onComplete === 'function') onComplete(null);
-              return;
-            }
-            const fallbackRes = applyLineEvaluation(lineId, '', {
-              targetRubyHtml: line.jp,
-              errorCode: errCode
-            });
-            if (typeof onComplete === 'function') onComplete(fallbackRes);
-          }
+          if (!isCurrent()) return;
+          errorCode = (ev && ev.error) || 'unknown';
+          completeRecognition();
         };
 
-        rec.onend = function() {
-          if (!handled) {
-            finishRecordingDueToSilence();
-          }
-        };
+        rec.onend = completeRecognition;
 
         rec.start();
         resetSilenceTimer();
         activeMaxRecordTimer = setTimeout(finishRecordingDueToSilence, MAX_RECORD_TIMEOUT_MS);
         return;
       } catch (e) {
+        activeRecognition = null;
         cleanupAudioCapture();
       }
     }
 
-    // Fallback khi môi trường không có Web Speech API (ví dụ: Node.js Test Runner hoặc trình duyệt không hỗ trợ)
-    const simRes = applyLineEvaluation(lineId, line.rawJp, { targetRubyHtml: line.jp });
-    if (typeof onComplete === 'function') onComplete(simRes);
-    return simRes;
+    state.recordingLineId = null;
+    if (typeof root.showToast === 'function') {
+      root.showToast('Không thể mở tính năng nhận giọng. Hãy kiểm tra quyền micro hoặc thử trình duyệt khác.');
+    }
+    rerender();
+    if (typeof onComplete === 'function') onComplete(null);
+    return null;
   }
 
   function playUserVoice(lineId) {
@@ -3022,7 +3039,9 @@
       roleplayTimer = null;
     }
     if (activeRecognition) {
-      try { activeRecognition.stop(); } catch (e) {}
+      const rec = activeRecognition;
+      activeRecognition = null;
+      try { rec.abort(); } catch (e) {}
     }
     cleanupAudioCapture();
     stopAllKaiwaAudio();
@@ -3075,8 +3094,6 @@
           roleplayTimer = setTimeout(nextTurn, 400);
         };
         recordLine(line.id, advanceOnce);
-        // Bộ hẹn giờ an toàn tối đa 5.5 giây nếu trình duyệt treo sự kiện onend
-        roleplayTimer = setTimeout(advanceOnce, 5500);
       } else {
         playLine(line.id, function() {
           if (!state.isRoleplaying) return;
