@@ -4,7 +4,7 @@
  */
 'use strict';
 
-const ASSET_VERSION = '20261117_19';
+const ASSET_VERSION = '20261117_20';
 const CACHE_VERSION = `minna-pwa-v${ASSET_VERSION}`;
 
 const CORE_ASSETS = [
@@ -13,6 +13,7 @@ const CORE_ASSETS = [
   './app.js',
   `./style.css?v=${ASSET_VERSION}`,
   `./app.js?v=${ASSET_VERSION}`,
+  `./src/study_voice_engine.js?v=${ASSET_VERSION}`,
   './manifest.json',
   './icons/shiba-favicon-16.png',
   './icons/shiba-favicon-32.png',
@@ -87,7 +88,7 @@ function isInvalidHtmlFallbackForAsset(requestUrl, response) {
   if (!contentType.includes('text/html')) return false;
   try {
     const pathname = new URL(requestUrl, self.location.origin).pathname.toLowerCase();
-    return /\.(mp3|wav|ogg|json|js|css|svg|png|jpg|jpeg|webp|woff2?)$/.test(pathname);
+    return /\.(mp3|wav|ogg|wasm|gz|htsvoice|json|js|css|svg|png|jpg|jpeg|webp|woff2?)$/.test(pathname);
   } catch (_err) {
     return false;
   }
@@ -195,6 +196,9 @@ async function handleStaleWhileRevalidate(rawRequest) {
   }
 
   const cachedResponse = await caches.match(request, { ignoreSearch: false });
+  if (cachedResponse && new URL(request.url).pathname.startsWith('/src/study-voice/v1/') && !rangeHeader) {
+    return cachedResponse;
+  }
   const networkPromise = fetchAndCache(request, CACHE_VERSION);
 
   if (cachedResponse) {

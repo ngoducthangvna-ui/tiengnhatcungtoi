@@ -1057,49 +1057,17 @@ function updateHeaderProgress() {
 
 // ZONE 05: JAPANESE SPEECH, DIALOGUE VOICES & PROSODY ENGINE (AudioEngine DELEGATION)
 
-const STUDY_SPEAKER = 'miller';
-const STUDY_VOICE_LABEL = 'Anh Miller (Nam trẻ)';
-const STUDY_VOICE = 'Brian JP';
-const STUDY_FALLBACK_PROFILE = { id: STUDY_SPEAKER, gender: 'male', speechGenVoice: STUDY_VOICE, pitch: 1.06, rate: 1.02 };
 const DEFAULT_USER_SPEED = 0.96;
 const DEFAULT_USER_PITCH = 1.00;
 
-const speechAudioCache = new Map();
 let currentSpeechAudio = null;
 let currentAudioSessionId = 0; // Epoch Counter chống Race Condition phát lặp đa giọng
 let activeOnlineAudioAbort = null; // Bộ dọn dẹp tiến trình Online Audio (Google/Youdao) đang chờ/retry
 let activeSpeechSafetyTimer = null; // Quản lý Timer bảo vệ trạng thái nút bấm
 let activeSpeechCancel = null;
-let speechProxyUnavailableUntil = 0;
 let lastSpeechClickTime = 0; // Debounce bảo vệ chống spam click phần cứng
 let lastSpeechText = '';
 
-
-function getDialogueVoiceProfile(speakerId = STUDY_SPEAKER) {
-  const profiles = typeof AudioEngine !== 'undefined' && AudioEngine.CHARACTER_VOICE_PROFILES;
-  const profile = profiles?.[speakerId];
-  return profile ? { id: speakerId, ...profile } : STUDY_FALLBACK_PROFILE;
-}
-
-
-function computeDialogueProsody(profile, cfg, speechText) {
-  const userSpeed = (cfg && cfg.speed) || DEFAULT_USER_SPEED;
-  const userPitch = (cfg && cfg.pitch) || DEFAULT_USER_PITCH;
-  let baseRate = profile.rate || 0.96;
-  let basePitch = profile.pitch || 1.0;
-
-  if (speechText && typeof AudioEngine !== 'undefined' && typeof AudioEngine.computeExpressiveProsody === 'function') {
-    const exp = AudioEngine.computeExpressiveProsody(speechText, profile.id || STUDY_SPEAKER, false, cfg?.contextMeta);
-    if (exp) {
-      baseRate = exp.rate;
-      basePitch = exp.pitch;
-    }
-  }
-
-  const rate = Math.max(0.6, Math.min(1.4, baseRate * (userSpeed / DEFAULT_USER_SPEED) * (cfg?.slow ? 0.78 : 1)));
-  const pitch = Math.max(0.72, Math.min(1.28, basePitch * (userPitch / DEFAULT_USER_PITCH)));
-  return { rate: Number(rate.toFixed(3)), pitch: Number(pitch.toFixed(3)) };
-}
 
 function cleanSpeechText(text) {
   if (typeof AudioEngine !== 'undefined' && typeof AudioEngine.cleanSpeechText === 'function') {
@@ -1237,28 +1205,17 @@ function normalizeVoiceSetting(value, min, max, fallback) {
   return Number.isFinite(number) ? Math.min(max, Math.max(min, number)) : fallback;
 }
 
-function getSpeechGenConfig() {
-  try {
-    const token = safeGetStorage('speechgen_token') || (typeof window !== 'undefined' && window.SPEECHGEN_CONFIG && window.SPEECHGEN_CONFIG.token) || '';
-    const email = safeGetStorage('speechgen_email') || (typeof window !== 'undefined' && window.SPEECHGEN_CONFIG && window.SPEECHGEN_CONFIG.email) || '';
-    const speed = normalizeVoiceSetting(safeGetStorage('speechgen_speed'), 0.75, 1.25, DEFAULT_USER_SPEED);
-    const pitch = normalizeVoiceSetting(safeGetStorage('speechgen_pitch'), 0.85, 1.20, DEFAULT_USER_PITCH);
-    return { token, email, speed, pitch, speaker: STUDY_SPEAKER, voice: STUDY_VOICE };
-  } catch (e) {
-    return { token: '', email: '', speed: DEFAULT_USER_SPEED, pitch: DEFAULT_USER_PITCH, speaker: STUDY_SPEAKER, voice: STUDY_VOICE };
-  }
+function getStudyVoiceSettings() {
+  return {
+    speed: normalizeVoiceSetting(safeGetStorage('speechgen_speed'), 0.75, 1.25, DEFAULT_USER_SPEED),
+    pitch: normalizeVoiceSetting(safeGetStorage('speechgen_pitch'), 0.85, 1.20, DEFAULT_USER_PITCH)
+  };
 }
 
-function setSpeechGenConfig(cfg) {
-  try {
-    if (cfg.token !== undefined) safeSetStorage('speechgen_token', cfg.token.trim());
-    if (cfg.email !== undefined) safeSetStorage('speechgen_email', cfg.email.trim());
-    if (cfg.speed !== undefined) safeSetStorage('speechgen_speed', String(cfg.speed));
-    if (cfg.pitch !== undefined) safeSetStorage('speechgen_pitch', String(cfg.pitch));
-  } catch (e) {}
+function setStudyVoiceSettings({ speed, pitch }) {
+  safeSetStorage('speechgen_speed', String(speed));
+  safeSetStorage('speechgen_pitch', String(pitch));
 }
-window.setSpeechGenConfig = setSpeechGenConfig;
-window.getSpeechGenConfig = getSpeechGenConfig;
 
 function stopAllSpeechAudio() {
 
@@ -1316,76 +1273,6 @@ function stopAllSpeechAudio() {
 }
 window.stopAllSpeechAudio = stopAllSpeechAudio;
 
-
-async function fetchSpeechGenAudio(speechText, cfg, signal) {
-  const pitchVal = Math.max(-20, Math.min(20, Math.round((cfg.pitch - 1) * 100)));
-  const cacheKey = JSON.stringify([STUDY_VOICE, cfg.speed, pitchVal, speechText]);
-  if (speechAudioCache.has(cacheKey)) {
-    return speechAudioCache.get(cacheKey);
-  }
-
-  if (Date.now() >= speechProxyUnavailableUntil && /^https?:$/.test(window.location?.protocol)) {
-    try {
-      const proxyRes = await fetch('/api/speech', {
-        method: 'POST',
-        signal,
-        headers: {
-          'Content-Type': 'application/json',
-          'X-Requested-With': 'MinnaApp'
-        },
-        body: JSON.stringify({
-          text: speechText,
-          speaker: STUDY_SPEAKER,
-          voice: STUDY_VOICE,
-          speed: cfg.speed || 0.92,
-          pitch: pitchVal
-        })
-      });
-      if (proxyRes.ok) {
-        const data = await proxyRes.json();
-        if (data && (data.audioUrl || data.file || data.file_cors)) {
-          const audioUrl = data.audioUrl || data.file_cors || data.file;
-          speechAudioCache.set(cacheKey, audioUrl);
-          return audioUrl;
-        }
-      } else if ([404, 405, 429, 500, 503].includes(proxyRes.status)) {
-        speechProxyUnavailableUntil = Date.now() + 60000;
-      }
-    } catch (proxyErr) {
-
-    }
-  }
-
-  if (signal?.aborted || !cfg.token || !cfg.email) return null;
-
-  const bodyData = new URLSearchParams({
-    token: cfg.token,
-    email: cfg.email,
-    voice: STUDY_VOICE,
-    text: speechText,
-    format: 'mp3',
-    speed: String(cfg.speed || 0.92),
-    pitch: String(pitchVal),
-    pause_sentence: '350',
-    pause_paragraph: '500'
-  });
-
-  const response = await fetch('https://speechgen.io/index.php?r=api/text', {
-    method: 'POST',
-    signal,
-    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-    body: bodyData.toString()
-  });
-
-  if (!response.ok) throw new Error('SpeechGen HTTP error: ' + response.status);
-  const data = await response.json();
-  if (data && (data.status === 1 || data.status === '1') && (data.file || data.file_cors)) {
-    const audioUrl = data.file_cors || data.file;
-    speechAudioCache.set(cacheKey, audioUrl);
-    return audioUrl;
-  }
-  throw new Error((data && data.error) || 'SpeechGen generation failed');
-}
 
 function playOnlineJapaneseAudio(text, stopRelay, safetyTimer, forcedSessionId, rate = 1, onPlaying) {
   const sessionId = typeof forcedSessionId === 'number' ? forcedSessionId : currentAudioSessionId;
@@ -1502,161 +1389,67 @@ function playOnlineJapaneseAudio(text, stopRelay, safetyTimer, forcedSessionId, 
   tryNextSource();
 }
 
-function speakStudyVoiceOnDevice(text, prosody, sessionId, onState, onDone) {
-  const synthesis = window.speechSynthesis;
-  const voices = synthesis?.getVoices?.() || [];
-  const voice = typeof AudioEngine !== 'undefined'
-    ? AudioEngine.selectBestJapaneseVoice(voices, 'male', STUDY_SPEAKER, true)
-    : null;
-  if (!voice || typeof SpeechSynthesisUtterance !== 'function') {
-    onDone(false);
-    return;
-  }
-
-  const utterance = new SpeechSynthesisUtterance(text);
-  utterance.lang = 'ja-JP';
-  utterance.voice = voice;
-  utterance.rate = prosody.rate;
-  utterance.pitch = prosody.pitch;
-  utterance.onstart = () => {
-    if (sessionId === currentAudioSessionId) onState?.('device');
-  };
-  utterance.onend = () => onDone(true);
-  utterance.onerror = () => onDone(false);
-
-  setTimeout(() => {
-    if (sessionId !== currentAudioSessionId) return;
-    try {
-      if (synthesis.paused) synthesis.resume();
-      window.speechSynthesis.speak(utterance);
-    } catch (error) {
-      onDone(false);
-    }
-  }, 16);
-}
-
-async function speakJapanese(text, btnElement, ev, _speakerKey, cfgOverride, playback = {}) {
-  if (ev && ev.stopPropagation) ev.stopPropagation();
-
+async function speakJapanese(text, btnElement, ev, _speakerKey, settings, playback = {}) {
+  ev?.stopPropagation?.();
   const now = Date.now();
   if (!playback.onDone && lastSpeechClickTime && (now - lastSpeechClickTime < 160) && text === lastSpeechText) return;
   lastSpeechClickTime = now;
   lastSpeechText = text;
 
-  const cleanText = cleanSpeechText(text);
-  if (!cleanText) {
+  const speechText = formatJapaneseGrammarSpeech(text) || cleanSpeechText(text);
+  if (!speechText) {
     playback.onDone?.(false);
     return;
   }
 
-  let btn = btnElement;
-  if (!btn && ev && ev.currentTarget) btn = ev.currentTarget;
-
   stopAllSpeechAudio();
   const sessionId = ++currentAudioSessionId;
-  const speechText = formatJapaneseGrammarSpeech(text) || cleanText;
-  const cfg = Object.assign({}, getSpeechGenConfig(), cfgOverride);
-  const profile = getDialogueVoiceProfile();
-  const prosody = computeDialogueProsody(profile, cfg, speechText);
-  const controller = typeof AbortController === 'function' ? new AbortController() : null;
+  const controller = new AbortController();
+  const voice = window.StudyVoiceEngine;
+  const btn = btnElement || ev?.currentTarget;
+  const config = settings || getStudyVoiceSettings();
   let finished = false;
-  let startTimeout;
 
-  const stopRelay = (success) => {
+  const finish = success => {
     if (finished || sessionId !== currentAudioSessionId) return;
     finished = true;
-    clearTimeout(safetyTimer);
-    clearTimeout(startTimeout);
+    clearTimeout(activeSpeechSafetyTimer);
     activeSpeechSafetyTimer = null;
     activeSpeechCancel = null;
     btn?.classList.remove('is-speaking');
-    if (!success && !playback.onDone) showToast(`Giọng ${STUDY_VOICE_LABEL} chưa khả dụng trên thiết bị hoặc máy chủ.`);
-    playback.onDone?.(Boolean(success));
+    if (!success && !playback.onDone) showToast('Chưa phát được giọng tiếng Nhật. Hãy kiểm tra kết nối rồi bấm loa lại.');
+    playback.onDone?.(success);
   };
 
   activeSpeechCancel = () => {
-    controller?.abort();
-    clearTimeout(startTimeout);
+    controller.abort();
     playback.onState?.('idle');
   };
-  const safetyTimer = setTimeout(() => {
-    if (finished || sessionId !== currentAudioSessionId) return;
-    controller?.abort();
-    activeOnlineAudioAbort?.();
-    activeOnlineAudioAbort = null;
-    currentSpeechAudio?.pause();
-    currentSpeechAudio = null;
-    stopRelay(false);
-    if (sessionId === currentAudioSessionId) window.speechSynthesis?.cancel();
-  }, Math.max(20000, cleanText.length * 600));
-  activeSpeechSafetyTimer = safetyTimer;
+  activeSpeechSafetyTimer = setTimeout(() => {
+    controller.abort();
+    finish(false);
+  }, 95000 + speechText.length * 500);
   btn?.classList.add('is-speaking');
   playback.onState?.('loading');
+  if (voice && !voice.isReady() && !playback.onState) showToast('Đang tải giọng đọc tiếng Nhật cho lần sử dụng đầu tiên…');
 
-  const localFallback = () => {
-    if (finished || sessionId !== currentAudioSessionId) return;
-    speakStudyVoiceOnDevice(speechText, prosody, sessionId, playback.onState, stopRelay);
-  };
-
-  const useProxy = /^https?:$/.test(window.location?.protocol);
-  if (!useProxy && !(cfg.token && cfg.email)) {
-    localFallback();
-    return;
-  }
-
-  const requestTimeout = setTimeout(() => controller?.abort(), 5500);
-  let audioUrl;
   try {
-    // The proxy accepts plain Japanese plus the resolved speed and pitch.
-    audioUrl = await fetchSpeechGenAudio(speechText, { ...cfg, speed: prosody.rate, pitch: prosody.pitch },
-      controller?.signal);
-  } catch (err) {
-    if (!controller?.signal.aborted) console.warn('SpeechGen:', err.message);
-  } finally {
-    clearTimeout(requestTimeout);
-  }
-
-  if (finished || sessionId !== currentAudioSessionId) return;
-  if (!audioUrl || typeof Audio !== 'function') {
-    localFallback();
-    return;
-  }
-
-  const audio = new Audio(audioUrl);
-  currentSpeechAudio = audio;
-  const isCurrentAudio = () => !finished && sessionId === currentAudioSessionId && currentSpeechAudio === audio;
-  const fallbackFromCloud = () => {
-    if (!isCurrentAudio()) return;
-    clearTimeout(startTimeout);
-    currentSpeechAudio = null;
-    audio.pause();
-    audio.src = '';
-    localFallback();
-  };
-  startTimeout = setTimeout(fallbackFromCloud, 4500);
-  audio.onplaying = () => {
-    if (!isCurrentAudio()) return;
-    clearTimeout(startTimeout);
-    playback.onState?.('cloud');
-  };
-  audio.onended = () => {
-    if (!isCurrentAudio()) return;
-    clearTimeout(startTimeout);
-    currentSpeechAudio = null;
-    stopRelay(true);
-  };
-  audio.onerror = fallbackFromCloud;
-  try {
-    audio.play()?.catch(fallbackFromCloud);
-  } catch (err) {
-    fallbackFromCloud();
+    await voice.play(speechText, {
+      ...config,
+      signal: controller.signal,
+      onPlaying: () => {
+        if (sessionId === currentAudioSessionId) playback.onState?.('playing');
+      }
+    });
+    finish(true);
+  } catch (error) {
+    if (controller.signal.aborted) return;
+    console.warn('Open JTalk:', error.message);
+    finish(false);
   }
 }
 
-
 window.speakJapanese = speakJapanese;
-window.getDialogueVoiceProfile = getDialogueVoiceProfile;
-
 
 const SPEAKER_ICON_HTML = `<svg class="speaker-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path><path d="M19.07 4.93a10 10 0 0 1 0 14.14"></path></svg>`;
 
@@ -8123,7 +7916,7 @@ function initVoiceSettingsModal() {
   };
 
   const openModal = () => {
-    const cfg = getSpeechGenConfig();
+    const cfg = getStudyVoiceSettings();
     previousFocus = document.activeElement;
     previousOverflow = document.body.style.overflow;
     setPreviewStatus('idle');
@@ -8194,29 +7987,19 @@ function initVoiceSettingsModal() {
         stopPreview();
         return;
       }
-      const title = STUDY_VOICE_LABEL;
-      let source;
       previewStudyVoice(getLivePreviewCfg(), testBtn, e, {
         onState(state) {
-          source = state;
           if (state === 'idle') {
             setPreviewStatus('idle');
           } else if (state === 'loading') {
-            setPreviewStatus('loading', `Đang tải giọng ${title}…`);
-          } else if (state === 'sample') {
-            const note = getLivePreviewCfg().pitch === DEFAULT_USER_PITCH ? '' : ' · Bản mẫu giữ cao độ gốc';
-            setPreviewStatus('playing', `${title} · Mẫu Hội thoại${note}`);
+            const ready = window.StudyVoiceEngine?.isReady();
+            setPreviewStatus('loading', ready ? 'Đang tạo âm thanh…' : 'Đang tải giọng đọc cho lần sử dụng đầu tiên…');
           } else {
-            const label = state === 'device' ? 'Giọng trên thiết bị' : 'Giọng trực tuyến';
-            setPreviewStatus('playing', `${title} · ${label}`);
+            setPreviewStatus('playing', 'Đang phát giọng nam tiếng Nhật.');
           }
         },
         onDone(played) {
-          const originalPitch = source === 'sample' && getLivePreviewCfg().pitch !== DEFAULT_USER_PITCH;
-          const message = played
-            ? `Đã phát ${title}.${source === 'sample' ? ' Đây là mẫu Hội thoại có sẵn.' : ''}${originalPitch ? ' Mẫu giữ cao độ gốc.' : ''}`
-            : 'Chưa phát được giọng này. Hãy kiểm tra kết nối rồi thử lại.';
-          setPreviewStatus('idle', message);
+          setPreviewStatus('idle', played ? 'Đã phát mẫu giọng đọc.' : 'Chưa phát được giọng này. Hãy kiểm tra kết nối rồi thử lại.');
         }
       });
     });
@@ -8227,7 +8010,7 @@ function initVoiceSettingsModal() {
       const newSpeed = speedSlider ? parseFloat(speedSlider.value) : DEFAULT_USER_SPEED;
       const newPitch = pitchSlider ? parseFloat(pitchSlider.value) : DEFAULT_USER_PITCH;
 
-      setSpeechGenConfig({
+      setStudyVoiceSettings({
         speed: newSpeed,
         pitch: newPitch
       });
@@ -8240,44 +8023,9 @@ function initVoiceSettingsModal() {
 }
 
 
-function previewStudyVoice(liveCfg = {}, btn, ev, playback = {}) {
-  const sample = AudioEngine.getVoicePreviewSample(STUDY_SPEAKER);
-  const text = sample?.text || 'こんにちは。今日も一緒に日本語を勉強しましょう。';
-  const done = (played) => playback.onDone?.(played);
-  const synthesize = (onDone) => speakJapanese(text, btn, ev, null, liveCfg, {
-    ...playback, onDone
-  });
-
-  if (!sample || typeof window.KaiwaEngine?.playVoiceSample !== 'function') {
-    return synthesize(done);
-  }
-  if (ev?.stopPropagation) ev.stopPropagation();
-
-  const playSample = (onDone) => {
-    let settled = false;
-    const cancel = () => {
-      settled = true;
-      playback.onState?.('idle');
-    };
-    const speed = (liveCfg.speed || DEFAULT_USER_SPEED) / DEFAULT_USER_SPEED;
-    window.KaiwaEngine.playVoiceSample(sample, speed, (played) => {
-      if (settled) return;
-      settled = true;
-      if (activeSpeechCancel === cancel) activeSpeechCancel = null;
-      btn?.classList.remove('is-speaking');
-      onDone(played);
-    });
-    if (settled) return;
-    activeSpeechCancel = cancel;
-    btn?.classList.add('is-speaking');
-    playback.onState?.('sample');
-  };
-
-  if ((liveCfg.pitch || DEFAULT_USER_PITCH) === DEFAULT_USER_PITCH) {
-    playSample((played) => played ? done(true) : synthesize(done));
-    return;
-  }
-  return synthesize((played) => played ? done(true) : playSample(done));
+function previewStudyVoice(settings, btn, ev, playback) {
+  const text = 'こんにちは。今日も一緒に日本語を勉強しましょう。';
+  return speakJapanese(text, btn, ev, null, settings, playback);
 }
 
 function initSidebarGearMenu() {

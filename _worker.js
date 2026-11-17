@@ -792,6 +792,11 @@ export default {
     }
 
     // Gắn đầy đủ 9 HTTP Security Headers chuẩn OWASP / CIS Benchmarks
+    if (url.pathname === '/src/study-voice/v1/synth-worker.js') {
+      return applySecurityHeaders(response, {
+        'Content-Security-Policy': "default-src 'none'; script-src 'self' 'wasm-unsafe-eval'; connect-src 'self'"
+      });
+    }
     return applySecurityHeaders(response);
   }
 };

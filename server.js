@@ -75,6 +75,7 @@ const MIME_TYPES = {
   '.html': 'text/html; charset=utf-8',
   '.css': 'text/css; charset=utf-8',
   '.js': 'application/javascript; charset=utf-8',
+  '.wasm': 'application/wasm',
   '.json': 'application/json; charset=utf-8',
   '.svg': 'image/svg+xml',
   '.png': 'image/png',
@@ -940,6 +941,9 @@ async function handleRequest(req, res) {
       'Content-Type': contentType,
       'Accept-Ranges': 'bytes'
     };
+    if (pathname === '/src/study-voice/v1/synth-worker.js') {
+      headers['Content-Security-Policy'] = "default-src 'none'; script-src 'self' 'wasm-unsafe-eval'; connect-src 'self'";
+    }
     if (ext === '.html' || ext === '.mp3' || pathname.startsWith('/data/kaiwa_')) {
       headers['Cache-Control'] = 'no-cache, no-store, must-revalidate';
     } else {
