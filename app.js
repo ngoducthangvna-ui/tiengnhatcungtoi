@@ -2160,6 +2160,7 @@ function renderContent(id) {
   const content = document.getElementById('lesson-content');
   if (!content) return;
 
+  if (currentActiveId !== id) window.KaiwaEngine?.cancelRecording?.(false);
   currentActiveId = id;
   if (pendingModuleId === id) pendingModuleId = null;
 
@@ -6398,11 +6399,13 @@ function initQuickSearch() {
         headerSpeechRecognition.onend = null;
         headerSpeechRecognition.onerror = null;
         headerSpeechRecognition.onresult = null;
-        headerSpeechRecognition.stop();
+        headerSpeechRecognition.abort();
       } catch (err) {}
       headerSpeechRecognition = null;
     }
   };
+
+  window.stopHeaderVoiceSearch = stopHeaderVoiceSearch;
 
   const startHeaderVoiceSearch = () => {
     const SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
@@ -6412,6 +6415,8 @@ function initQuickSearch() {
     }
 
     stopHeaderVoiceSearch();
+    window.KaiwaEngine?.cancelRecording?.();
+    stopMaziiVoiceSearch(true);
 
     try {
       headerSpeechRecognition = new SpeechRec();
@@ -9884,6 +9889,8 @@ function setMaziiVoiceLang(lang) {
 
 
 function startMaziiVoiceSearch(lang = 'ja-JP') {
+  window.stopHeaderVoiceSearch?.();
+  window.KaiwaEngine?.cancelRecording?.();
   maziiVoiceLang = lang || 'ja-JP';
   maziiShouldKeepListening = true;
   maziiLastVoiceText = '';
@@ -10430,6 +10437,10 @@ window.openMaziiWithQuery = function(query, type = 'word', autoOpenHw = false) {
 window.toggleMaziiVoiceSearch = toggleMaziiVoiceSearch;
 window.startMaziiVoiceSearch = startMaziiVoiceSearch;
 window.stopMaziiVoiceSearch = stopMaziiVoiceSearch;
+window.stopVoiceSearchForRecording = function () {
+  window.stopHeaderVoiceSearch?.();
+  stopMaziiVoiceSearch(true);
+};
 window.setMaziiVoiceLang = setMaziiVoiceLang;
 window.renderVoiceCandidates = renderVoiceCandidates;
 window.selectVoiceCandidate = selectVoiceCandidate;

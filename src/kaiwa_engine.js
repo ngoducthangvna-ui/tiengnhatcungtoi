@@ -88,9 +88,12 @@
   let masterTimer = null;
   let roleplayTimer = null;
   let activeRecognition = null;
+  let activeRecording = null;
   let activeRecognitionEndTimer = null;
   const recognitionOnlyLines = new Set();
   const latestRecordingByLine = new Map();
+  const clipAttemptByLine = new Map();
+  const scoreAttemptByLine = new Map();
   let activeMediaRecorder = null;
   let activeMediaStream = null;
   let activeUserAudio = null;
@@ -101,6 +104,7 @@
   let activeFinishRecording = null;
   const SILENCE_TIMEOUT_MS = 5000;
   const MAX_RECORD_TIMEOUT_MS = 30000;
+  const RECOGNITION_TAIL_MS = 700;
   let capturedPitchSamples = [];
   let speakerPressTimer = null;
   let speakerLongPressTriggered = false;
@@ -1149,7 +1153,7 @@
 
         <div class="kaiwa-eval-actions">
           <button type="button" class="kaiwa-mini-btn" onclick="${playSampleFn}">${KAIWA_ICONS.play} <span>Giọng mẫu</span></button>
-          <button type="button" class="kaiwa-mini-btn kaiwa-btn-play-user ${isPlayingUser ? 'is-playing' : ''}" onclick="KaiwaEngine.playUserVoice('${lineId}')">${KAIWA_ICONS.userVoice || KAIWA_ICONS.play} <span>Giọng của bạn</span></button>
+          ${state.userBlobs[lineId] ? `<button type="button" class="kaiwa-mini-btn kaiwa-btn-play-user ${isPlayingUser ? 'is-playing' : ''}" onclick="KaiwaEngine.playUserVoice('${lineId}')">${KAIWA_ICONS.userVoice || KAIWA_ICONS.play} <span>${getRecordingLabel(lineId)}</span></button>` : ''}
           <button type="button" class="kaiwa-mini-btn" onclick="KaiwaEngine.recordLine('${lineId}')">${KAIWA_ICONS.mic} <span>Đọc lại</span></button>
           <button type="button" class="kaiwa-close-eval" onclick="KaiwaEngine.toggleEvalPanel('${lineId}', false)">Đóng</button>
         </div>
@@ -1171,7 +1175,7 @@
     const isOpenEval = !!state.openEvalByLine[line.id];
     const isOpenExp = !!state.openExpByLine[line.id];
     const evalInfo = (state.progress.evalData && state.progress.evalData[line.id]) || null;
-    const hasUserVoice = Boolean(state.userBlobs[line.id] || (score !== null && evalInfo));
+    const hasUserVoice = Boolean(state.userBlobs[line.id]);
     const isPlayingUser = state.playingUserVoiceLineId === line.id;
 
     const highlightedJpHtml = renderHighlightedJapanese(line.jp, evalInfo);
@@ -1237,7 +1241,7 @@
           <div class="kaiwa-line-actions">
             ${showScorePill ? `<button type="button" class="kaiwa-score-pill ${scoreBadgeClass} ${isOpenEval ? 'is-open' : ''}" title="Bấm để xem chi tiết ngữ điệu ${endPitchArrow} &amp; nghe lại giọng (${score}/100)" aria-label="Điểm phát âm ${score} trên 100. Bấm để xem chi tiết ngữ điệu và nghe lại giọng" aria-expanded="${isOpenEval ? 'true' : 'false'}" onclick="KaiwaEngine.toggleEvalPanel('${line.id}')">${score}/100</button>` : ''}
             ${showSpeakerBtn ? `<button type="button" class="kaiwa-circle-btn kaiwa-btn-speaker ${isPlaying ? 'is-playing' : ''} ${isLooping ? 'is-looping' : ''}" title="Chạm để nghe phát âm mẫu • Nhấn giữ nếu muốn lặp" aria-label="Chạm để nghe phát âm mẫu, nhấn giữ nếu muốn lặp" onpointerdown="KaiwaEngine.onSpeakerDown('${line.id}', event)" onpointerup="KaiwaEngine.onSpeakerUp('${line.id}', event)" onpointerleave="KaiwaEngine.onSpeakerUp('${line.id}', event)" onpointercancel="KaiwaEngine.onSpeakerUp('${line.id}', event)" oncontextmenu="return KaiwaEngine.onSpeakerContextMenu('${line.id}', event)" onclick="KaiwaEngine.onSpeakerClick('${line.id}', event)">${KAIWA_ICONS.speaker}</button>` : ''}
-            ${hasUserVoice && !isShadowing ? `<button type="button" class="kaiwa-circle-btn kaiwa-btn-user-voice ${isPlayingUser ? 'is-playing' : ''}" title="Chạm để nghe lại giọng nói của bạn" aria-label="Chạm để nghe lại giọng nói của bạn" onclick="KaiwaEngine.playUserVoice('${line.id}')">${KAIWA_ICONS.userVoice}</button>` : ''}
+            ${hasUserVoice && !isShadowing ? `<button type="button" class="kaiwa-circle-btn kaiwa-btn-user-voice ${isPlayingUser ? 'is-playing' : ''}" title="${getRecordingLabel(line.id)}" aria-label="${getRecordingLabel(line.id)}" onclick="KaiwaEngine.playUserVoice('${line.id}')">${KAIWA_ICONS.userVoice}</button>` : ''}
             ${showLoopBtn ? `<button type="button" class="kaiwa-circle-btn kaiwa-btn-loop ${isLooping ? 'is-looping' : ''}" title="Bật/tắt lặp câu này để nhại theo" aria-label="Lặp câu này" onclick="KaiwaEngine.toggleLoopLine('${line.id}')">${KAIWA_ICONS.repeat}</button>` : ''}
             ${showMicBtn ? `<button type="button" class="kaiwa-circle-btn kaiwa-btn-mic ${isRecording ? 'is-recording' : ''}" title="Chạm để thu âm chấm điểm" aria-label="Chạm để thu âm chấm điểm" onclick="KaiwaEngine.recordLine('${line.id}')">${KAIWA_ICONS.mic}</button>` : ''}
           </div>
@@ -1384,7 +1388,7 @@
         const isRcPlaying = state.playingLineId === rcLineId;
         const isRcOpenEval = !!state.openEvalByLine[rcLineId];
         const isPlayingUser = state.playingUserVoiceLineId === rcLineId;
-        const hasUserVoice = Boolean(state.userBlobs[rcLineId] || (rcScore !== null && rcEvalInfo));
+        const hasUserVoice = Boolean(state.userBlobs[rcLineId]);
         const highlightedRcJp = renderHighlightedJapanese(l.jp, rcEvalInfo);
         const rcScoreBadgeClass = rcScore !== null
           ? (rcScore < 70 ? 'is-low' : (rcScore < 85 ? 'is-warn' : 'is-good'))
@@ -1422,7 +1426,7 @@
               <div class="kaiwa-line-actions">
                 ${rcScore !== null ? `<button type="button" class="kaiwa-score-pill ${rcScoreBadgeClass} ${isRcOpenEval ? 'is-open' : ''}" title="Bấm để xem chi tiết ngữ điệu ${endPitchArrow} &amp; nghe lại giọng (${rcScore}/100)" aria-label="Điểm phát âm ${rcScore} trên 100. Bấm để xem chi tiết ngữ điệu và nghe lại giọng" aria-expanded="${isRcOpenEval ? 'true' : 'false'}" onclick="KaiwaEngine.toggleEvalPanel('${rcLineId}')">${rcScore}/100</button>` : ''}
                 <button type="button" class="kaiwa-circle-btn kaiwa-btn-speaker ${isRcPlaying ? 'is-playing' : ''}" title="Chạm để nghe phát âm mẫu" aria-label="Chạm để nghe phát âm mẫu" onclick="KaiwaEngine.playLine('${rcLineId}')">${KAIWA_ICONS.speaker}</button>
-                ${hasUserVoice ? `<button type="button" class="kaiwa-circle-btn kaiwa-btn-user-voice ${isPlayingUser ? 'is-playing' : ''}" title="Chạm để nghe lại giọng nói của bạn" aria-label="Chạm để nghe lại giọng nói của bạn" onclick="KaiwaEngine.playUserVoice('${rcLineId}')">${KAIWA_ICONS.userVoice}</button>` : ''}
+                ${hasUserVoice ? `<button type="button" class="kaiwa-circle-btn kaiwa-btn-user-voice ${isPlayingUser ? 'is-playing' : ''}" title="${getRecordingLabel(rcLineId)}" aria-label="${getRecordingLabel(rcLineId)}" onclick="KaiwaEngine.playUserVoice('${rcLineId}')">${KAIWA_ICONS.userVoice}</button>` : ''}
                 <button type="button" class="kaiwa-circle-btn kaiwa-btn-mic ${isRcRecording ? 'is-recording' : ''}" title="Chạm để thu âm chấm điểm" aria-label="Chạm để thu âm chấm điểm" onclick="KaiwaEngine.recordLine('${rcLineId}')">${KAIWA_ICONS.mic}</button>
               </div>
             </div>
@@ -1713,6 +1717,7 @@
 
   function renderKaiwaModule(moduleId, containerEl) {
     ensureStylesheetLoaded();
+    if (moduleId && moduleId !== state.currentLessonId) cancelRecording(false);
     if (moduleId) state.currentLessonId = moduleId;
     const lessonData = getLessonData(state.currentLessonId);
 
@@ -2414,15 +2419,7 @@
       clearInterval(activePitchTimer);
       activePitchTimer = null;
     }
-    if (activeMediaRecorder && activeMediaRecorder.state === 'recording') {
-      try {
-        if (typeof activeMediaRecorder.requestData === 'function') {
-          activeMediaRecorder.requestData();
-        }
-      } catch (e) {}
-      try { activeMediaRecorder.stop(); } catch (e) {}
-    }
-    activeMediaRecorder = null;
+    stopRecorder();
     if (activeAudioCtx) {
       try { activeAudioCtx.close(); } catch (e) {}
       activeAudioCtx = null;
@@ -2431,6 +2428,40 @@
       try { activeMediaStream.getTracks().forEach(t => t.stop()); } catch (e) {}
       activeMediaStream = null;
     }
+  }
+
+  function stopRecorder() {
+    const recorder = activeMediaRecorder;
+    activeMediaRecorder = null;
+    if (recorder && recorder.state !== 'inactive') {
+      try { recorder.stop(); } catch (e) {}
+    }
+  }
+
+  function cancelRecording(shouldRender = true) {
+    if (!activeRecording) return;
+    if (latestRecordingByLine.get(activeRecording.key) === activeRecording) {
+      latestRecordingByLine.delete(activeRecording.key);
+    }
+    activeRecording = null;
+    const rec = activeRecognition;
+    activeRecognition = null;
+    state.recordingLineId = null;
+    if (state.isRoleplaying) {
+      state.isRoleplaying = false;
+      clearTimeout(roleplayTimer);
+      roleplayTimer = null;
+    }
+    try { rec?.abort(); } catch (e) {}
+    cleanupAudioCapture();
+    if (shouldRender) rerender();
+  }
+
+  function getRecordingLabel(lineId) {
+    const scoreAttempt = scoreAttemptByLine.get(lineId);
+    return scoreAttempt && scoreAttempt !== clipAttemptByLine.get(lineId)
+      ? 'Bản ghi khác lượt chấm'
+      : 'Giọng của bạn';
   }
 
   function applyLineEvaluation(lineId, spokenTranscript, evalOptions) {
@@ -2457,12 +2488,24 @@
       return null;
     }
 
-    if (state.recordingLineId !== null) {
-      if (state.recordingLineId === lineId && activeFinishRecording) activeFinishRecording();
+    if (state.recordingLineId === lineId) {
+      activeFinishRecording?.();
       return null;
     }
+    if (activeRecording) {
+      if (typeof onComplete === 'function') {
+        onComplete(null);
+        return null;
+      }
+      cancelRecording(false);
+    }
 
+    root.stopVoiceSearchForRecording?.();
     state.recordingLineId = lineId;
+    state.isPlayingAll = false;
+    state.playingLineId = null;
+    state.loopingLineId = null;
+    clearTimeout(masterTimer);
     stopAllKaiwaAudio();
     if (activeUserAudio) {
       try { activeUserAudio.pause(); } catch (e) {}
@@ -2474,325 +2517,399 @@
     rerender();
 
     const SpeechRec = root.SpeechRecognition || root.webkitSpeechRecognition;
-    if (SpeechRec) {
-      try {
-        const ua = (root.navigator && root.navigator.userAgent) || '';
-        const isMobileUA = Boolean(/Android|iPhone|iPad|iPod/i.test(ua));
-        const isIOSUA = Boolean(/iPhone|iPad|iPod/i.test(ua));
-        let pendingOfflineEval = null;
-        let latestOfflineReport = null;
-        let bestCapturedTranscript = '';
-        let bestCapturedAlternatives = [];
-        let stopping = false;
-        let errorCode = '';
-        let recordStopTime = null;
-        const lessonId = state.currentLessonId;
-        const recordingKey = lessonId + ':' + lineId;
-        const recognitionOnly = /Android/i.test(ua) && recognitionOnlyLines.has(recordingKey);
-        const rec = new SpeechRec();
-        activeRecognition = rec;
-        latestRecordingByLine.set(recordingKey, rec);
-        const isCurrent = () => activeRecognition === rec && state.recordingLineId === lineId;
-        const samples = capturedPitchSamples;
+    const mediaDevices = root.navigator?.mediaDevices;
+    const canRecord = typeof root.MediaRecorder === 'function' && typeof mediaDevices?.getUserMedia === 'function';
+    const ua = root.navigator?.userAgent || '';
+    const mobile = /Android|iPhone|iPad|iPod/i.test(ua) ||
+      (/Macintosh/i.test(ua) && root.navigator?.maxTouchPoints > 1);
+    const lessonId = state.currentLessonId;
+    const recordingKey = lessonId + ':' + lineId;
+    const recognitionOnly = mobile && recognitionOnlyLines.delete(recordingKey);
+    const attempt = { key: recordingKey };
+    let rec = null;
+    try { if (SpeechRec) rec = new SpeechRec(); } catch (e) {}
+    if (!rec && !canRecord) {
+      state.recordingLineId = null;
+      root.showToast?.(root.isSecureContext === false
+        ? 'Micro cần kết nối HTTPS. Hãy mở trang qua HTTPS để thu âm.'
+        : 'Trình duyệt này không hỗ trợ thu âm hoặc nhận giọng.');
+      rerender();
+      onComplete?.(null);
+      return null;
+    }
+    activeRecognition = rec;
+    activeRecording = attempt;
+    latestRecordingByLine.set(recordingKey, attempt);
+    const isCurrent = () => activeRecording === attempt;
+    const isLatest = () => state.currentLessonId === lessonId && latestRecordingByLine.get(recordingKey) === attempt;
+    let pendingOfflineEval = null;
+    let latestOfflineReport = null;
+    let bestCapturedTranscript = '';
+    let bestCapturedAlternatives = [];
+    let stopping = false;
+    let errorCode = '';
+    let recognitionEnded = !rec;
+    let captureError = null;
+    let recordingStarted = false;
+    let lastVoiceTime = null;
+    let firstVoiceTime = null;
+    let recognitionEndTime = null;
+    let recordStopTime = null;
+    const samples = capturedPitchSamples;
 
-        const resetSilenceTimer = function() {
-          if (!isCurrent() || stopping) return;
-          if (activeSilenceTimer) clearTimeout(activeSilenceTimer);
-          activeSilenceTimer = setTimeout(finishRecordingDueToSilence, SILENCE_TIMEOUT_MS);
-        };
+    function markVoice() {
+      lastVoiceTime = Date.now();
+      if (firstVoiceTime === null) firstVoiceTime = lastVoiceTime;
+      resetSilenceTimer();
+    }
 
-        const finalizeEvaluation = function() {
-          const userDurationSec = recordStartTime
-            ? Math.max(0.4, Number((((recordStopTime ?? Date.now()) - recordStartTime) / 1000).toFixed(2)))
-            : null;
-          const targetDurationSec = (line.time && line.time[1] > line.time[0])
-            ? Number((line.time[1] - line.time[0]).toFixed(2))
-            : (line.audioDuration || null);
+    const resetSilenceTimer = function() {
+      if (!isCurrent() || stopping) return;
+      if (activeSilenceTimer) clearTimeout(activeSilenceTimer);
+      activeSilenceTimer = setTimeout(finishRecordingDueToSilence, SILENCE_TIMEOUT_MS);
+    };
 
-          if (!bestCapturedTranscript) {
-            state.recordingLineId = null;
-            const canRetryWithoutRecorder = /Android/i.test(ua) && !recognitionOnly &&
-              (!errorCode || errorCode === 'no-speech' || errorCode === 'audio-capture');
-            if (canRetryWithoutRecorder) recognitionOnlyLines.add(recordingKey);
-            if (typeof root.showToast === 'function') {
-              if (errorCode === 'network') {
-                root.showToast('Chưa chấm được: dịch vụ nhận giọng không kết nối được. Hãy kiểm tra mạng rồi thử lại.');
-              } else if (errorCode === 'not-allowed' || errorCode === 'service-not-allowed') {
-                root.showToast('Chưa chấm được: trình duyệt chặn nhận giọng. Hãy kiểm tra quyền micro.');
-              } else if (canRetryWithoutRecorder) {
-                root.showToast('Chưa nhận được lời nói để chấm. Chạm mic đọc lại để chấm ở chế độ chỉ nhận giọng.');
-              } else {
-                root.showToast('Chưa nhận được lời nói để chấm. Hãy chạm mic và đọc lại.');
-              }
-            }
-            rerender();
-            if (typeof onComplete === 'function') onComplete(null);
-            return null;
+    const finalizeEvaluation = function() {
+      const spokenDuration = latestOfflineReport?.rms?.voicedDurationSec ||
+        (firstVoiceTime !== null && lastVoiceTime > firstVoiceTime ? (lastVoiceTime - firstVoiceTime) / 1000 : null);
+      const userDurationSec = spokenDuration || (!mobile && recordStartTime
+        ? Math.max(0.4, Number((((recordStopTime ?? Date.now()) - recordStartTime) / 1000).toFixed(2)))
+        : null);
+      const targetDurationSec = (line.time && line.time[1] > line.time[0])
+        ? Number((line.time[1] - line.time[0]).toFixed(2))
+        : (line.audioDuration || null);
+
+      const recognitionEndedEarly = mobile && recognitionEndTime !== null && lastVoiceTime !== null &&
+        lastVoiceTime - recognitionEndTime > RECOGNITION_TAIL_MS;
+      if (!bestCapturedTranscript || recognitionEndedEarly) {
+        state.recordingLineId = null;
+        const canRetryWithoutRecorder = mobile && Boolean(rec) && canRecord && !recognitionOnly &&
+            (!errorCode || errorCode === 'no-speech' || errorCode === 'audio-capture');
+        if (canRetryWithoutRecorder) recognitionOnlyLines.add(recordingKey);
+        if (typeof root.showToast === 'function') {
+          if (!rec && recordingStarted && !captureError) {
+            root.showToast('Đã thu âm. Trình duyệt này không hỗ trợ nhận giọng để chấm điểm.');
+          } else if (captureError && !recordingStarted) {
+            root.showToast(captureError);
+          } else if (errorCode === 'network') {
+            root.showToast('Chưa chấm được: dịch vụ nhận giọng không kết nối được. Hãy kiểm tra mạng rồi thử lại.');
+          } else if (errorCode === 'not-allowed' || errorCode === 'service-not-allowed') {
+            root.showToast('Chưa chấm được: trình duyệt chặn nhận giọng. Hãy kiểm tra quyền micro.');
+          } else if (recognitionEndedEarly && canRetryWithoutRecorder) {
+            root.showToast('Bộ nhận giọng dừng trước khi bạn đọc xong. Chạm mic đọc lại liền câu để chấm.');
+          } else if (canRetryWithoutRecorder) {
+            root.showToast('Chưa nhận được lời nói để chấm. Chạm mic đọc lại để chấm ở chế độ chỉ nhận giọng.');
+          } else {
+            root.showToast('Chưa nhận được lời nói để chấm. Hãy chạm mic và đọc lại.');
           }
+        }
+        rerender();
+        if (typeof onComplete === 'function') onComplete(null);
+        return null;
+      }
 
-          let bestEval = null;
-          let bestRank = 0;
-          let bestConf = 0.9;
-          const candidates = bestCapturedAlternatives.length > 0
-            ? bestCapturedAlternatives
-            : [{ transcript: bestCapturedTranscript, confidence: 0.9 }];
+      let bestEval = null;
+      let bestRank = 0;
+      let bestConf = 0.9;
+      const candidates = bestCapturedAlternatives.length > 0
+        ? bestCapturedAlternatives
+        : [{ transcript: bestCapturedTranscript, confidence: 0.9 }];
 
-          for (let i = 0; i < candidates.length; i++) {
-            const candidate = candidates[i] && candidates[i].transcript;
-            if (!candidate) continue;
-            const candidateConf = typeof candidates[i].confidence === 'number' ? candidates[i].confidence : 0.85;
-            const candidateEval = evaluatePronunciation(
-              line.rawJp || line.jp,
-              candidate,
-              line.pitchCurve,
-              line.endPitch,
-              {
-                targetRubyHtml: line.jp,
-                measuredPitchSamples: samples,
-                acousticReport: latestOfflineReport,
-                userDurationSec,
-                targetDurationSec,
-                candidateRank: i,
-                confidence: candidateConf
-              }
-            );
-            if (!bestEval || candidateEval.score > bestEval.score) {
-              bestEval = candidateEval;
-              bestCapturedTranscript = candidate;
-              bestRank = i;
-              bestConf = candidateConf;
-            }
-          }
-
-          const evalOpts = {
+      for (let i = 0; i < candidates.length; i++) {
+        const candidate = candidates[i] && candidates[i].transcript;
+        if (!candidate) continue;
+        const candidateConf = typeof candidates[i].confidence === 'number' ? candidates[i].confidence : 0.85;
+        const candidateEval = evaluatePronunciation(
+          line.rawJp || line.jp,
+          candidate,
+          line.pitchCurve,
+          line.endPitch,
+          {
             targetRubyHtml: line.jp,
             measuredPitchSamples: samples,
             acousticReport: latestOfflineReport,
             userDurationSec,
             targetDurationSec,
-            candidateRank: bestRank,
-            confidence: bestConf
-          };
-          pendingOfflineEval = {
-            bestTranscript: bestCapturedTranscript,
-            opts: evalOpts
-          };
+            candidateRank: i,
+            confidence: candidateConf
+          }
+        );
+        if (!bestEval || candidateEval.score > bestEval.score) {
+          bestEval = candidateEval;
+          bestCapturedTranscript = candidate;
+          bestRank = i;
+          bestConf = candidateConf;
+        }
+      }
 
-          const finalRes = applyLineEvaluation(lineId, bestCapturedTranscript, evalOpts);
-          if (typeof onComplete === 'function') onComplete(finalRes);
-          return finalRes;
-        };
+      const evalOpts = {
+        targetRubyHtml: line.jp,
+        measuredPitchSamples: samples,
+        acousticReport: latestOfflineReport,
+        userDurationSec,
+        targetDurationSec,
+        candidateRank: bestRank,
+        confidence: bestConf
+      };
+      pendingOfflineEval = {
+        bestTranscript: bestCapturedTranscript,
+        opts: evalOpts
+      };
 
-        const completeRecognition = function() {
-          if (!isCurrent()) return;
-          activeRecognition = null;
-          cleanupAudioCapture();
-          if (state.currentLessonId === lessonId) return finalizeEvaluation();
-          state.recordingLineId = null;
-          rerender();
-          if (typeof onComplete === 'function') onComplete(null);
-        };
+      scoreAttemptByLine.set(lineId, attempt);
+      const finalRes = applyLineEvaluation(lineId, bestCapturedTranscript, evalOpts);
+      if (typeof onComplete === 'function') onComplete(finalRes);
+      return finalRes;
+    };
 
-        const finishRecordingDueToSilence = function() {
-          if (!isCurrent() || stopping) return;
-          stopping = true;
-          recordStopTime = Date.now();
-          cleanupAudioCapture();
-          activeRecognitionEndTimer = setTimeout(() => {
-            completeRecognition();
-            try { rec.abort(); } catch (e) {}
-          }, 2000);
-          // stop() can produce a final result before onend.
-          try { rec.stop(); } catch (e) { completeRecognition(); }
-        };
+    const completeRecognition = function() {
+      if (!isCurrent()) return;
+      activeRecognition = null;
+      activeRecording = null;
+      cleanupAudioCapture();
+      if (state.currentLessonId === lessonId) return finalizeEvaluation();
+      state.recordingLineId = null;
+      rerender();
+      if (typeof onComplete === 'function') onComplete(null);
+    };
 
-        activeFinishRecording = function() {
-          return finishRecordingDueToSilence();
-        };
+    const finishRecordingDueToSilence = function() {
+      if (!isCurrent() || stopping) return;
+      stopping = true;
+      recordStopTime = Date.now();
+      stopRecorder();
+      if (recognitionEnded) return completeRecognition();
+      activeRecognitionEndTimer = setTimeout(() => {
+        completeRecognition();
+        try { rec.abort(); } catch (e) {}
+      }, mobile ? 4500 : 2000);
+      // stop() can produce a final result before onend.
+      try { rec.stop(); } catch (e) { completeRecognition(); }
+    };
 
-        // Thu âm qua MediaRecorder (Desktop & Android) + Giải mã Offline DSP (YIN + RMS + DTW) sau khi dừng nói
-        if (!recognitionOnly && !isIOSUA && root.navigator && root.navigator.mediaDevices && root.navigator.mediaDevices.getUserMedia &&
-            (typeof root.MediaRecorder === 'function' || (!isMobileUA && (root.AudioContext || root.webkitAudioContext)))) {
-          root.navigator.mediaDevices.getUserMedia({ audio: true }).then(stream => {
-            if (!isCurrent() || stopping) {
-              stream.getTracks().forEach(t => t.stop());
-              return;
-            }
-            activeMediaStream = stream;
-            // 1. Trên Desktop, hỗ trợ thêm bộ thu mẫu F0 dự phòng
-            const AudioCtxClass = root.AudioContext || root.webkitAudioContext;
-            if (!isMobileUA && AudioCtxClass) {
-              try {
-                if (activePitchTimer) clearInterval(activePitchTimer);
-                if (activeAudioCtx) {
-                  try { activeAudioCtx.close(); } catch (e) {}
-                }
-                activeAudioCtx = new AudioCtxClass();
-                const source = activeAudioCtx.createMediaStreamSource(stream);
-                const analyser = activeAudioCtx.createAnalyser();
-                analyser.fftSize = 2048;
-                source.connect(analyser);
-                const timeBuf = new Float32Array(analyser.fftSize);
-                activePitchTimer = setInterval(() => {
-                  if (!activeAudioCtx || state.recordingLineId !== lineId) return;
-                  analyser.getFloatTimeDomainData(timeBuf);
-                  let sumSq = 0;
-                  for (let s = 0; s < timeBuf.length; s++) {
-                    sumSq += timeBuf[s] * timeBuf[s];
-                  }
-                  const rms = Math.sqrt(sumSq / timeBuf.length);
-                  const f0 = detectPitchF0FromBuffer(timeBuf, activeAudioCtx.sampleRate);
-                  if (f0) capturedPitchSamples.push(f0);
-                  if (f0 || rms > 0.02) {
-                    resetSilenceTimer();
-                  }
-                }, 50);
-              } catch (ctxErr) {}
-            }
+    activeFinishRecording = function() {
+      return finishRecordingDueToSilence();
+    };
 
-            // 2. Khởi tạo MediaRecorder & Phân tích AudioBuffer Offline khi kết thúc thu âm (5s im lặng)
-            if (typeof root.MediaRecorder !== 'undefined') {
-              const chunks = [];
-              let mimeType = '';
-              if (typeof root.MediaRecorder.isTypeSupported === 'function') {
-                if (root.MediaRecorder.isTypeSupported('audio/webm;codecs=opus')) mimeType = 'audio/webm;codecs=opus';
-                else if (root.MediaRecorder.isTypeSupported('audio/webm')) mimeType = 'audio/webm';
-                else if (root.MediaRecorder.isTypeSupported('audio/mp4')) mimeType = 'audio/mp4';
+    const AudioCtxClass = root.AudioContext || root.webkitAudioContext;
+    const wantsCapture = !(rec && recognitionOnly) && (canRecord ||
+      (!mobile && rec && AudioCtxClass && typeof mediaDevices?.getUserMedia === 'function'));
+    const captureFailed = (error) => {
+      if (!isCurrent()) return;
+      captureError = error?.name === 'NotAllowedError' ? 'Không thể thu âm vì chưa có quyền micro.'
+        : error?.name === 'NotReadableError' ? 'Không thể thu âm. Hãy kiểm tra mic có đang được ứng dụng khác sử dụng.'
+        : 'Không thể lưu bản thu âm trên trình duyệt này.';
+      if (activeMediaStream) {
+        activeMediaStream.getTracks().forEach(track => track.stop());
+        activeMediaStream = null;
+      }
+      stopRecorder();
+      if (recognitionEnded) completeRecognition();
+      else root.showToast?.(captureError);
+    };
+    if (wantsCapture) {
+      if (mobile && AudioCtxClass) {
+        try {
+          activeAudioCtx = new AudioCtxClass();
+          activeAudioCtx.resume?.()?.catch(() => {});
+        } catch (e) {}
+      }
+      let streamRequest;
+      try { streamRequest = mediaDevices.getUserMedia({ audio: true }); }
+      catch (error) { captureFailed(error); }
+      streamRequest?.then(stream => {
+        if (!isCurrent() || stopping) {
+          stream.getTracks().forEach(t => t.stop());
+          return;
+        }
+        activeMediaStream = stream;
+        if (AudioCtxClass) {
+          try {
+            if (activePitchTimer) clearInterval(activePitchTimer);
+            if (!activeAudioCtx) activeAudioCtx = new AudioCtxClass();
+            activeAudioCtx.resume?.()?.catch(() => {});
+            const source = activeAudioCtx.createMediaStreamSource(stream);
+            const analyser = activeAudioCtx.createAnalyser();
+            analyser.fftSize = 2048;
+            source.connect(analyser);
+            const timeBuf = new Float32Array(analyser.fftSize);
+            activePitchTimer = setInterval(() => {
+              if (!activeAudioCtx || !isCurrent() || stopping) return;
+              analyser.getFloatTimeDomainData(timeBuf);
+              let sumSq = 0;
+              for (let s = 0; s < timeBuf.length; s++) {
+                sumSq += timeBuf[s] * timeBuf[s];
               }
-              activeMediaRecorder = mimeType
-                ? new root.MediaRecorder(stream, { mimeType })
-                : new root.MediaRecorder(stream);
-
-              const recorder = activeMediaRecorder;
-              recorder.ondataavailable = e => { if (e.data && e.data.size > 0) chunks.push(e.data); };
-              recorder.onstop = () => {
-                try {
-                  if (!chunks.length || state.currentLessonId !== lessonId || latestRecordingByLine.get(recordingKey) !== rec) return;
-                  const finalMime = recorder.mimeType || mimeType || 'audio/webm';
-                  const blob = new Blob(chunks, { type: finalMime });
-                  if (state.userBlobs[lineId] && typeof URL !== 'undefined' && typeof URL.revokeObjectURL === 'function') {
-                    try { URL.revokeObjectURL(state.userBlobs[lineId]); } catch (e) {}
-                  }
-                  if (typeof URL !== 'undefined' && typeof URL.createObjectURL === 'function') {
-                    state.userBlobs[lineId] = URL.createObjectURL(blob);
-                    rerender();
-                  }
-                  // Giải mã AudioBuffer Offline bằng AcousticAnalyzer (YIN + RMS Silence Gap + DTW)
-                  const analyzer = getAcousticAnalyzer();
-                  if (analyzer && typeof analyzer.decodeAndAnalyzeBlob === 'function' && chunks.length > 0) {
-                    const targetHiraForLine = extractKanaReadingFromRubyHtml(line.jp) ||
-                      katakanaToHiragana(normalizeNumbersToHiragana(normalizeJapaneseForCompare(line.rawJp || line.jp)));
-                    const targetMorasForLine = splitIntoMoraTokens(targetHiraForLine);
-                    analyzer.decodeAndAnalyzeBlob(blob, {
-                      modelCurve: line.pitchCurve,
-                      targetMoras: targetMorasForLine
-                    }).then(report => {
-                      if (!report || state.currentLessonId !== lessonId || latestRecordingByLine.get(recordingKey) !== rec) return;
-                      latestOfflineReport = report;
-                      if (pendingOfflineEval && pendingOfflineEval.bestTranscript) {
-                        const opts = Object.assign({}, pendingOfflineEval.opts, { acousticReport: report });
-                        state.progress.evalData[lineId] = evaluatePronunciation(
-                          line.rawJp || line.jp, pendingOfflineEval.bestTranscript, line.pitchCurve, line.endPitch, opts
-                        );
-                        state.progress.scores[lineId] = state.progress.evalData[lineId].score;
-                        saveProgress();
-                        rerender();
-                      }
-                    }).catch(() => {});
-                  }
-                } catch (err) {} finally {
-                  if (activeMediaStream === stream) {
-                    stream.getTracks().forEach(t => t.stop());
-                    activeMediaStream = null;
-                  }
-                }
-              };
-              recorder.start(250);
-            }
-          }).catch(() => {});
+              const rms = Math.sqrt(sumSq / timeBuf.length);
+              const f0 = mobile ? null : detectPitchF0FromBuffer(timeBuf, activeAudioCtx.sampleRate);
+              if (f0) capturedPitchSamples.push(f0);
+              if (f0 || rms > 0.02) markVoice();
+            }, 50);
+          } catch (ctxErr) {}
         }
 
-        rec.lang = 'ja-JP';
-        rec.continuous = true;
-        if (recognitionOnly) rec.continuous = false;
-        rec.interimResults = true;
-        rec.maxAlternatives = 3;
+        // 2. Khởi tạo MediaRecorder & Phân tích AudioBuffer Offline khi kết thúc thu âm (5s im lặng)
+        if (canRecord) {
+          const chunks = [];
+          let mimeType = '';
+          if (typeof root.MediaRecorder.isTypeSupported === 'function') {
+            if (root.MediaRecorder.isTypeSupported('audio/webm;codecs=opus')) mimeType = 'audio/webm;codecs=opus';
+            else if (root.MediaRecorder.isTypeSupported('audio/webm')) mimeType = 'audio/webm';
+            else if (root.MediaRecorder.isTypeSupported('audio/mp4')) mimeType = 'audio/mp4';
+          }
+          activeMediaRecorder = mimeType
+            ? new root.MediaRecorder(stream, { mimeType })
+            : new root.MediaRecorder(stream);
 
-        rec.onspeechstart = function() {
-          resetSilenceTimer();
-        };
-
-        rec.onaudiostart = function() {
-          resetSilenceTimer();
-        };
-
-        rec.onsoundstart = function() {
-          resetSilenceTimer();
-        };
-
-        rec.onresult = function(event) {
-          if (!isCurrent()) return;
-          resetSilenceTimer();
-          let currentInterim = '';
-          let currentFinal = '';
-          const alts = [];
-
-          for (let i = 0; i < event.results.length; ++i) {
-            const item = event.results[i];
-            if (item.isFinal) {
-              currentFinal += (item[0] && item[0].transcript) || '';
-              for (let j = 0; j < item.length; ++j) {
-                if (item[j] && item[j].transcript) {
-                  alts.push({
-                    transcript: item[j].transcript,
-                    confidence: item[j].confidence || 0.85
-                  });
-                }
+          const recorder = activeMediaRecorder;
+          recorder.onerror = event => captureFailed(event.error);
+          recorder.ondataavailable = e => { if (e.data && e.data.size > 0) chunks.push(e.data); };
+          recorder.onstop = () => {
+            try {
+              if (!isLatest()) return;
+              if (!chunks.length) {
+                if (!captureError && recordingStarted) root.showToast?.('Bản thu âm không có dữ liệu. Hãy thử ghi lại.');
+                return;
               }
-            } else {
-              currentInterim += (item[0] && item[0].transcript) || '';
-              if (item[0] && item[0].transcript) {
-                alts.push({
-                  transcript: item[0].transcript,
-                  confidence: item[0].confidence || 0.8
-                });
+              const finalMime = recorder.mimeType || mimeType || chunks[0].type;
+              const blob = new Blob(chunks, { type: finalMime });
+              if (state.userBlobs[lineId] && typeof URL !== 'undefined' && typeof URL.revokeObjectURL === 'function') {
+                try { URL.revokeObjectURL(state.userBlobs[lineId]); } catch (e) {}
+              }
+              if (typeof URL !== 'undefined' && typeof URL.createObjectURL === 'function') {
+                state.userBlobs[lineId] = URL.createObjectURL(blob);
+                clipAttemptByLine.set(lineId, attempt);
+                rerender();
+              }
+              // Giải mã AudioBuffer Offline bằng AcousticAnalyzer (YIN + RMS Silence Gap + DTW)
+              const analyzer = getAcousticAnalyzer();
+              if (analyzer && typeof analyzer.decodeAndAnalyzeBlob === 'function' && chunks.length > 0) {
+                const targetHiraForLine = extractKanaReadingFromRubyHtml(line.jp) ||
+                  katakanaToHiragana(normalizeNumbersToHiragana(normalizeJapaneseForCompare(line.rawJp || line.jp)));
+                const targetMorasForLine = splitIntoMoraTokens(targetHiraForLine);
+                analyzer.decodeAndAnalyzeBlob(blob, {
+                  modelCurve: line.pitchCurve,
+                  targetMoras: targetMorasForLine
+                }).then(report => {
+                  if (!report || !isLatest()) return;
+                  latestOfflineReport = report;
+                  if (pendingOfflineEval && pendingOfflineEval.bestTranscript) {
+                    const opts = Object.assign({}, pendingOfflineEval.opts, {
+                      acousticReport: report,
+                      userDurationSec: report.rms?.voicedDurationSec || pendingOfflineEval.opts.userDurationSec
+                    });
+                    state.progress.evalData[lineId] = evaluatePronunciation(
+                      line.rawJp || line.jp, pendingOfflineEval.bestTranscript, line.pitchCurve, line.endPitch, opts
+                    );
+                    state.progress.scores[lineId] = state.progress.evalData[lineId].score;
+                    saveProgress();
+                    rerender();
+                  }
+                }).catch(() => {});
+              }
+            } catch (err) {} finally {
+              if (activeMediaStream === stream) {
+                stream.getTracks().forEach(t => t.stop());
+                activeMediaStream = null;
               }
             }
+          };
+          recorder.start();
+          recordingStarted = true;
+          resetSilenceTimer();
+        }
+      }).catch(captureFailed);
+    }
+
+    if (!isCurrent()) return null;
+    if (!rec) {
+      activeMaxRecordTimer = setTimeout(finishRecordingDueToSilence, MAX_RECORD_TIMEOUT_MS);
+      return null;
+    }
+
+    rec.lang = 'ja-JP';
+    rec.continuous = true;
+    if (/Android/i.test(ua) || recognitionOnly) rec.continuous = false;
+    rec.interimResults = true;
+    rec.maxAlternatives = 3;
+
+    rec.onspeechstart = function() {
+      markVoice();
+    };
+    rec.onspeechend = function() {
+      if (firstVoiceTime !== null) lastVoiceTime = Date.now();
+    };
+
+    rec.onaudiostart = function() {
+      resetSilenceTimer();
+    };
+
+    rec.onsoundstart = function() {
+      resetSilenceTimer();
+    };
+
+    rec.onresult = function(event) {
+      if (!isCurrent() || recognitionEnded) return;
+      resetSilenceTimer();
+      let currentInterim = '';
+      let currentFinal = '';
+      const alts = [];
+
+      for (let i = 0; i < event.results.length; ++i) {
+        const item = event.results[i];
+        if (item.isFinal) {
+          currentFinal += (item[0] && item[0].transcript) || '';
+          for (let j = 0; j < item.length; ++j) {
+            if (item[j] && item[j].transcript) {
+              alts.push({
+                transcript: item[j].transcript,
+                confidence: item[j].confidence || 0.85
+              });
+            }
           }
-
-          const combined = (currentFinal + currentInterim).trim();
-          if (combined) {
-            bestCapturedTranscript = combined;
-            bestCapturedAlternatives = event.results.length === 1 ? alts : [
-              { transcript: combined, confidence: 0.85 }
-            ];
+        } else {
+          currentInterim += (item[0] && item[0].transcript) || '';
+          if (item[0] && item[0].transcript) {
+            alts.push({
+              transcript: item[0].transcript,
+              confidence: item[0].confidence || 0.8
+            });
           }
-        };
-
-        rec.onerror = function(ev) {
-          if (!isCurrent()) return;
-          errorCode = (ev && ev.error) || 'unknown';
-          completeRecognition();
-        };
-
-        rec.onend = completeRecognition;
-
-        rec.start();
-        resetSilenceTimer();
-        activeMaxRecordTimer = setTimeout(finishRecordingDueToSilence, MAX_RECORD_TIMEOUT_MS);
-        return;
-      } catch (e) {
-        activeRecognition = null;
-        cleanupAudioCapture();
+        }
       }
-    }
 
-    state.recordingLineId = null;
-    if (typeof root.showToast === 'function') {
-      root.showToast('Không thể mở tính năng nhận giọng. Hãy kiểm tra quyền micro hoặc thử trình duyệt khác.');
+      const combined = (currentFinal + currentInterim).trim();
+      if (combined) {
+        bestCapturedTranscript = combined;
+        bestCapturedAlternatives = event.results.length === 1 ? alts : [
+          { transcript: combined, confidence: 0.85 }
+        ];
+      }
+    };
+
+    const onRecognitionEnd = () => {
+      if (!isCurrent() || recognitionEnded) return;
+      recognitionEnded = true;
+      recognitionEndTime = Date.now();
+      // Android may end recognition after one phrase while the recorder is still running.
+      if (mobile && wantsCapture && !captureError && !stopping) return;
+      completeRecognition();
+    };
+    rec.onerror = function(ev) {
+      errorCode = (ev && ev.error) || 'unknown';
+      onRecognitionEnd();
+    };
+    rec.onend = onRecognitionEnd;
+
+    try {
+      if (!mobile || !wantsCapture) resetSilenceTimer();
+      activeMaxRecordTimer = setTimeout(finishRecordingDueToSilence, MAX_RECORD_TIMEOUT_MS);
+      rec.start();
+    } catch (e) {
+      errorCode = e?.name === 'NotAllowedError' ? 'not-allowed' : 'start-failed';
+      recognitionEnded = true;
+      if (!canRecord || recognitionOnly) completeRecognition();
     }
-    rerender();
-    if (typeof onComplete === 'function') onComplete(null);
     return null;
   }
 
@@ -2852,21 +2969,6 @@
 
     if (typeof root.showToast === 'function') {
       root.showToast('🎤 Chưa có bản ghi âm giọng nói (hoặc trang vừa tải lại). Bạn hãy chạm vào Micro để đọc lại nhé!');
-    }
-    const line = findLineById(lineId);
-    if (line) {
-      const spkId = line.speakerId || 'sato';
-      const prof = (root.AudioEngine && typeof root.AudioEngine.getCharacterVoiceProfile === 'function')
-        ? root.AudioEngine.getCharacterVoiceProfile(spkId)
-        : null;
-      speakJapanese(
-        line.jp || line.rawJp,
-        prof ? prof.pitch : 1.02,
-        null,
-        prof ? prof.gender : null,
-        spkId,
-        prof ? prof.rate : 0.96
-      );
     }
   }
 
@@ -3025,12 +3127,14 @@
 
   function setTab(tabName) {
     if (['dialogue', 'renshuu'].includes(tabName)) {
+      if (state.activeTab !== tabName) cancelRecording(false);
       state.activeTab = tabName;
       rerender();
     }
   }
 
   function stopRoleplaySession() {
+    cancelRecording(false);
     state.isRoleplaying = false;
     state.playingLineId = null;
     state.recordingLineId = null;
@@ -3038,17 +3142,12 @@
       clearTimeout(roleplayTimer);
       roleplayTimer = null;
     }
-    if (activeRecognition) {
-      const rec = activeRecognition;
-      activeRecognition = null;
-      try { rec.abort(); } catch (e) {}
-    }
-    cleanupAudioCapture();
     stopAllKaiwaAudio();
     rerender();
   }
 
   function setPracticeMode(mode) {
+    cancelRecording(false);
     const normalized = (mode === 'shadowing' || mode === 'roleplay') ? mode : 'free';
     state.practiceMode = normalized;
     state.isPlayingAll = false;
@@ -3106,6 +3205,7 @@
   }
 
   function selectRenshuuSub(rcId, subIdx) {
+    cancelRecording(false);
     state.rcSubIndex[rcId] = subIdx;
     rerender();
   }
@@ -3131,6 +3231,11 @@
     rerender();
   }
 
+  root.addEventListener?.('pagehide', () => cancelRecording(false));
+  root.document?.addEventListener?.('visibilitychange', () => {
+    if (root.document.hidden) cancelRecording();
+  });
+
   return {
     state,
     renderKaiwaModule,
@@ -3145,6 +3250,7 @@
     playVoiceSample,
     playSpriteSegment,
     stopAllKaiwaAudio,
+    cancelRecording,
     seekMasterPlayer,
     toggleLoopLine,
     onSpeakerDown,
