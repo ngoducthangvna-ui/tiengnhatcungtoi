@@ -10,6 +10,43 @@
 (function(root) {
   'use strict';
 
+  // Sidebar symbols use wider gaps so the details remain distinct at navigation size.
+  const sidebarSvg = (content) => `<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${content}</svg>`;
+  const SIDEBAR_ICONS = {
+    lessons: sidebarSvg(
+      '<path d="M12 6C9.4 4.3 6.1 4 2.5 5v13.5c3.6-1 6.9-.7 9.5 1.5 2.6-2.2 5.9-2.5 9.5-1.5V5c-3.6-1-6.9-.7-9.5 1Zm0 0v14"/>' +
+      '<path class="icon-detail" d="M5.5 9.2c1.2-.1 2.4 0 3.5.4m-3.5 3.4c1.2-.1 2.4 0 3.5.4m6-3.8c1.1-.4 2.3-.5 3.5-.4m-3.5 4.2c1.1-.4 2.3-.5 3.5-.4"/>'
+    ),
+    kaiwa: sidebarSvg(
+      '<path d="M3 11v2m6-7v12m6-12v12m6-7v2"/>' +
+      '<path class="icon-detail" d="M6 9v6m6-12v18m6-12v6"/>'
+    ),
+    quiz: sidebarSvg(
+      '<path d="M13.5 3 5 14h6l-.5 7L19 10h-6l.5-7Z"/>' +
+      '<path class="icon-detail" d="M4.5 4v4M2.5 6h4m13 11v4m-2-2h4"/>'
+    ),
+    dokkai: sidebarSvg(
+      '<path d="M5 3h9l5 5v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2Zm9 0v5h5"/>' +
+      '<path class="icon-detail" d="M7 8h3m-3 4h8m-8 4h8"/>'
+    ),
+    kanji: sidebarSvg(
+      '<path d="m10 14 7.5-9.6a2 2 0 0 1 3.1 2.5L13 16.5m-3-2.5 3 2.5m-3-2.5c-3-.2-3.1 3.6-4.6 5.8 3.6.2 6.1-.8 7.6-3.3"/>' +
+      '<path class="icon-detail" d="M6.5 3v9M3 6h7M6.5 7A13 13 0 0 1 3 10.5M6.5 7A13 13 0 0 0 10 10.5"/>'
+    ),
+    radicals: sidebarSvg(
+      '<rect x="2.5" y="2.5" width="19" height="19" rx="2"/><path d="M12 2.5v19M2.5 12h19"/>' +
+      '<path class="icon-detail" d="M5.6 5.6h3.3V9H5.6Zm9.6 1.8h3.3m-1.65-1.8V9m-9.6 6.2L5.6 18.4m1.65-3.2 1.65 3.2m6.3-1.6h3.3"/>'
+    ),
+    masterSuite: sidebarSvg(
+      '<rect x="5.5" y="3" width="14.5" height="18" rx="2"/><path d="M3 7h4m-4 5h4m-4 5h4"/>' +
+      '<path class="icon-detail" d="m13.6 7-3.4 5.6h3.1L12.7 17l3.6-6h-3.2l.5-4Z"/>'
+    ),
+    exam: sidebarSvg(
+      '<path d="M2.5 4.5q9.5 3 19 0l-1 3q-8.5 2-17 0L2.5 4.5ZM7 8.5V21m10-12.5V21M5.5 21h3m7 0h3"/>' +
+      '<path class="icon-detail" d="M4 12.5h16m-8-3.5v3.5"/>'
+    )
+  };
+
   const APP_ICONS = {
     // Sách / Tra từ điển / Lý thuyết (Curved pages & text lines)
     book: `<svg class="icon-svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 6C10 4.5 6.5 4.2 3 5V18.2C6.5 17.4 10 17.7 12 19.2C14 17.7 17.5 17.4 21 18.2V5C17.5 4.2 14 4.5 12 6Z M12 6V20.5 M2.5 19.8C6.2 19.0 9.8 19.3 12 20.6C14.2 19.3 17.8 19.0 21.5 19.8 M5.2 8.2C6.8 7.9 8.4 8.0 9.8 8.5 M5.2 10.6C6.8 10.3 8.4 10.4 9.8 10.9 M5.2 13.0C6.8 12.7 8.4 12.8 9.8 13.3 M5.2 15.4C6.8 15.1 8.4 15.2 9.8 15.7 M14.2 8.5C15.6 8.0 17.2 7.9 18.8 8.2 M14.2 10.9C15.6 10.4 17.2 10.3 18.8 10.6 M14.2 13.3C15.6 12.8 17.2 12.7 18.8 13.0 M14.2 15.7C15.6 15.2 17.2 15.1 18.8 15.4"></path></svg>`,
@@ -19,7 +56,7 @@
     dokkai: `<svg class="icon-svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 21h12a2 2 0 0 0 2-2v-2H10v2a2 2 0 1 1-4 0V5a2 2 0 1 0-4 0v3h4 M19 17V5a2 2 0 0 0-2-2H4 M15 8h-5 M15 12h-5"></path></svg>`,
     
     // Kính lúp / Tìm kiếm
-    search: `<svg class="icon-svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>`,
+    search: `<svg class="icon-svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line><path class="icon-detail" d="M8 11a3 3 0 0 1 3-3"></path></svg>`,
     
     // Micro / Tìm kiếm giọng nói (Voice Search)
     mic: `<svg class="icon-svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3z"></path><path d="M19 10v1a7 7 0 0 1-14 0v-1"></path><line x1="12" y1="18" x2="12" y2="22"></line><line x1="8" y1="22" x2="16" y2="22"></line></svg>`,
@@ -47,13 +84,13 @@
     lightbulb: `<svg class="icon-svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 18h6"></path><path d="M10 22h4"></path><path d="M12 2a7 7 0 0 0-7 7c0 2.38 1.19 4.47 3 5.74V17a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1v-2.26c1.81-1.27 3-3.36 3-5.74a7 7 0 0 0-7-7z"></path></svg>`,
     
     // Thẻ Flashcard 3D
-    cards: `<svg class="icon-svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path></svg>`,
+    cards: `<svg class="icon-svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path><path class="icon-detail" d="M8 11h5"></path></svg>`,
     
     // Bài tập trắc nghiệm / Sổ tay SRS Notebook với ngôi sao & tabs
     exercise: `<svg class="icon-svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5.5 3H17.5A2 2 0 0 1 19.5 5V19A2 2 0 0 1 17.5 21H5.5A1.5 1.5 0 0 1 4 19.5V4.5A1.5 1.5 0 0 1 5.5 3Z M2.5 6.2H5.5 M2.5 9.1H5.5 M2.5 12.0H5.5 M2.5 14.9H5.5 M2.5 17.8H5.5 M12.2 8.2L13.3 10.6L15.9 11.0L14.0 12.8L14.5 15.4L12.2 14.1L9.9 15.4L10.4 12.8L8.5 11.0L11.1 10.6Z"></path><path d="M19.5 5.5H21.2V8.5H19.5" stroke="#e11d48"></path><path d="M19.5 9.8H21.2V12.8H19.5" stroke="#6366f1"></path><path d="M19.5 14.1H21.2V17.1H19.5" stroke="#f59e0b"></path></svg>`,
     
     // Tia sét / Phản xạ nhanh (Lightning Reflex)
-    bolt: `<svg class="icon-svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M13.5 2.5L5.5 13.5H12L10.5 21.5L18.5 10.5H12L13.5 2.5Z"></path></svg>`,
+    bolt: `<svg class="icon-svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M13.5 2.5L5.5 13.5H12L10.5 21.5L18.5 10.5H12L13.5 2.5Z"></path><path class="icon-detail" d="M3.5 4.5v3m-1.5-1.5h3"></path></svg>`,
     
     // Trộn ngẫu nhiên (Shuffle)
     shuffle: `<svg class="icon-svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="16 3 21 3 21 8"></polyline><line x1="4" y1="20" x2="21" y2="3"></line><polyline points="21 16 21 21 16 21"></polyline><line x1="15" y1="15" x2="21" y2="21"></line><line x1="4" y1="4" x2="9" y2="9"></line></svg>`,
@@ -91,7 +128,7 @@
     torii: `<svg class="icon-svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 6C8 7.2 16 7.2 21 6L20.2 8C15.5 9 8.5 9 3.8 8Z M4.2 11H19.8 M4.2 12.5H19.8 M12 8.7V11 M7 8.5V21 M8.6 8.6V21 M15.4 8.6V21 M17 8.5V21 M6.2 21H9.4 M14.6 21H17.8"></path></svg>`,
 
     // Loa phát âm chuẩn SGK Tokyo (Speaker)
-    speaker: `<svg class="icon-svg speaker-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path><path d="M19.07 4.93a10 10 0 0 1 0 14.14"></path></svg>`,
+    speaker: `<svg class="icon-svg speaker-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path class="icon-detail" d="M15.54 8.46a5 5 0 0 1 0 7.07"></path><path class="icon-detail" d="M19.07 4.93a10 10 0 0 1 0 14.14"></path></svg>`,
 
     // Thông tin / Giải thích ngữ pháp & từ vựng (Info)
     info: `<svg class="icon-svg info-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>`,
@@ -132,7 +169,7 @@
     tabProfile: `<svg class="wa-icon wa-tab-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="10" cy="7" r="4"></circle><path d="M3 21v-2a5 5 0 0 1 5-5h4a5 5 0 0 1 5 5v2"></path><path d="M19 8c0 .7-.3 1.3-1 1.3.7 0 1 .6 1 1.3 0-.7.3-1.3 1-1.3-.7 0-1-.6-1-1.3z"></path></svg>`,
     tabAccounts: `<svg class="wa-icon wa-tab-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="6" width="14" height="14" rx="3"></rect><path d="M8 2h10a3 3 0 0 1 3 3v10"></path><path d="M6 13h6M6 16h4"></path></svg>`,
     tabLeaderboard: `<svg class="wa-icon wa-tab-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6-6 6 6-3 10H9L6 9z"></path><path d="M4 19h16"></path><circle cx="12" cy="11" r="1.5"></circle></svg>`,
-    tabSync: `<svg class="wa-icon wa-tab-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a9 9 0 0 1-15.3 6.3L3 16"></path><path d="M3 21v-5h5"></path><path d="M3 12a9 9 0 0 1 15.3-6.3L21 8"></path><path d="M21 3v5h-5"></path></svg>`,
+    tabSync: `<svg class="wa-icon wa-tab-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a9 9 0 0 1-15.3 6.3L3 16"></path><path d="M3 21v-5h5"></path><path d="M3 12a9 9 0 0 1 15.3-6.3L21 8"></path><path class="icon-detail" d="M21 3v5h-5"></path></svg>`,
 
     // 9 Wa-Modern Kamon Avatars (Section 2 & Master Optical Grid)
     avatars: {
@@ -168,7 +205,7 @@
 
     // Utilities & Sync (100% Hairline Wireframe, zero fill)
     sparkleBulb: `<svg class="wa-util-svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 2v4M12 18v4M2 12h4M18 12h4"></path><circle cx="12" cy="12" r="5"></circle></svg>`,
-    sectionChart: `<svg class="wa-util-svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="18" y1="20" x2="18" y2="4"></line><line x1="12" y1="20" x2="12" y2="10"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg>`,
+    sectionChart: `<svg class="wa-util-svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line class="icon-detail" x1="18" y1="20" x2="18" y2="4"></line><line x1="12" y1="20" x2="12" y2="10"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg>`,
     editPen: `<svg class="wa-util-svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M17 3a2.8 2.8 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"></path></svg>`,
     logoutDoor: `<svg class="wa-util-svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>`,
     deviceCards: `<svg class="wa-util-svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="2" width="14" height="20" rx="2"></rect><line x1="12" y1="18" x2="12.01" y2="18"></line></svg>`,
@@ -297,6 +334,7 @@
   // Gắn nhóm biểu tượng vào APP_ICONS
   APP_ICONS.account = ACCOUNT_WA_ICONS;
   APP_ICONS.masterSuite = MASTER_SUITE_ICONS;
+  APP_ICONS.sidebar = SIDEBAR_ICONS;
 
   // Bảo đảm tương thích toàn cầu (UMD)
   if (typeof window !== 'undefined') {

@@ -17,7 +17,7 @@
   // HỆ THỐNG BIỂU TƯỢNG VECTOR SVG ĐỒNG BỘ THEO DESIGN SYSTEM BÀI HỌC
   const EXAM_ICONS = {
     arrowLeft: `<svg class="icon-svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>`,
-    clock: `<svg class="icon-svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 2.5A1.5 1.5 0 0 1 13.5 4H10.5A1.5 1.5 0 0 1 12 2.5Z M7 10C7 6.8 9.2 4.5 12 4.5C14.8 4.5 17 6.8 17 10L18.5 17.5H5.5L7 10Z M4.5 17.5H19.5 M6.5 14H17.5 M10.5 17.5A1.5 1.5 0 0 0 13.5 17.5"></path></svg>`,
+    clock: `<svg class="icon-svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="13" r="8"></circle><path d="M10 2h4m-2 0v3m5 2 2-2"></path><path class="icon-detail" d="M12 9v4l3 2"></path></svg>`,
     search: `<svg class="icon-svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>`,
     trophy: `<svg class="icon-svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"></path><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"></path><path d="M4 22h16"></path><path d="M10 14.66V17c0 .55-.45 1-1 1H8c-.55 0-1 .45-1 1v1h10v-1c0-.55-.45-1-1-1h-1c-.55 0-1-.45-1-1v-2.34"></path><path d="M6 4h12v7a6 6 0 0 1-12 0V4z"></path></svg>`,
     history: `<svg class="icon-svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 14 14"></polyline><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path><path d="M3 3v5h5"></path></svg>`,
@@ -105,7 +105,7 @@
     const link = document.createElement('link');
     link.id = 'exam-engine-styles';
     link.rel = 'stylesheet';
-    link.href = 'src/exam_style.css?v=20261111_12';
+    link.href = 'src/exam_style.css?v=20261117_12';
     document.head.appendChild(link);
   }
 
@@ -115,12 +115,12 @@
   function ensureFuriganaMapLoaded() {
     if (root.EXAM_FURIGANA && typeof root.EXAM_FURIGANA === 'object') return Promise.resolve();
     if (root.NavigationEngine && typeof root.NavigationEngine.loadScriptAsync === 'function') {
-      return root.NavigationEngine.loadScriptAsync('data/exam_furigana.js?v=20261111_12');
+      return root.NavigationEngine.loadScriptAsync('data/exam_furigana.js?v=20261117_03');
     }
     return new Promise((resolve) => {
       if (typeof document === 'undefined') return resolve();
       const s = document.createElement('script');
-      s.src = 'data/exam_furigana.js?v=20261111_12';
+      s.src = 'data/exam_furigana.js?v=20261117_03';
       s.onload = () => resolve();
       s.onerror = () => resolve();
       document.head.appendChild(s);
@@ -142,7 +142,7 @@
       return Promise.all(promises);
     }
 
-    const scriptUrl = isN5 ? 'data/exams_n5.js?v=20261111_12' : 'data/exams_n4.js?v=20261111_12';
+    const scriptUrl = isN5 ? 'data/exams_n5.js?v=20261117_03' : 'data/exams_n4.js?v=20261117_03';
     if (root.NavigationEngine && typeof root.NavigationEngine.loadScriptAsync === 'function') {
       promises.push(root.NavigationEngine.loadScriptAsync(scriptUrl));
       return Promise.all(promises);

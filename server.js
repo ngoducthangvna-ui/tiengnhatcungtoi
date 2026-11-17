@@ -18,11 +18,42 @@ const url = require('url');
 const fs = require('fs');
 const path = require('path');
 const crypto = require('crypto');
+const { Readable } = require('node:stream');
 
 const PORT = parseInt(process.env.PORT || '3000', 10);
 const HOST = process.env.HOST || '0.0.0.0';
 const CANONICAL_DOMAIN = process.env.CANONICAL_DOMAIN || 'tiengnhat-minna.pages.dev';
 const ROOT_DIR = __dirname;
+
+function createGoogleStore() {
+  const configured = process.env.MINNA_GOOGLE_DATA_DIR;
+  if (!configured || !path.isAbsolute(configured)) return null;
+  const directory = path.resolve(configured);
+  const relative = path.relative(ROOT_DIR, directory);
+  if (!relative || (!relative.startsWith('..' + path.sep) && !path.isAbsolute(relative))) return null;
+  return {
+    sync(uid, changes) {
+      fs.mkdirSync(directory, { recursive: true, mode: 0o700 });
+      const file = path.join(directory, uid + '.json');
+      let entries = {};
+      try {
+        entries = JSON.parse(fs.readFileSync(file, 'utf8'));
+      } catch (error) {
+        if (error.code !== 'ENOENT') throw error;
+      }
+      if (Object.keys(changes).length === 0) return entries;
+      Object.assign(entries, changes);
+      const temporary = file + '.' + crypto.randomUUID() + '.tmp';
+      try {
+        fs.writeFileSync(temporary, JSON.stringify(entries), { mode: 0o600 });
+        fs.renameSync(temporary, file);
+      } finally {
+        fs.rmSync(temporary, { force: true });
+      }
+      return entries;
+    }
+  };
+}
 
 // ------------------------------------------------------------------------------
 // CẤU HÌNH 9 HTTP SECURITY HEADERS CHUẨN OWASP / CIS BENCHMARKS
@@ -86,28 +117,6 @@ function loadPersistedUserStore() {
     }
   } catch (err) {
     // Chạy an toàn trong RAM nếu filesystem read-only hoặc file hỏng nhẹ
-  }
-}
-
-function savePersistedUserStore() {
-  try {
-    const accounts = Array.from(userAccountsStore.values());
-    const progress = {};
-    for (const [uid, prog] of userProgressStore.entries()) {
-      progress[uid] = prog;
-    }
-    const data = {
-      updatedAt: Date.now(),
-      accounts,
-      progress
-    };
-    const dir = path.dirname(USERS_STORE_FILE);
-    if (!fs.existsSync(dir)) {
-      fs.mkdirSync(dir, { recursive: true });
-    }
-    fs.writeFileSync(USERS_STORE_FILE, JSON.stringify(data, null, 2), 'utf8');
-  } catch (err) {
-    // Chạy an toàn nếu filesystem read-only
   }
 }
 
@@ -558,6 +567,20 @@ async function handleRequest(req, res) {
   // 2. ROUTE SECURE API PROXY GIỌNG NÓI (/api/speech)
   // --------------------------------------------------------------------------
   const normalizedPath = pathname.replace(/\/+$/, '') || '/';
+  if (/^\/api\/account\/(?:google\/(?:start|callback)|session|sync|logout)$/.test(normalizedPath)) {
+    try {
+      const { handleGoogleAccount } = await import('./google-account-api.mjs');
+      const body = req.method === 'POST' ? { body: Readable.toWeb(req), duplex: 'half' } : {};
+      const request = new Request('http://localhost' + req.url, { method: req.method, headers: req.headers, ...body });
+      const response = await handleGoogleAccount(request, process.env, createGoogleStore());
+      const headers = Object.fromEntries(response.headers);
+      const cookies = response.headers.getSetCookie();
+      if (cookies.length) headers['set-cookie'] = cookies;
+      return sendResponse(res, response.status, headers, await response.text());
+    } catch {
+      return sendResponse(res, 503, { 'Cache-Control': 'no-store' }, 'Dịch vụ tài khoản hiện chưa khả dụng.');
+    }
+  }
   if (normalizedPath === '/api/speech') {
     // Chặn gọi từ trang web lạ (Cross-site request forgery)
     if (secFetchSite === 'cross-site') {
@@ -824,296 +847,9 @@ async function handleRequest(req, res) {
   // --------------------------------------------------------------------------
   // 2C. ROUTE XÁC THỰC, ĐỒNG BỘ TIẾN ĐỘ & BẢNG XẾP HẠNG (/api/auth/*)
   // --------------------------------------------------------------------------
-  if (normalizedPath === '/api/auth/register' || normalizedPath === '/api/auth/login') {
-    if (secFetchSite === 'cross-site') {
-      return sendResponse(res, 403, { 'Content-Type': 'application/json' },
-        JSON.stringify({ error: 'Forbidden cross-site request' })
-      );
-    }
-
-    if (req.method === 'OPTIONS') {
-      return sendResponse(res, 204, {
-        'Access-Control-Allow-Origin': '*',
-        'Access-Control-Allow-Methods': 'POST, OPTIONS',
-        'Access-Control-Allow-Headers': 'Content-Type, Authorization, X-Requested-With',
-        'Access-Control-Max-Age': '86400'
-      });
-    }
-
-    if (req.method !== 'POST') {
-      return sendResponse(res, 405, { 'Content-Type': 'application/json' },
-        JSON.stringify({ error: 'Method Not Allowed' })
-      );
-    }
-
-    try {
-      const body = await readJsonBody(req);
-      const rawUsername = String(body.username || '').trim();
-      const USERNAME_REGEX = /^[a-zA-Z0-9_.-]{3,24}$/;
-      if (!USERNAME_REGEX.test(rawUsername)) {
-        return sendResponse(res, 400, { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' },
-          JSON.stringify({ error: 'Tên tài khoản không hợp lệ (3-24 ký tự chữ, số, gạch nối hoặc chấm).' })
-        );
-      }
-
-      const clientCredHash = String(body.credentialHash || '').trim();
-      if (!clientCredHash || clientCredHash.length < 32) {
-        return sendResponse(res, 400, { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' },
-          JSON.stringify({ error: 'Thiếu credentialHash xác thực an toàn.' })
-        );
-      }
-
-      const usernameKey = rawUsername.toLowerCase();
-      const isRegisterAction = normalizedPath === '/api/auth/register' || body.action === 'register';
-      const existingAccount = userAccountsStore.get(usernameKey);
-
-      if (isRegisterAction) {
-        if (existingAccount) {
-          if (timingSafeEqualString(existingAccount.credentialHash, clientCredHash)) {
-            const syncToken = generateSyncToken(existingAccount.uid, existingAccount.username);
-            const storedRec = userProgressStore.get(existingAccount.uid);
-            return sendResponse(res, 200, {
-              'Content-Type': 'application/json',
-              'Access-Control-Allow-Origin': '*'
-            }, JSON.stringify({
-              success: true,
-              user: {
-                uid: existingAccount.uid,
-                username: existingAccount.username,
-                displayName: existingAccount.displayName,
-                avatar: existingAccount.avatar,
-                levelGoal: existingAccount.levelGoal,
-                updatedAt: existingAccount.updatedAt
-              },
-              syncToken,
-              progress: storedRec ? storedRec.progress : null
-            }));
-          } else {
-            return sendResponse(res, 409, {
-              'Content-Type': 'application/json',
-              'Access-Control-Allow-Origin': '*'
-            }, JSON.stringify({ error: 'Tên tài khoản đã tồn tại.' }));
-          }
-        }
-
-        const uid = `usr_${Date.now().toString(36)}_${crypto.randomBytes(4).toString('hex')}`;
-        const newAccount = {
-          uid,
-          username: rawUsername,
-          displayName: String(body.displayName || rawUsername).trim().slice(0, 50),
-          avatar: String(body.avatar || 'avatar_1').slice(0, 50),
-          levelGoal: String(body.levelGoal || 'N5').slice(0, 10),
-          credentialHash: clientCredHash,
-          createdAt: Date.now(),
-          updatedAt: Date.now()
-        };
-
-        userAccountsStore.set(usernameKey, newAccount);
-        savePersistedUserStore();
-
-        const syncToken = generateSyncToken(uid, newAccount.username);
-        return sendResponse(res, 200, {
-          'Content-Type': 'application/json',
-          'Access-Control-Allow-Origin': '*'
-        }, JSON.stringify({
-          success: true,
-          user: {
-            uid: newAccount.uid,
-            username: newAccount.username,
-            displayName: newAccount.displayName,
-            avatar: newAccount.avatar,
-            levelGoal: newAccount.levelGoal,
-            updatedAt: newAccount.updatedAt
-          },
-          syncToken,
-          progress: null
-        }));
-      }
-
-      // Đăng nhập (login)
-      if (!existingAccount) {
-        return sendResponse(res, 401, {
-          'Content-Type': 'application/json',
-          'Access-Control-Allow-Origin': '*'
-        }, JSON.stringify({ error: 'Tên đăng nhập hoặc mật khẩu không chính xác.' }));
-      }
-
-      if (!timingSafeEqualString(existingAccount.credentialHash, clientCredHash)) {
-        return sendResponse(res, 401, {
-          'Content-Type': 'application/json',
-          'Access-Control-Allow-Origin': '*'
-        }, JSON.stringify({ error: 'Tên đăng nhập hoặc mật khẩu không chính xác.' }));
-      }
-
-      if (body.displayName) existingAccount.displayName = String(body.displayName).trim().slice(0, 50);
-      if (body.avatar) existingAccount.avatar = String(body.avatar).slice(0, 50);
-      if (body.levelGoal) existingAccount.levelGoal = String(body.levelGoal).slice(0, 10);
-      existingAccount.updatedAt = Date.now();
-      savePersistedUserStore();
-
-      const syncToken = generateSyncToken(existingAccount.uid, existingAccount.username);
-      const storedRec = userProgressStore.get(existingAccount.uid);
-      return sendResponse(res, 200, {
-        'Content-Type': 'application/json',
-        'Access-Control-Allow-Origin': '*'
-      }, JSON.stringify({
-        success: true,
-        user: {
-          uid: existingAccount.uid,
-          username: existingAccount.username,
-          displayName: existingAccount.displayName,
-          avatar: existingAccount.avatar,
-          levelGoal: existingAccount.levelGoal,
-          updatedAt: existingAccount.updatedAt
-        },
-        syncToken,
-        progress: storedRec ? storedRec.progress : null
-      }));
-    } catch (err) {
-      return sendResponse(res, 500, { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' },
-        JSON.stringify({ error: 'Auth processing error', detail: err.message })
-      );
-    }
-  }
-
-  if (normalizedPath === '/api/auth/sync') {
-    if (secFetchSite === 'cross-site') {
-      return sendResponse(res, 403, { 'Content-Type': 'application/json' },
-        JSON.stringify({ error: 'Forbidden cross-site request' })
-      );
-    }
-
-    if (req.method === 'OPTIONS') {
-      return sendResponse(res, 204, {
-        'Access-Control-Allow-Origin': '*',
-        'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
-        'Access-Control-Allow-Headers': 'Content-Type, Authorization, X-Requested-With',
-        'Access-Control-Max-Age': '86400'
-      });
-    }
-
-    try {
-      const authHeader = req.headers['authorization'] || '';
-      let bearerToken = authHeader.startsWith('Bearer ') ? authHeader.slice(7).trim() : '';
-
-      if (req.method === 'GET') {
-        const queryToken = parsedUrl.searchParams.get('token') || parsedUrl.searchParams.get('syncToken');
-        if (!bearerToken && queryToken) bearerToken = queryToken;
-        const queryUid = parsedUrl.searchParams.get('uid');
-        const queryUsername = parsedUrl.searchParams.get('username');
-
-        let verifiedUser = bearerToken ? verifySyncToken(bearerToken) : null;
-        let account = null;
-
-        if (verifiedUser) {
-          account = Array.from(userAccountsStore.values()).find(a => a.uid === verifiedUser.uid);
-        } else if (queryUsername) {
-          account = userAccountsStore.get(queryUsername.toLowerCase());
-          const queryHash = parsedUrl.searchParams.get('credentialHash');
-          if (!account || !queryHash || !timingSafeEqualString(account.credentialHash, queryHash)) {
-            account = null;
-          }
-        }
-
-        if (!account) {
-          return sendResponse(res, 401, { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' },
-            JSON.stringify({ error: 'Yêu cầu xác thực không hợp lệ.' })
-          );
-        }
-
-        if (queryUid && queryUid !== account.uid) {
-          return sendResponse(res, 403, { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' },
-            JSON.stringify({ error: 'Truy cập bị từ chối (IDOR Guard).' })
-          );
-        }
-
-        const storedRec = userProgressStore.get(account.uid) || { progress: {}, stats: {} };
-        return sendResponse(res, 200, {
-          'Content-Type': 'application/json',
-          'Access-Control-Allow-Origin': '*'
-        }, JSON.stringify({
-          success: true,
-          syncedAt: storedRec.updatedAt || Date.now(),
-          progress: storedRec.progress || {},
-          stats: storedRec.stats || {}
-        }));
-      }
-
-      if (req.method === 'POST') {
-        const body = await readJsonBody(req);
-        const tokenInBody = body.syncToken || bearerToken;
-        let verifiedUser = tokenInBody ? verifySyncToken(tokenInBody) : null;
-        let account = null;
-
-        if (verifiedUser) {
-          account = Array.from(userAccountsStore.values()).find(a => a.uid === verifiedUser.uid);
-        }
-
-        if (!account && body.username && body.credentialHash) {
-          const acc = userAccountsStore.get(String(body.username).trim().toLowerCase());
-          if (acc && timingSafeEqualString(acc.credentialHash, String(body.credentialHash))) {
-            account = acc;
-          }
-        }
-
-        if (!account && body.uid && body.credentialHash) {
-          const acc = Array.from(userAccountsStore.values()).find(a => a.uid === body.uid);
-          if (acc && timingSafeEqualString(acc.credentialHash, String(body.credentialHash))) {
-            account = acc;
-          }
-        }
-
-        if (!account) {
-          return sendResponse(res, 401, { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' },
-            JSON.stringify({ error: 'Yêu cầu xác thực không hợp lệ hoặc phiên làm việc đã hết hạn.' })
-          );
-        }
-
-        // Chống IDOR
-        if (body.uid && body.uid !== account.uid) {
-          return sendResponse(res, 403, { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' },
-            JSON.stringify({ error: 'Truy cập bị từ chối (IDOR Guard).' })
-          );
-        }
-
-        if (body.displayName) account.displayName = String(body.displayName).trim().slice(0, 50);
-        if (body.avatar) account.avatar = String(body.avatar).slice(0, 50);
-        if (body.levelGoal) account.levelGoal = String(body.levelGoal).slice(0, 10);
-        account.updatedAt = Date.now();
-
-        const currentRecord = userProgressStore.get(account.uid) || { progress: {}, stats: {} };
-        const mergedProgress = mergeServerProgress(currentRecord.progress || {}, body.progress || {});
-        const calculatedStats = calculateUserStats(mergedProgress, account);
-        const updatedStats = Object.assign({}, calculatedStats, body.stats || {});
-
-        const newRecord = {
-          progress: mergedProgress,
-          stats: updatedStats,
-          updatedAt: Date.now()
-        };
-
-        userProgressStore.set(account.uid, newRecord);
-        savePersistedUserStore();
-
-        return sendResponse(res, 200, {
-          'Content-Type': 'application/json',
-          'Access-Control-Allow-Origin': '*'
-        }, JSON.stringify({
-          success: true,
-          syncedAt: newRecord.updatedAt,
-          progress: mergedProgress,
-          stats: updatedStats
-        }));
-      }
-
-      return sendResponse(res, 405, { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' },
-        JSON.stringify({ error: 'Method Not Allowed' })
-      );
-    } catch (err) {
-      return sendResponse(res, 500, { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' },
-        JSON.stringify({ error: 'Sync processing error', detail: err.message })
-      );
-    }
+  if (/^\/api\/auth\/(?:register|login|request-reset|sync)$/.test(normalizedPath)) {
+    return sendResponse(res, 410, { 'Content-Type': 'application/json', 'Cache-Control': 'no-store' },
+      JSON.stringify({ error: 'Vui lòng tiếp tục bằng tài khoản Google.' }));
   }
 
   if (normalizedPath === '/api/auth/leaderboard') {

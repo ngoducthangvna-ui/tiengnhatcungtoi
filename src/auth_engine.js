@@ -332,6 +332,19 @@
       return _currentUser ? Object.assign({}, _currentUser) : null;
     },
 
+    setGoogleUser(user) {
+      if (user && !/^google_\d{1,40}$/.test(user.uid)) return;
+      _currentUser = user ? { ...user, username: user.email || '', avatar: 'daruma', levelGoal: 'N5' } : null;
+      _getStorageEngine()?.setActiveUserNamespace(_currentUser?.uid || '');
+    },
+
+    getLegacyImportSource() {
+      const session = _loadActiveSession();
+      if (!session?.uid) return null;
+      const account = _loadAccounts().find(item => item.uid === session.uid);
+      return account ? { uid: account.uid, displayName: account.displayName || account.username } : null;
+    },
+
     /**
      * Đăng ký callback khi đổi tài khoản
      * @param {Function} listener

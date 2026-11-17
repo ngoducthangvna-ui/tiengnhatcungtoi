@@ -4,12 +4,15 @@
  */
 'use strict';
 
-const CACHE_VERSION = 'minna-pwa-v20261113_04';
+const ASSET_VERSION = '20261117_12';
+const CACHE_VERSION = `minna-pwa-v${ASSET_VERSION}`;
 
 const CORE_ASSETS = [
   './',
   './style.css',
   './app.js',
+  `./style.css?v=${ASSET_VERSION}`,
+  `./app.js?v=${ASSET_VERSION}`,
   './manifest.json',
   './icons/shiba-favicon-16.png',
   './icons/shiba-favicon-32.png',
@@ -18,9 +21,16 @@ const CORE_ASSETS = [
   './icons/shiba-512.png',
   './icons/shiba-maskable-512.png',
   './data/ui_icons.js',
+  `./data/ui_icons.js?v=${ASSET_VERSION}`,
+  `./src/kaiwa_engine.js?v=${ASSET_VERSION}`,
+  `./src/exam_engine.js?v=${ASSET_VERSION}`,
+  `./src/exam_style.css?v=${ASSET_VERSION}`,
   './data/curriculum_manifest.js',
   './data/reference_hub_data.js',
   './src/storage_engine.js',
+  `./src/storage_engine.js?v=${ASSET_VERSION}`,
+  `./src/auth_engine.js?v=${ASSET_VERSION}`,
+  `./src/google_account_engine.js?v=${ASSET_VERSION}`,
   './src/navigation_engine.js',
   './src/conjugation_engine.js',
   './src/notebook_engine.js',
@@ -28,7 +38,9 @@ const CORE_ASSETS = [
   './src/study_worker.js',
   './src/domain_services.js',
   './src/study_tools_engine.js',
-  './src/master_suite_style.css'
+  './src/master_suite_style.css',
+  `./src/study_tools_engine.js?v=${ASSET_VERSION}`,
+  `./src/master_suite_style.css?v=${ASSET_VERSION}`
 ];
 
 // Phase 2 Normalizer: Chuẩn hóa /index.html về root './' để loại bỏ 308 redirect loops

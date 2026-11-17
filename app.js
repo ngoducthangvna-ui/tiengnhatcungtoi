@@ -2058,12 +2058,13 @@ function renderSidebar() {
   const loadedDokkai = (typeof dokkaiData !== 'undefined' && Array.isArray(dokkaiData)) ? dokkaiData : (Array.isArray(root.dokkaiData) ? root.dokkaiData : []);
   const loadedKanji = (typeof kanjiLessonsData !== 'undefined' && Array.isArray(kanjiLessonsData)) ? kanjiLessonsData : (Array.isArray(root.kanjiLessonsData) ? root.kanjiLessonsData : []);
   const loadedRadicals = (typeof radicalsData !== 'undefined' && Array.isArray(radicalsData)) ? radicalsData : (Array.isArray(root.radicalsData) ? root.radicalsData : []);
+  const sidebarIcons = APP_ICONS.sidebar || {};
 
   const groups = [
     {
       id: "group-lessons",
       title: "Bài Học",
-      icon: APP_ICONS.book || '',
+      icon: sidebarIcons.lessons || APP_ICONS.book,
       isOpenDefault: false,
       items: Array.from({ length: 50 }, (_, i) => {
         const num = i + 1;
@@ -2080,7 +2081,7 @@ function renderSidebar() {
     {
       id: "group-kaiwa",
       title: "Hội Thoại",
-      icon: (window.ACCOUNT_WA_ICONS && window.ACCOUNT_WA_ICONS.stats && window.ACCOUNT_WA_ICONS.stats.kaiwa) || APP_ICONS.kaiwaWave || APP_ICONS.speaker || '',
+      icon: sidebarIcons.kaiwa || APP_ICONS.kaiwaWave,
       isOpenDefault: false,
       items: Array.from({ length: 50 }, (_, i) => {
         const num = i + 1;
@@ -2098,7 +2099,7 @@ function renderSidebar() {
     {
       id: "group-quiz",
       title: "Bài Tập",
-      icon: APP_ICONS.bolt || '',
+      icon: sidebarIcons.quiz || APP_ICONS.bolt,
       isOpenDefault: false,
       items: Array.from({ length: 50 }, (_, i) => {
         const num = i + 1;
@@ -2115,7 +2116,7 @@ function renderSidebar() {
     {
       id: "group-dokkai",
       title: "Đọc Hiểu",
-      icon: APP_ICONS.newspaper || APP_ICONS.dokkai || '',
+      icon: sidebarIcons.dokkai || APP_ICONS.newspaper,
       isOpenDefault: false,
       items: Array.from({ length: 50 }, (_, i) => {
         const num = i + 1;
@@ -2132,7 +2133,7 @@ function renderSidebar() {
     {
       id: "group-kanji",
       title: "Mẹo Nhớ Kanji",
-      icon: APP_ICONS.pen || '',
+      icon: sidebarIcons.kanji || APP_ICONS.pen,
       isOpenDefault: false,
       items: Array.from({ length: 50 }, (_, i) => {
         const num = i + 1;
@@ -2149,7 +2150,7 @@ function renderSidebar() {
     {
       id: "group-radicals",
       title: "Bộ Thủ",
-      icon: (window.MASTER_SUITE_ICONS && window.MASTER_SUITE_ICONS.reference) || APP_ICONS.radicalsGrid || APP_ICONS.kanjiBadge || '',
+      icon: sidebarIcons.radicals || APP_ICONS.radicalsGrid,
       isOpenDefault: false,
       items: Array.from({ length: 17 }, (_, i) => {
         const num = i + 1;
@@ -2166,14 +2167,14 @@ function renderSidebar() {
     {
       id: "group-master-suite",
       title: "Trung Tâm Phản Xạ & Sổ Tay",
-      icon: (window.MASTER_SUITE_ICONS && window.MASTER_SUITE_ICONS.torii) || APP_ICONS.torii || '',
+      icon: sidebarIcons.masterSuite || APP_ICONS.exercise,
       isOpenDefault: false,
       items: [
         {
           id: 'conjugation-lab',
           label: 'Đấu Trường Chia Thể',
           sub: '10 Thể V/A',
-          icon: (window.MASTER_SUITE_ICONS && window.MASTER_SUITE_ICONS.bolt) || APP_ICONS.bolt || '',
+          icon: APP_ICONS.bolt || '',
           isCurrent: currentActiveId === 'conjugation-lab' || (currentActiveId === 'master-hub' && (!window.StudyToolsEngine || !window.StudyToolsEngine.state || window.StudyToolsEngine.state.activeTab === 'conjugation'))
         },
         {
@@ -2194,7 +2195,7 @@ function renderSidebar() {
           id: 'analytics-hub',
           label: 'Streak, Radar & Zen',
           sub: 'Streak & Zen',
-          icon: (window.MASTER_SUITE_ICONS && window.MASTER_SUITE_ICONS.flame) || APP_ICONS.streakComet || '',
+          icon: (window.MASTER_SUITE_ICONS && window.MASTER_SUITE_ICONS.radar) || '',
           isCurrent: currentActiveId === 'analytics-hub' || currentActiveId === 'streak-zen' || (currentActiveId === 'master-hub' && window.StudyToolsEngine && window.StudyToolsEngine.state && window.StudyToolsEngine.state.activeTab === 'analytics')
         }
       ]
@@ -2202,7 +2203,7 @@ function renderSidebar() {
     {
       id: "group-exam",
       title: "Luyện Thi JLPT",
-      icon: APP_ICONS.torii || '',
+      icon: sidebarIcons.exam || APP_ICONS.torii,
       isOpenDefault: false,
       items: (root.EXAMS_MANIFEST && Array.isArray(root.EXAMS_MANIFEST.exams) ? root.EXAMS_MANIFEST.exams : []).map(ex => {
         const isCur = (currentActiveId === ex.id || currentActiveId === `exam-${ex.code.toLowerCase()}`);
@@ -7284,13 +7285,10 @@ window.handleSearchClick = function(targetId, highlightText = '') {
   }
 };
 
-let mobileNavPillStep = 0;
 let lastMobileNavInteraction = 0;
-let mobileNavNavigationTimer = null;
 let mobileNavNavigationToken = 0;
-const MOBILE_NAV_TRANSITION = 'transform 0.14s cubic-bezier(0.22, 1, 0.36, 1)';
 
-function setMobileNavVisualIndex(idx, animate = true) {
+function setMobileNavVisualIndex(idx) {
   const nav = document.getElementById('mobile-bottom-nav');
   if (!nav || idx < 0 || idx > 4) return;
   const oldIndex = nav.getAttribute ? nav.getAttribute('data-active-index') : null;
@@ -7299,13 +7297,6 @@ function setMobileNavVisualIndex(idx, animate = true) {
   if (nav.style && nav.style.setProperty) nav.style.setProperty('--slider-index', idx);
   const items = nav.querySelectorAll ? nav.querySelectorAll('.mobile-nav-item') : [];
   if (items && items.forEach) items.forEach((btn, i) => btn.classList.toggle('active', i === idx));
-  const pill = document.getElementById('mobile-nav-slider-pill');
-  if (pill && pill.style) {
-    pill.style.transition = animate ? MOBILE_NAV_TRANSITION : 'none';
-    if (mobileNavPillStep && pill.style.setProperty) {
-      pill.style.setProperty('--pill-x', `${idx * mobileNavPillStep}px`);
-    }
-  }
 }
 
 function syncMobileBottomNav(activeId) {
@@ -7348,37 +7339,6 @@ function syncMobileBottomNav(activeId) {
   else if (id === 'exam' || id.startsWith('exam-') || id.startsWith('de-thi') || id.startsWith('radicals-')) activeIndex = 4;
 
   setMobileNavVisualIndex(activeIndex);
-  if (!mobileNavPillStep) updateMobileNavSlider(false);
-}
-
-function updateMobileNavSlider(animate = true) {
-  const nav = document.getElementById('mobile-bottom-nav');
-  const pill = document.getElementById('mobile-nav-slider-pill');
-  if (!nav) return;
-
-  const activeBtn = nav.querySelector ? nav.querySelector('.mobile-nav-item.active') : null;
-  if (!activeBtn) return;
-
-  const items = nav.querySelectorAll ? Array.from(nav.querySelectorAll('.mobile-nav-item')) : [];
-  const idx = items.indexOf(activeBtn);
-  if (idx >= 0) {
-    if (nav.setAttribute) nav.setAttribute('data-active-index', String(idx));
-    if (nav.style) {
-      if (nav.style.setProperty) nav.style.setProperty('--slider-index', idx);
-      else nav.style['--slider-index'] = idx;
-    }
-    if (pill && pill.style) {
-      const width = nav.clientWidth || 0;
-      if (width > 0 && nav.setAttribute) {
-        mobileNavPillStep = width / 5;
-        nav.setAttribute('data-motion-ready', 'true');
-      }
-      if (mobileNavPillStep && pill.style.setProperty) {
-        pill.style.setProperty('--pill-x', `${idx * mobileNavPillStep}px`);
-      }
-      pill.style.transition = animate ? MOBILE_NAV_TRANSITION : 'none';
-    }
-  }
 }
 
 function initMobileBottomNavSliderTouch() {
@@ -7386,14 +7346,13 @@ function initMobileBottomNavSliderTouch() {
   if (!nav || !nav.addEventListener) return;
 
   const navTypes = ['lesson', 'kanji', 'quiz', 'dokkai', 'exam'];
-  let isDragging = false;
+  let hasSwiped = false;
   let lastHoveredIndex = -1;
-  let startIndex = -1;
   let touchNavRect = null;
 
   const getIndexFromTouch = (touch) => {
     if (!touch) return -1;
-    const rect = touchNavRect || nav.getBoundingClientRect();
+    const rect = touchNavRect;
     if (!rect || rect.width <= 0) return -1;
     const relativeX = touch.clientX - rect.left;
     if (relativeX < 0 || relativeX > rect.width) return -1;
@@ -7402,65 +7361,45 @@ function initMobileBottomNavSliderTouch() {
     return Math.max(0, Math.min(4, idx));
   };
 
-  const previewPillAtIndex = (idx, animate = true) => {
-    if (idx < 0 || idx > 4) return;
-    setMobileNavVisualIndex(idx, animate);
-  };
-
   nav.addEventListener('touchstart', (e) => {
-    if (!e.touches || e.touches.length === 0) return;
+    if (!e.touches || e.touches.length !== 1) return;
     lastMobileNavInteraction = Date.now();
     touchNavRect = nav.getBoundingClientRect();
-    const idx = getIndexFromTouch(e.touches[0]);
-    if (idx >= 0) {
-      isDragging = true;
-      startIndex = idx;
-      lastHoveredIndex = idx;
-      previewPillAtIndex(idx, false);
-    }
+    lastHoveredIndex = getIndexFromTouch(e.touches[0]);
+    hasSwiped = false;
   }, { passive: true });
 
   nav.addEventListener('touchmove', (e) => {
-    if (!isDragging || !e.touches || e.touches.length === 0) return;
+    if (lastHoveredIndex < 0 || !e.touches || e.touches.length !== 1) return;
     lastMobileNavInteraction = Date.now();
     const idx = getIndexFromTouch(e.touches[0]);
     if (idx >= 0 && idx !== lastHoveredIndex) {
+      hasSwiped = true;
       lastHoveredIndex = idx;
-      previewPillAtIndex(idx);
+      setMobileNavVisualIndex(idx);
       if (typeof triggerHaptic === 'function') triggerHaptic(8);
     }
   }, { passive: true });
 
   nav.addEventListener('touchend', (e) => {
-    if (!isDragging) return;
-    isDragging = false;
+    if (lastHoveredIndex < 0 || (e.touches && e.touches.length > 0)) return;
     touchNavRect = null;
-    if (lastHoveredIndex >= 0 && lastHoveredIndex < navTypes.length && lastHoveredIndex !== startIndex) {
+    if (hasSwiped) {
       const targetType = navTypes[lastHoveredIndex];
       e.preventDefault();
       if (typeof handleMobileBottomNav === 'function') {
         handleMobileBottomNav(targetType);
       }
     }
-    startIndex = -1;
+    lastHoveredIndex = -1;
     if (typeof triggerHaptic === 'function') triggerHaptic(14);
   }, { passive: false });
 
   nav.addEventListener('touchcancel', () => {
-    isDragging = false;
     touchNavRect = null;
-    startIndex = -1;
-    syncMobileBottomNav();
+    lastHoveredIndex = -1;
+    if (hasSwiped) syncMobileBottomNav();
   }, { passive: true });
-
-  if (typeof window !== 'undefined' && window.addEventListener) {
-    window.addEventListener('resize', () => {
-      updateMobileNavSlider(false);
-    }, { passive: true });
-    window.addEventListener('orientationchange', () => {
-      setTimeout(() => updateMobileNavSlider(false), 150);
-    }, { passive: true });
-  }
 }
 
 window.handleMobileBottomNav = function(targetType) {
@@ -7490,14 +7429,17 @@ window.handleMobileBottomNav = function(targetType) {
   ++moduleNavigationToken;
   syncMobileBottomNav(targetId);
   closeMobileSidebar();
-  clearTimeout(mobileNavNavigationTimer);
   const navigationToken = ++mobileNavNavigationToken;
   const reduceMotion = typeof window.matchMedia === 'function' && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  mobileNavNavigationTimer = setTimeout(() => {
-    if (navigationToken !== mobileNavNavigationToken) return;
-    mobileNavNavigationTimer = null;
+  if (reduceMotion) {
     switchModule(targetId);
-  }, reduceMotion ? 0 : 150);
+    return;
+  }
+
+  // Let the tab indicator paint before rendering the next module.
+  safeRAF(() => safeRAF(() => {
+    if (navigationToken === mobileNavNavigationToken) switchModule(targetId);
+  }));
 };
 
 
@@ -7630,8 +7572,6 @@ function restoreScrollPosition(targetScroll) {
 
 window.switchModule = function(targetId, updateHash = true) {
   if (!targetId) return;
-  clearTimeout(mobileNavNavigationTimer);
-  mobileNavNavigationTimer = null;
   ++mobileNavNavigationToken;
   const navigationToken = ++moduleNavigationToken;
   pendingModuleId = targetId;
@@ -7752,12 +7692,12 @@ if (typeof window !== 'undefined' && typeof window.addEventListener === 'functio
 }
 
 
-function applyTheme(themeName) {
+function applyTheme(themeName, persist = true) {
   if (document.documentElement && document.documentElement.classList) {
     document.documentElement.classList.add('theme-switching');
     document.documentElement.setAttribute('data-theme', themeName);
   }
-  safeSetStorage('minna_theme', themeName);
+  if (persist) safeSetStorage('minna_theme', themeName);
 
   const metaTheme = document.querySelector('meta[name="theme-color"]');
   if (metaTheme) {
@@ -7787,7 +7727,7 @@ function applyTheme(themeName) {
 
 function initThemeToggle() {
   const saved = safeGetStorage('minna_theme', 'light') || 'light';
-  applyTheme(saved);
+  applyTheme(saved, false);
 
   const btn = document.getElementById('theme-toggle-btn');
   if (btn && btn.addEventListener) {
@@ -10871,24 +10811,6 @@ window.retryMicrophonePermission = retryMicrophonePermission;
 
 // ZONE 13: MULTI-ACCOUNT AUTH UI, ACHIEVEMENTS DASHBOARD & LEADERBOARD CONTROLLER (WORKER 3)
 
-let authCurrentTab = 'profile';
-let authFormMode = 'register'; // 'register' | 'login'
-let authSelectedRegisterAvatar = 'daruma';
-let authSelectedEditAvatar = 'daruma';
-let _pinModalConfirmCallback = null;
-
-
-function getWaAccountIcon(category, key) {
-  if (window.ACCOUNT_WA_ICONS) {
-    if (category && window.ACCOUNT_WA_ICONS[category]) {
-      return window.ACCOUNT_WA_ICONS[category][key] || '';
-    }
-    return window.ACCOUNT_WA_ICONS[key] || '';
-  }
-  return '';
-}
-
-
 function getRankCrestSvg(rankBadge) {
   const icons = window.ACCOUNT_WA_ICONS && window.ACCOUNT_WA_ICONS.ranks ? window.ACCOUNT_WA_ICONS.ranks : null;
   if (!icons) return rankBadge || '';
@@ -10923,39 +10845,6 @@ function getAvatarPreset(avatarId) {
 }
 
 
-function renderAvatarGrid(containerId, selectedId, onSelect) {
-  const container = document.getElementById(containerId);
-  if (!container) return;
-
-  const presets = (window.AuthEngine && Array.isArray(window.AuthEngine.AVATAR_PRESETS))
-    ? window.AuthEngine.AVATAR_PRESETS
-    : [];
-
-  container.innerHTML = presets.map(p => {
-    const isSelected = p.id === selectedId;
-    const svgIcon = (window.ACCOUNT_WA_ICONS && window.ACCOUNT_WA_ICONS.avatars && window.ACCOUNT_WA_ICONS.avatars[p.id])
-      ? window.ACCOUNT_WA_ICONS.avatars[p.id]
-      : (p.svg || p.icon);
-    return `
-      <button type="button" class="avatar-preset-item ${isSelected ? 'is-selected' : ''}" data-avatar-id="${p.id}" title="${escapeHtml(p.name)}">
-        <span class="preset-icon" aria-hidden="true">${svgIcon}</span>
-        <span class="preset-name">${escapeHtml(p.name.split(' ')[0])}</span>
-      </button>
-    `;
-  }).join('');
-
-  if (typeof onSelect === 'function') {
-    const btns = container.querySelectorAll('.avatar-preset-item');
-    btns.forEach(btn => {
-      btn.addEventListener('click', () => {
-        const avId = btn.getAttribute('data-avatar-id');
-        onSelect(avId);
-      });
-    });
-  }
-}
-
-
 function renderUserAccountChips() {
   const user = (window.AuthEngine && typeof window.AuthEngine.getCurrentUser === 'function')
     ? window.AuthEngine.getCurrentUser()
@@ -10978,7 +10867,7 @@ function renderUserAccountChips() {
   const hName = document.getElementById('header-account-name');
   const hBadge = document.getElementById('header-account-badge');
 
-  if (hAvatar) hAvatar.innerHTML = avatarPreset.svg || avatarPreset.icon;
+  renderAccountAvatar(hAvatar, user, avatarPreset.svg || avatarPreset.icon);
   if (hName) hName.textContent = user ? user.displayName : 'Khách';
   if (hBadge) {
     hBadge.innerHTML = `<span class="header-account-rank-icon" aria-hidden="true">${rankSvg}</span><span class="header-account-xp-text">${stats.totalXp || 0} XP</span>`;
@@ -10987,7 +10876,7 @@ function renderUserAccountChips() {
   const msAvatar = document.getElementById('msheet-account-avatar');
   const msName = document.getElementById('msheet-account-name');
   const msBadge = document.getElementById('msheet-account-badge');
-  if (msAvatar) msAvatar.innerHTML = avatarPreset.svg || avatarPreset.icon;
+  renderAccountAvatar(msAvatar, user, avatarPreset.svg || avatarPreset.icon);
   if (msName) msName.textContent = user ? (user.displayName || user.username || 'Khách') : 'Khách';
   if (msBadge) msBadge.textContent = `${stats.totalXp || 0} XP`;
 
@@ -10995,7 +10884,7 @@ function renderUserAccountChips() {
   const cName = document.getElementById('cover-account-name');
   const cXp = document.getElementById('cover-account-xp');
 
-  if (cAvatar) cAvatar.innerHTML = avatarPreset.svg || avatarPreset.icon;
+  renderAccountAvatar(cAvatar, user, avatarPreset.svg || avatarPreset.icon);
   if (cName) cName.textContent = user ? user.displayName : 'Tài khoản';
   if (cXp) cXp.textContent = `${stats.totalXp || 0} XP`;
 
@@ -11006,945 +10895,243 @@ function renderUserAccountChips() {
 }
 
 
-function initUserAccountUI() {
-
-  if (window.AuthEngine && typeof window.AuthEngine.onAuthChange === 'function') {
-    window.AuthEngine.onAuthChange((newUser) => {
-      refreshAppOnAccountChange(newUser);
-    });
+function renderAccountAvatar(element, user, fallback) {
+  if (!element) return;
+  const url = window.GoogleAccountEngine?.getAvatar(user);
+  if (!url) {
+    element.innerHTML = fallback;
+    return;
   }
-
-  const accModal = document.getElementById('user-account-modal');
-  if (accModal) {
-    accModal.addEventListener('click', (e) => {
-      if (e.target === accModal) {
-        closeUserAccountModal();
-      }
-    });
-  }
-
-  const pinModal = document.getElementById('account-pin-modal');
-  if (pinModal) {
-    pinModal.addEventListener('click', (e) => {
-      if (e.target === pinModal) {
-        closeAccountPinModal();
-      }
-    });
-  }
-
-  const pinInput = document.getElementById('pin-modal-input');
-  if (pinInput) {
-    pinInput.addEventListener('keydown', (e) => {
-      if (e.key === 'Enter') {
-        const btn = document.getElementById('pin-modal-confirm-btn');
-        if (btn) btn.click();
-      }
-    });
-  }
-
-  renderUserAccountChips();
+  const image = document.createElement('img');
+  image.className = 'google-account-avatar';
+  image.alt = '';
+  image.referrerPolicy = 'no-referrer';
+  image.addEventListener('error', () => {
+    if (image.parentNode === element) element.innerHTML = fallback;
+  }, { once: true });
+  image.src = url;
+  element.replaceChildren(image);
 }
 
+function renderUserAccountUI() {
+  renderUserAccountChips();
+  const engine = window.GoogleAccountEngine;
+  if (!engine) return;
+  const user = window.AuthEngine?.getCurrentUser();
+  const { configured, status } = engine.getStatus();
+  const byId = id => document.getElementById(id);
+  const profile = byId('google-account-profile');
+  if (!profile) return;
+  profile.hidden = !user;
+  byId('google-account-actions').hidden = !user;
+  const signIn = byId('google-sign-in');
+  signIn.hidden = Boolean(user);
+  signIn.disabled = !configured;
+  byId('google-account-status').textContent = status;
+  if (!user) return;
 
-function openUserAccountModal(initialTab = 'profile') {
+  renderAccountAvatar(byId('profile-display-avatar'), user, getAvatarPreset('daruma').svg);
+  byId('profile-display-name').textContent = user.displayName;
+  byId('profile-display-username').textContent = user.email;
+  byId('profile-display-xp').textContent = window.AuthEngine.calculateUserStats(user.uid).totalXp + ' XP';
+  byId('google-import-guest').hidden = Object.keys(window.StorageEngine.exportUserProgressSnapshot('guest').data).length === 0;
+  const legacy = window.AuthEngine.getLegacyImportSource();
+  const legacyImport = byId('google-import-legacy');
+  legacyImport.hidden = !legacy;
+  if (legacy) legacyImport.textContent = 'Gộp tiến độ từ hồ sơ cũ: ' + legacy.displayName;
+}
+
+let accountOpener = null;
+
+function openUserAccountModal() {
   const modal = document.getElementById('user-account-modal');
   if (!modal) return;
+  accountOpener = document.activeElement;
   modal.classList.add('show-modal');
   modal.setAttribute('aria-hidden', 'false');
-  switchAccountModalTab(initialTab);
   renderUserAccountUI();
+  document.getElementById('close-account-modal-btn')?.focus();
 }
-
 
 function closeUserAccountModal() {
   const modal = document.getElementById('user-account-modal');
   if (!modal) return;
   modal.classList.remove('show-modal');
   modal.setAttribute('aria-hidden', 'true');
-  toggleProfileEditDrawer(false);
+  accountOpener?.focus();
+  accountOpener = null;
 }
 
-
-function computeXpProgressPercent(totalXp) {
-
-  if (typeof totalXp !== 'number' || isNaN(totalXp) || totalXp <= 0) {
-    return 5;
-  }
-
-  const xp = Math.max(0, Math.floor(totalXp));
-
-  let pct = 0;
-  if (xp >= 10000) {
-    pct = 100;
-  } else if (xp >= 5000) {
-    pct = Math.round(75 + ((xp - 5000) / 5000) * 25);
-  } else if (xp >= 2000) {
-    pct = Math.round(50 + ((xp - 2000) / 3000) * 25);
-  } else if (xp >= 500) {
-    pct = Math.round(25 + ((xp - 500) / 1500) * 25);
-  } else {
-    pct = Math.round(5 + (xp / 500) * 20);
-  }
-
-  return Math.min(100, Math.max(5, pct));
-}
-
-
-function toggleAuthFormDrawer(forceOpen) {
-
-  const container = document.getElementById('auth-form-container');
-  const btn = document.getElementById('btn-toggle-auth-form');
-  if (!container) return;
-
-  const isCurrentlyCollapsed = container.classList.contains('is-collapsed');
-  const shouldOpen = typeof forceOpen === 'boolean' ? forceOpen : isCurrentlyCollapsed;
-
-  container.classList.toggle('is-collapsed', !shouldOpen);
-  if (btn) {
-    btn.setAttribute('aria-expanded', shouldOpen ? 'true' : 'false');
-    btn.classList.toggle('active', shouldOpen);
-  }
-}
-
-
-function toggleSyncPasteInput(forceOpen) {
-
-  const drawer = document.getElementById('import-code-drawer');
-  const btn = document.getElementById('btn-toggle-paste-input');
-  if (!drawer) return;
-
-  const isCurrentlyCollapsed = drawer.classList.contains('is-collapsed');
-  const shouldOpen = typeof forceOpen === 'boolean' ? forceOpen : isCurrentlyCollapsed;
-
-  drawer.classList.toggle('is-collapsed', !shouldOpen);
-  if (btn) {
-    btn.setAttribute('aria-expanded', shouldOpen ? 'true' : 'false');
-    btn.classList.toggle('active', shouldOpen);
-  }
-}
-
-
-function switchAccountModalTab(tabId) {
-  const validTabs = ['profile', 'accounts', 'leaderboard', 'sync'];
-  const targetTab = validTabs.includes(tabId) ? tabId : 'profile';
-  authCurrentTab = targetTab;
-
-  const tabBtns = document.querySelectorAll('.account-tab-btn');
-  tabBtns.forEach(btn => {
-    const isCur = btn.getAttribute('data-tab') === targetTab;
-    btn.classList.toggle('active', isCur);
-    btn.setAttribute('aria-selected', isCur ? 'true' : 'false');
-  });
-
-  const panels = document.querySelectorAll('.account-tab-panel');
-  panels.forEach(p => {
-    p.classList.remove('active');
-  });
-
-  const curPanel = document.getElementById(`account-tab-${targetTab}`);
-  if (curPanel) curPanel.classList.add('active');
-
-  if (targetTab === 'profile') {
-    renderProfileTab();
-  } else if (targetTab === 'accounts') {
-    const accounts = (window.AuthEngine && typeof window.AuthEngine.listAccounts === 'function')
-      ? window.AuthEngine.listAccounts()
-      : [];
-    toggleAuthFormDrawer(accounts.length === 0);
-    renderAccountsTab();
-  } else if (targetTab === 'leaderboard') {
-    renderLeaderboardTab();
-  } else if (targetTab === 'sync') {
-    renderSyncTab();
-  }
-}
-
-
-function renderUserAccountUI() {
-  renderUserAccountChips();
-  switchAccountModalTab(authCurrentTab || 'profile');
-}
-
-
-function renderProfileTab() {
-  const user = (window.AuthEngine && typeof window.AuthEngine.getCurrentUser === 'function')
-    ? window.AuthEngine.getCurrentUser()
-    : null;
-  const uid = user ? user.uid : 'guest';
-  const stats = (window.AuthEngine && typeof window.AuthEngine.calculateUserStats === 'function')
-    ? window.AuthEngine.calculateUserStats(uid)
-    : { totalXp: 0, rankTitle: 'Tân Binh Nhập Môn', rankBadge: '🌱' };
-
-  const isGuest = !user;
-  const guestSvg = (window.ACCOUNT_WA_ICONS && window.ACCOUNT_WA_ICONS.avatars && window.ACCOUNT_WA_ICONS.avatars.guest)
-    ? window.ACCOUNT_WA_ICONS.avatars.guest
-    : '<svg class="wa-avatar-svg" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"></circle><circle cx="12" cy="8.5" r="3"></circle><path d="M6.5 18c0-3 2.5-5.5 5.5-5.5s5.5 2.5 5.5 5.5"></path></svg>';
-
-  const avatarPreset = isGuest ? { svg: guestSvg, icon: '👤' } : getAvatarPreset(user.avatar || 'daruma');
-  const rankSvg = getRankCrestSvg(stats.rankBadge || '🌱');
-
-  const avEl = document.getElementById('profile-display-avatar');
-  const nameEl = document.getElementById('profile-display-name');
-  const userEl = document.getElementById('profile-display-username');
-  const levelEl = document.getElementById('profile-display-level');
-  const rankEl = document.getElementById('profile-display-rank');
-  const xpEl = document.getElementById('profile-display-xp');
-
-  if (avEl) avEl.innerHTML = avatarPreset.svg || avatarPreset.icon;
-  if (nameEl) nameEl.textContent = user ? user.displayName : 'Học viên Khách';
-  if (userEl) userEl.textContent = user ? `@${user.username}` : '@guest';
-  if (levelEl) levelEl.textContent = `JLPT ${user ? user.levelGoal : 'N5'}`;
-  if (rankEl) {
-    rankEl.innerHTML = `${rankSvg} <span>${escapeHtml(stats.rankTitle || 'Tân Binh Nhập Môn')}</span>`;
-  }
-  if (xpEl) xpEl.textContent = `${stats.totalXp || 0} XP`;
-
-  const progressFill = document.getElementById('profile-xp-progress-fill');
-  if (progressFill) {
-    const pct = computeXpProgressPercent(stats.totalXp || 0);
-    progressFill.style.width = `${pct}%`;
-  }
-
-  const guestNotice = document.getElementById('guest-welcome-notice');
-  if (guestNotice) guestNotice.style.display = user ? 'none' : 'flex';
-
-  const slEl = document.getElementById('stat-lessons-count');
-  const skEl = document.getElementById('stat-kanji-count');
-  const srEl = document.getElementById('stat-radicals-count');
-  const sqEl = document.getElementById('stat-quiz-count');
-  const skwEl = document.getElementById('stat-kaiwa-count');
-  const seEl = document.getElementById('stat-exam-count');
-
-  if (slEl) slEl.textContent = `${stats.completedModulesCount || 0} / 150`;
-  if (skEl) skEl.textContent = `${stats.learnedKanjiCount || 0} chữ`;
-  if (srEl) srEl.textContent = `${stats.learnedRadicalsCount || 0} / 191`;
-  if (sqEl) sqEl.textContent = `${stats.quizCompletedCount || 0} bài (${stats.quizAvgScore || 0}%)`;
-
-  const starSvg = (window.ACCOUNT_WA_ICONS && window.ACCOUNT_WA_ICONS.starMini)
-    ? window.ACCOUNT_WA_ICONS.starMini
-    : '<svg class="inline-star-svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>';
-  if (skwEl) skwEl.innerHTML = `${stats.kaiwaPracticedCount || 0} câu (${starSvg} ${stats.kaiwaStars || 0})`;
-  if (seEl) seEl.textContent = `${stats.examsTakenCount || 0} đề (${stats.bestExamScore || 0}/20)`;
-
-  const editBtn = document.getElementById('btn-edit-profile-open');
-  const logoutBtn = document.getElementById('btn-logout-account');
-  if (editBtn) editBtn.style.display = user ? 'inline-flex' : 'none';
-  if (logoutBtn) logoutBtn.style.display = user ? 'inline-flex' : 'none';
-}
-
-
-function toggleProfileEditDrawer(show) {
-  const drawer = document.getElementById('profile-edit-drawer');
-  if (!drawer) return;
-
-  if (!show) {
-    drawer.style.display = 'none';
-    return;
-  }
-
-  const user = (window.AuthEngine && typeof window.AuthEngine.getCurrentUser === 'function')
-    ? window.AuthEngine.getCurrentUser()
-    : null;
-  if (!user) {
-    showToast('Chỉ có thể chỉnh sửa hồ sơ khi đã đăng nhập.');
-    return;
-  }
-
-  drawer.style.display = 'flex';
-  const nameInput = document.getElementById('edit-profile-name');
-  const goalSelect = document.getElementById('edit-profile-goal');
-
-  if (nameInput) nameInput.value = user.displayName || '';
-  if (goalSelect) goalSelect.value = user.levelGoal || 'N5';
-  authSelectedEditAvatar = user.avatar || 'daruma';
-
-  renderAvatarGrid('edit-avatar-grid', authSelectedEditAvatar, (newAv) => {
-    authSelectedEditAvatar = newAv;
-    renderAvatarGrid('edit-avatar-grid', authSelectedEditAvatar, null);
-  });
-}
-
-
-function saveProfileChanges() {
-  const user = (window.AuthEngine && typeof window.AuthEngine.getCurrentUser === 'function')
-    ? window.AuthEngine.getCurrentUser()
-    : null;
-  if (!user) return;
-
-  const nameInput = document.getElementById('edit-profile-name');
-  const goalSelect = document.getElementById('edit-profile-goal');
-
-  const newDisplayName = nameInput ? nameInput.value.trim() : '';
-  const newGoal = goalSelect ? goalSelect.value : 'N5';
-
-  if (!newDisplayName) {
-    showToast('Tên hiển thị không được để trống.');
-    return;
-  }
-
-  if (window.AuthEngine && typeof window.AuthEngine.updateProfile === 'function') {
-    const res = window.AuthEngine.updateProfile(user.uid, {
-      displayName: newDisplayName,
-      avatar: authSelectedEditAvatar,
-      levelGoal: newGoal
+function initUserAccountUI() {
+  const modal = document.getElementById('user-account-modal');
+  const engine = window.GoogleAccountEngine;
+  if (!modal || !engine) return;
+  const byId = id => document.getElementById(id);
+  const errorBox = byId('google-account-error');
+  const showError = (message = '') => {
+    errorBox.textContent = message;
+    errorBox.hidden = !message;
+  };
+  const bindAction = (id, action) => {
+    const button = byId(id);
+    button.addEventListener('click', async () => {
+      showError();
+      button.disabled = true;
+      try { await action(); }
+      catch (error) { showError(error.message); }
+      finally { button.disabled = false; }
     });
-
-    if (res && res.success) {
-      toggleProfileEditDrawer(false);
-      renderUserAccountUI();
-      showToast('Đã lưu thay đổi hồ sơ thành công!');
-    } else {
-      showToast(`Lỗi: ${res ? res.error : 'Không thể cập nhật hồ sơ'}`);
-    }
-  }
-}
-
-
-function renderAccountsTab() {
-  const listEl = document.getElementById('account-switcher-list');
-  const countBadge = document.getElementById('accounts-count-badge');
-  if (!listEl) return;
-
-  const accounts = (window.AuthEngine && typeof window.AuthEngine.listAccounts === 'function')
-    ? window.AuthEngine.listAccounts()
-    : [];
-  const currentUser = (window.AuthEngine && typeof window.AuthEngine.getCurrentUser === 'function')
-    ? window.AuthEngine.getCurrentUser()
-    : null;
-
-  if (countBadge) {
-    countBadge.textContent = `${accounts.length} tài khoản`;
-  }
-
-  let html = '';
-
-  accounts.forEach(acc => {
-    const isActive = currentUser && currentUser.uid === acc.uid;
-    const preset = getAvatarPreset(acc.avatar);
-    const stats = acc.stats || {};
-    const rankSvg = getRankCrestSvg(stats.rankBadge || '🌱');
-
-    html += `
-      <div class="account-switch-item ${isActive ? 'is-active' : ''}">
-        <div class="switch-item-left">
-          <span class="switch-item-avatar" aria-hidden="true">${preset.svg || preset.icon}</span>
-          <div class="switch-item-info">
-            <div class="switch-item-name">${escapeHtml(acc.displayName)} <span style="font-size:11px;font-weight:normal;color:var(--text-muted);">(@${escapeHtml(acc.username)})</span></div>
-            <div class="switch-item-meta">
-              <span>${rankSvg} ${escapeHtml(stats.rankTitle || 'Tân Binh')}</span>
-              <span>•</span>
-              <span style="color:var(--accent-primary);font-weight:700;">${stats.totalXp || 0} XP</span>
-            </div>
-          </div>
-        </div>
-        <div class="switch-item-actions">
-          ${isActive ? `
-            <span class="active-check-badge">Đang dùng ✓</span>
-          ` : `
-            <button type="button" class="btn-switch-account" onclick="handleQuickSwitchAccount('${acc.uid}')">Chuyển sang</button>
-            <button type="button" class="btn-delete-account" onclick="handleDeleteAccountPrompt('${acc.uid}', '${escapeHtml(acc.displayName)}')" title="Xóa tài khoản này">Xóa</button>
-          `}
-        </div>
-      </div>
-    `;
-  });
-
-  const isGuestActive = !currentUser;
-  const guestStats = (window.AuthEngine && typeof window.AuthEngine.calculateUserStats === 'function')
-    ? window.AuthEngine.calculateUserStats('guest')
-    : { totalXp: 0, rankBadge: '🌱', rankTitle: 'Khách' };
-  const guestAvatarSvg = (window.ACCOUNT_WA_ICONS && window.ACCOUNT_WA_ICONS.avatars && window.ACCOUNT_WA_ICONS.avatars.guest)
-    ? window.ACCOUNT_WA_ICONS.avatars.guest
-    : '<svg class="wa-avatar-svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"></circle><circle cx="12" cy="8.5" r="3"></circle><path d="M6.5 18c0-3 2.5-5.5 5.5-5.5s5.5 2.5 5.5 5.5"></path></svg>';
-
-  html += `
-    <div class="account-switch-item ${isGuestActive ? 'is-active' : ''}">
-      <div class="switch-item-left">
-        <span class="switch-item-avatar" aria-hidden="true">${guestAvatarSvg}</span>
-        <div class="switch-item-info">
-          <div class="switch-item-name">Học viên Khách (Guest)</div>
-          <div class="switch-item-meta">
-            <span>Tiến độ cục bộ tạm thời</span>
-            <span>•</span>
-            <span style="color:var(--accent-primary);font-weight:700;">${guestStats.totalXp || 0} XP</span>
-          </div>
-        </div>
-      </div>
-      <div class="switch-item-actions">
-        ${isGuestActive ? `
-          <span class="active-check-badge">Đang dùng ✓</span>
-        ` : `
-          <button type="button" class="btn-switch-account" onclick="handleQuickSwitchAccount('guest')">Chuyển về Khách</button>
-        `}
-      </div>
-    </div>
-  `;
-
-  listEl.innerHTML = html;
-
-  renderAvatarGrid('register-avatar-grid', authSelectedRegisterAvatar, (newAv) => {
-    authSelectedRegisterAvatar = newAv;
-    renderAvatarGrid('register-avatar-grid', authSelectedRegisterAvatar, null);
-  });
-}
-
-
-function setAuthFormMode(mode) {
-  authFormMode = mode;
-  const btnReg = document.getElementById('btn-mode-register');
-  const btnLog = document.getElementById('btn-mode-login');
-  const mainForm = document.getElementById('auth-main-form');
-  const groupName = document.getElementById('group-auth-displayname');
-  const groupAvatar = document.getElementById('group-auth-avatar');
-  const groupGoal = document.getElementById('group-auth-goal');
-  const groupMigrate = document.getElementById('group-auth-migrate');
-  const submitBtn = document.getElementById('btn-auth-submit');
-  const errorAlert = document.getElementById('auth-error-alert');
-
-  if (errorAlert) {
-    errorAlert.textContent = '';
-    errorAlert.style.display = 'none';
-  }
-
-  if (btnReg) btnReg.classList.toggle('active', mode === 'register');
-  if (btnLog) btnLog.classList.toggle('active', mode === 'login');
-
-  const isReg = mode === 'register';
-  if (mainForm) mainForm.classList.toggle('is-login', !isReg);
-  if (groupName) groupName.style.display = isReg ? 'flex' : 'none';
-  if (groupAvatar) groupAvatar.style.display = isReg ? 'flex' : 'none';
-  if (groupGoal) groupGoal.style.display = isReg ? 'flex' : 'none';
-  if (groupMigrate) groupMigrate.style.display = isReg ? 'block' : 'none';
-
-  if (submitBtn) {
-    submitBtn.innerHTML = isReg
-      ? `<span>Đăng Ký &amp; Vào Học Ngay</span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="9 18 15 12 9 6"></polyline></svg>`
-      : `<span>Đăng Nhập Ngay</span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="9 18 15 12 9 6"></polyline></svg>`;
-  }
-}
-
-
-function handleAuthFormSubmit(event) {
-  if (event && event.preventDefault) event.preventDefault();
-
-  const errorEl = document.getElementById('auth-error-alert');
-  const usernameInput = document.getElementById('auth-input-username');
-  const pinInput = document.getElementById('auth-input-pin');
-  const displayNameInput = document.getElementById('auth-input-displayname');
-  const goalSelect = document.getElementById('auth-input-goal');
-  const migrateCheck = document.getElementById('auth-check-migrate');
-
-  if (errorEl) {
-    errorEl.textContent = '';
-    errorEl.style.display = 'none';
-  }
-
-  const username = usernameInput ? usernameInput.value.trim() : '';
-  const pin = pinInput ? pinInput.value.trim() : '';
-
-  if (!username || !pin) {
-    if (errorEl) {
-      errorEl.textContent = 'Vui lòng điền đầy đủ tên đăng nhập và mã PIN.';
-      errorEl.style.display = 'block';
-    }
-    return;
-  }
-
-  if (!window.AuthEngine) {
-    if (errorEl) {
-      errorEl.textContent = 'Động cơ tài khoản chưa sẵn sàng.';
-      errorEl.style.display = 'block';
-    }
-    return;
-  }
-
-  if (authFormMode === 'register') {
-    const displayName = displayNameInput ? displayNameInput.value.trim() : '';
-    const levelGoal = goalSelect ? goalSelect.value : 'N5';
-    const migrateGuestData = migrateCheck ? migrateCheck.checked : true;
-    const avatar = authSelectedRegisterAvatar || 'daruma';
-
-    const res = window.AuthEngine.registerAccount({
-      username,
-      displayName,
-      secretPin: pin,
-      avatar,
-      levelGoal,
-      migrateGuestData
-    });
-
-    if (res && res.success) {
-      if (usernameInput) usernameInput.value = '';
-      if (pinInput) pinInput.value = '';
-      if (displayNameInput) displayNameInput.value = '';
-      switchAccountModalTab('profile');
-      showToast(`Đăng ký thành công! Chào mừng ${res.user.displayName}`);
-    } else {
-      if (errorEl) {
-        errorEl.textContent = res ? res.error : 'Đăng ký thất bại.';
-        errorEl.style.display = 'block';
-      }
-    }
-  } else {
-
-    const res = window.AuthEngine.loginAccount(username, pin);
-    if (res && res.success) {
-      if (usernameInput) usernameInput.value = '';
-      if (pinInput) pinInput.value = '';
-      switchAccountModalTab('profile');
-      showToast(`Đăng nhập thành công! Chào mừng trở lại ${res.user.displayName}`);
-    } else {
-      if (errorEl) {
-        errorEl.textContent = res ? res.error : 'Tên đăng nhập hoặc mã PIN không chính xác.';
-        errorEl.style.display = 'block';
-      }
-    }
-  }
-}
-
-
-function openAccountPinModal(title, desc, onConfirm) {
-  const modal = document.getElementById('account-pin-modal');
-  const titleEl = document.getElementById('pin-modal-title');
-  const descEl = document.getElementById('pin-modal-desc');
-  const inputEl = document.getElementById('pin-modal-input');
-  const errorEl = document.getElementById('pin-modal-error');
-  const confirmBtn = document.getElementById('pin-modal-confirm-btn');
-
-  if (!modal || !inputEl) return;
-
-  if (titleEl) titleEl.textContent = title || 'Xác Nhận Mã PIN';
-  if (descEl) descEl.textContent = desc || 'Vui lòng nhập mã PIN bảo mật:';
-  if (errorEl) {
-    errorEl.textContent = '';
-    errorEl.style.display = 'none';
-  }
-
-  inputEl.value = '';
-  _pinModalConfirmCallback = onConfirm;
-
-  if (confirmBtn) {
-    confirmBtn.onclick = () => {
-      const pin = inputEl.value.trim();
-      if (!pin) {
-        if (errorEl) {
-          errorEl.textContent = 'Vui lòng nhập mã PIN.';
-          errorEl.style.display = 'block';
-        }
-        return;
-      }
-      if (typeof _pinModalConfirmCallback === 'function') {
-        _pinModalConfirmCallback(pin);
-      }
-    };
-  }
-
-  modal.classList.add('show-modal');
-  modal.setAttribute('aria-hidden', 'false');
-  setTimeout(() => inputEl.focus(), 100);
-}
-
-
-function closeAccountPinModal() {
-  const modal = document.getElementById('account-pin-modal');
-  if (modal) {
-    modal.classList.remove('show-modal');
-    modal.setAttribute('aria-hidden', 'true');
-  }
-  _pinModalConfirmCallback = null;
-}
-
-
-function handleQuickSwitchAccount(uid) {
-  if (!uid || uid === 'guest') {
-    if (window.AuthEngine && typeof window.AuthEngine.logoutToGuest === 'function') {
-      window.AuthEngine.logoutToGuest();
-    }
-    return;
-  }
-
-  const accounts = (window.AuthEngine && typeof window.AuthEngine.listAccounts === 'function')
-    ? window.AuthEngine.listAccounts()
-    : [];
-  const acc = accounts.find(a => a.uid === uid);
-  const targetName = acc ? acc.displayName : 'tài khoản';
-
-  openAccountPinModal(
-    'Chuyển Đổi Tài Khoản',
-    `Nhập mã PIN bảo mật để đăng nhập vào tài khoản "${escapeHtml(targetName)}":`,
-    (pin) => {
-      if (!window.AuthEngine || typeof window.AuthEngine.switchAccount !== 'function') return;
-      const res = window.AuthEngine.switchAccount(uid, pin);
-      if (res && res.success) {
-        closeAccountPinModal();
-      } else {
-        const errEl = document.getElementById('pin-modal-error');
-        if (errEl) {
-          errEl.textContent = res ? res.error : 'Mã PIN không đúng.';
-          errEl.style.display = 'block';
-        }
-      }
-    }
-  );
-}
-
-
-function handleDeleteAccountPrompt(uid, name) {
-  openAccountPinModal(
-    'Xóa Tài Khoản',
-    `CẢNH BÁO: Bạn có chắc chắn muốn xóa tài khoản "${escapeHtml(name)}"? Toàn bộ tiến độ học tập và thành tích sẽ bị xóa vĩnh viễn. Nhập mã PIN để xác nhận:`,
-    (pin) => {
-      if (!window.AuthEngine || typeof window.AuthEngine.deleteAccount !== 'function') return;
-      const res = window.AuthEngine.deleteAccount(uid, pin);
-      if (res && res.success) {
-        closeAccountPinModal();
-        showToast(`Đã xóa tài khoản "${name}" thành công.`);
-        renderAccountsTab();
-      } else {
-        const errEl = document.getElementById('pin-modal-error');
-        if (errEl) {
-          errEl.textContent = res ? res.error : 'Mã PIN không chính xác.';
-          errEl.style.display = 'block';
-        }
-      }
-    }
-  );
-}
-
-
-function handleLogoutAccount() {
-  if (window.AuthEngine && typeof window.AuthEngine.logoutToGuest === 'function') {
-    window.AuthEngine.logoutToGuest();
-  }
-}
-
-
-function renderLeaderboardTab() {
-  const listEl = document.getElementById('multi-user-leaderboard-list');
-  if (!listEl) return;
-
-  if (!window.AuthEngine || typeof window.AuthEngine.getMultiUserLeaderboard !== 'function') {
-    listEl.innerHTML = '<div style="padding:16px;text-align:center;color:var(--text-muted);">Đang tải bảng xếp hạng...</div>';
-    return;
-  }
-
-  const leaderboard = window.AuthEngine.getMultiUserLeaderboard();
-  const currentUser = (typeof window.AuthEngine.getCurrentUser === 'function')
-    ? window.AuthEngine.getCurrentUser()
-    : null;
-
-  if (!leaderboard || leaderboard.length === 0) {
-    listEl.innerHTML = '<div style="padding:16px;text-align:center;color:var(--text-muted);">Chưa có dữ liệu học tập nào trên thiết bị.</div>';
-    return;
-  }
-
-  listEl.innerHTML = leaderboard.map((item, idx) => {
-    const isCurrent = (currentUser && currentUser.uid === item.uid) || (!currentUser && item.isGuest);
-    const isGuest = item.isGuest;
-    const guestSvg = (window.ACCOUNT_WA_ICONS && window.ACCOUNT_WA_ICONS.avatars && window.ACCOUNT_WA_ICONS.avatars.guest)
-      ? window.ACCOUNT_WA_ICONS.avatars.guest
-      : '<svg class="wa-avatar-svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"></circle><circle cx="12" cy="8.5" r="3"></circle><path d="M6.5 18c0-3 2.5-5.5 5.5-5.5s5.5 2.5 5.5 5.5"></path></svg>';
-    const preset = isGuest ? { svg: guestSvg, icon: '👤' } : getAvatarPreset(item.avatar);
-    const stats = item.stats || {};
-    const rankSvg = getRankCrestSvg(stats.rankBadge || '🌱');
-
-    let rankHtml = `${idx + 1}`;
-    let rankClass = '';
-    const medals = window.ACCOUNT_WA_ICONS || {};
-    if (idx === 0) { rankHtml = medals.medal1 || '🥇'; rankClass = 'top-1'; }
-    else if (idx === 1) { rankHtml = medals.medal2 || '🥈'; rankClass = 'top-2'; }
-    else if (idx === 2) { rankHtml = medals.medal3 || '🥉'; rankClass = 'top-3'; }
-
-    return `
-      <div class="leaderboard-row ${isCurrent ? 'is-current-user' : ''}">
-        <div class="col-rank">
-          <span class="rank-badge ${rankClass}">${rankHtml}</span>
-        </div>
-        <div class="col-user">
-          <div class="user-cell">
-            <span class="user-cell-avatar" aria-hidden="true">${preset.svg || preset.icon}</span>
-            <div class="user-cell-info">
-              <span class="user-cell-name">
-                ${escapeHtml(item.displayName)}
-                ${isCurrent ? ' <span style="font-size:11px;color:var(--accent-primary);font-weight:700;">(Bạn)</span>' : ''}
-              </span>
-              <span class="user-cell-title">${rankSvg} ${escapeHtml(stats.rankTitle || 'Tân Binh')} • JLPT ${escapeHtml(item.levelGoal || 'N5')}</span>
-            </div>
-          </div>
-        </div>
-        <div class="col-stats stats-cell">
-          <div class="stat-pill-group">
-            <span class="stat-mini-pill">Bài: ${escapeHtml(String(stats.completedModulesCount || 0))}</span>
-            <span class="stat-mini-pill">Hán tự: ${escapeHtml(String(stats.learnedKanjiCount || 0))}</span>
-            <span class="stat-mini-pill">Thi: ${escapeHtml(String(stats.bestExamScore || 0))}/20</span>
-          </div>
-        </div>
-        <div class="col-xp xp-cell">
-          ${stats.totalXp || 0} XP
-        </div>
-      </div>
-    `;
-  }).join('');
-}
-
-
-function renderSyncTab() {
-  const statusEl = document.getElementById('cloud-sync-status');
-  if (statusEl && statusEl.textContent === 'Đang kết nối máy chủ...') {
-    statusEl.textContent = 'Chưa đồng bộ';
-  }
-}
-
-
-async function handleCloudSync() {
-  const statusEl = document.getElementById('cloud-sync-status');
-  const syncBtn = document.getElementById('btn-cloud-sync');
-
-  if (statusEl) {
-    statusEl.className = 'sync-status-label';
-    statusEl.textContent = 'Đang kết nối máy chủ...';
-  }
-  if (syncBtn) syncBtn.disabled = true;
-
-  try {
-    if (window.AuthEngine && typeof window.AuthEngine.syncWithServer === 'function') {
-      const res = await window.AuthEngine.syncWithServer();
-      if (res && res.success) {
-        if (statusEl) {
-          statusEl.className = 'sync-status-label success';
-          statusEl.textContent = `✓ Đã đồng bộ lúc ${new Date().toLocaleTimeString()}`;
-        }
-        showToast('Đồng bộ tiến độ học tập với máy chủ thành công!');
-        updateHeaderProgress();
-      } else {
-        if (statusEl) {
-          statusEl.className = 'sync-status-label error';
-          statusEl.textContent = `⚠️ ${res.error || 'Lỗi kết nối máy chủ'}`;
-        }
-        showToast(`Đồng bộ máy chủ: ${res.error || 'Chế độ ngoại tuyến'}`);
-      }
-    }
-  } catch (err) {
-    if (statusEl) {
-      statusEl.className = 'sync-status-label error';
-      statusEl.textContent = '⚠️ Ngoại lệ kết nối máy chủ';
-    }
-  } finally {
-    if (syncBtn) syncBtn.disabled = false;
-  }
-}
-
-
-function handleExportSyncCode() {
-  if (!window.AuthEngine || typeof window.AuthEngine.exportSyncCode !== 'function') return;
-  const user = window.AuthEngine.getCurrentUser();
-  const uid = user ? user.uid : 'guest';
-  const code = window.AuthEngine.exportSyncCode(uid);
-
-  const wrapper = document.getElementById('export-code-wrapper');
-  const output = document.getElementById('sync-code-output');
-
-  if (output) output.value = code;
-  if (wrapper) wrapper.style.display = 'flex';
-
-  showToast('Đã tạo mã sao lưu di động thành công!');
-}
-
-
-function handleDownloadBackupFile() {
-  const user = (window.AuthEngine && typeof window.AuthEngine.getCurrentUser === 'function')
-    ? window.AuthEngine.getCurrentUser()
-    : null;
-  const uid = user ? user.uid : 'guest';
-  const se = (typeof StorageEngine !== 'undefined') ? StorageEngine : null;
-  const snapshot = se && typeof se.exportUserProgressSnapshot === 'function'
-    ? se.exportUserProgressSnapshot(uid)
-    : { data: {} };
-
-  const backupData = {
-    app: 'MinnaNoNihongo_JLPT',
-    version: 1,
-    exportedAt: new Date().toISOString(),
-    user: user || { uid: 'guest', username: 'guest', displayName: 'Học viên Khách', avatar: 'tanuki', levelGoal: 'N5' },
-    snapshot: snapshot
   };
 
-  const jsonStr = JSON.stringify(backupData, null, 2);
-  const blob = new Blob([jsonStr], { type: 'application/json' });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = `minna_backup_${user ? user.username : 'guest'}_${Date.now()}.json`;
-  document.body.appendChild(a);
-  a.click();
-  document.body.removeChild(a);
-  setTimeout(() => URL.revokeObjectURL(url), 2000);
+  modal.addEventListener('click', event => { if (event.target === modal) closeUserAccountModal(); });
+  modal.addEventListener('keydown', event => { if (event.key === 'Escape') closeUserAccountModal(); });
+  byId('google-sign-in').addEventListener('click', () => { location.assign('/api/account/google/start'); });
+  const input = byId('google-avatar-input');
+  byId('google-avatar-picker').addEventListener('click', () => input.click());
+  input.addEventListener('change', async () => {
+    const [file] = input.files;
+    input.value = '';
+    if (!file) return;
+    showError();
+    const picker = byId('google-avatar-picker');
+    picker.disabled = true;
+    try { await engine.saveAvatar(file); }
+    catch (error) { showError(error.message); }
+    finally { picker.disabled = false; }
+  });
+  bindAction('btn-logout-account', () => engine.logout());
+  bindAction('google-import-guest', () => engine.importGuestProgress());
+  bindAction('google-import-legacy', () => engine.importLegacyProgress());
 
-  showToast('Đã tải file sao lưu (.json) thành công!');
-}
-
-
-function handleBackupFileSelected(event) {
-  const file = event.target && event.target.files ? event.target.files[0] : null;
-  const nameLabel = document.getElementById('selected-file-name');
-  if (!file) return;
-
-  if (nameLabel) nameLabel.textContent = file.name;
-
-  const reader = new FileReader();
-  reader.onload = function(e) {
-    const text = String(e.target.result || '').trim();
-    const inputArea = document.getElementById('sync-code-input');
-    if (text.startsWith('MINNA_SYNC_V1:')) {
-      if (inputArea) inputArea.value = text;
-    } else {
-      try {
-        const parsed = JSON.parse(text);
-        if (parsed.snapshot && window.StorageEngine && typeof window.StorageEngine.importUserProgressSnapshot === 'function') {
-          const user = (window.AuthEngine && typeof window.AuthEngine.getCurrentUser === 'function')
-            ? window.AuthEngine.getCurrentUser()
-            : null;
-          const targetUid = user ? user.uid : 'guest';
-          const res = window.StorageEngine.importUserProgressSnapshot(targetUid, parsed.snapshot, true);
-          showToast(`Đã nhập trực tiếp ${res.count || 0} mục tiến độ từ file JSON!`);
-          refreshAppOnAccountChange(user);
-          const statusEl = document.getElementById('import-sync-status');
-          if (statusEl) {
-            statusEl.className = 'sync-status-label success';
-            statusEl.textContent = `✓ Đã nhập thành công ${res.count || 0} mục`;
-          }
-        }
-      } catch (err) {
-        showToast('File JSON không đúng định dạng sao lưu Minna.');
-      }
+  engine.init((identityChanged, keys = []) => {
+    if (identityChanged || keys.includes('minna_theme')) applyTheme(safeGetStorage('minna_theme', 'light'), false);
+    if (identityChanged || keys.includes(STORAGE_FURIGANA_KEY)) {
+      document.body.classList.toggle('hide-furigana', safeGetStorage(STORAGE_FURIGANA_KEY) === 'false');
     }
-  };
-  reader.readAsText(file);
-}
-
-
-function handleImportSyncData() {
-  const input = document.getElementById('sync-code-input');
-  const statusEl = document.getElementById('import-sync-status');
-  const rawCode = input ? input.value.trim() : '';
-
-  if (!rawCode) {
-    if (statusEl) {
-      statusEl.className = 'sync-status-label error';
-      statusEl.textContent = 'Vui lòng dán mã MINNA_SYNC_V1:...';
+    if (identityChanged || keys.includes('minna_kaiwa_progress_v1')) window.KaiwaEngine?.reloadUserProgress();
+    if (identityChanged || keys.some(key => key !== 'minna_google_avatar')) {
+      renderSidebar();
+      updateHeaderProgress();
+      const busy = document.querySelector('#examRunnerView, .lesson-content textarea:focus, .lesson-content input:focus');
+      if (!busy && currentActiveId) renderContent(currentActiveId);
     }
-    showToast('Chưa nhập mã sao lưu.');
-    return;
-  }
-
-  if (!window.AuthEngine || typeof window.AuthEngine.importSyncCode !== 'function') {
-    showToast('Động cơ AuthEngine chưa sẵn sàng.');
-    return;
-  }
-
-  const res = window.AuthEngine.importSyncCode(rawCode, true);
-  if (res && res.success) {
-    if (statusEl) {
-      statusEl.className = 'sync-status-label success';
-      statusEl.textContent = `✓ Đã nhập thành công ${res.importedKeys} mục tiến độ!`;
-    }
-    showToast(`Nhập tiến độ thành công! Đã gộp ${res.importedKeys} mục.`);
-    if (input) input.value = '';
-    const user = window.AuthEngine.getCurrentUser();
-    refreshAppOnAccountChange(user);
-  } else {
-    if (statusEl) {
-      statusEl.className = 'sync-status-label error';
-      statusEl.textContent = `⚠️ ${res ? res.error : 'Nhập thất bại'}`;
-    }
-    showToast(`Lỗi nhập tiến độ: ${res ? res.error : 'Không hợp lệ'}`);
-  }
-}
-
-
-function copySyncCodeToClipboard() {
-  const output = document.getElementById('sync-code-output');
-  if (!output || !output.value) {
-    showToast('Chưa có mã sao lưu để sao chép.');
-    return;
-  }
-  if (navigator && navigator.clipboard && typeof navigator.clipboard.writeText === 'function') {
-    navigator.clipboard.writeText(output.value)
-      .then(() => showToast('Đã sao chép mã sao lưu vào bộ nhớ tạm!'))
-      .catch(() => {
-        output.select();
-        document.execCommand('copy');
-        showToast('Đã sao chép mã sao lưu!');
-      });
-  } else {
-    output.select();
-    document.execCommand('copy');
-    showToast('Đã sao chép mã sao lưu!');
-  }
-}
-
-
-function refreshAppOnAccountChange(newUser) {
-  const user = newUser || (window.AuthEngine && typeof window.AuthEngine.getCurrentUser === 'function' ? window.AuthEngine.getCurrentUser() : null);
-
-  if (typeof renderSidebar === 'function') {
-    renderSidebar();
-  }
-
-  if (typeof updateHeaderProgress === 'function') {
-    updateHeaderProgress();
-  }
-
-  if (typeof switchModule === 'function' && typeof currentActiveId !== 'undefined') {
-    switchModule(currentActiveId, false);
-  }
-
+    renderUserAccountUI();
+  });
   renderUserAccountUI();
-
-  const displayName = user ? user.displayName : 'Học viên Khách';
-  showToast(`Đã chuyển sang: ${displayName}`);
+  const resultUrl = new URL(location.href);
+  const result = resultUrl.searchParams.get('account');
+  if (result === 'connected' || result === 'error') {
+    resultUrl.searchParams.delete('account');
+    history.replaceState(history.state, '', resultUrl.href);
+    openUserAccountModal();
+    if (result === 'error') showError('Chưa đăng nhập được bằng Google. Vui lòng thử lại.');
+  }
 }
 
 window.toggleTheme = toggleTheme;
 window.toggleFurigana = toggleFurigana;
 window.openUserAccountModal = openUserAccountModal;
 window.closeUserAccountModal = closeUserAccountModal;
-window.switchAccountModalTab = switchAccountModalTab;
-window.toggleProfileEditDrawer = toggleProfileEditDrawer;
-window.saveProfileChanges = saveProfileChanges;
-window.setAuthFormMode = setAuthFormMode;
-window.handleAuthFormSubmit = handleAuthFormSubmit;
-window.handleQuickSwitchAccount = handleQuickSwitchAccount;
-window.handleDeleteAccountPrompt = handleDeleteAccountPrompt;
-window.closeAccountPinModal = closeAccountPinModal;
-window.handleLogoutAccount = handleLogoutAccount;
-window.handleCloudSync = handleCloudSync;
-window.handleExportSyncCode = handleExportSyncCode;
-window.handleDownloadBackupFile = handleDownloadBackupFile;
-window.handleBackupFileSelected = handleBackupFileSelected;
-window.handleImportSyncData = handleImportSyncData;
-window.copySyncCodeToClipboard = copySyncCodeToClipboard;
+
+function initPressFeedback() {
+  if (typeof window.matchMedia !== 'function' || !window.CSS?.supports('scale', '1')) return;
+
+  const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+  const controls = 'button, a[href], summary, input[type="button"], input[type="submit"], input[type="checkbox"], input[type="radio"], [role="button"], [role="tab"], [role="menuitem"], [role="option"], [role="switch"]';
+  const animations = new WeakMap();
+  const pressDuration = 85;
+  let press = null;
+
+  const motionEnabled = () => !reducedMotion.matches && document.documentElement.dataset.thermalMode !== 'true';
+
+  function findControl(target) {
+    const control = target?.closest?.(controls);
+    if (!control || control.matches(':disabled') || control.closest('[aria-disabled="true"], [inert], .sidebar-overlay')) return null;
+    // Keep the bottom navigation's touch targets fixed while its icons respond.
+    return control.matches('.mobile-nav-item') ? control.querySelector('.mobile-nav-icon') : control;
+  }
+
+  function animateScale(control, keyframes, options) {
+    const previous = animations.get(control);
+    const animation = control.animate(keyframes, options);
+    animations.set(control, animation);
+    previous?.cancel();
+    return animation;
+  }
+
+  function releasePress(rebound) {
+    if (!press) return;
+    const { control, animation, depth } = press;
+    press = null;
+    if (!motionEnabled() || !control.isConnected) {
+      animation.cancel();
+      return;
+    }
+
+    const progress = animation.effect.getComputedTiming().progress ?? 0;
+    const scale = 1 - (1 - depth) * progress;
+    if (!rebound) {
+      animateScale(control, [{ scale }, { scale: 1 }], { duration: 120, easing: 'ease-out' });
+      return;
+    }
+
+    animateScale(control, [
+      { scale, offset: 0, easing: 'cubic-bezier(0.2, 0.7, 0.3, 1)' },
+      { scale: Math.min(scale, depth + 0.01), offset: 0.17, easing: 'ease-out' },
+      { scale: 1 + (1 - depth) * 0.35, offset: 0.55, easing: 'ease-in-out' },
+      { scale: 1, offset: 1 }
+    ], { duration: 235 });
+  }
+
+  const capture = { capture: true, passive: true };
+  document.addEventListener('pointerdown', (event) => {
+    if (!event.isPrimary || event.button !== 0 || !motionEnabled()) return;
+    const control = findControl(event.target);
+    if (typeof control?.animate !== 'function') return;
+    releasePress(false);
+
+    const depth = control.matches('[role="button"]:not(button), summary') ? 0.98 : 0.95;
+    const animation = animateScale(control, [{ scale: 1 }, { scale: depth }], {
+      duration: pressDuration, easing: 'ease-out', fill: 'forwards'
+    });
+    press = { control, animation, depth, id: event.pointerId, x: event.clientX, y: event.clientY };
+  }, capture);
+
+  document.addEventListener('pointermove', (event) => {
+    if (!press || press.id !== event.pointerId) return;
+    if (Math.hypot(event.clientX - press.x, event.clientY - press.y) > 12) releasePress(false);
+  }, capture);
+  document.addEventListener('pointerup', (event) => {
+    if (press && press.id === event.pointerId) releasePress(findControl(event.target) === press.control);
+  }, capture);
+  document.addEventListener('pointercancel', (event) => {
+    if (press && press.id === event.pointerId) releasePress(false);
+  }, capture);
+  window.addEventListener('blur', () => releasePress(false));
+  reducedMotion.addEventListener?.('change', () => releasePress(false));
+
+  document.addEventListener('click', (event) => {
+    if (event.detail !== 0 || !motionEnabled()) return;
+    const control = findControl(event.target);
+    if (typeof control?.animate !== 'function') return;
+    animateScale(control, [{ scale: 1 }, { scale: 0.97, offset: 0.22 }, { scale: 1.01, offset: 0.58 }, { scale: 1 }], { duration: 235 });
+  }, capture);
+}
+
 window.renderUserAccountChips = renderUserAccountChips;
 window.renderUserAccountUI = renderUserAccountUI;
-window.refreshAppOnAccountChange = refreshAppOnAccountChange;
-window.computeXpProgressPercent = computeXpProgressPercent;
-window.toggleAuthFormDrawer = toggleAuthFormDrawer;
-window.toggleSyncPasteInput = toggleSyncPasteInput;
+
 
 
 if (document && document.addEventListener) {
   document.addEventListener('DOMContentLoaded', () => {
 
-    if (window.AuthEngine && typeof window.AuthEngine.init === 'function') {
-      try {
-        window.AuthEngine.init();
-      } catch (e) {
-        console.warn('[Bootstrap] Ngoại lệ khởi tạo AuthEngine:', e);
-      }
-    }
+    if (window.GoogleAccountEngine) window.GoogleAccountEngine.restore();
+    else window.AuthEngine?.init();
 
     initModuleScrollPositions();
     initDeviceSettings();
+    initPressFeedback();
     initThemeToggle();
     initFuriganaToggle();
     initFullscreenToggle();

@@ -12,7 +12,7 @@
   'use strict';
 
   const STORAGE_KEY = 'minna_kaiwa_progress_v1';
-  const ASSET_VERSION = '20261111_12';
+  const ASSET_VERSION = '20261117_03';
 
   // Ký hiệu số Zen tối giản phong cách Nhật Bản cho tab Luyện tập C
   const ZEN_CIRCLED_NUMS = ['①', '②', '③', '④', '⑤'];
@@ -48,7 +48,7 @@
 
   // HỆ THỐNG BIỂU TƯỢNG VECTOR SVG ĐỒNG BỘ PHONG CÁCH TỐI GIẢN TOÀN TRANG (FEATHER / LUCIDE STYLE)
   const KAIWA_ICONS = {
-    speaker: `<svg class="icon-svg speaker-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path><path d="M19.07 4.93a10 10 0 0 1 0 14.14"></path></svg>`,
+    speaker: `<svg class="icon-svg speaker-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path class="icon-detail" d="M15.54 8.46a5 5 0 0 1 0 7.07"></path><path class="icon-detail" d="M19.07 4.93a10 10 0 0 1 0 14.14"></path></svg>`,
     userVoice: `<svg class="icon-svg user-voice-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 14V12A8 8 0 0 1 20 12V14 M4 12.5C5.5 9 8.5 7 12 7C15.5 7 18.5 9 20 12.5 M4 13.5H6.5A1.5 1.5 0 0 1 8 15V18.5A1.5 1.5 0 0 1 6.5 20H5.5A1.5 1.5 0 0 1 4 18.5V13.5Z M16 15A1.5 1.5 0 0 1 17.5 13.5H20V18.5A1.5 1.5 0 0 1 18.5 20H17.5A1.5 1.5 0 0 1 16 18.5V15Z"></path></svg>`,
     mic: `<svg class="icon-svg mic-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 2a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3z"></path><path d="M19 10v2a7 7 0 0 1-14 0v-2"></path><line x1="12" y1="19" x2="12" y2="22"></line><line x1="8" y1="22" x2="16" y2="22"></line></svg>`,
     info: `<svg class="icon-svg info-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>`,

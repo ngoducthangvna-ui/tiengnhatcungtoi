@@ -93,7 +93,9 @@
     if (
       !_activeUserNamespace ||
       _activeUserNamespace === 'guest' ||
-      GLOBAL_EXEMPT_KEYS.has(trimmed) ||
+      (GLOBAL_EXEMPT_KEYS.has(trimmed) && !(
+        _activeUserNamespace.startsWith('google_') && (trimmed === 'minna_theme' || trimmed === 'minna_voice_settings')
+      )) ||
       trimmed.startsWith('minna_auth_') ||
       trimmed.startsWith('u_')
     ) {

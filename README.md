@@ -52,3 +52,11 @@ node scripts/run_security_audit_scan.js
 
 * Xem chi tiết chính sách an toàn thông tin tại [SECURITY.md](SECURITY.md).
 * Quy trình xử lý sự cố an ninh tại [INCIDENT_RESPONSE_RUNBOOK.md](INCIDENT_RESPONSE_RUNBOOK.md).
+
+## Đăng nhập và đồng bộ bằng Google
+
+Tạo OAuth Client loại **Web application** trong Google Cloud Console. Thêm redirect URI chính xác, ví dụ `https://ten-mien-cua-ban/api/account/google/callback`. Đặt `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`, `GOOGLE_REDIRECT_URI` và `GOOGLE_SESSION_SECRET` trên máy chủ. Dùng secret ngẫu nhiên dài ít nhất 32 ký tự cho `GOOGLE_SESSION_SECRET`. Giao diện chạy từ `file://` chỉ học cục bộ.
+
+Cloudflare Pages sử dụng binding KV `MINNA_USERS_KV`. Triển khai bằng tích hợp Git hoặc Wrangler để đóng gói `_worker.js` cùng `google-account-api.mjs`. Với `server.js`, đặt `MINNA_GOOGLE_DATA_DIR` thành đường dẫn tuyệt đối có quyền ghi nằm ngoài thư mục web. Dùng một thư mục lưu trữ bền vững khi chạy bằng container.
+
+Google xác thực người dùng. Trang lưu tiến độ và ảnh đại diện trên máy chủ theo ID Google. Các cài đặt phần cứng và thông tin xác thực dịch vụ giọng nói được lưu theo thiết bị. Giao diện có nút gộp tiến độ của khách hoặc hồ sơ cũ từng đăng nhập trên thiết bị.
