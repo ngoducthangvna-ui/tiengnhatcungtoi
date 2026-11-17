@@ -1918,13 +1918,21 @@
 
     function startHtmlPlayback() {
       if (sessionId !== currentKaiwaSessionId) return;
-      activeSpriteTimer = setTimeout(finishOnce, durationMs);
+      activeSpriteLoadTimer = setTimeout(fallbackOnce, 5000);
       try {
         audio.playbackRate = playbackRate;
         audio.currentTime = startSec;
         const playPromise = audio.play();
-        if (playPromise && typeof playPromise.catch === 'function') {
-          playPromise.catch(fallbackOnce);
+        const afterStart = function() {
+          if (sessionId !== currentKaiwaSessionId || activeSpriteAudio !== audio) return;
+          clearTimeout(activeSpriteLoadTimer);
+          activeSpriteLoadTimer = null;
+          activeSpriteTimer = setTimeout(finishOnce, durationMs);
+        };
+        if (playPromise && typeof playPromise.then === 'function') {
+          playPromise.then(afterStart, fallbackOnce);
+        } else {
+          afterStart();
         }
       } catch (e) {
         fallbackOnce();
@@ -1937,6 +1945,7 @@
         if (sessionId === currentKaiwaSessionId) fallbackOnce();
       }, 5000);
       audio.addEventListener('loadedmetadata', function() {
+        if (sessionId !== currentKaiwaSessionId || activeSpriteAudio !== audio) return;
         if (activeSpriteLoadTimer) {
           clearTimeout(activeSpriteLoadTimer);
           activeSpriteLoadTimer = null;
@@ -1954,7 +1963,7 @@
    * từ file MP3 đa nhân vật của bài học (audio/kaiwa/lesson_X.mp3).
    * Ưu tiên Web Audio API (Sprite Buffer) chống giật/trễ, fallback sang HTML5 Audio hoặc TTS.
    */
-  function playSpriteSegment(audioSrc, timeRange, onEndCallback, onFallback, speed = 1) {
+  function playSpriteSegment(audioSrc, timeRange, onEndCallback, onFallback, speed = 1, slow = state.slowAudio) {
     if (
       !audioSrc ||
       !Array.isArray(timeRange) ||
@@ -1968,7 +1977,7 @@
 
     const startSec = Math.max(0, Number(timeRange[0]) || 0);
     const endSec = Math.max(startSec + 0.08, Number(timeRange[1]) || (startSec + 2.0));
-    const playbackRate = speed * (state.slowAudio ? 0.78 : 1);
+    const playbackRate = speed * (slow ? 0.78 : 1);
 
     stopAllKaiwaAudio();
     const sessionId = ++currentKaiwaSessionId;
@@ -2008,14 +2017,14 @@
     };
 
     const finishOnce = function() {
-      if (settled) return;
+      if (settled || sessionId !== currentKaiwaSessionId) return;
       settled = true;
       cleanup();
       if (typeof onEndCallback === 'function') onEndCallback();
     };
 
     const fallbackOnce = function() {
-      if (settled) return;
+      if (settled || sessionId !== currentKaiwaSessionId) return;
       settled = true;
       cleanup();
       if (typeof onFallback === 'function') onFallback();
@@ -2041,6 +2050,10 @@
     }
 
     playHtmlAudioSpriteSegment(audioSrc, startSec, endSec, playbackRate, finishOnce, fallbackOnce, sessionId);
+  }
+
+  function playVoiceSample(sample, speed, onDone) {
+    playSpriteSegment(sample.src, [sample.start, sample.end], () => onDone(true), () => onDone(false), speed, false);
   }
 
   function speakJapanese(text, pitchOpt, onEndCallback, preferredGender, speakerId, rateOpt, contextMeta) {
@@ -3120,6 +3133,7 @@
     renderHighlightedJapanese,
     applyRenshuuSubstitution,
     playLine,
+    playVoiceSample,
     playSpriteSegment,
     stopAllKaiwaAudio,
     seekMasterPlayer,

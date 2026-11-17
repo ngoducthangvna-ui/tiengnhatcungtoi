@@ -1076,6 +1076,7 @@ let activeOnlineAudioAbort = null; // Bộ dọn dẹp tiến trình Online Audi
 let activeSpeechSafetyTimer = null; // Quản lý Timer bảo vệ trạng thái nút bấm
 let activeSpeechCancel = null;
 let speechProxyUnavailableUntil = 0;
+let warnedCharacterVoiceFallback = false;
 let lastSpeechClickTime = 0; // Debounce bảo vệ chống spam click phần cứng
 let lastSpeechText = '';
 
@@ -1339,7 +1340,7 @@ function stopAllSpeechAudio() {
 window.stopAllSpeechAudio = stopAllSpeechAudio;
 
 
-function findDialogueJpVoice(speakerKey) {
+function findDialogueJpVoice(speakerKey, requireCharacter = false) {
   if (typeof window === 'undefined' || typeof window.speechSynthesis?.getVoices !== 'function') return null;
   const voices = window.speechSynthesis.getVoices();
   if (!voices || voices.length === 0) return null;
@@ -1347,9 +1348,10 @@ function findDialogueJpVoice(speakerKey) {
   const profile = getDialogueVoiceProfile(speakerKey);
   const speakerId = resolveDialogueSpeakerId(speakerKey);
   if (typeof AudioEngine !== 'undefined' && typeof AudioEngine.selectBestJapaneseVoice === 'function') {
-    const best = AudioEngine.selectBestJapaneseVoice(voices, profile.gender || null, speakerId);
-    if (best) return best;
+    const best = AudioEngine.selectBestJapaneseVoice(voices, profile.gender || null, speakerId, requireCharacter);
+    if (best || requireCharacter) return best;
   }
+  if (requireCharacter) return null;
 
   const isJa = v => v.lang === 'ja-JP' || (v.lang && v.lang.startsWith('ja'));
   const genderRe = profile.gender === 'male' ? /(keita|otoya|ichiro|male)/i : /(nanami|kyoko|haruka|female)/i;
@@ -1558,7 +1560,7 @@ function playOnlineJapaneseAudio(text, stopRelay, safetyTimer, forcedSessionId, 
   tryNextSource();
 }
 
-function speakWithLedaWebSpeech(speechText, stopRelay, safetyTimer, cfg, onFallback, speakerKey, forcedSessionId, onPlaying) {
+function speakWithLedaWebSpeech(speechText, stopRelay, safetyTimer, cfg, onFallback, speakerKey, forcedSessionId, onPlaying, requireCharacter) {
   const sessionId = typeof forcedSessionId === 'number' ? forcedSessionId : currentAudioSessionId;
 
   if (typeof window === 'undefined' || !('speechSynthesis' in window)) {
@@ -1572,10 +1574,10 @@ function speakWithLedaWebSpeech(speechText, stopRelay, safetyTimer, cfg, onFallb
     return;
   }
 
-  const isDefaultSpeaker = resolveDialogueSpeakerId(speakerKey) === DIALOGUE_DEFAULT_SPEAKER;
-  const voice = isDefaultSpeaker
-    ? (cachedLedaVoice || findLedaJpVoice())
-    : findDialogueJpVoice(speakerKey);
+  const isCoreCharacter = typeof AudioEngine !== 'undefined' && AudioEngine.ROTATION_CHARACTERS.includes(speakerKey);
+  const characterVoice = findDialogueJpVoice(speakerKey, isCoreCharacter);
+  const usesFallback = isCoreCharacter && !characterVoice && !requireCharacter;
+  const voice = usesFallback ? (cachedLedaVoice || findLedaJpVoice()) : characterVoice;
   if (!voice) {
     if (sessionId !== currentAudioSessionId) return;
     if (onFallback) {
@@ -1599,14 +1601,16 @@ function speakWithLedaWebSpeech(speechText, stopRelay, safetyTimer, cfg, onFallb
         : cleanUtteranceText.replace(/<[^>]+>/g, '');
       cleanUtteranceText = cleanUtteranceText.replace(/<[^>]+>/g, '').trim();
     }
-    const prosody = computeDialogueProsody(getDialogueVoiceProfile(speakerKey), cfg, cleanUtteranceText);
+    const prosody = computeDialogueProsody(getDialogueVoiceProfile(usesFallback ? DIALOGUE_DEFAULT_SPEAKER : speakerKey), cfg, cleanUtteranceText);
     const utterance = new SpeechSynthesisUtterance(cleanUtteranceText);
     utterance.lang = 'ja-JP';
     utterance.voice = voice;
     utterance.rate = prosody.rate;
     utterance.pitch = prosody.pitch;
     utterance.onstart = () => {
-      if (sessionId === currentAudioSessionId && onPlaying) onPlaying('device');
+      if (sessionId !== currentAudioSessionId) return;
+      if (usesFallback) notifyCharacterVoiceFallback();
+      if (onPlaying) onPlaying('device');
     };
 
     utterance.onend = () => {
@@ -1664,6 +1668,11 @@ function speakWithLedaWebSpeech(speechText, stopRelay, safetyTimer, cfg, onFallb
   }
 }
 
+function notifyCharacterVoiceFallback() {
+  if (warnedCharacterVoiceFallback) return;
+  warnedCharacterVoiceFallback = true;
+  showToast('Giọng nhân vật chưa khả dụng. Đang dùng giọng tiếng Nhật dự phòng.');
+}
 
 async function speakJapanese(text, btnElement, ev, speakerKey, cfgOverride, playback = {}) {
   if (ev && ev.stopPropagation) ev.stopPropagation();
@@ -1730,11 +1739,16 @@ async function speakJapanese(text, btnElement, ev, speakerKey, cfgOverride, play
 
   const onlineFallback = () => {
     if (finished || sessionId !== currentAudioSessionId) return;
-    playOnlineJapaneseAudio(speechText, stopRelay, safetyTimer, sessionId, prosody.rate, playback.onState);
+    if (playback.previewSpeaker) {
+      stopRelay(false);
+      return;
+    }
+    const fallbackRate = computeDialogueProsody(getDialogueVoiceProfile(DIALOGUE_DEFAULT_SPEAKER), cfg, speechText).rate;
+    playOnlineJapaneseAudio(speechText, stopRelay, safetyTimer, sessionId, fallbackRate, () => notifyCharacterVoiceFallback());
   };
   const localFallback = () => {
     if (finished || sessionId !== currentAudioSessionId) return;
-    speakWithLedaWebSpeech(speechText, stopRelay, safetyTimer, cfg, onlineFallback, speakerToUse, sessionId, playback.onState);
+    speakWithLedaWebSpeech(speechText, stopRelay, safetyTimer, cfg, onlineFallback, speakerToUse, sessionId, playback.onState, Boolean(playback.previewSpeaker));
   };
 
   const useProxy = Date.now() >= speechProxyUnavailableUntil && /^https?:$/.test(window.location?.protocol);
@@ -8377,8 +8391,9 @@ function initVoiceSettingsModal() {
             setPreviewStatus('idle');
           } else if (state === 'loading') {
             setPreviewStatus('loading', `Đang tải giọng ${title}…`);
-          } else if (state === 'online') {
-            setPreviewStatus('playing', 'Đang dùng giọng tiếng Nhật dự phòng. Nguồn này chỉ chỉnh được tốc độ.');
+          } else if (state === 'sample') {
+            const note = getLivePreviewCfg().pitch === DEFAULT_USER_PITCH ? '' : ' · Bản mẫu giữ cao độ gốc';
+            setPreviewStatus('playing', `${title} · Bản mẫu nhân vật${note}`);
           } else {
             const label = state === 'device' ? 'Giọng trên thiết bị' : 'Giọng trực tuyến';
             setPreviewStatus('playing', `${title} · ${label}`);
@@ -8386,9 +8401,10 @@ function initVoiceSettingsModal() {
         },
         onDone(played) {
           if (played && active === 'rotate') nextPreviewIndex = (nextPreviewIndex + 1) % rotation.length;
+          const originalPitch = source === 'sample' && getLivePreviewCfg().pitch !== DEFAULT_USER_PITCH;
           const message = played
-            ? (source === 'online' ? 'Đã phát giọng dự phòng. Nguồn này chỉ chỉnh được tốc độ.' : `Đã phát ${title}.`)
-            : 'Không phát được tiếng Nhật. Hãy kiểm tra kết nối hoặc cài giọng tiếng Nhật trên thiết bị.';
+            ? `Đã phát ${title}.${originalPitch ? ' Bản mẫu giữ cao độ gốc.' : ''}`
+            : 'Chưa phát được giọng này. Hãy kiểm tra kết nối rồi thử lại.';
           setPreviewStatus('idle', message);
         }
       });
@@ -8416,10 +8432,45 @@ function initVoiceSettingsModal() {
 }
 
 
-function previewVoiceCharacter(speakerId, liveCfg, btn, ev, playback = {}) {
-  const text = 'こんにちは。今日も一緒に日本語を勉強しましょう。';
+function previewVoiceCharacter(speakerId, liveCfg = {}, btn, ev, playback = {}) {
   const speaker = speakerId === 'rotate' ? AudioEngine.ROTATION_CHARACTERS[0] : speakerId;
-  return speakJapanese(text, btn, ev, null, liveCfg, { ...playback, previewSpeaker: speaker });
+  const sample = AudioEngine.getVoicePreviewSample(speaker);
+  const text = sample?.text || 'こんにちは。今日も一緒に日本語を勉強しましょう。';
+  const done = (played) => playback.onDone?.(played);
+  const synthesize = (onDone) => speakJapanese(text, btn, ev, null, liveCfg, {
+    ...playback, previewSpeaker: speaker, onDone
+  });
+
+  if (!sample || typeof window.KaiwaEngine?.playVoiceSample !== 'function') {
+    return synthesize(done);
+  }
+  if (ev?.stopPropagation) ev.stopPropagation();
+
+  const playSample = (onDone) => {
+    let settled = false;
+    const cancel = () => {
+      settled = true;
+      playback.onState?.('idle');
+    };
+    const speed = (liveCfg.speed || DEFAULT_USER_SPEED) / DEFAULT_USER_SPEED;
+    window.KaiwaEngine.playVoiceSample(sample, speed, (played) => {
+      if (settled) return;
+      settled = true;
+      if (activeSpeechCancel === cancel) activeSpeechCancel = null;
+      btn?.classList.remove('is-speaking');
+      onDone(played);
+    });
+    if (settled) return;
+    activeSpeechCancel = cancel;
+    btn?.classList.add('is-speaking');
+    playback.onState?.('sample');
+  };
+
+  if ((liveCfg.pitch || DEFAULT_USER_PITCH) === DEFAULT_USER_PITCH) {
+    playSample((played) => played ? done(true) : synthesize(done));
+    return;
+  }
+  return synthesize((played) => played ? done(true) : playSample(done));
 }
 window.previewVoiceCharacter = previewVoiceCharacter;
 

@@ -33,7 +33,7 @@
 
   // Ma trận hồ sơ giọng 25 nhân vật (13 mô hình giọng Neural độc lập + biên độ Pitch tự nhiên [0.93 - 1.05])
   const CHARACTER_VOICE_PROFILES = {
-    sato:      { gender: 'female', voice: 'ja-JP-NanamiNeural',             speechGenVoice: 'Nanami',    pitch: 1.00, rate: 0.95, voiceHints: /nanami|kyoko|google\s*日本語/i, voiceName: 'Nanami (Nữ công sở chuẩn Tokyo)' },
+    sato:      { gender: 'female', voice: 'ja-JP-NanamiNeural',             speechGenVoice: 'Nanami',    pitch: 1.00, rate: 0.95, voiceHints: /nanami|kyoko/i, voiceName: 'Nanami (Nữ công sở chuẩn Tokyo)' },
     karina:    { gender: 'female', voice: 'en-US-EmmaMultilingualNeural',   speechGenVoice: 'Aoi',       pitch: 1.18, rate: 1.04, voiceHints: /haruka|sayaka|ayumi|aoi|mayu|emma/i, voiceName: 'Emma (Nữ sinh viên trẻ trung)' },
     maria:     { gender: 'female', voice: 'en-US-AvaMultilingualNeural',    speechGenVoice: 'Shiori',    pitch: 0.90, rate: 0.94, voiceHints: /shiori|ava|mizuki/i, voiceName: 'Ava (Nữ đằm thắm, ấm áp)' },
     kimura:    { gender: 'female', voice: 'de-DE-SeraphinaMultilingualNeural', speechGenVoice: 'Seraphina', pitch: 1.04, rate: 0.97, voiceName: 'Seraphina (Nữ phát thanh viên)' },
@@ -66,11 +66,11 @@
   // Mẫu giọng Studio Neural thật (cắt từ Audio Sprite Kaiwa) dùng cho nút "Nghe thử" trong bảng Cài đặt giọng
   const VOICE_PREVIEW_SAMPLES = {
     rotate: { src: 'audio/kaiwa/lesson_1.mp3',  start: 0,    end: 3.41, text: 'みなさん、こんにちは！マイク・ミラーです。' },
-    sato:   { src: 'audio/kaiwa/lesson_6.mp3',  start: 2.81, end: 5.06, text: 'あした 友だちと お花見を します。' },
-    karina: { src: 'audio/kaiwa/lesson_14.mp3', start: 0,    end: 1.87, text: '梅田まで 行って ください。' },
-    maria:  { src: 'audio/kaiwa/lesson_3.mp3',  start: 0,    end: 2.81, text: 'すみません。ワイン売り場は どこですか。' },
-    yamada: { src: 'audio/kaiwa/lesson_1.mp3',  start: 3.41, end: 6.41, text: '佐藤さん、こちらは マイク・ミラーさんです。' },
-    miller: { src: 'audio/kaiwa/lesson_4.mp3',  start: 2.64, end: 6.6,  text: 'すみません。そちらは 何時から 何時までですか。' },
+    sato:   { src: 'audio/kaiwa/lesson_1.mp3',  start: 0,     end: 1.34, text: 'おはようございます。' },
+    karina: { src: 'audio/kaiwa/lesson_23.mp3', start: 33.98, end: 37.13, text: 'はい。どうもありがとうございました。' },
+    maria:  { src: 'audio/kaiwa/lesson_16.mp3', start: 31.8,  end: 33.5, text: 'どうもありがとうございました。' },
+    yamada: { src: 'audio/kaiwa/lesson_1.mp3',  start: 1.73,  end: 3.1, text: 'おはようございます。' },
+    miller: { src: 'audio/kaiwa/lesson_4.mp3',  start: 13.08, end: 15.14, text: 'どうもありがとうございました。' },
     santos: { src: 'audio/kaiwa/lesson_2.mp3',  start: 4.54, end: 6.62, text: 'こんにちは。サントスです。' }
   };
 
@@ -221,7 +221,7 @@
      * Chọn giọng đọc tiếng Nhật tự nhiên nhất (Ưu tiên giọng Neural / Natural / Google / Kyoko / Otoya)
      * Hỗ trợ phân vai theo giới tính (male/female) và mã nhân vật (speakerId).
      */
-    selectBestJapaneseVoice(voices, preferredGender = null, speakerId = null) {
+    selectBestJapaneseVoice(voices, preferredGender = null, speakerId = null, requireCharacter = false) {
       if (!Array.isArray(voices) || voices.length === 0) return null;
       const profile = speakerId ? AudioEngine.getCharacterVoiceProfile(speakerId, preferredGender) : null;
       const targetGender = preferredGender || (profile && profile.gender) || null;
@@ -234,6 +234,7 @@
         if (!v || !v.name) return false;
         const lang = String(v.lang || '').toLowerCase();
         const nameLower = String(v.name || '').toLowerCase();
+        if (requireCharacter && !profile?.voiceHints?.test(v.name)) return false;
         if (lang === 'ja-jp' || lang === 'ja_jp' || lang.startsWith('ja')) return true;
         if (multilingualName && nameLower.includes(multilingualName) && /multilingual/i.test(nameLower)) {
           return true;
