@@ -1704,7 +1704,7 @@ async function speakJapanese(text, btnElement, ev, speakerKey, cfgOverride, play
     ? speakerKey || rotatingSpeaker
     : cfg.speaker);
   const speakerToUse = resolveDialogueSpeakerId(candidate);
-  const fixedStudyVoice = !playback.dialogue && !playback.previewSpeaker && cfg.speaker !== 'rotate';
+  const fixedStudyVoice = !playback.previewSpeaker && cfg.speaker !== 'rotate';
   const requireCharacter = fixedStudyVoice || Boolean(playback.previewSpeaker);
   const profile = getDialogueVoiceProfile(speakerToUse);
   const prosody = computeDialogueProsody(profile, cfg, speechText);

@@ -1963,7 +1963,7 @@
    * từ file MP3 đa nhân vật của bài học (audio/kaiwa/lesson_X.mp3).
    * Ưu tiên Web Audio API (Sprite Buffer) chống giật/trễ, fallback sang HTML5 Audio hoặc TTS.
    */
-  function playSpriteSegment(audioSrc, timeRange, onEndCallback, onFallback, speed = 1, slow = state.slowAudio) {
+  function playSpriteSegment(audioSrc, timeRange, onEndCallback, onFallback, previewSpeed) {
     if (
       !audioSrc ||
       !Array.isArray(timeRange) ||
@@ -1977,7 +1977,7 @@
 
     const startSec = Math.max(0, Number(timeRange[0]) || 0);
     const endSec = Math.max(startSec + 0.08, Number(timeRange[1]) || (startSec + 2.0));
-    const playbackRate = speed * (slow ? 0.78 : 1);
+    const playbackRate = previewSpeed ?? (state.slowAudio ? 0.78 : 1);
 
     stopAllKaiwaAudio();
     const sessionId = ++currentKaiwaSessionId;
@@ -2033,7 +2033,7 @@
 
     const ctx = (typeof root.fetch === 'function') ? getOrCreateSpriteAudioContext() : null;
 
-    if (ctx && playbackRate === 1) {
+    if (ctx && (previewSpeed === undefined || playbackRate === 1)) {
       if (spriteBufferCache[audioSrc]) {
         playBufferSpriteSegment(ctx, spriteBufferCache[audioSrc], startSec, endSec, playbackRate, finishOnce, fallbackOnce);
         return;
@@ -2053,14 +2053,10 @@
   }
 
   function playVoiceSample(sample, speed, onDone) {
-    playSpriteSegment(sample.src, [sample.start, sample.end], () => onDone(true), () => onDone(false), speed, false);
+    playSpriteSegment(sample.src, [sample.start, sample.end], () => onDone(true), () => onDone(false), speed);
   }
 
   function speakJapanese(text, pitchOpt, onEndCallback, preferredGender, speakerId, rateOpt, contextMeta) {
-    if (typeof root.speakJapanese === 'function') {
-      root.speakJapanese(text, null, null, speakerId, { slow: state.slowAudio, contextMeta }, { dialogue: true, onDone: onEndCallback });
-      return;
-    }
     const paced = buildNaturalSpeechText(text);
     if (!paced) {
       if (typeof onEndCallback === 'function') onEndCallback();
@@ -2259,8 +2255,7 @@
       sceneType: line.sceneType || lessonData.sceneType || ''
     };
 
-    const handleLineEnded = function(success) {
-      if (success === false) state.loopingLineId = null;
+    const handleLineEnded = function() {
       if (state.loopingLineId === lineId) {
         playLine(lineId, onComplete);
         return;
@@ -2275,11 +2270,8 @@
     };
 
     const spriteSrc = line.audioSrc || lessonData.audioSrc;
-    const settings = typeof root.getSpeechGenConfig === 'function' ? root.getSpeechGenConfig() : null;
-    const canUseRecording = !settings || (settings.speaker === 'rotate' && settings.pitch === 1);
-    if (canUseRecording && spriteSrc && Array.isArray(line.time) && line.time.length === 2) {
-      const speed = settings ? settings.speed / 0.96 : 1;
-      playSpriteSegment(spriteSrc, line.time, handleLineEnded, fallbackToTts, speed);
+    if (spriteSrc && Array.isArray(line.time) && line.time.length === 2) {
+      playSpriteSegment(spriteSrc, line.time, handleLineEnded, fallbackToTts);
       return;
     }
 
