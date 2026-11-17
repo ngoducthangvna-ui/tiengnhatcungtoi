@@ -34,8 +34,8 @@
   // Ma trận hồ sơ giọng 25 nhân vật (13 mô hình giọng Neural độc lập + biên độ Pitch tự nhiên [0.93 - 1.05])
   const CHARACTER_VOICE_PROFILES = {
     sato:      { gender: 'female', voice: 'ja-JP-NanamiNeural',             speechGenVoice: 'Nanami',    pitch: 1.00, rate: 0.95, voiceHints: /nanami|kyoko|google\s*日本語/i, voiceName: 'Nanami (Nữ công sở chuẩn Tokyo)' },
-    karina:    { gender: 'female', voice: 'en-US-EmmaMultilingualNeural',   speechGenVoice: 'Emma',      pitch: 1.18, rate: 1.04, voiceHints: /haruka|sayaka|ayumi|aoi|mayu|emma/i, voiceName: 'Emma (Nữ sinh viên trẻ trung)' },
-    maria:     { gender: 'female', voice: 'en-US-AvaMultilingualNeural',    speechGenVoice: 'Ava',       pitch: 0.90, rate: 0.94, voiceHints: /shiori|ava|mizuki/i, voiceName: 'Ava (Nữ đằm thắm, ấm áp)' },
+    karina:    { gender: 'female', voice: 'en-US-EmmaMultilingualNeural',   speechGenVoice: 'Aoi',       pitch: 1.18, rate: 1.04, voiceHints: /haruka|sayaka|ayumi|aoi|mayu|emma/i, voiceName: 'Emma (Nữ sinh viên trẻ trung)' },
+    maria:     { gender: 'female', voice: 'en-US-AvaMultilingualNeural',    speechGenVoice: 'Shiori',    pitch: 0.90, rate: 0.94, voiceHints: /shiori|ava|mizuki/i, voiceName: 'Ava (Nữ đằm thắm, ấm áp)' },
     kimura:    { gender: 'female', voice: 'de-DE-SeraphinaMultilingualNeural', speechGenVoice: 'Seraphina', pitch: 1.04, rate: 0.97, voiceName: 'Seraphina (Nữ phát thanh viên)' },
     suzuki:    { gender: 'female', voice: 'fr-FR-VivienneMultilingualNeural',  speechGenVoice: 'Vivienne',  pitch: 1.03, rate: 0.96, voiceName: 'Vivienne (Nữ đồng nghiệp)' },
     watanabe:  { gender: 'female', voice: 'pt-BR-ThalitaMultilingualNeural',   speechGenVoice: 'Thalita',   pitch: 0.99, rate: 0.95, voiceName: 'Thalita (Nữ thanh lịch)' },
@@ -45,8 +45,8 @@
     barber:    { gender: 'female', voice: 'ja-JP-NanamiNeural',             speechGenVoice: 'Nanami',    pitch: 1.04, rate: 0.97, voiceName: 'Nanami-Stylist (Thợ salon thân thiện)' },
     lee:       { gender: 'female', voice: 'pt-BR-ThalitaMultilingualNeural',   speechGenVoice: 'Thalita',   pitch: 1.00, rate: 0.95, voiceName: 'Thalita-Scholar (Nữ nghiên cứu viên)' },
     yamada:    { gender: 'male',   voice: 'ja-JP-KeitaNeural',              speechGenVoice: 'Keita',     pitch: 0.86, rate: 0.93, voiceHints: /keita|otoya|ichiro/i, voiceName: 'Keita (Nam công sở chuẩn Tokyo)' },
-    miller:    { gender: 'male',   voice: 'en-US-BrianMultilingualNeural',  speechGenVoice: 'Brian',     pitch: 1.06, rate: 1.02, voiceHints: /takumi|daichi|naoki|brian/i, voiceName: 'Brian (Nam thanh niên trẻ)' },
-    santos:    { gender: 'male',   voice: 'en-US-AndrewMultilingualNeural', speechGenVoice: 'Andrew',    pitch: 0.80, rate: 0.92, voiceHints: /hattori|andrew/i, voiceName: 'Andrew (Nam trầm ấm)' },
+    miller:    { gender: 'male',   voice: 'en-US-BrianMultilingualNeural',  speechGenVoice: 'Daichi',    pitch: 1.06, rate: 1.02, voiceHints: /takumi|daichi|brian/i, voiceName: 'Brian (Nam thanh niên trẻ)' },
+    santos:    { gender: 'male',   voice: 'en-US-AndrewMultilingualNeural', speechGenVoice: 'Naoki',     pitch: 0.80, rate: 0.92, voiceHints: /naoki|hattori|andrew/i, voiceName: 'Andrew (Nam trầm ấm)' },
     wang:      { gender: 'male',   voice: 'ko-KR-HyunsuMultilingualNeural', speechGenVoice: 'Hyunsu',    pitch: 1.02, rate: 0.95, voiceName: 'Hyunsu (Bác sĩ trẻ điềm tĩnh)' },
     watt:      { gender: 'male',   voice: 'en-AU-WilliamMultilingualNeural', speechGenVoice: 'William',   pitch: 0.94, rate: 0.93, voiceName: 'William (Giáo sư đĩnh đạc)' },
     matsumoto: { gender: 'male',   voice: 'en-AU-WilliamMultilingualNeural', speechGenVoice: 'William',   pitch: 0.93, rate: 0.92, voiceName: 'William-Senior (Trưởng phòng uy nghiêm)' },
@@ -227,6 +227,7 @@
       const targetGender = preferredGender || (profile && profile.gender) || null;
       const preferredVoiceHint = profile && profile.speechGenVoice ? profile.speechGenVoice.toLowerCase() : '';
       const exactModelHint = profile && profile.voice ? profile.voice.toLowerCase() : '';
+      const multilingualName = (profile && profile.voice.match(/^[a-z]{2}-[a-z]{2}-(.+)MultilingualNeural$/i))?.[1].toLowerCase();
 
       // Chấp nhận cả các giọng tiếng Nhật bản địa (ja-JP) và các giọng Multilingual Neural khớp với nhân vật
       const candidateVoices = voices.filter(v => {
@@ -234,7 +235,7 @@
         const lang = String(v.lang || '').toLowerCase();
         const nameLower = String(v.name || '').toLowerCase();
         if (lang === 'ja-jp' || lang === 'ja_jp' || lang.startsWith('ja')) return true;
-        if (preferredVoiceHint && nameLower.includes(preferredVoiceHint) && /multilingual|natural|online|neural/i.test(nameLower)) {
+        if (multilingualName && nameLower.includes(multilingualName) && /multilingual/i.test(nameLower)) {
           return true;
         }
         return false;
@@ -259,11 +260,11 @@
         if (profile && profile.voiceHints && profile.voiceHints.test(name)) score += 75;
 
         if (targetGender === 'male') {
-          if (/keita|otoya|ichiro|hattori|daichi|naoki|male|takumi|brian|andrew|william|hyunsu|florian|remy|giuseppe/i.test(lower)) score += 25;
+          if (/keita|otoya|ichiro|hattori|daichi|naoki|\bmale\b|takumi|brian|andrew|william|hyunsu|florian|remy|giuseppe/i.test(lower)) score += 25;
           if (/nanami|kyoko|haruka|ayumi|sayaka|aoi|mayu|shiori|female|emma|ava|seraphina|vivienne|thalita/i.test(lower)) score -= 15;
         } else if (targetGender === 'female') {
           if (/nanami|kyoko|haruka|ayumi|sayaka|aoi|mayu|shiori|google\s*日本語|female|mizuki|emma|ava|seraphina|vivienne|thalita/i.test(lower)) score += 25;
-          if (/keita|otoya|ichiro|hattori|daichi|naoki|male|brian|andrew|william|hyunsu|florian|remy|giuseppe/i.test(lower)) score -= 15;
+          if (/keita|otoya|ichiro|hattori|daichi|naoki|\bmale\b|brian|andrew|william|hyunsu|florian|remy|giuseppe/i.test(lower)) score -= 15;
         }
         return score;
       };

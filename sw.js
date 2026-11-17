@@ -4,7 +4,7 @@
  */
 'use strict';
 
-const ASSET_VERSION = '20261117_13';
+const ASSET_VERSION = '20261117_14';
 const CACHE_VERSION = `minna-pwa-v${ASSET_VERSION}`;
 
 const CORE_ASSETS = [
@@ -22,6 +22,7 @@ const CORE_ASSETS = [
   './icons/shiba-maskable-512.png',
   './data/ui_icons.js',
   `./data/ui_icons.js?v=${ASSET_VERSION}`,
+  `./src/audio_engine.js?v=${ASSET_VERSION}`,
   `./src/kaiwa_engine.js?v=${ASSET_VERSION}`,
   `./src/exam_engine.js?v=${ASSET_VERSION}`,
   `./src/exam_style.css?v=${ASSET_VERSION}`,

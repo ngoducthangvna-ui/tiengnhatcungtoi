@@ -291,19 +291,24 @@ function detectCurrentDevice() {
 }
 
 function getDeviceSettings() {
-  return safeGetJsonStorage(STORAGE_DEVICE_SETTINGS_KEY, { ...DEFAULT_DEVICE_SETTINGS }, (data) => {
+  const settings = safeGetJsonStorage(STORAGE_DEVICE_SETTINGS_KEY, DEFAULT_DEVICE_SETTINGS, (data) => {
     return data && typeof data === 'object' && !Array.isArray(data);
   });
+  return normalizeDeviceSettings(settings);
 }
 
-function saveDeviceSettings(settings) {
-  const clean = {
+function normalizeDeviceSettings(settings) {
+  return {
     mode: ['auto', 'mobile', 'tablet', 'desktop'].includes(settings.mode) ? settings.mode : 'auto',
     fontSize: ['small', 'normal', 'large', 'xlarge'].includes(settings.fontSize) ? settings.fontSize : 'normal',
     density: ['compact', 'normal', 'comfort'].includes(settings.density) ? settings.density : 'normal',
-    thermalMode: Boolean(settings.thermalMode),
+    thermalMode: settings.thermalMode === true,
     haptic: settings.haptic !== false
   };
+}
+
+function saveDeviceSettings(settings) {
+  const clean = normalizeDeviceSettings(settings);
   safeSetStorage(STORAGE_DEVICE_SETTINGS_KEY, JSON.stringify(clean));
   applyDeviceSettings(clean);
   return clean;
@@ -318,12 +323,13 @@ function applyDeviceSettings(settings) {
   const detected = detectCurrentDevice();
   const effectiveDevice = currentMode === 'auto' ? detected : currentMode;
 
+  const wasDrawer = typeof usesDrawerNavigation === 'function' && usesDrawerNavigation();
   root.setAttribute('data-device', effectiveDevice);
   root.setAttribute('data-device-mode', currentMode);
   root.setAttribute('data-font-size', settings.fontSize || 'normal');
   root.setAttribute('data-density', settings.density || 'normal');
   root.setAttribute('data-thermal-mode', settings.thermalMode ? 'true' : 'false');
-  root.setAttribute('data-haptic', settings.haptic ? 'true' : 'false');
+  root.setAttribute('data-haptic', settings.haptic !== false ? 'true' : 'false');
 
   const badge = document.getElementById('detected-device-badge');
   if (badge) {
@@ -332,14 +338,19 @@ function applyDeviceSettings(settings) {
       tablet: 'Máy tính bảng',
       desktop: 'Máy tính'
     };
-    badge.textContent = (currentMode === 'auto' ? 'Tự động nhận diện: ' : 'Chế độ cố định: ') + (labels[effectiveDevice] || effectiveDevice);
+    const label = labels[effectiveDevice];
+    badge.textContent = currentMode === 'auto' ? `Tự động · ${label}` : `Bố cục · ${label}`;
+    if (detected === 'mobile' && effectiveDevice !== 'mobile') badge.textContent += ' · Vừa màn hình';
+  }
+  if (typeof updateMenuButtonState === 'function') {
+    if (wasDrawer && !usesDrawerNavigation()) closeMobileSidebar();
+    else updateMenuButtonState();
   }
 }
 
-function triggerHaptic(duration = 12) {
+function triggerHaptic(duration = 12, enabled) {
   try {
-    const settings = getDeviceSettings();
-    if (!settings.haptic) return;
+    if (!(enabled ?? getDeviceSettings().haptic)) return;
     if (typeof navigator !== 'undefined' && typeof navigator.vibrate === 'function') {
       navigator.vibrate(duration);
     }
@@ -351,120 +362,117 @@ try {
 } catch (e) {}
 
 function initDeviceSettings() {
-  const settings = getDeviceSettings();
-  applyDeviceSettings(settings);
-
-  if (typeof window !== 'undefined') {
-    let resizeTimer = null;
-    window.addEventListener('resize', () => {
-      clearTimeout(resizeTimer);
-      resizeTimer = setTimeout(() => {
-        const cur = getDeviceSettings();
-        if (cur.mode === 'auto') {
-          applyDeviceSettings(cur);
-        }
-      }, 200);
-    }, { passive: true });
-  }
+  applyDeviceSettings(getDeviceSettings());
 
   const btnOpen = document.getElementById('btn-device-settings');
   const modal = document.getElementById('device-settings-modal');
+  if (!btnOpen || !modal) return;
+
   const btnClose = document.getElementById('close-device-modal-btn');
   const btnSave = document.getElementById('save-device-modal-btn');
   const btnReset = document.getElementById('reset-device-modal-btn');
+  const thermalToggle = document.getElementById('thermal-saver-toggle');
+  const hapticToggle = document.getElementById('haptic-toggle');
+  const hapticHint = document.getElementById('haptic-support-hint');
+  const settingsStatus = document.getElementById('device-settings-status');
+  const groups = [
+    { selector: '#device-mode-selector', setting: 'mode', key: 'mode' },
+    { selector: '#device-font-selector', setting: 'fontSize', key: 'font' },
+    { selector: '#device-density-selector', setting: 'density', key: 'density' }
+  ];
+  let draft = null;
+  let restoreFocus;
+  let previousOverflow;
+  let resizeTimer;
 
-  if (!btnOpen || !modal) return;
-
-  const syncModalUI = (cfg) => {
-
-    document.querySelectorAll('#device-mode-selector .device-pill').forEach(btn => {
-      btn.classList.toggle('active', btn.getAttribute('data-mode') === (cfg.mode || 'auto'));
-    });
-
-    document.querySelectorAll('#device-font-selector .device-pill').forEach(btn => {
-      btn.classList.toggle('active', btn.getAttribute('data-font') === (cfg.fontSize || 'normal'));
-    });
-
-    document.querySelectorAll('#device-density-selector .device-pill').forEach(btn => {
-      btn.classList.toggle('active', btn.getAttribute('data-density') === (cfg.density || 'normal'));
-    });
-
-    const thermalToggle = document.getElementById('thermal-saver-toggle');
-    if (thermalToggle) thermalToggle.checked = Boolean(cfg.thermalMode);
-    const hapticToggle = document.getElementById('haptic-toggle');
-    if (hapticToggle) hapticToggle.checked = cfg.haptic !== false;
+  const renderDraft = () => {
+    applyDeviceSettings(draft);
+    for (const { selector, setting, key } of groups) {
+      modal.querySelectorAll(`${selector} .device-pill`).forEach(button => {
+        const selected = button.dataset[key] === draft[setting];
+        button.classList.toggle('active', selected);
+        button.setAttribute('aria-pressed', String(selected));
+      });
+    }
+    thermalToggle.checked = draft.thermalMode;
+    hapticToggle.checked = draft.haptic;
+    hapticHint.textContent = typeof navigator.vibrate === 'function'
+      ? 'Bật để thử rung ngay trên thiết bị này.'
+      : 'Trình duyệt này không hỗ trợ rung.';
+    settingsStatus.textContent = 'Đang xem trước. Bấm Lưu cài đặt để giữ thay đổi.';
   };
 
+  window.addEventListener('resize', () => {
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(() => applyDeviceSettings(draft || getDeviceSettings()), 150);
+  }, { passive: true });
+
   const openModal = () => {
-    const cur = getDeviceSettings();
-    syncModalUI(cur);
+    draft = getDeviceSettings();
+    restoreFocus = document.activeElement;
+    previousOverflow = document.body.style.overflow;
+    renderDraft();
+    document.body.style.overflow = 'hidden';
     modal.classList.add('show-modal');
     modal.setAttribute('aria-hidden', 'false');
+    modal.querySelector('#device-mode-selector .active')?.focus();
   };
 
   const closeModal = () => {
     modal.classList.remove('show-modal');
     modal.setAttribute('aria-hidden', 'true');
+    document.body.style.overflow = previousOverflow || '';
+    draft = null;
+    applyDeviceSettings(getDeviceSettings());
+    if (restoreFocus?.getClientRects().length) restoreFocus.focus();
+    else if (usesDrawerNavigation()) document.getElementById('menu-toggle-btn')?.focus();
+    else document.getElementById('btn-sidebar-gear')?.focus();
   };
 
-  btnOpen.addEventListener('click', (e) => {
-    if (e && e.stopPropagation) e.stopPropagation();
+  btnOpen.addEventListener('click', (event) => {
+    event.stopPropagation();
     openModal();
   });
-
-  if (btnClose) btnClose.addEventListener('click', closeModal);
-
-  modal.addEventListener('click', (e) => {
-    if (e.target === modal) closeModal();
+  btnClose.addEventListener('click', closeModal);
+  modal.addEventListener('click', (event) => {
+    if (event.target === modal) closeModal();
+  });
+  document.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape' && draft) closeModal();
   });
 
-  const setupPills = (containerId, attrName) => {
-    const container = document.getElementById(containerId);
-    if (!container) return;
-    container.addEventListener('click', (e) => {
-      const pill = e.target.closest('.device-pill');
-      if (!pill) return;
-      container.querySelectorAll('.device-pill').forEach(p => p.classList.remove('active'));
-      pill.classList.add('active');
-    });
-  };
-
-  setupPills('device-mode-selector', 'data-mode');
-  setupPills('device-font-selector', 'data-font');
-  setupPills('device-density-selector', 'data-density');
-
-  if (btnSave) {
-    btnSave.addEventListener('click', () => {
-      const activeModePill = document.querySelector('#device-mode-selector .device-pill.active');
-      const activeFontPill = document.querySelector('#device-font-selector .device-pill.active');
-      const activeDensityPill = document.querySelector('#device-density-selector .device-pill.active');
-      const thermalToggle = document.getElementById('thermal-saver-toggle');
-      const hapticToggle = document.getElementById('haptic-toggle');
-
-      const newSettings = {
-        mode: activeModePill ? activeModePill.getAttribute('data-mode') : 'auto',
-        fontSize: activeFontPill ? activeFontPill.getAttribute('data-font') : 'normal',
-        density: activeDensityPill ? activeDensityPill.getAttribute('data-density') : 'normal',
-        thermalMode: thermalToggle ? thermalToggle.checked : false,
-        haptic: hapticToggle ? hapticToggle.checked : true
-      };
-
-      saveDeviceSettings(newSettings);
-      closeModal();
-      triggerHaptic(20);
-      showToast('Đã lưu cấu hình cá nhân hóa thiết bị thành công!');
+  for (const { selector, setting, key } of groups) {
+    modal.querySelector(selector).addEventListener('click', (event) => {
+      const button = event.target.closest('.device-pill');
+      if (!button || !draft) return;
+      draft[setting] = button.dataset[key];
+      renderDraft();
     });
   }
 
-  if (btnReset) {
-    btnReset.addEventListener('click', () => {
-      saveDeviceSettings({ ...DEFAULT_DEVICE_SETTINGS });
-      syncModalUI(DEFAULT_DEVICE_SETTINGS);
-      triggerHaptic(15);
-      showToast('Đã khôi phục cài đặt thiết bị về mặc định');
-    });
-  }
+  thermalToggle.addEventListener('change', () => {
+    draft.thermalMode = thermalToggle.checked;
+    renderDraft();
+  });
+  hapticToggle.addEventListener('change', () => {
+    draft.haptic = hapticToggle.checked;
+    renderDraft();
+    if (draft.haptic) triggerHaptic(25, true);
+  });
+
+  btnSave.addEventListener('click', () => {
+    saveDeviceSettings(draft);
+    closeModal();
+    triggerHaptic(20);
+    showToast('Đã lưu cài đặt thiết bị.');
+  });
+
+  btnReset.addEventListener('click', () => {
+    draft = { ...DEFAULT_DEVICE_SETTINGS };
+    renderDraft();
+  });
 }
+
 
 function initFuriganaToggle() {
   const btn = document.getElementById('btn-toggle-furigana');
@@ -1066,6 +1074,8 @@ let cachedLedaVoice = null; // Cache giọng hội thoại mặc định (giữ 
 let currentAudioSessionId = 0; // Epoch Counter chống Race Condition phát lặp đa giọng
 let activeOnlineAudioAbort = null; // Bộ dọn dẹp tiến trình Online Audio (Google/Youdao) đang chờ/retry
 let activeSpeechSafetyTimer = null; // Quản lý Timer bảo vệ trạng thái nút bấm
+let activeSpeechCancel = null;
+let speechProxyUnavailableUntil = 0;
 let lastSpeechClickTime = 0; // Debounce bảo vệ chống spam click phần cứng
 let lastSpeechText = '';
 
@@ -1098,14 +1108,14 @@ function computeDialogueProsody(profile, cfg, speechText) {
   let basePitch = profile.pitch || 1.0;
 
   if (speechText && typeof AudioEngine !== 'undefined' && typeof AudioEngine.computeExpressiveProsody === 'function') {
-    const exp = AudioEngine.computeExpressiveProsody(speechText, profile.id || DIALOGUE_DEFAULT_SPEAKER, false);
+    const exp = AudioEngine.computeExpressiveProsody(speechText, profile.id || DIALOGUE_DEFAULT_SPEAKER, false, cfg?.contextMeta);
     if (exp) {
       baseRate = exp.rate;
       basePitch = exp.pitch;
     }
   }
 
-  const rate = Math.max(0.6, Math.min(1.4, baseRate * (userSpeed / DEFAULT_USER_SPEED)));
+  const rate = Math.max(0.6, Math.min(1.4, baseRate * (userSpeed / DEFAULT_USER_SPEED) * (cfg?.slow ? 0.78 : 1)));
   const pitch = Math.max(0.72, Math.min(1.28, basePitch * (userPitch / DEFAULT_USER_PITCH)));
   return { rate: Number(rate.toFixed(3)), pitch: Number(pitch.toFixed(3)) };
 }
@@ -1241,13 +1251,18 @@ function isVocabTermLong(v) {
   return false;
 }
 
+function normalizeVoiceSetting(value, min, max, fallback) {
+  const number = parseFloat(value);
+  return Number.isFinite(number) ? Math.min(max, Math.max(min, number)) : fallback;
+}
+
 function getSpeechGenConfig() {
   try {
     const token = safeGetStorage('speechgen_token') || (typeof window !== 'undefined' && window.SPEECHGEN_CONFIG && window.SPEECHGEN_CONFIG.token) || '';
     const email = safeGetStorage('speechgen_email') || (typeof window !== 'undefined' && window.SPEECHGEN_CONFIG && window.SPEECHGEN_CONFIG.email) || '';
-    const speed = parseFloat(safeGetStorage('speechgen_speed') || String(DEFAULT_USER_SPEED));
-    const pitch = parseFloat(safeGetStorage('speechgen_pitch') || String(DEFAULT_USER_PITCH));
-    const speaker = safeGetStorage('speechgen_speaker') || 'rotate';
+    const speed = normalizeVoiceSetting(safeGetStorage('speechgen_speed'), 0.75, 1.25, DEFAULT_USER_SPEED);
+    const pitch = normalizeVoiceSetting(safeGetStorage('speechgen_pitch'), 0.85, 1.20, DEFAULT_USER_PITCH);
+    const speaker = resolveDialogueSpeakerId(safeGetStorage('speechgen_speaker') || 'rotate');
     const profile = getDialogueVoiceProfile(speaker);
     return { token, email, speed, pitch, speaker, voice: profile.speechGenVoice || SPEECHGEN_VOICE };
   } catch (e) {
@@ -1262,8 +1277,6 @@ function setSpeechGenConfig(cfg) {
     if (cfg.speed !== undefined) safeSetStorage('speechgen_speed', String(cfg.speed));
     if (cfg.pitch !== undefined) safeSetStorage('speechgen_pitch', String(cfg.pitch));
     if (cfg.speaker !== undefined) safeSetStorage('speechgen_speaker', String(cfg.speaker));
-    const targetSpk = cfg.speaker === 'rotate' ? DIALOGUE_DEFAULT_SPEAKER : (cfg.speaker || DIALOGUE_DEFAULT_SPEAKER);
-    cachedLedaVoice = findDialogueJpVoice(targetSpk);
   } catch (e) {}
 }
 window.setSpeechGenConfig = setSpeechGenConfig;
@@ -1272,6 +1285,11 @@ window.getSpeechGenConfig = getSpeechGenConfig;
 function stopAllSpeechAudio() {
 
   currentAudioSessionId++;
+  if (activeSpeechCancel) {
+    const cancel = activeSpeechCancel;
+    activeSpeechCancel = null;
+    cancel();
+  }
 
   if (activeSpeechSafetyTimer) {
     clearTimeout(activeSpeechSafetyTimer);
@@ -1322,7 +1340,7 @@ window.stopAllSpeechAudio = stopAllSpeechAudio;
 
 
 function findDialogueJpVoice(speakerKey) {
-  if (typeof window === 'undefined' || !('speechSynthesis' in window)) return null;
+  if (typeof window === 'undefined' || typeof window.speechSynthesis?.getVoices !== 'function') return null;
   const voices = window.speechSynthesis.getVoices();
   if (!voices || voices.length === 0) return null;
 
@@ -1348,21 +1366,21 @@ if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
   };
 }
 
-async function fetchSpeechGenAudio(speechText, cfg, speakerId, fallbackPlainText) {
+async function fetchSpeechGenAudio(speechText, cfg, speakerId, fallbackPlainText, signal) {
   const spk = speakerId || (cfg && cfg.speaker) || DIALOGUE_DEFAULT_SPEAKER;
   const profile = getDialogueVoiceProfile(spk);
   const sgVoice = profile.speechGenVoice || (cfg && cfg.voice) || SPEECHGEN_VOICE;
-  const cacheKey = spk + '|' + sgVoice + '|' + speechText;
+  const pitchVal = Math.max(-20, Math.min(20, Math.round((cfg.pitch - 1) * 100)));
+  const cacheKey = JSON.stringify([spk, sgVoice, cfg.speed, pitchVal, speechText]);
   if (speechAudioCache.has(cacheKey)) {
     return speechAudioCache.get(cacheKey);
   }
 
-  const pitchVal = Math.round((cfg.pitch - 1.0) * 10);
-
-  if (typeof window !== 'undefined' && window.location && window.location.protocol && window.location.protocol.startsWith('http')) {
+  if (Date.now() >= speechProxyUnavailableUntil && /^https?:$/.test(window.location?.protocol)) {
     try {
       const proxyRes = await fetch('/api/speech', {
         method: 'POST',
+        signal,
         headers: {
           'Content-Type': 'application/json',
           'X-Requested-With': 'MinnaApp'
@@ -1382,13 +1400,15 @@ async function fetchSpeechGenAudio(speechText, cfg, speakerId, fallbackPlainText
           speechAudioCache.set(cacheKey, audioUrl);
           return audioUrl;
         }
+      } else if ([404, 405, 429, 500, 503].includes(proxyRes.status)) {
+        speechProxyUnavailableUntil = Date.now() + 60000;
       }
     } catch (proxyErr) {
 
     }
   }
 
-  if (!cfg.token || !cfg.email) return null;
+  if (signal?.aborted || !cfg.token || !cfg.email) return null;
 
   const rawTextForSpeechGen = (typeof speechText === 'string' && speechText.startsWith('<speak') && fallbackPlainText)
     ? fallbackPlainText
@@ -1408,6 +1428,7 @@ async function fetchSpeechGenAudio(speechText, cfg, speakerId, fallbackPlainText
 
   const response = await fetch('https://speechgen.io/index.php?r=api/text', {
     method: 'POST',
+    signal,
     headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
     body: bodyData.toString()
   });
@@ -1422,12 +1443,12 @@ async function fetchSpeechGenAudio(speechText, cfg, speakerId, fallbackPlainText
   throw new Error((data && data.error) || 'SpeechGen generation failed');
 }
 
-function playOnlineJapaneseAudio(text, stopRelay, safetyTimer, forcedSessionId) {
+function playOnlineJapaneseAudio(text, stopRelay, safetyTimer, forcedSessionId, rate = 1, onPlaying) {
   const sessionId = typeof forcedSessionId === 'number' ? forcedSessionId : currentAudioSessionId;
   const clean = formatJapaneseGrammarSpeech(text) || cleanSpeechText(text);
-  if (!clean) {
+  if (!clean || typeof Audio !== 'function') {
     if (safetyTimer) clearTimeout(safetyTimer);
-    if (stopRelay) stopRelay();
+    if (stopRelay) stopRelay(false);
     return;
   }
 
@@ -1470,7 +1491,7 @@ function playOnlineJapaneseAudio(text, stopRelay, safetyTimer, forcedSessionId) 
     }
   };
 
-  function endPlayback() {
+  function endPlayback(success) {
     if (finished) return;
     finished = true;
     if (sourceTimer) {
@@ -1478,16 +1499,16 @@ function playOnlineJapaneseAudio(text, stopRelay, safetyTimer, forcedSessionId) 
       sourceTimer = null;
     }
     if (safetyTimer) clearTimeout(safetyTimer);
-    if (stopRelay) stopRelay();
     if (currentSpeechAudio === activeAudio) currentSpeechAudio = null;
     if (activeAudio) activeAudio = null;
     activeOnlineAudioAbort = null;
+    if (stopRelay) stopRelay(success);
   }
 
   function tryNextSource() {
     if (finished || sessionId !== currentAudioSessionId) return;
     if (srcIdx >= sources.length) {
-      endPlayback();
+      endPlayback(false);
       return;
     }
 
@@ -1504,44 +1525,40 @@ function playOnlineJapaneseAudio(text, stopRelay, safetyTimer, forcedSessionId) 
     }
     audio.preload = 'auto';
     audio.src = src.url;
+    audio.playbackRate = rate;
 
-    sourceTimer = setTimeout(() => {
-      if (finished || sessionId !== currentAudioSessionId) return;
-
-      if (!finished && (audio.paused || audio.readyState < 2)) {
-        try { audio.pause(); } catch (e) {}
-        tryNextSource();
-      }
-    }, 4500);
-
-    audio.onended = () => {
-      if (sourceTimer) clearTimeout(sourceTimer);
-      if (finished || sessionId !== currentAudioSessionId) return;
-      endPlayback();
-    };
-
-    audio.onerror = () => {
-      if (sourceTimer) clearTimeout(sourceTimer);
-      if (finished || sessionId !== currentAudioSessionId) return;
+    const isCurrentSource = () => !finished && sessionId === currentAudioSessionId && activeAudio === audio;
+    const retry = () => {
+      if (!isCurrentSource()) return;
+      clearTimeout(sourceTimer);
+      activeAudio = null;
+      currentSpeechAudio = null;
+      audio.pause();
+      audio.src = '';
       tryNextSource();
     };
+    sourceTimer = setTimeout(retry, 4500);
 
-    const p = audio.play();
-    if (p !== undefined) {
-      p.then(() => {
-        if (sourceTimer) clearTimeout(sourceTimer);
-      }).catch(() => {
-        if (sourceTimer) clearTimeout(sourceTimer);
-        if (finished || sessionId !== currentAudioSessionId) return;
-        tryNextSource();
-      });
+    audio.onplaying = () => {
+      if (!isCurrentSource()) return;
+      clearTimeout(sourceTimer);
+      if (onPlaying) onPlaying('online');
+    };
+    audio.onended = () => {
+      if (isCurrentSource()) endPlayback(true);
+    };
+    audio.onerror = retry;
+    try {
+      audio.play()?.catch(retry);
+    } catch (e) {
+      retry();
     }
   }
 
   tryNextSource();
 }
 
-function speakWithLedaWebSpeech(speechText, stopRelay, safetyTimer, cfg, onFallback, speakerKey, forcedSessionId) {
+function speakWithLedaWebSpeech(speechText, stopRelay, safetyTimer, cfg, onFallback, speakerKey, forcedSessionId, onPlaying) {
   const sessionId = typeof forcedSessionId === 'number' ? forcedSessionId : currentAudioSessionId;
 
   if (typeof window === 'undefined' || !('speechSynthesis' in window)) {
@@ -1558,7 +1575,7 @@ function speakWithLedaWebSpeech(speechText, stopRelay, safetyTimer, cfg, onFallb
   const isDefaultSpeaker = resolveDialogueSpeakerId(speakerKey) === DIALOGUE_DEFAULT_SPEAKER;
   const voice = isDefaultSpeaker
     ? (cachedLedaVoice || findLedaJpVoice())
-    : (findDialogueJpVoice(speakerKey) || cachedLedaVoice || findLedaJpVoice());
+    : findDialogueJpVoice(speakerKey);
   if (!voice) {
     if (sessionId !== currentAudioSessionId) return;
     if (onFallback) {
@@ -1588,11 +1605,14 @@ function speakWithLedaWebSpeech(speechText, stopRelay, safetyTimer, cfg, onFallb
     utterance.voice = voice;
     utterance.rate = prosody.rate;
     utterance.pitch = prosody.pitch;
+    utterance.onstart = () => {
+      if (sessionId === currentAudioSessionId && onPlaying) onPlaying('device');
+    };
 
     utterance.onend = () => {
       if (sessionId !== currentAudioSessionId) return;
       clearTimeout(safetyTimer);
-      stopRelay();
+      stopRelay(true);
     };
 
     utterance.onerror = (err) => {
@@ -1603,7 +1623,7 @@ function speakWithLedaWebSpeech(speechText, stopRelay, safetyTimer, cfg, onFallb
       const errType = (err && err.error) || '';
       if (errType === 'interrupted' || errType === 'canceled') {
         clearTimeout(safetyTimer);
-        stopRelay();
+        stopRelay(false);
         return;
       }
 
@@ -1645,137 +1665,137 @@ function speakWithLedaWebSpeech(speechText, stopRelay, safetyTimer, cfg, onFallb
 }
 
 
-async function speakJapanese(text, btnElement, ev, speakerKey, cfgOverride) {
-  if (ev && ev.stopPropagation) {
-    ev.stopPropagation();
-  }
+async function speakJapanese(text, btnElement, ev, speakerKey, cfgOverride, playback = {}) {
+  if (ev && ev.stopPropagation) ev.stopPropagation();
 
   const now = Date.now();
-  if (lastSpeechClickTime && (now - lastSpeechClickTime < 160) && text === lastSpeechText) {
-    return;
-  }
+  if (!playback.onDone && lastSpeechClickTime && (now - lastSpeechClickTime < 160) && text === lastSpeechText) return;
   lastSpeechClickTime = now;
   lastSpeechText = text;
 
-  let btn = btnElement;
-  if (!btn && typeof window !== 'undefined' && window.event) {
-    const target = window.event.currentTarget || window.event.target;
-    if (target) {
-      btn = target.closest ? target.closest('.speak-btn, .speak-btn-mini, .btn-test-voice, .kcard-audio-btn, .btn-tool, button') : target;
-    }
+  const cleanText = cleanSpeechText(text);
+  if (!cleanText) {
+    playback.onDone?.(false);
+    return;
   }
+
+  let btn = btnElement;
+  if (!btn && ev && ev.currentTarget) btn = ev.currentTarget;
 
   stopAllSpeechAudio();
   const sessionId = ++currentAudioSessionId;
+  const speechText = formatJapaneseGrammarSpeech(text) || cleanText;
+  const cfg = Object.assign({}, getSpeechGenConfig(), cfgOverride);
+  // A fixed preference overrides a suggested character. Class mode keeps explicit dialogue roles.
+  const rotatingSpeaker = typeof AudioEngine !== 'undefined' ? AudioEngine.getRotatingSpeaker(speechText) : DIALOGUE_DEFAULT_SPEAKER;
+  const candidate = playback.previewSpeaker || (cfg.speaker === 'rotate'
+    ? speakerKey || rotatingSpeaker
+    : cfg.speaker);
+  const speakerToUse = resolveDialogueSpeakerId(candidate);
+  const profile = getDialogueVoiceProfile(speakerToUse);
+  const prosody = computeDialogueProsody(profile, cfg, speechText);
+  const controller = typeof AbortController === 'function' ? new AbortController() : null;
+  let finished = false;
+  let startTimeout;
 
-  const cleanText = cleanSpeechText(text);
-  if (!cleanText) {
-    if (btn && btn.classList) btn.classList.remove('is-speaking');
-    return;
-  }
-
-  const speechText = formatJapaneseGrammarSpeech(text) || formatJapaneseGrammarSpeech(cleanText);
-
-  if (btn && btn.classList) {
-    btn.classList.add('is-speaking');
-  }
-
-  const stopRelay = () => {
-    if (sessionId !== currentAudioSessionId) return;
-    if (btn && btn.classList) {
-      btn.classList.remove('is-speaking');
-    }
+  const stopRelay = (success) => {
+    if (finished || sessionId !== currentAudioSessionId) return;
+    finished = true;
+    clearTimeout(safetyTimer);
+    clearTimeout(startTimeout);
+    activeSpeechSafetyTimer = null;
+    activeSpeechCancel = null;
+    btn?.classList.remove('is-speaking');
+    playback.onDone?.(Boolean(success));
   };
 
-  const dynamicDuration = Math.max(6500, cleanText.length * 280);
-  const safetyTimer = setTimeout(stopRelay, dynamicDuration);
+  activeSpeechCancel = () => {
+    controller?.abort();
+    clearTimeout(startTimeout);
+    playback.onState?.('idle');
+  };
+  const safetyTimer = setTimeout(() => {
+    if (finished || sessionId !== currentAudioSessionId) return;
+    controller?.abort();
+    activeOnlineAudioAbort?.();
+    activeOnlineAudioAbort = null;
+    currentSpeechAudio?.pause();
+    currentSpeechAudio = null;
+    stopRelay(false);
+    if (sessionId === currentAudioSessionId) window.speechSynthesis?.cancel();
+  }, Math.max(20000, cleanText.length * 600));
   activeSpeechSafetyTimer = safetyTimer;
+  btn?.classList.add('is-speaking');
+  playback.onState?.('loading');
 
-  const appCfg = Object.assign({}, getSpeechGenConfig(), cfgOverride || {});
-  let candidateSpeaker = speakerKey || appCfg.speaker || 'rotate';
-  if (candidateSpeaker === 'rotate') {
-    candidateSpeaker = (typeof AudioEngine !== 'undefined' && typeof AudioEngine.getRotatingSpeaker === 'function')
-      ? AudioEngine.getRotatingSpeaker(speechText || cleanText)
-      : DIALOGUE_DEFAULT_SPEAKER;
-  }
-  const speakerToUse = resolveDialogueSpeakerId(candidateSpeaker);
-  const voiceProfile = getDialogueVoiceProfile(speakerToUse);
-  const cfg = Object.assign({}, appCfg, { voice: voiceProfile.speechGenVoice || SPEECHGEN_VOICE });
+  const onlineFallback = () => {
+    if (finished || sessionId !== currentAudioSessionId) return;
+    playOnlineJapaneseAudio(speechText, stopRelay, safetyTimer, sessionId, prosody.rate, playback.onState);
+  };
+  const localFallback = () => {
+    if (finished || sessionId !== currentAudioSessionId) return;
+    speakWithLedaWebSpeech(speechText, stopRelay, safetyTimer, cfg, onlineFallback, speakerToUse, sessionId, playback.onState);
+  };
 
-  const jpVoice = findDialogueJpVoice(speakerToUse) || cachedLedaVoice || findLedaJpVoice();
-
-  const canTryCloudSpeech = (cfg.token && cfg.email) || (typeof window !== 'undefined' && window.location && window.location.protocol && window.location.protocol.startsWith('http'));
-  if (canTryCloudSpeech) {
-    try {
-      const ssmlPayload = (typeof AudioEngine !== 'undefined' && typeof AudioEngine.buildExpressiveSSML === 'function')
-        ? AudioEngine.buildExpressiveSSML(cleanText, speakerToUse, cfg.speed, cfg.pitch)
-        : speechText;
-      const audioUrl = await fetchSpeechGenAudio(ssmlPayload, cfg, speakerToUse, speechText);
-
-      if (sessionId !== currentAudioSessionId) {
-        return; // Người dùng đã bấm từ khác trong lúc đang tải mạng, hủy bỏ ngay!
-      }
-      if (audioUrl) {
-        const audio = new Audio(audioUrl);
-        currentSpeechAudio = audio;
-        audio.onended = () => {
-          if (sessionId !== currentAudioSessionId) return;
-          clearTimeout(safetyTimer);
-          stopRelay();
-          if (currentSpeechAudio === audio) currentSpeechAudio = null;
-        };
-        audio.onerror = () => {
-          if (sessionId !== currentAudioSessionId) return;
-          if (jpVoice) {
-            speakWithLedaWebSpeech(speechText, stopRelay, safetyTimer, cfg, () => playOnlineJapaneseAudio(cleanText, stopRelay, safetyTimer, sessionId), speakerToUse, sessionId);
-          } else {
-            playOnlineJapaneseAudio(cleanText, stopRelay, safetyTimer, sessionId);
-          }
-        };
-        const p = audio.play();
-        if (p !== undefined) {
-          p.catch(() => {
-            if (sessionId !== currentAudioSessionId) return;
-            if (jpVoice) {
-              speakWithLedaWebSpeech(speechText, stopRelay, safetyTimer, cfg, () => playOnlineJapaneseAudio(cleanText, stopRelay, safetyTimer, sessionId), speakerToUse, sessionId);
-            } else {
-              playOnlineJapaneseAudio(cleanText, stopRelay, safetyTimer, sessionId);
-            }
-          });
-        }
-        return;
-      }
-    } catch (apiErr) {
-      console.warn('SpeechGen Cloud API chuyển hướng:', apiErr.message);
-    }
-  }
-
-  const hasSpeechSynth = typeof window !== 'undefined' && 'speechSynthesis' in window && typeof SpeechSynthesisUtterance !== 'undefined';
-
-  if (jpVoice && hasSpeechSynth) {
-    speakWithLedaWebSpeech(speechText, stopRelay, safetyTimer, cfg, () => {
-      playOnlineJapaneseAudio(cleanText, stopRelay, safetyTimer, sessionId);
-    }, speakerToUse, sessionId);
+  const useProxy = Date.now() >= speechProxyUnavailableUntil && /^https?:$/.test(window.location?.protocol);
+  if (!useProxy && !(cfg.token && cfg.email)) {
+    localFallback();
     return;
   }
 
-  if (!window._warnedNoJpVoice) {
-    window._warnedNoJpVoice = true;
-    if (typeof showToast === 'function') {
-      showToast("Đang phát âm thanh trực tuyến (Điện thoại chưa cài gói giọng tiếng Nhật ja-JP).");
-    }
+  const requestTimeout = setTimeout(() => controller?.abort(), 5500);
+  let audioUrl;
+  try {
+    // The proxy accepts plain Japanese plus the resolved speed and pitch.
+    audioUrl = await fetchSpeechGenAudio(speechText, { ...cfg, speed: prosody.rate, pitch: prosody.pitch },
+      speakerToUse, speechText, controller?.signal);
+  } catch (err) {
+    if (!controller?.signal.aborted) console.warn('SpeechGen:', err.message);
+  } finally {
+    clearTimeout(requestTimeout);
   }
-  playOnlineJapaneseAudio(cleanText, stopRelay, safetyTimer, sessionId);
+
+  if (finished || sessionId !== currentAudioSessionId) return;
+  if (!audioUrl || typeof Audio !== 'function') {
+    localFallback();
+    return;
+  }
+
+  const audio = new Audio(audioUrl);
+  currentSpeechAudio = audio;
+  const isCurrentAudio = () => !finished && sessionId === currentAudioSessionId && currentSpeechAudio === audio;
+  const fallbackFromCloud = () => {
+    if (!isCurrentAudio()) return;
+    clearTimeout(startTimeout);
+    currentSpeechAudio = null;
+    audio.pause();
+    audio.src = '';
+    localFallback();
+  };
+  startTimeout = setTimeout(fallbackFromCloud, 4500);
+  audio.onplaying = () => {
+    if (!isCurrentAudio()) return;
+    clearTimeout(startTimeout);
+    playback.onState?.('cloud');
+  };
+  audio.onended = () => {
+    if (!isCurrentAudio()) return;
+    clearTimeout(startTimeout);
+    currentSpeechAudio = null;
+    stopRelay(true);
+  };
+  audio.onerror = fallbackFromCloud;
+  try {
+    audio.play()?.catch(fallbackFromCloud);
+  } catch (err) {
+    fallbackFromCloud();
+  }
 }
+
 
 window.speakJapanese = speakJapanese;
 window.getDialogueVoiceProfile = getDialogueVoiceProfile;
 
-
-const _playOnlineJapaneseAudioCore = playOnlineJapaneseAudio;
-window.playOnlineJapaneseAudio = function(text, onEnd, safetyTimer) {
-  _playOnlineJapaneseAudioCore(text, typeof onEnd === 'function' ? onEnd : null, safetyTimer || null);
-};
 
 const SPEAKER_ICON_HTML = `<svg class="speaker-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path><path d="M19.07 4.93a10 10 0 0 1 0 14.14"></path></svg>`;
 
@@ -7850,12 +7870,16 @@ function initResetProgress() {
   });
 }
 
+function usesDrawerNavigation() {
+  return window.innerWidth <= 768 || document.documentElement.getAttribute('data-device') === 'mobile';
+}
+
 function updateMenuButtonState() {
   const btn = document.getElementById('menu-toggle-btn');
   const sidebar = document.getElementById('sidebar');
   if (!btn || !sidebar) return;
 
-  const isMobile = typeof window !== 'undefined' && window.innerWidth <= 768;
+  const isMobile = usesDrawerNavigation();
   if (isMobile) {
     const isMobileOpen = sidebar.classList.contains('mobile-open');
     btn.classList.toggle('is-mobile-open', isMobileOpen);
@@ -7877,19 +7901,11 @@ function initMenuToggle() {
   const overlay = document.getElementById('sidebar-overlay');
   if (!btn || !sidebar) return;
 
-  const isMobile = typeof window !== 'undefined' && window.innerWidth <= 768;
-  if (!isMobile) {
-    const savedCollapsed = safeGetStorage('minna_sidebar_collapsed');
-    if (savedCollapsed === 'true') {
-      sidebar.classList.add('collapsed');
-    } else {
-      sidebar.classList.remove('collapsed');
-    }
-  }
+  sidebar.classList.toggle('collapsed', safeGetStorage('minna_sidebar_collapsed') === 'true');
   updateMenuButtonState();
 
   const toggleMenu = () => {
-    const currentIsMobile = typeof window !== 'undefined' && window.innerWidth <= 768;
+    const currentIsMobile = usesDrawerNavigation();
     if (currentIsMobile) {
       const isOpen = sidebar.classList.toggle('mobile-open');
       if (overlay) overlay.classList.toggle('active', isOpen);
@@ -7981,7 +7997,7 @@ function initMenuToggle() {
       if (resizeTimer) cancelAnimationFrame(resizeTimer);
       resizeTimer = safeRAF(() => {
         updateMenuButtonState();
-        if (window.innerWidth > 768) {
+        if (!usesDrawerNavigation()) {
           if (overlay) overlay.classList.remove('active');
           sidebar.classList.remove('mobile-open');
           if (document.body && document.body.classList) {
@@ -8226,8 +8242,26 @@ function initVoiceSettingsModal() {
   const pitchVal = document.getElementById('voice-pitch-val');
   const saveBtn = document.getElementById('save-voice-modal-btn');
   const testBtn = document.getElementById('btn-test-voice-sample');
+  const testLabel = testBtn?.querySelector('span');
+  const testStatus = document.getElementById('voice-preview-status');
 
   if (!modal) return;
+
+  let previewing = false;
+  let nextPreviewIndex = 0;
+  let previousFocus;
+  let previousOverflow;
+
+  const setPreviewStatus = (state, message = '') => {
+    previewing = state === 'loading' || state === 'playing';
+    if (testLabel) testLabel.textContent = previewing ? 'Dừng nghe thử' : 'Nghe thử';
+    if (testStatus) testStatus.textContent = message;
+  };
+
+  const stopPreview = () => {
+    if (previewing) stopAllSpeechAudio();
+    setPreviewStatus('idle');
+  };
 
   const syncCharacterPills = (speakerId) => {
     const curSpeaker = speakerId || 'rotate';
@@ -8240,6 +8274,10 @@ function initVoiceSettingsModal() {
 
   const openModal = () => {
     const cfg = getSpeechGenConfig();
+    previousFocus = document.activeElement;
+    previousOverflow = document.body.style.overflow;
+    nextPreviewIndex = 0;
+    setPreviewStatus('idle');
     syncCharacterPills(cfg.speaker || 'rotate');
     if (speedSlider) {
       speedSlider.value = cfg.speed || DEFAULT_USER_SPEED;
@@ -8253,12 +8291,17 @@ function initVoiceSettingsModal() {
     modal.classList.add('show-modal');
     modal.setAttribute('aria-hidden', 'false');
     if (document.body && document.body.style) document.body.style.overflow = 'hidden';
+    modal.querySelector('.device-pill.active')?.focus();
   };
 
   const closeModal = () => {
+    stopPreview();
     modal.classList.remove('show-modal');
     modal.setAttribute('aria-hidden', 'true');
-    if (document.body && document.body.style) document.body.style.overflow = '';
+    document.body.style.overflow = previousOverflow || '';
+    const focusTarget = previousFocus?.getClientRects().length ? previousFocus
+      : document.getElementById(usesDrawerNavigation() ? 'menu-toggle-btn' : 'btn-sidebar-gear');
+    focusTarget?.focus();
   };
 
   if (triggerBtn && triggerBtn.addEventListener) triggerBtn.addEventListener('click', openModal);
@@ -8296,25 +8339,59 @@ function initVoiceSettingsModal() {
       const spk = pill.getAttribute('data-speaker');
       syncCharacterPills(spk);
       triggerHaptic(15);
-      previewVoiceCharacter(spk, getLivePreviewCfg(), testBtn, e);
+      stopPreview();
+      nextPreviewIndex = 0;
     });
   }
 
   if (speedSlider && speedVal && speedSlider.addEventListener) {
     speedSlider.addEventListener('input', () => {
       speedVal.textContent = speedSlider.value + 'x';
+      stopPreview();
     });
   }
 
   if (pitchSlider && pitchVal && pitchSlider.addEventListener) {
     pitchSlider.addEventListener('input', () => {
       pitchVal.textContent = pitchSlider.value + 'x';
+      stopPreview();
     });
   }
 
   if (testBtn && testBtn.addEventListener) {
     testBtn.addEventListener('click', (e) => {
-      previewVoiceCharacter(getActiveSpeaker(), getLivePreviewCfg(), testBtn, e);
+      if (previewing) {
+        stopPreview();
+        return;
+      }
+      const active = getActiveSpeaker();
+      const rotation = AudioEngine.ROTATION_CHARACTERS;
+      const speaker = active === 'rotate' ? rotation[nextPreviewIndex] : active;
+      const name = charSelector.querySelector(`[data-speaker="${speaker}"]`)?.textContent.trim() || '';
+      const title = active === 'rotate' ? `${nextPreviewIndex + 1}/${rotation.length} · ${name}` : name;
+      let source;
+      previewVoiceCharacter(speaker, getLivePreviewCfg(), testBtn, e, {
+        onState(state) {
+          source = state;
+          if (state === 'idle') {
+            setPreviewStatus('idle');
+          } else if (state === 'loading') {
+            setPreviewStatus('loading', `Đang tải giọng ${title}…`);
+          } else if (state === 'online') {
+            setPreviewStatus('playing', 'Đang dùng giọng tiếng Nhật dự phòng. Nguồn này chỉ chỉnh được tốc độ.');
+          } else {
+            const label = state === 'device' ? 'Giọng trên thiết bị' : 'Giọng trực tuyến';
+            setPreviewStatus('playing', `${title} · ${label}`);
+          }
+        },
+        onDone(played) {
+          if (played && active === 'rotate') nextPreviewIndex = (nextPreviewIndex + 1) % rotation.length;
+          const message = played
+            ? (source === 'online' ? 'Đã phát giọng dự phòng. Nguồn này chỉ chỉnh được tốc độ.' : `Đã phát ${title}.`)
+            : 'Không phát được tiếng Nhật. Hãy kiểm tra kết nối hoặc cài giọng tiếng Nhật trên thiết bị.';
+          setPreviewStatus('idle', message);
+        }
+      });
     });
   }
 
@@ -8333,49 +8410,16 @@ function initVoiceSettingsModal() {
 
       closeModal();
       triggerHaptic(20);
-      showToast('Đã lưu cài đặt giọng đọc Hội thoại thành công!');
+      showToast('Đã lưu cài đặt giọng đọc tiếng Nhật.');
     });
   }
 }
 
 
-/**
- * Nghe thử giọng nhân vật (Phương án 2): ưu tiên mẫu MP3 Studio Neural thật cắt từ Audio Sprite Kaiwa,
- * áp dụng tốc độ thanh trượt theo thời gian thực; fallback sang Web Speech với Tốc độ/Cao độ đang kéo.
- */
-function previewVoiceCharacter(speakerId, liveCfg, btn, ev) {
-  // Phase 1: Guard & Phase 2: Normalize
-  const spk = resolveDialogueSpeakerId(speakerId);
-  const cfg = liveCfg || {};
-  const sample = (typeof AudioEngine !== 'undefined' && typeof AudioEngine.getVoicePreviewSample === 'function')
-    ? AudioEngine.getVoicePreviewSample(spk) : null;
-  const fallback = () => speakJapanese(sample ? sample.text : 'こんにちは！今日も一緒に楽しく勉強しましょう。', btn, ev, spk, cfg);
-  if (!sample || typeof Audio === 'undefined') return fallback();
-  const rate = Math.max(0.6, Math.min(1.6, (cfg.speed || DEFAULT_USER_SPEED) / DEFAULT_USER_SPEED));
-  const durationMs = Math.max(300, Math.round(((sample.end - sample.start) / rate) * 1000) + 80);
-
-  // Phase 4: Imperative shell
-  stopAllSpeechAudio();
-  const sessionId = ++currentAudioSessionId;
-  const audio = new Audio(sample.src);
-  currentSpeechAudio = audio;
-  audio.playbackRate = rate;
-  try { audio.currentTime = sample.start; } catch (e) {}
-  if (btn && btn.classList) btn.classList.add('is-speaking');
-  let stopTimer = null;
-  const finish = () => {
-    if (stopTimer) { clearTimeout(stopTimer); stopTimer = null; }
-    try { audio.pause(); } catch (e) {}
-    if (btn && btn.classList) btn.classList.remove('is-speaking');
-    if (currentSpeechAudio === audio) currentSpeechAudio = null;
-  };
-  stopTimer = setTimeout(() => { if (sessionId === currentAudioSessionId) finish(); }, durationMs);
-  audio.addEventListener('loadedmetadata', () => { try { audio.currentTime = sample.start; } catch (e) {} });
-  audio.addEventListener('timeupdate', () => { if (sessionId !== currentAudioSessionId || audio.currentTime >= sample.end) finish(); });
-  audio.addEventListener('ended', finish);
-  audio.addEventListener('error', () => { if (sessionId === currentAudioSessionId) { finish(); fallback(); } });
-  const p = audio.play();
-  if (p && p.catch) p.catch(() => { if (sessionId === currentAudioSessionId) { finish(); fallback(); } });
+function previewVoiceCharacter(speakerId, liveCfg, btn, ev, playback = {}) {
+  const text = 'こんにちは。今日も一緒に日本語を勉強しましょう。';
+  const speaker = speakerId === 'rotate' ? AudioEngine.ROTATION_CHARACTERS[0] : speakerId;
+  return speakJapanese(text, btn, ev, null, liveCfg, { ...playback, previewSpeaker: speaker });
 }
 window.previewVoiceCharacter = previewVoiceCharacter;
 

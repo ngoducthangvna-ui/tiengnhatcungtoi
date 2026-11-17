@@ -640,7 +640,7 @@ async function handleRequest(req, res) {
 
       if (!token || !email) {
         try {
-          const cacheKey = (body.speaker || voiceName) + '|' + speechText;
+          const cacheKey = JSON.stringify([body.speaker || voiceName, speed, pitch, speechText]);
           if (speechServerCache.has(cacheKey)) {
             return sendResponse(res, 200, {
               'Content-Type': 'application/json',
