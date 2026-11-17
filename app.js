@@ -8475,6 +8475,10 @@ function previewVoiceCharacter(speakerId, liveCfg = {}, btn, ev, playback = {}) 
     playback.onState?.('sample');
   };
 
+  if ((liveCfg.pitch || DEFAULT_USER_PITCH) === DEFAULT_USER_PITCH) {
+    playSample((played) => played ? done(true) : synthesize(done));
+    return;
+  }
   return synthesize((played) => played ? done(true) : playSample(done));
 }
 window.previewVoiceCharacter = previewVoiceCharacter;

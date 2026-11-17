@@ -429,7 +429,7 @@ const NEURAL_VOICE_MAP = {
 };
 
 async function synthesizeEdgeNeuralTTS(text, voiceOrSpeaker, speed = 0.96, pitch = 0) {
-  const vKey = String(voiceOrSpeaker || '').toLowerCase().trim();
+  const vKey = String(voiceOrSpeaker || '').toLowerCase().trim().replace(/ jp$/, '');
   const selectedVoice = NEURAL_VOICE_MAP[vKey] || 'ja-JP-NanamiNeural';
 
   const TRUSTED_CLIENT_TOKEN = "6A5AA1D4EAFF4E9FB37E23D68491D6F4";
@@ -626,7 +626,7 @@ async function handleRequest(req, res) {
       const speed = body.speed || 0.92;
       const pitch = body.pitch || 0;
       // Giọng đồng bộ với nhân vật Hội thoại (whitelist chống lạm dụng tham số)
-      const ALLOWED_VOICES = ['Nanami', 'Keita', 'Aoi', 'Mayu', 'Shiori', 'Takumi', 'Daichi', 'Naoki'];
+      const ALLOWED_VOICES = ['Nanami', 'Keita', 'Aoi', 'Mayu', 'Shiori', 'Takumi', 'Daichi', 'Naoki', 'Emma JP', 'Ava JP', 'Brian JP', 'Andrew JP'];
       const voiceName = ALLOWED_VOICES.includes(body.voice) ? body.voice : 'Nanami';
 
       if (!speechText) {

@@ -334,7 +334,7 @@ export default {
         const speed = body.speed || 0.92;
         const pitch = body.pitch || 0;
       // Giọng đồng bộ với nhân vật Hội thoại (whitelist chống lạm dụng tham số)
-      const ALLOWED_VOICES = ['Nanami', 'Keita', 'Aoi', 'Mayu', 'Shiori', 'Takumi', 'Daichi', 'Naoki'];
+      const ALLOWED_VOICES = ['Nanami', 'Keita', 'Aoi', 'Mayu', 'Shiori', 'Takumi', 'Daichi', 'Naoki', 'Emma JP', 'Ava JP', 'Brian JP', 'Andrew JP'];
       const voiceName = ALLOWED_VOICES.includes(body.voice) ? body.voice : 'Nanami';
 
         if (!speechText) {

@@ -34,8 +34,8 @@
   // Ma trận hồ sơ giọng 25 nhân vật (13 mô hình giọng Neural độc lập + biên độ Pitch tự nhiên [0.93 - 1.05])
   const CHARACTER_VOICE_PROFILES = {
     sato:      { gender: 'female', voice: 'ja-JP-NanamiNeural',             speechGenVoice: 'Nanami',    pitch: 1.00, rate: 0.95, voiceHints: /nanami|kyoko/i, voiceName: 'Nanami (Nữ công sở chuẩn Tokyo)' },
-    karina:    { gender: 'female', voice: 'en-US-EmmaMultilingualNeural',   speechGenVoice: 'Aoi',       pitch: 1.18, rate: 1.04, voiceHints: /haruka|sayaka|ayumi|aoi|mayu|emma/i, voiceName: 'Emma (Nữ sinh viên trẻ trung)' },
-    maria:     { gender: 'female', voice: 'en-US-AvaMultilingualNeural',    speechGenVoice: 'Shiori',    pitch: 0.90, rate: 0.94, voiceHints: /shiori|ava|mizuki/i, voiceName: 'Ava (Nữ đằm thắm, ấm áp)' },
+    karina:    { gender: 'female', voice: 'en-US-EmmaMultilingualNeural',   speechGenVoice: 'Emma JP',   pitch: 1.18, rate: 1.04, voiceHints: /haruka|sayaka|ayumi|aoi|mayu|emma/i, voiceName: 'Emma (Nữ sinh viên trẻ trung)' },
+    maria:     { gender: 'female', voice: 'en-US-AvaMultilingualNeural',    speechGenVoice: 'Ava JP',    pitch: 0.90, rate: 0.94, voiceHints: /shiori|ava|mizuki/i, voiceName: 'Ava (Nữ đằm thắm, ấm áp)' },
     kimura:    { gender: 'female', voice: 'de-DE-SeraphinaMultilingualNeural', speechGenVoice: 'Seraphina', pitch: 1.04, rate: 0.97, voiceName: 'Seraphina (Nữ phát thanh viên)' },
     suzuki:    { gender: 'female', voice: 'fr-FR-VivienneMultilingualNeural',  speechGenVoice: 'Vivienne',  pitch: 1.03, rate: 0.96, voiceName: 'Vivienne (Nữ đồng nghiệp)' },
     watanabe:  { gender: 'female', voice: 'pt-BR-ThalitaMultilingualNeural',   speechGenVoice: 'Thalita',   pitch: 0.99, rate: 0.95, voiceName: 'Thalita (Nữ thanh lịch)' },
@@ -45,8 +45,8 @@
     barber:    { gender: 'female', voice: 'ja-JP-NanamiNeural',             speechGenVoice: 'Nanami',    pitch: 1.04, rate: 0.97, voiceName: 'Nanami-Stylist (Thợ salon thân thiện)' },
     lee:       { gender: 'female', voice: 'pt-BR-ThalitaMultilingualNeural',   speechGenVoice: 'Thalita',   pitch: 1.00, rate: 0.95, voiceName: 'Thalita-Scholar (Nữ nghiên cứu viên)' },
     yamada:    { gender: 'male',   voice: 'ja-JP-KeitaNeural',              speechGenVoice: 'Keita',     pitch: 0.86, rate: 0.93, voiceHints: /keita|otoya|ichiro/i, voiceName: 'Keita (Nam công sở chuẩn Tokyo)' },
-    miller:    { gender: 'male',   voice: 'en-US-BrianMultilingualNeural',  speechGenVoice: 'Daichi',    pitch: 1.06, rate: 1.02, voiceHints: /takumi|daichi|brian/i, voiceName: 'Brian (Nam thanh niên trẻ)' },
-    santos:    { gender: 'male',   voice: 'en-US-AndrewMultilingualNeural', speechGenVoice: 'Naoki',     pitch: 0.80, rate: 0.92, voiceHints: /naoki|hattori|andrew/i, voiceName: 'Andrew (Nam trầm ấm)' },
+    miller:    { gender: 'male',   voice: 'en-US-BrianMultilingualNeural',  speechGenVoice: 'Brian JP',  pitch: 1.06, rate: 1.02, voiceHints: /takumi|daichi|brian/i, voiceName: 'Brian (Nam thanh niên trẻ)' },
+    santos:    { gender: 'male',   voice: 'en-US-AndrewMultilingualNeural', speechGenVoice: 'Andrew JP', pitch: 0.80, rate: 0.92, voiceHints: /naoki|hattori|andrew/i, voiceName: 'Andrew (Nam trầm ấm)' },
     wang:      { gender: 'male',   voice: 'ko-KR-HyunsuMultilingualNeural', speechGenVoice: 'Hyunsu',    pitch: 1.02, rate: 0.95, voiceName: 'Hyunsu (Bác sĩ trẻ điềm tĩnh)' },
     watt:      { gender: 'male',   voice: 'en-AU-WilliamMultilingualNeural', speechGenVoice: 'William',   pitch: 0.94, rate: 0.93, voiceName: 'William (Giáo sư đĩnh đạc)' },
     matsumoto: { gender: 'male',   voice: 'en-AU-WilliamMultilingualNeural', speechGenVoice: 'William',   pitch: 0.93, rate: 0.92, voiceName: 'William-Senior (Trưởng phòng uy nghiêm)' },
@@ -66,11 +66,11 @@
   // Mẫu giọng Studio Neural thật (cắt từ Audio Sprite Kaiwa) dùng cho nút "Nghe thử" trong bảng Cài đặt giọng
   const VOICE_PREVIEW_SAMPLES = {
     rotate: { src: 'audio/kaiwa/lesson_1.mp3',  start: 0,    end: 3.41, text: 'みなさん、こんにちは！マイク・ミラーです。' },
-    sato:   { src: 'audio/kaiwa/lesson_1.mp3',  start: 0,     end: 1.34, text: 'おはようございます。' },
-    karina: { src: 'audio/kaiwa/lesson_23.mp3', start: 33.98, end: 37.13, text: 'はい。どうもありがとうございました。' },
-    maria:  { src: 'audio/kaiwa/lesson_16.mp3', start: 31.8,  end: 33.5, text: 'どうもありがとうございました。' },
-    yamada: { src: 'audio/kaiwa/lesson_1.mp3',  start: 1.73,  end: 3.1, text: 'おはようございます。' },
-    miller: { src: 'audio/kaiwa/lesson_4.mp3',  start: 13.08, end: 15.14, text: 'どうもありがとうございました。' },
+    sato:   { src: 'audio/kaiwa/lesson_6.mp3',  start: 2.81, end: 5.06, text: 'あした 友だちと お花見を します。' },
+    karina: { src: 'audio/kaiwa/lesson_14.mp3', start: 0,    end: 1.87, text: '梅田まで 行って ください。' },
+    maria:  { src: 'audio/kaiwa/lesson_3.mp3',  start: 0,    end: 2.81, text: 'すみません。ワイン売り場は どこですか。' },
+    yamada: { src: 'audio/kaiwa/lesson_1.mp3',  start: 3.41, end: 6.41, text: '佐藤さん、こちらは マイク・ミラーさんです。' },
+    miller: { src: 'audio/kaiwa/lesson_4.mp3',  start: 2.64, end: 6.6,  text: 'すみません。そちらは 何時から 何時までですか。' },
     santos: { src: 'audio/kaiwa/lesson_2.mp3',  start: 4.54, end: 6.62, text: 'こんにちは。サントスです。' }
   };
 
@@ -225,7 +225,7 @@
       if (!Array.isArray(voices) || voices.length === 0) return null;
       const profile = speakerId ? AudioEngine.getCharacterVoiceProfile(speakerId, preferredGender) : null;
       const targetGender = preferredGender || (profile && profile.gender) || null;
-      const preferredVoiceHint = profile && profile.speechGenVoice ? profile.speechGenVoice.toLowerCase() : '';
+      const preferredVoiceHint = profile?.speechGenVoice?.replace(/ JP$/i, '').toLowerCase() || '';
       const exactModelHint = profile && profile.voice ? profile.voice.toLowerCase() : '';
       const multilingualName = (profile && profile.voice.match(/^[a-z]{2}-[a-z]{2}-(.+)MultilingualNeural$/i))?.[1].toLowerCase();
 
@@ -234,7 +234,7 @@
         if (!v || !v.name) return false;
         const lang = String(v.lang || '').toLowerCase();
         const nameLower = String(v.name || '').toLowerCase();
-        if (requireCharacter && !profile?.voiceHints?.test(v.name)) return false;
+        if (requireCharacter && (!preferredVoiceHint || !nameLower.includes(preferredVoiceHint))) return false;
         if (lang === 'ja-jp' || lang === 'ja_jp' || lang.startsWith('ja')) return true;
         if (multilingualName && nameLower.includes(multilingualName) && /multilingual/i.test(nameLower)) {
           return true;
@@ -255,7 +255,7 @@
         if (exactModelHint && lower.includes(exactModelHint)) {
           score += 45;
         } else if (preferredVoiceHint && lower.includes(preferredVoiceHint)) {
-          score += 38;
+          score += 100;
         }
         // Ưu tiên sub-voice riêng của nhân vật để 2 nhân vật cùng giới tính không trùng giọng
         if (profile && profile.voiceHints && profile.voiceHints.test(name)) score += 75;
