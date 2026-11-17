@@ -7,8 +7,7 @@
   const keys = [
     ...storage.PROGRESS_KEY_PATTERNS.filter(key => key !== 'minna_module_scroll_pos'),
     'minna_mazii_history', 'minna_quiz_auto_advance', 'minna_show_furigana', 'minna_furigana_setting',
-    'minna_theme', 'minna_voice_settings', 'speechgen_speed', 'speechgen_pitch',
-    'speechgen_speaker', avatarKey
+    'minna_theme', 'minna_voice_settings', 'speechgen_speed', 'speechgen_pitch', avatarKey
   ];
   let user = null;
   let configured = false;

@@ -1057,48 +1057,28 @@ function updateHeaderProgress() {
 
 // ZONE 05: JAPANESE SPEECH, DIALOGUE VOICES & PROSODY ENGINE (AudioEngine DELEGATION)
 
-const DIALOGUE_DEFAULT_SPEAKER = 'sato'; // Giọng mặc định: chị Sato (Nanami, nữ công sở chuẩn Tokyo)
-const DIALOGUE_SPEAKER_ALIASES = { a: 'sato', b: 'yamada', c: 'miller', d: 'karina', e: 'santos' };
-const DIALOGUE_FALLBACK_PROFILES = {
-  sato:   { id: 'sato',   gender: 'female', speechGenVoice: 'Nanami', pitch: 1.02, rate: 0.96 },
-  yamada: { id: 'yamada', gender: 'male',   speechGenVoice: 'Keita',  pitch: 1.00, rate: 0.96 }
-};
-const SPEECHGEN_VOICE = DIALOGUE_FALLBACK_PROFILES[DIALOGUE_DEFAULT_SPEAKER].speechGenVoice;
-const SPEECHGEN_MODEL = 'ja-JP-NanamiNeural';
+const STUDY_SPEAKER = 'miller';
+const STUDY_VOICE_LABEL = 'Anh Miller (Nam trẻ)';
+const STUDY_VOICE = 'Brian JP';
+const STUDY_FALLBACK_PROFILE = { id: STUDY_SPEAKER, gender: 'male', speechGenVoice: STUDY_VOICE, pitch: 1.06, rate: 1.02 };
 const DEFAULT_USER_SPEED = 0.96;
 const DEFAULT_USER_PITCH = 1.00;
 
 const speechAudioCache = new Map();
 let currentSpeechAudio = null;
-let cachedLedaVoice = null; // Cache giọng hội thoại mặc định (giữ tên biến cũ để tương thích)
 let currentAudioSessionId = 0; // Epoch Counter chống Race Condition phát lặp đa giọng
 let activeOnlineAudioAbort = null; // Bộ dọn dẹp tiến trình Online Audio (Google/Youdao) đang chờ/retry
 let activeSpeechSafetyTimer = null; // Quản lý Timer bảo vệ trạng thái nút bấm
 let activeSpeechCancel = null;
 let speechProxyUnavailableUntil = 0;
-let warnedCharacterVoiceFallback = false;
 let lastSpeechClickTime = 0; // Debounce bảo vệ chống spam click phần cứng
 let lastSpeechText = '';
 
 
-function resolveDialogueSpeakerId(speakerKey) {
-  const raw = String(speakerKey || '').toLowerCase().replace(/[^a-z0-9_]/g, '');
-  if (!raw) return DIALOGUE_DEFAULT_SPEAKER;
-  if (raw === 'rotate') return 'rotate';
-  if (DIALOGUE_SPEAKER_ALIASES[raw]) return DIALOGUE_SPEAKER_ALIASES[raw];
-  const profiles = (typeof AudioEngine !== 'undefined' && AudioEngine.CHARACTER_VOICE_PROFILES) || DIALOGUE_FALLBACK_PROFILES;
-  return profiles[raw] ? raw : DIALOGUE_DEFAULT_SPEAKER;
-}
-
-
-function getDialogueVoiceProfile(speakerKey) {
-  const id = resolveDialogueSpeakerId(speakerKey);
-  const targetId = id === 'rotate' ? DIALOGUE_DEFAULT_SPEAKER : id;
-  if (typeof AudioEngine !== 'undefined' && typeof AudioEngine.getCharacterVoiceProfile === 'function') {
-    const p = AudioEngine.getCharacterVoiceProfile(targetId);
-    if (p) return Object.assign({ id: targetId }, p);
-  }
-  return DIALOGUE_FALLBACK_PROFILES[targetId] || DIALOGUE_FALLBACK_PROFILES[DIALOGUE_DEFAULT_SPEAKER];
+function getDialogueVoiceProfile(speakerId = STUDY_SPEAKER) {
+  const profiles = typeof AudioEngine !== 'undefined' && AudioEngine.CHARACTER_VOICE_PROFILES;
+  const profile = profiles?.[speakerId];
+  return profile ? { id: speakerId, ...profile } : STUDY_FALLBACK_PROFILE;
 }
 
 
@@ -1109,7 +1089,7 @@ function computeDialogueProsody(profile, cfg, speechText) {
   let basePitch = profile.pitch || 1.0;
 
   if (speechText && typeof AudioEngine !== 'undefined' && typeof AudioEngine.computeExpressiveProsody === 'function') {
-    const exp = AudioEngine.computeExpressiveProsody(speechText, profile.id || DIALOGUE_DEFAULT_SPEAKER, false, cfg?.contextMeta);
+    const exp = AudioEngine.computeExpressiveProsody(speechText, profile.id || STUDY_SPEAKER, false, cfg?.contextMeta);
     if (exp) {
       baseRate = exp.rate;
       basePitch = exp.pitch;
@@ -1263,11 +1243,9 @@ function getSpeechGenConfig() {
     const email = safeGetStorage('speechgen_email') || (typeof window !== 'undefined' && window.SPEECHGEN_CONFIG && window.SPEECHGEN_CONFIG.email) || '';
     const speed = normalizeVoiceSetting(safeGetStorage('speechgen_speed'), 0.75, 1.25, DEFAULT_USER_SPEED);
     const pitch = normalizeVoiceSetting(safeGetStorage('speechgen_pitch'), 0.85, 1.20, DEFAULT_USER_PITCH);
-    const speaker = resolveDialogueSpeakerId(safeGetStorage('speechgen_speaker') || 'rotate');
-    const profile = getDialogueVoiceProfile(speaker);
-    return { token, email, speed, pitch, speaker, voice: profile.speechGenVoice || SPEECHGEN_VOICE };
+    return { token, email, speed, pitch, speaker: STUDY_SPEAKER, voice: STUDY_VOICE };
   } catch (e) {
-    return { token: '', email: '', speed: DEFAULT_USER_SPEED, pitch: DEFAULT_USER_PITCH, speaker: 'rotate', voice: SPEECHGEN_VOICE };
+    return { token: '', email: '', speed: DEFAULT_USER_SPEED, pitch: DEFAULT_USER_PITCH, speaker: STUDY_SPEAKER, voice: STUDY_VOICE };
   }
 }
 
@@ -1277,10 +1255,6 @@ function setSpeechGenConfig(cfg) {
     if (cfg.email !== undefined) safeSetStorage('speechgen_email', cfg.email.trim());
     if (cfg.speed !== undefined) safeSetStorage('speechgen_speed', String(cfg.speed));
     if (cfg.pitch !== undefined) safeSetStorage('speechgen_pitch', String(cfg.pitch));
-    if (cfg.speaker !== undefined) {
-      safeSetStorage('speechgen_speaker', String(cfg.speaker));
-      warnedCharacterVoiceFallback = false;
-    }
   } catch (e) {}
 }
 window.setSpeechGenConfig = setSpeechGenConfig;
@@ -1343,40 +1317,9 @@ function stopAllSpeechAudio() {
 window.stopAllSpeechAudio = stopAllSpeechAudio;
 
 
-function findDialogueJpVoice(speakerKey, requireCharacter = false) {
-  if (typeof window === 'undefined' || typeof window.speechSynthesis?.getVoices !== 'function') return null;
-  const voices = window.speechSynthesis.getVoices();
-  if (!voices || voices.length === 0) return null;
-
-  const profile = getDialogueVoiceProfile(speakerKey);
-  const speakerId = resolveDialogueSpeakerId(speakerKey);
-  if (typeof AudioEngine !== 'undefined' && typeof AudioEngine.selectBestJapaneseVoice === 'function') {
-    const best = AudioEngine.selectBestJapaneseVoice(voices, profile.gender || null, speakerId, requireCharacter);
-    if (best || requireCharacter) return best;
-  }
-  if (requireCharacter) return null;
-
-  const isJa = v => v.lang === 'ja-JP' || (v.lang && v.lang.startsWith('ja'));
-  const genderRe = profile.gender === 'male' ? /(keita|otoya|ichiro|male)/i : /(nanami|kyoko|haruka|female)/i;
-  return voices.find(v => isJa(v) && genderRe.test(v.name)) || voices.find(isJa) || null;
-}
-
-function findLedaJpVoice() {
-  return findDialogueJpVoice(DIALOGUE_DEFAULT_SPEAKER);
-}
-
-if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
-  window.speechSynthesis.onvoiceschanged = () => {
-    cachedLedaVoice = findLedaJpVoice();
-  };
-}
-
-async function fetchSpeechGenAudio(speechText, cfg, speakerId, fallbackPlainText, signal) {
-  const spk = speakerId || (cfg && cfg.speaker) || DIALOGUE_DEFAULT_SPEAKER;
-  const profile = getDialogueVoiceProfile(spk);
-  const sgVoice = profile.speechGenVoice || (cfg && cfg.voice) || SPEECHGEN_VOICE;
+async function fetchSpeechGenAudio(speechText, cfg, signal) {
   const pitchVal = Math.max(-20, Math.min(20, Math.round((cfg.pitch - 1) * 100)));
-  const cacheKey = JSON.stringify([spk, sgVoice, cfg.speed, pitchVal, speechText]);
+  const cacheKey = JSON.stringify([STUDY_VOICE, cfg.speed, pitchVal, speechText]);
   if (speechAudioCache.has(cacheKey)) {
     return speechAudioCache.get(cacheKey);
   }
@@ -1392,8 +1335,8 @@ async function fetchSpeechGenAudio(speechText, cfg, speakerId, fallbackPlainText
         },
         body: JSON.stringify({
           text: speechText,
-          speaker: spk,
-          voice: sgVoice,
+          speaker: STUDY_SPEAKER,
+          voice: STUDY_VOICE,
           speed: cfg.speed || 0.92,
           pitch: pitchVal
         })
@@ -1415,15 +1358,11 @@ async function fetchSpeechGenAudio(speechText, cfg, speakerId, fallbackPlainText
 
   if (signal?.aborted || !cfg.token || !cfg.email) return null;
 
-  const rawTextForSpeechGen = (typeof speechText === 'string' && speechText.startsWith('<speak') && fallbackPlainText)
-    ? fallbackPlainText
-    : speechText;
-
   const bodyData = new URLSearchParams({
     token: cfg.token,
     email: cfg.email,
-    voice: sgVoice,
-    text: rawTextForSpeechGen,
+    voice: STUDY_VOICE,
+    text: speechText,
     format: 'mp3',
     speed: String(cfg.speed || 0.92),
     pitch: String(pitchVal),
@@ -1563,121 +1502,40 @@ function playOnlineJapaneseAudio(text, stopRelay, safetyTimer, forcedSessionId, 
   tryNextSource();
 }
 
-function speakWithLedaWebSpeech(speechText, stopRelay, safetyTimer, cfg, onFallback, speakerKey, forcedSessionId, onPlaying, requireCharacter) {
-  const sessionId = typeof forcedSessionId === 'number' ? forcedSessionId : currentAudioSessionId;
-
-  if (typeof window === 'undefined' || !('speechSynthesis' in window)) {
-    if (sessionId !== currentAudioSessionId) return;
-    if (onFallback) {
-      onFallback();
-    } else {
-      clearTimeout(safetyTimer);
-      stopRelay();
-    }
+function speakStudyVoiceOnDevice(text, prosody, sessionId, onState, onDone) {
+  const synthesis = window.speechSynthesis;
+  const voices = synthesis?.getVoices?.() || [];
+  const voice = typeof AudioEngine !== 'undefined'
+    ? AudioEngine.selectBestJapaneseVoice(voices, 'male', STUDY_SPEAKER, true)
+    : null;
+  if (!voice || typeof SpeechSynthesisUtterance !== 'function') {
+    onDone(false);
     return;
   }
 
-  const isCoreCharacter = typeof AudioEngine !== 'undefined' && AudioEngine.ROTATION_CHARACTERS.includes(speakerKey);
-  const characterVoice = findDialogueJpVoice(speakerKey, isCoreCharacter || requireCharacter);
-  const usesFallback = isCoreCharacter && !characterVoice && !requireCharacter;
-  const voice = usesFallback ? (cachedLedaVoice || findLedaJpVoice()) : characterVoice;
-  if (!voice) {
+  const utterance = new SpeechSynthesisUtterance(text);
+  utterance.lang = 'ja-JP';
+  utterance.voice = voice;
+  utterance.rate = prosody.rate;
+  utterance.pitch = prosody.pitch;
+  utterance.onstart = () => {
+    if (sessionId === currentAudioSessionId) onState?.('device');
+  };
+  utterance.onend = () => onDone(true);
+  utterance.onerror = () => onDone(false);
+
+  setTimeout(() => {
     if (sessionId !== currentAudioSessionId) return;
-    if (onFallback) {
-      onFallback();
-    } else {
-      clearTimeout(safetyTimer);
-      stopRelay();
+    try {
+      if (synthesis.paused) synthesis.resume();
+      window.speechSynthesis.speak(utterance);
+    } catch (error) {
+      onDone(false);
     }
-    return;
-  }
-
-  try {
-    if (window.speechSynthesis.paused) {
-      window.speechSynthesis.resume();
-    }
-    // Đảm bảo Web Speech API luôn nhận văn bản tiếng Nhật tự nhiên, không dính thẻ XML SSML
-    let cleanUtteranceText = speechText;
-    if (typeof cleanUtteranceText === 'string' && (cleanUtteranceText.includes('<speak') || /<[^>]+>/.test(cleanUtteranceText))) {
-      cleanUtteranceText = (typeof AudioEngine !== 'undefined' && typeof AudioEngine.cleanSpeechText === 'function')
-        ? AudioEngine.cleanSpeechText(cleanUtteranceText)
-        : cleanUtteranceText.replace(/<[^>]+>/g, '');
-      cleanUtteranceText = cleanUtteranceText.replace(/<[^>]+>/g, '').trim();
-    }
-    const prosody = computeDialogueProsody(getDialogueVoiceProfile(usesFallback ? DIALOGUE_DEFAULT_SPEAKER : speakerKey), cfg, cleanUtteranceText);
-    const utterance = new SpeechSynthesisUtterance(cleanUtteranceText);
-    utterance.lang = 'ja-JP';
-    utterance.voice = voice;
-    utterance.rate = prosody.rate;
-    utterance.pitch = prosody.pitch;
-    utterance.onstart = () => {
-      if (sessionId !== currentAudioSessionId) return;
-      if (usesFallback) notifyCharacterVoiceFallback();
-      if (onPlaying) onPlaying('device');
-    };
-
-    utterance.onend = () => {
-      if (sessionId !== currentAudioSessionId) return;
-      clearTimeout(safetyTimer);
-      stopRelay(true);
-    };
-
-    utterance.onerror = (err) => {
-
-      if (sessionId !== currentAudioSessionId) return;
-
-
-      const errType = (err && err.error) || '';
-      if (errType === 'interrupted' || errType === 'canceled') {
-        clearTimeout(safetyTimer);
-        stopRelay(false);
-        return;
-      }
-
-      console.warn('Web Speech API phát âm lỗi (mã: ' + errType + '), chuyển sang online audio fallback:', err);
-      if (onFallback) {
-        onFallback();
-      } else {
-        clearTimeout(safetyTimer);
-        stopRelay();
-      }
-    };
-
-    setTimeout(() => {
-      if (sessionId !== currentAudioSessionId) return;
-      try {
-        if (window.speechSynthesis.paused) {
-          window.speechSynthesis.resume();
-        }
-        window.speechSynthesis.speak(utterance);
-      } catch (innerErr) {
-        if (sessionId === currentAudioSessionId && onFallback) {
-          onFallback();
-        } else {
-          clearTimeout(safetyTimer);
-          stopRelay();
-        }
-      }
-    }, 16);
-
-  } catch (err) {
-    if (sessionId !== currentAudioSessionId) return;
-    if (onFallback) {
-      onFallback();
-    } else {
-      clearTimeout(safetyTimer);
-      stopRelay();
-    }
-  }
+  }, 16);
 }
 
-function notifyCharacterVoiceFallback() {
-  if (warnedCharacterVoiceFallback) return;
-  warnedCharacterVoiceFallback = true;
-  showToast('Giọng nhân vật chưa khả dụng. Đang dùng giọng tiếng Nhật dự phòng.');
-}
-
-async function speakJapanese(text, btnElement, ev, speakerKey, cfgOverride, playback = {}) {
+async function speakJapanese(text, btnElement, ev, _speakerKey, cfgOverride, playback = {}) {
   if (ev && ev.stopPropagation) ev.stopPropagation();
 
   const now = Date.now();
@@ -1698,15 +1556,7 @@ async function speakJapanese(text, btnElement, ev, speakerKey, cfgOverride, play
   const sessionId = ++currentAudioSessionId;
   const speechText = formatJapaneseGrammarSpeech(text) || cleanText;
   const cfg = Object.assign({}, getSpeechGenConfig(), cfgOverride);
-  // A fixed preference overrides a suggested character. Class mode keeps explicit dialogue roles.
-  const rotatingSpeaker = typeof AudioEngine !== 'undefined' ? AudioEngine.getRotatingSpeaker(speechText) : DIALOGUE_DEFAULT_SPEAKER;
-  const candidate = playback.previewSpeaker || (cfg.speaker === 'rotate'
-    ? speakerKey || rotatingSpeaker
-    : cfg.speaker);
-  const speakerToUse = resolveDialogueSpeakerId(candidate);
-  const fixedStudyVoice = !playback.previewSpeaker && cfg.speaker !== 'rotate';
-  const requireCharacter = fixedStudyVoice || Boolean(playback.previewSpeaker);
-  const profile = getDialogueVoiceProfile(speakerToUse);
+  const profile = getDialogueVoiceProfile();
   const prosody = computeDialogueProsody(profile, cfg, speechText);
   const controller = typeof AbortController === 'function' ? new AbortController() : null;
   let finished = false;
@@ -1720,10 +1570,7 @@ async function speakJapanese(text, btnElement, ev, speakerKey, cfgOverride, play
     activeSpeechSafetyTimer = null;
     activeSpeechCancel = null;
     btn?.classList.remove('is-speaking');
-    if (!success && fixedStudyVoice) {
-      const label = document.querySelector(`#voice-character-selector [data-speaker="${speakerToUse}"]`)?.textContent.trim();
-      showToast(`${label || 'Giọng đã chọn'} chưa khả dụng trên thiết bị hoặc máy chủ.`);
-    }
+    if (!success && !playback.onDone) showToast(`Giọng ${STUDY_VOICE_LABEL} chưa khả dụng trên thiết bị hoặc máy chủ.`);
     playback.onDone?.(Boolean(success));
   };
 
@@ -1746,18 +1593,9 @@ async function speakJapanese(text, btnElement, ev, speakerKey, cfgOverride, play
   btn?.classList.add('is-speaking');
   playback.onState?.('loading');
 
-  const onlineFallback = () => {
-    if (finished || sessionId !== currentAudioSessionId) return;
-    if (requireCharacter) {
-      stopRelay(false);
-      return;
-    }
-    const fallbackRate = computeDialogueProsody(getDialogueVoiceProfile(DIALOGUE_DEFAULT_SPEAKER), cfg, speechText).rate;
-    playOnlineJapaneseAudio(speechText, stopRelay, safetyTimer, sessionId, fallbackRate, () => notifyCharacterVoiceFallback());
-  };
   const localFallback = () => {
     if (finished || sessionId !== currentAudioSessionId) return;
-    speakWithLedaWebSpeech(speechText, stopRelay, safetyTimer, cfg, onlineFallback, speakerToUse, sessionId, playback.onState, requireCharacter);
+    speakStudyVoiceOnDevice(speechText, prosody, sessionId, playback.onState, stopRelay);
   };
 
   const useProxy = /^https?:$/.test(window.location?.protocol);
@@ -1771,7 +1609,7 @@ async function speakJapanese(text, btnElement, ev, speakerKey, cfgOverride, play
   try {
     // The proxy accepts plain Japanese plus the resolved speed and pitch.
     audioUrl = await fetchSpeechGenAudio(speechText, { ...cfg, speed: prosody.rate, pitch: prosody.pitch },
-      speakerToUse, speechText, controller?.signal);
+      controller?.signal);
   } catch (err) {
     if (!controller?.signal.aborted) console.warn('SpeechGen:', err.message);
   } finally {
@@ -1894,13 +1732,12 @@ function renderGrammarExamples(examples, fallbackHtml) {
             <div class="dialogue-lines">
               ${(ex.lines || ex.dialogue || []).map(line => {
                 const cleanSpeech = cleanSpeechText(line.rawJp || line.jp);
-                const speakerKey = String(line.speaker || '').toLowerCase().replace(/[^a-z0-9_]/g, '');
                 return `
                   <div class="dialogue-line dialogue-speaker-${line.speaker.toLowerCase()}">
                     <div class="speaker-badge speaker-${line.speaker.toLowerCase()}">${line.speaker}</div>
                     <div class="dialogue-bubble">
                       <div class="dialogue-jp">
-                        <button class="speak-btn" onclick="speakJapanese('${cleanSpeech}', this, event, '${speakerKey}')" title="Nghe câu này (giọng hội thoại)">${SPEAKER_ICON_HTML}</button>
+                        <button class="speak-btn" onclick="speakJapanese('${cleanSpeech}', this, event)" title="Nghe câu này">${SPEAKER_ICON_HTML}</button>
                         <span class="jp-sentence">${line.jp}</span>
                       </div>
                       <div class="dialogue-vi">${line.vi}</div>
@@ -1922,7 +1759,7 @@ function renderGrammarExamples(examples, fallbackHtml) {
             </div>
             <div class="sentence-box">
               <div class="sentence-jp">
-                <button class="speak-btn" onclick="speakJapanese('${cleanSpeech}', this, event)" title="Nghe câu này (giọng hội thoại)">${SPEAKER_ICON_HTML}</button>
+                <button class="speak-btn" onclick="speakJapanese('${cleanSpeech}', this, event)" title="Nghe câu này">${SPEAKER_ICON_HTML}</button>
                 <span class="jp-sentence">${ex.jp}</span>
               </div>
               <div class="sentence-vi">
@@ -2681,11 +2518,11 @@ function renderContent(id) {
                 return `
                 <tr class="vocab-row" data-cat="${catKey}">
                   <td class="vocab-col-hira">
-                    <button class="speak-btn speak-btn-desktop" onclick="speakJapanese('${speechTarget}', this, event)" title="Phát âm từ này (giọng hội thoại)">${SPEAKER_ICON_HTML}</button>
+                    <button class="speak-btn speak-btn-desktop" onclick="speakJapanese('${speechTarget}', this, event)" title="Phát âm từ này">${SPEAKER_ICON_HTML}</button>
                     <span class="vocab-hira-text">${v.hiragana}</span>
                   </td>
                   <td class="vocab-col-kanji ${isLongWord ? 'vocab-is-long' : ''}">
-                    <button class="speak-btn speak-btn-mobile" onclick="speakJapanese('${speechTarget}', this, event)" title="Phát âm từ này (giọng hội thoại)">${SPEAKER_ICON_HTML}</button>
+                    <button class="speak-btn speak-btn-mobile" onclick="speakJapanese('${speechTarget}', this, event)" title="Phát âm từ này">${SPEAKER_ICON_HTML}</button>
                     <div class="vocab-term-group">
                       <strong class="vocab-term-main">${hasKanji ? v.kanji : `<span class="vocab-desktop-no-kanji">—</span><span class="vocab-mobile-no-kanji">${v.hiragana}</span>`}</strong>
                       ${showSubReading ? `<span class="vocab-mobile-hira">${v.hiragana}</span>` : ''}
@@ -8271,7 +8108,6 @@ function initVoiceSettingsModal() {
   if (!modal) return;
 
   let previewing = false;
-  let nextPreviewIndex = 0;
   let previousFocus;
   let previousOverflow;
 
@@ -8286,22 +8122,11 @@ function initVoiceSettingsModal() {
     setPreviewStatus('idle');
   };
 
-  const syncCharacterPills = (speakerId) => {
-    const curSpeaker = speakerId || 'rotate';
-    document.querySelectorAll('#voice-character-selector .device-pill').forEach(btn => {
-      const isActive = btn.getAttribute('data-speaker') === curSpeaker;
-      btn.classList.toggle('active', isActive);
-      btn.setAttribute('aria-pressed', isActive ? 'true' : 'false');
-    });
-  };
-
   const openModal = () => {
     const cfg = getSpeechGenConfig();
     previousFocus = document.activeElement;
     previousOverflow = document.body.style.overflow;
-    nextPreviewIndex = 0;
     setPreviewStatus('idle');
-    syncCharacterPills(cfg.speaker || 'rotate');
     if (speedSlider) {
       speedSlider.value = cfg.speed || DEFAULT_USER_SPEED;
       if (speedVal) speedVal.textContent = (cfg.speed || DEFAULT_USER_SPEED) + 'x';
@@ -8314,7 +8139,7 @@ function initVoiceSettingsModal() {
     modal.classList.add('show-modal');
     modal.setAttribute('aria-hidden', 'false');
     if (document.body && document.body.style) document.body.style.overflow = 'hidden';
-    modal.querySelector('.device-pill.active')?.focus();
+    closeBtn?.focus();
   };
 
   const closeModal = () => {
@@ -8349,24 +8174,6 @@ function initVoiceSettingsModal() {
     pitch: pitchSlider ? parseFloat(pitchSlider.value) : DEFAULT_USER_PITCH
   });
 
-  const getActiveSpeaker = () => {
-    const activePill = document.querySelector('#voice-character-selector .device-pill.active');
-    return activePill ? activePill.getAttribute('data-speaker') : 'rotate';
-  };
-
-  const charSelector = document.getElementById('voice-character-selector');
-  if (charSelector && charSelector.addEventListener) {
-    charSelector.addEventListener('click', (e) => {
-      const pill = e.target.closest('.device-pill');
-      if (!pill) return;
-      const spk = pill.getAttribute('data-speaker');
-      syncCharacterPills(spk);
-      triggerHaptic(15);
-      stopPreview();
-      nextPreviewIndex = 0;
-    });
-  }
-
   if (speedSlider && speedVal && speedSlider.addEventListener) {
     speedSlider.addEventListener('input', () => {
       speedVal.textContent = speedSlider.value + 'x';
@@ -8387,13 +8194,9 @@ function initVoiceSettingsModal() {
         stopPreview();
         return;
       }
-      const active = getActiveSpeaker();
-      const rotation = AudioEngine.ROTATION_CHARACTERS;
-      const speaker = active === 'rotate' ? rotation[nextPreviewIndex] : active;
-      const name = charSelector.querySelector(`[data-speaker="${speaker}"]`)?.textContent.trim() || '';
-      const title = active === 'rotate' ? `${nextPreviewIndex + 1}/${rotation.length} · ${name}` : name;
+      const title = STUDY_VOICE_LABEL;
       let source;
-      previewVoiceCharacter(speaker, getLivePreviewCfg(), testBtn, e, {
+      previewStudyVoice(getLivePreviewCfg(), testBtn, e, {
         onState(state) {
           source = state;
           if (state === 'idle') {
@@ -8409,7 +8212,6 @@ function initVoiceSettingsModal() {
           }
         },
         onDone(played) {
-          if (played && active === 'rotate') nextPreviewIndex = (nextPreviewIndex + 1) % rotation.length;
           const originalPitch = source === 'sample' && getLivePreviewCfg().pitch !== DEFAULT_USER_PITCH;
           const message = played
             ? `Đã phát ${title}.${source === 'sample' ? ' Đây là mẫu Hội thoại có sẵn.' : ''}${originalPitch ? ' Mẫu giữ cao độ gốc.' : ''}`
@@ -8422,13 +8224,10 @@ function initVoiceSettingsModal() {
 
   if (saveBtn && saveBtn.addEventListener) {
     saveBtn.addEventListener('click', () => {
-      const activePill = document.querySelector('#voice-character-selector .device-pill.active');
-      const chosenSpeaker = activePill ? activePill.getAttribute('data-speaker') : DIALOGUE_DEFAULT_SPEAKER;
       const newSpeed = speedSlider ? parseFloat(speedSlider.value) : DEFAULT_USER_SPEED;
       const newPitch = pitchSlider ? parseFloat(pitchSlider.value) : DEFAULT_USER_PITCH;
 
       setSpeechGenConfig({
-        speaker: chosenSpeaker,
         speed: newSpeed,
         pitch: newPitch
       });
@@ -8441,13 +8240,12 @@ function initVoiceSettingsModal() {
 }
 
 
-function previewVoiceCharacter(speakerId, liveCfg = {}, btn, ev, playback = {}) {
-  const speaker = speakerId === 'rotate' ? AudioEngine.ROTATION_CHARACTERS[0] : speakerId;
-  const sample = AudioEngine.getVoicePreviewSample(speaker);
+function previewStudyVoice(liveCfg = {}, btn, ev, playback = {}) {
+  const sample = AudioEngine.getVoicePreviewSample(STUDY_SPEAKER);
   const text = sample?.text || 'こんにちは。今日も一緒に日本語を勉強しましょう。';
   const done = (played) => playback.onDone?.(played);
   const synthesize = (onDone) => speakJapanese(text, btn, ev, null, liveCfg, {
-    ...playback, previewSpeaker: speaker, onDone
+    ...playback, onDone
   });
 
   if (!sample || typeof window.KaiwaEngine?.playVoiceSample !== 'function') {
@@ -8481,7 +8279,6 @@ function previewVoiceCharacter(speakerId, liveCfg = {}, btn, ev, playback = {}) 
   }
   return synthesize((played) => played ? done(true) : playSample(done));
 }
-window.previewVoiceCharacter = previewVoiceCharacter;
 
 function initSidebarGearMenu() {
   if (typeof document === 'undefined') return;

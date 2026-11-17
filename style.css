@@ -6783,8 +6783,7 @@ display: flex; flex-direction: column; gap: 4px;
   min-height: 44px;
   touch-action: manipulation;
 }
-#device-settings-modal .device-pill-group,
-#voice-character-selector {
+#device-settings-modal .device-pill-group {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
 }
@@ -6792,7 +6791,6 @@ display: flex; flex-direction: column; gap: 4px;
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
 }
-#voice-character-selector [data-speaker="rotate"] { grid-column: 1 / -1; }
 #voice-settings-modal input[type="range"] { min-height: 44px; }
 #voice-preview-status { margin: 0; }
 #voice-preview-status:empty { display: none; }

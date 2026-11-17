@@ -4,7 +4,7 @@
  */
 'use strict';
 
-const ASSET_VERSION = '20261117_18';
+const ASSET_VERSION = '20261117_19';
 const CACHE_VERSION = `minna-pwa-v${ASSET_VERSION}`;
 
 const CORE_ASSETS = [
