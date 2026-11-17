@@ -1277,7 +1277,10 @@ function setSpeechGenConfig(cfg) {
     if (cfg.email !== undefined) safeSetStorage('speechgen_email', cfg.email.trim());
     if (cfg.speed !== undefined) safeSetStorage('speechgen_speed', String(cfg.speed));
     if (cfg.pitch !== undefined) safeSetStorage('speechgen_pitch', String(cfg.pitch));
-    if (cfg.speaker !== undefined) safeSetStorage('speechgen_speaker', String(cfg.speaker));
+    if (cfg.speaker !== undefined) {
+      safeSetStorage('speechgen_speaker', String(cfg.speaker));
+      warnedCharacterVoiceFallback = false;
+    }
   } catch (e) {}
 }
 window.setSpeechGenConfig = setSpeechGenConfig;
@@ -1575,7 +1578,7 @@ function speakWithLedaWebSpeech(speechText, stopRelay, safetyTimer, cfg, onFallb
   }
 
   const isCoreCharacter = typeof AudioEngine !== 'undefined' && AudioEngine.ROTATION_CHARACTERS.includes(speakerKey);
-  const characterVoice = findDialogueJpVoice(speakerKey, isCoreCharacter);
+  const characterVoice = findDialogueJpVoice(speakerKey, isCoreCharacter || requireCharacter);
   const usesFallback = isCoreCharacter && !characterVoice && !requireCharacter;
   const voice = usesFallback ? (cachedLedaVoice || findLedaJpVoice()) : characterVoice;
   if (!voice) {
@@ -1701,6 +1704,8 @@ async function speakJapanese(text, btnElement, ev, speakerKey, cfgOverride, play
     ? speakerKey || rotatingSpeaker
     : cfg.speaker);
   const speakerToUse = resolveDialogueSpeakerId(candidate);
+  const fixedStudyVoice = !playback.dialogue && !playback.previewSpeaker && cfg.speaker !== 'rotate';
+  const requireCharacter = fixedStudyVoice || Boolean(playback.previewSpeaker);
   const profile = getDialogueVoiceProfile(speakerToUse);
   const prosody = computeDialogueProsody(profile, cfg, speechText);
   const controller = typeof AbortController === 'function' ? new AbortController() : null;
@@ -1715,6 +1720,10 @@ async function speakJapanese(text, btnElement, ev, speakerKey, cfgOverride, play
     activeSpeechSafetyTimer = null;
     activeSpeechCancel = null;
     btn?.classList.remove('is-speaking');
+    if (!success && fixedStudyVoice) {
+      const label = document.querySelector(`#voice-character-selector [data-speaker="${speakerToUse}"]`)?.textContent.trim();
+      showToast(`${label || 'Giọng đã chọn'} chưa khả dụng trên thiết bị hoặc máy chủ.`);
+    }
     playback.onDone?.(Boolean(success));
   };
 
@@ -1739,7 +1748,7 @@ async function speakJapanese(text, btnElement, ev, speakerKey, cfgOverride, play
 
   const onlineFallback = () => {
     if (finished || sessionId !== currentAudioSessionId) return;
-    if (playback.previewSpeaker) {
+    if (requireCharacter) {
       stopRelay(false);
       return;
     }
@@ -1748,10 +1757,10 @@ async function speakJapanese(text, btnElement, ev, speakerKey, cfgOverride, play
   };
   const localFallback = () => {
     if (finished || sessionId !== currentAudioSessionId) return;
-    speakWithLedaWebSpeech(speechText, stopRelay, safetyTimer, cfg, onlineFallback, speakerToUse, sessionId, playback.onState, Boolean(playback.previewSpeaker));
+    speakWithLedaWebSpeech(speechText, stopRelay, safetyTimer, cfg, onlineFallback, speakerToUse, sessionId, playback.onState, requireCharacter);
   };
 
-  const useProxy = Date.now() >= speechProxyUnavailableUntil && /^https?:$/.test(window.location?.protocol);
+  const useProxy = /^https?:$/.test(window.location?.protocol);
   if (!useProxy && !(cfg.token && cfg.email)) {
     localFallback();
     return;
@@ -8393,7 +8402,7 @@ function initVoiceSettingsModal() {
             setPreviewStatus('loading', `Đang tải giọng ${title}…`);
           } else if (state === 'sample') {
             const note = getLivePreviewCfg().pitch === DEFAULT_USER_PITCH ? '' : ' · Bản mẫu giữ cao độ gốc';
-            setPreviewStatus('playing', `${title} · Bản mẫu nhân vật${note}`);
+            setPreviewStatus('playing', `${title} · Mẫu Hội thoại${note}`);
           } else {
             const label = state === 'device' ? 'Giọng trên thiết bị' : 'Giọng trực tuyến';
             setPreviewStatus('playing', `${title} · ${label}`);
@@ -8403,7 +8412,7 @@ function initVoiceSettingsModal() {
           if (played && active === 'rotate') nextPreviewIndex = (nextPreviewIndex + 1) % rotation.length;
           const originalPitch = source === 'sample' && getLivePreviewCfg().pitch !== DEFAULT_USER_PITCH;
           const message = played
-            ? `Đã phát ${title}.${originalPitch ? ' Bản mẫu giữ cao độ gốc.' : ''}`
+            ? `Đã phát ${title}.${source === 'sample' ? ' Đây là mẫu Hội thoại có sẵn.' : ''}${originalPitch ? ' Mẫu giữ cao độ gốc.' : ''}`
             : 'Chưa phát được giọng này. Hãy kiểm tra kết nối rồi thử lại.';
           setPreviewStatus('idle', message);
         }
@@ -8466,10 +8475,6 @@ function previewVoiceCharacter(speakerId, liveCfg = {}, btn, ev, playback = {}) 
     playback.onState?.('sample');
   };
 
-  if ((liveCfg.pitch || DEFAULT_USER_PITCH) === DEFAULT_USER_PITCH) {
-    playSample((played) => played ? done(true) : synthesize(done));
-    return;
-  }
   return synthesize((played) => played ? done(true) : playSample(done));
 }
 window.previewVoiceCharacter = previewVoiceCharacter;
@@ -9088,29 +9093,7 @@ function romajiToHiragana(input) {
 
 
 function speakMaziiAudio(text, btnElement, ev) {
-  if (ev && ev.stopPropagation) ev.stopPropagation();
-  if (!text) return;
-
-  let btn = btnElement;
-  if (!btn && typeof window !== 'undefined' && window.event) {
-    const t = window.event.currentTarget || window.event.target;
-    if (t) btn = t.closest ? t.closest('.mazii-audio-btn, .speak-btn-mini, button') : t;
-  }
-
-  if (typeof speakJapanese === 'function') {
-    speakJapanese(text, btn, ev);
-  } else if (typeof window !== 'undefined' && typeof window.speakJapanese === 'function') {
-    window.speakJapanese(text, btn, ev);
-  } else {
-    try {
-      window.speechSynthesis.cancel();
-      const utter = new SpeechSynthesisUtterance(text);
-      utter.lang = 'ja-JP';
-      window.speechSynthesis.speak(utter);
-    } catch (e) {
-      console.warn('Speech error:', e);
-    }
-  }
+  return speakJapanese(text, btnElement, ev);
 }
 window.speakMaziiAudio = speakMaziiAudio;
 

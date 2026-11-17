@@ -2058,7 +2058,7 @@
 
   function speakJapanese(text, pitchOpt, onEndCallback, preferredGender, speakerId, rateOpt, contextMeta) {
     if (typeof root.speakJapanese === 'function') {
-      root.speakJapanese(text, null, null, speakerId, { slow: state.slowAudio, contextMeta }, { onDone: onEndCallback });
+      root.speakJapanese(text, null, null, speakerId, { slow: state.slowAudio, contextMeta }, { dialogue: true, onDone: onEndCallback });
       return;
     }
     const paced = buildNaturalSpeechText(text);
