@@ -12,7 +12,26 @@
   'use strict';
 
   const STORAGE_KEY = 'minna_kaiwa_progress_v1';
-  const ASSET_VERSION = '20261121_18';
+  const MOBILE_MIC_MODE_KEY = 'minna_kaiwa_mobile_mic_mode_v1';
+  const ASSET_VERSION = '20261121_19';
+
+  function loadMobileMicMode() {
+    try {
+      if (typeof root.localStorage !== 'undefined' && root.localStorage) {
+        const saved = root.localStorage.getItem(MOBILE_MIC_MODE_KEY);
+        if (saved === 'record' || saved === 'score') return saved;
+      }
+    } catch (e) {}
+    return 'score';
+  }
+
+  function saveMobileMicMode(mode) {
+    try {
+      if (typeof root.localStorage !== 'undefined' && root.localStorage) {
+        root.localStorage.setItem(MOBILE_MIC_MODE_KEY, mode === 'record' ? 'record' : 'score');
+      }
+    } catch (e) {}
+  }
 
   function resolveSpriteRuntimeUrl(audioSrc) {
     if (!audioSrc || typeof audioSrc !== 'string') return audioSrc;
@@ -88,6 +107,7 @@
     loopingLineId: null,
     recordingLineId: null,
     stoppingRecordingLineId: null,
+    mobileMicMode: loadMobileMicMode(), // 'score' (mặc định 1 chạm trên mobile/tablet) | 'record' (ghi âm nghe lại)
     openEvalByLine: {},
     openExpByLine: {},
     activeExpLineId: null,
@@ -1580,6 +1600,7 @@
     const isLooping = state.loopingLineId === line.id;
     const isStopping = state.stoppingRecordingLineId === line.id;
     const isRecording = state.recordingLineId === line.id && !isStopping;
+    const isRecordMode = state.mobileMicMode === 'record';
     const isOpenEval = !!state.openEvalByLine[line.id];
     const isOpenExp = !!state.openExpByLine[line.id];
     const evalInfo = (state.progress.evalData && state.progress.evalData[line.id]) || null;
@@ -1651,7 +1672,7 @@
             ${showSpeakerBtn ? `<button type="button" class="kaiwa-circle-btn kaiwa-btn-speaker ${isPlaying ? 'is-playing' : ''} ${isLooping ? 'is-looping' : ''}" title="Chạm để nghe phát âm mẫu • Nhấn giữ nếu muốn lặp" aria-label="Chạm để nghe phát âm mẫu, nhấn giữ nếu muốn lặp" onpointerdown="KaiwaEngine.onSpeakerDown('${line.id}', event)" onpointerup="KaiwaEngine.onSpeakerUp('${line.id}', event)" onpointerleave="KaiwaEngine.onSpeakerUp('${line.id}', event)" onpointercancel="KaiwaEngine.onSpeakerUp('${line.id}', event)" oncontextmenu="return KaiwaEngine.onSpeakerContextMenu('${line.id}', event)" onclick="KaiwaEngine.onSpeakerClick('${line.id}', event)">${KAIWA_ICONS.speaker}</button>` : ''}
             ${hasUserVoice && !isShadowing ? `<button type="button" class="kaiwa-circle-btn kaiwa-btn-user-voice ${isPlayingUser ? 'is-playing' : ''}" title="${getRecordingLabel(line.id)}" aria-label="${getRecordingLabel(line.id)}" onclick="KaiwaEngine.playUserVoice('${line.id}')">${KAIWA_ICONS.userVoice}</button>` : ''}
             ${showLoopBtn ? `<button type="button" class="kaiwa-circle-btn kaiwa-btn-loop ${isLooping ? 'is-looping' : ''}" title="Bật/tắt lặp câu này để nhại theo" aria-label="Lặp câu này" onclick="KaiwaEngine.toggleLoopLine('${line.id}')">${KAIWA_ICONS.repeat}</button>` : ''}
-            ${showMicBtn ? `<button type="button" class="kaiwa-circle-btn kaiwa-btn-mic ${isRecording ? 'is-recording' : (isStopping ? 'is-stopping' : '')}" title="${isRecording ? 'Đang thu âm... Chạm để dừng và chấm điểm' : (isStopping ? 'Đang chấm điểm... Chạm lần nữa để chốt ngay' : 'Chạm để thu âm chấm điểm')}" aria-label="${isRecording ? 'Đang thu âm, chạm để dừng' : (isStopping ? 'Đang xử lý kết quả' : 'Chạm để thu âm chấm điểm')}" onclick="KaiwaEngine.recordLine('${line.id}')">${KAIWA_ICONS.mic}</button>` : ''}
+            ${showMicBtn ? `<button type="button" class="kaiwa-circle-btn kaiwa-btn-mic ${isRecordMode ? 'is-record-mode' : ''} ${isRecording ? 'is-recording' : (isStopping ? 'is-stopping' : '')}" title="${isRecording ? (isRecordMode ? 'Đang ghi âm... Chạm để dừng và lưu giọng' : 'Đang lắng nghe... Chạm để dừng và chấm điểm') : (isStopping ? 'Đang chấm điểm... Chạm lần nữa để chốt ngay' : (isRecordMode ? 'Chạm để ghi âm nghe lại giọng của bạn' : 'Chạm để thu âm chấm điểm'))}" aria-label="${isRecording ? 'Đang thu âm, chạm để dừng' : (isStopping ? 'Đang xử lý kết quả' : (isRecordMode ? 'Chạm để ghi âm nghe lại' : 'Chạm để thu âm chấm điểm'))}" onclick="KaiwaEngine.recordLine('${line.id}')">${KAIWA_ICONS.mic}</button>` : ''}
           </div>
         </div>
 
@@ -1770,6 +1791,29 @@
     });
   }
 
+  function buildMobileMicModeBarHtml() {
+    const isRecordMode = state.mobileMicMode === 'record';
+    return `
+      <div class="kaiwa-mobile-mic-bar" role="group" aria-label="Chế độ Micro trên điện thoại và máy tính bảng">
+        <span class="kaiwa-mobile-mic-label">Chế độ Mic:</span>
+        <div class="kaiwa-mobile-mic-toggle-group">
+          <button type="button" class="kaiwa-mic-mode-btn ${!isRecordMode ? 'active' : ''}"
+            data-mic-mode="score" aria-pressed="${!isRecordMode ? 'true' : 'false'}"
+            onclick="KaiwaEngine.setMobileMicMode('score')">
+            ${KAIWA_ICONS.mic}
+            <span>Chấm phát âm</span>
+          </button>
+          <button type="button" class="kaiwa-mic-mode-btn ${isRecordMode ? 'active' : ''}"
+            data-mic-mode="record" aria-pressed="${isRecordMode ? 'true' : 'false'}"
+            onclick="KaiwaEngine.setMobileMicMode('record')">
+            ${KAIWA_ICONS.userVoice}
+            <span>Ghi âm nghe lại</span>
+          </button>
+        </div>
+      </div>
+    `;
+  }
+
   /**
    * Render Renshuu C (Luyện tập C - 3 mẫu hội thoại thay thế)
    */
@@ -1810,6 +1854,7 @@
         const rcEvalInfo = (state.progress.evalData && state.progress.evalData[rcLineId]) || null;
         const isRcStopping = state.stoppingRecordingLineId === rcLineId;
         const isRcRecording = state.recordingLineId === rcLineId && !isRcStopping;
+        const isRcRecordMode = state.mobileMicMode === 'record';
         const isRcPlaying = state.playingLineId === rcLineId;
         const isRcOpenEval = !!state.openEvalByLine[rcLineId];
         const isPlayingUser = state.playingUserVoiceLineId === rcLineId;
@@ -1852,7 +1897,7 @@
                 ${rcScore !== null ? `<button type="button" class="kaiwa-score-pill ${rcScoreBadgeClass} ${isRcOpenEval ? 'is-open' : ''}" title="Bấm để xem chi tiết ngữ điệu ${endPitchArrow} &amp; nghe lại giọng (${rcScore}/100)" aria-label="Điểm phát âm ${rcScore} trên 100. Bấm để xem chi tiết ngữ điệu và nghe lại giọng" aria-expanded="${isRcOpenEval ? 'true' : 'false'}" onclick="KaiwaEngine.toggleEvalPanel('${rcLineId}')">${rcScore}/100</button>` : ''}
                 <button type="button" class="kaiwa-circle-btn kaiwa-btn-speaker ${isRcPlaying ? 'is-playing' : ''}" title="Chạm để nghe phát âm mẫu" aria-label="Chạm để nghe phát âm mẫu" onclick="KaiwaEngine.playLine('${rcLineId}')">${KAIWA_ICONS.speaker}</button>
                 ${hasUserVoice ? `<button type="button" class="kaiwa-circle-btn kaiwa-btn-user-voice ${isPlayingUser ? 'is-playing' : ''}" title="${getRecordingLabel(rcLineId)}" aria-label="${getRecordingLabel(rcLineId)}" onclick="KaiwaEngine.playUserVoice('${rcLineId}')">${KAIWA_ICONS.userVoice}</button>` : ''}
-                <button type="button" class="kaiwa-circle-btn kaiwa-btn-mic ${isRcRecording ? 'is-recording' : (isRcStopping ? 'is-stopping' : '')}" title="${isRcRecording ? 'Đang thu âm... Chạm để dừng và chấm điểm' : (isRcStopping ? 'Đang chấm điểm... Chạm lần nữa để chốt ngay' : 'Chạm để thu âm chấm điểm')}" aria-label="${isRcRecording ? 'Đang thu âm, chạm để dừng' : (isRcStopping ? 'Đang xử lý kết quả' : 'Chạm để thu âm chấm điểm')}" onclick="KaiwaEngine.recordLine('${rcLineId}')">${KAIWA_ICONS.mic}</button>
+                <button type="button" class="kaiwa-circle-btn kaiwa-btn-mic ${isRcRecordMode ? 'is-record-mode' : ''} ${isRcRecording ? 'is-recording' : (isRcStopping ? 'is-stopping' : '')}" title="${isRcRecording ? (isRcRecordMode ? 'Đang ghi âm... Chạm để dừng và lưu giọng' : 'Đang lắng nghe... Chạm để dừng và chấm điểm') : (isRcStopping ? 'Đang chấm điểm... Chạm lần nữa để chốt ngay' : (isRcRecordMode ? 'Chạm để ghi âm nghe lại giọng của bạn' : 'Chạm để thu âm chấm điểm'))}" aria-label="${isRcRecording ? 'Đang thu âm, chạm để dừng' : (isRcStopping ? 'Đang xử lý kết quả' : (isRcRecordMode ? 'Chạm để ghi âm nghe lại' : 'Chạm để thu âm chấm điểm'))}" onclick="KaiwaEngine.recordLine('${rcLineId}')">${KAIWA_ICONS.mic}</button>
               </div>
             </div>
             ${rcEvalPanelHtml}
@@ -1882,7 +1927,7 @@
       `;
     }).join('');
 
-    return `<div class="kaiwa-rc-list">${cardsHtml}</div>`;
+    return `<div class="kaiwa-rc-list">${buildMobileMicModeBarHtml()}${cardsHtml}</div>`;
   }
 
   /**
@@ -2064,6 +2109,7 @@
 
               ${playerBarHtml}
               ${roleplayBarHtml}
+              ${activeMode !== 'shadowing' ? buildMobileMicModeBarHtml() : ''}
             </div>
 
             <div class="kaiwa-dialogue-list">
@@ -3561,10 +3607,12 @@
       !(loc && (loc.hostname === 'localhost' || loc.hostname === '127.0.0.1'));
     const lessonId = state.currentLessonId;
     const recordingKey = lessonId + ':' + lineId;
-    const recognitionOnly = mobile && recognitionOnlyLines.delete(recordingKey);
+    const mobileWantsRecordOnly = mobile && canRecord && (!SpeechRec || state.mobileMicMode === 'record');
+    const mobileScoreOnly = mobile && Boolean(SpeechRec) && !mobileWantsRecordOnly;
+    const recognitionOnly = mobileScoreOnly || (mobile && recognitionOnlyLines.delete(recordingKey));
     const attempt = { key: recordingKey };
     let rec = null;
-    try { if (SpeechRec) rec = new SpeechRec(); } catch (e) {}
+    try { if (SpeechRec && !mobileWantsRecordOnly) rec = new SpeechRec(); } catch (e) {}
     if (isInsecureHttp || (!rec && !canRecord)) {
       state.recordingLineId = null;
       root.showToast?.(isInsecureHttp || root.isSecureContext === false
@@ -3631,7 +3679,11 @@
         if (canRetryWithoutRecorder) recognitionOnlyLines.add(recordingKey);
         if (typeof root.showToast === 'function') {
           if (!rec && recordingStarted && !captureError) {
-            root.showToast('Đã thu âm. Trình duyệt này không hỗ trợ nhận giọng để chấm điểm.');
+            root.showToast(
+              mobile && Boolean(SpeechRec) && state.mobileMicMode === 'record'
+                ? 'Đã lưu bản ghi âm! Chạm biểu tượng tai nghe để nghe lại giọng của bạn.'
+                : 'Đã thu âm. Trình duyệt này không hỗ trợ nhận giọng để chấm điểm.'
+            );
           } else if (captureError && !recordingStarted) {
             root.showToast(captureError);
           } else if (errorCode === 'network') {
@@ -4374,6 +4426,26 @@
     );
   }
 
+  function setMobileMicMode(mode) {
+    const normalized = mode === 'record' ? 'record' : 'score';
+    if (state.mobileMicMode === normalized) return;
+    cancelRecording(false);
+    state.mobileMicMode = normalized;
+    saveMobileMicMode(normalized);
+    rerender();
+    if (typeof root.showToast === 'function') {
+      root.showToast(
+        normalized === 'record'
+          ? 'Đã chuyển sang chế độ Ghi âm nghe lại giọng của bạn.'
+          : 'Đã chuyển sang chế độ Chấm phát âm nhanh (1 chạm).'
+      );
+    }
+  }
+
+  function toggleMobileMicMode() {
+    setMobileMicMode(state.mobileMicMode === 'record' ? 'score' : 'record');
+  }
+
   function answerQuiz(questionId, optionIdx) {
     state.quizAnswers[questionId] = optionIdx;
     rerender();
@@ -4428,6 +4500,8 @@
     toggleMaskJp,
     setTab,
     setPracticeMode,
+    setMobileMicMode,
+    toggleMobileMicMode,
     selectRoleplayCharacter,
     startRoleplaySession,
     stopRoleplaySession,

@@ -1050,6 +1050,82 @@
   opacity: 0.88;
 }
 
+.kaiwa-mobile-mic-bar {
+  display: none;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding-top: 10px;
+  margin-top: 8px;
+  border-top: 1px solid var(--border-subtle, rgba(148, 163, 184, 0.16));
+  flex-wrap: wrap;
+}
+
+.kaiwa-rc-list > .kaiwa-mobile-mic-bar {
+  padding-top: 0;
+  margin-top: 0;
+  margin-bottom: 12px;
+  border-top: none;
+}
+
+.kaiwa-mobile-mic-label {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--text-muted, #94a3b8);
+  flex-shrink: 0;
+}
+
+.kaiwa-mobile-mic-toggle-group {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+  flex: 1;
+  justify-content: flex-end;
+}
+
+.kaiwa-mic-mode-btn {
+  min-height: 44px;
+  padding: 6px 12px;
+  border-radius: 999px;
+  border: 1px solid var(--border-color, rgba(148, 163, 184, 0.25));
+  background: transparent;
+  color: var(--text-secondary, #cbd5e1);
+  font-family: inherit;
+  font-size: 12.5px;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  cursor: pointer;
+  touch-action: manipulation;
+  transition: all 0.18s ease;
+}
+
+.kaiwa-mic-mode-btn.active {
+  background: var(--accent-primary, #ff5a36);
+  border-color: var(--accent-primary, #ff5a36);
+  color: #ffffff;
+  font-weight: 700;
+}
+
+.kaiwa-mic-mode-btn[data-mic-mode="record"].active {
+  background: #0284c7;
+  border-color: #38bdf8;
+  color: #ffffff;
+}
+
+@media (max-width: 1024px), (pointer: coarse) {
+  .kaiwa-mobile-mic-bar {
+    display: flex;
+  }
+  .kaiwa-circle-btn.kaiwa-btn-mic.is-record-mode:not(.is-recording):not(.is-stopping) {
+    color: #38bdf8;
+    border-color: rgba(56, 189, 248, 0.5);
+  }
+}
+
 .kaiwa-circle-btn.kaiwa-btn-user-voice {
   color: #38bdf8;
   border-color: #0284c7;
