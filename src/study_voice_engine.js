@@ -1,7 +1,7 @@
 (function (root) {
   'use strict';
 
-  const ASSET_VERSION = '20261121_17';
+  const ASSET_VERSION = '20261121_18';
   const currentScriptSrc = (typeof document !== 'undefined' && document.currentScript && document.currentScript.src)
     ? document.currentScript.src
     : (typeof location !== 'undefined' ? location.href : '');

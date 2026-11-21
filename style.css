@@ -6189,6 +6189,8 @@ display: none !important;
 position: absolute !important;
 left: 8px !important;
 right: 8px !important;
+width: auto !important;
+max-width: calc(100% - 16px) !important;
 top: 5px !important;
 bottom: 5px !important;
 z-index: 1005 !important;
@@ -6196,6 +6198,7 @@ background: var(--bg-surface, var(--bg-secondary)) !important;
 display: flex !important;
 align-items: center !important;
 border-radius: 10px !important;
+box-sizing: border-box !important;
 }
 .header-search-container.mobile-active .search-box-wrapper {
 width: 100% !important;
@@ -6205,12 +6208,12 @@ box-shadow: 0 4px 20px rgba(0, 0, 0, 0.35) !important;
 }
 .search-clear-btn,
 .search-voice-btn {
-width: 38px !important;
-height: 38px !important;
-min-width: 38px !important;
-min-height: 38px !important;
+width: 44px !important;
+height: 44px !important;
+min-width: 44px !important;
+min-height: 44px !important;
 }
-.search-box-wrapper { padding: 6px 10px; border-radius: 10px; height: 44px; min-height: 44px; box-sizing: border-box !important; gap: 6px; width: 100% !important; min-width: 0 !important; max-width: 100% !important; }
+.search-box-wrapper { padding: 0 2px 0 10px; border-radius: 10px; height: 44px; min-height: 44px; box-sizing: border-box !important; gap: 4px; width: 100% !important; min-width: 0 !important; max-width: 100% !important; }
 .search-icon { width: 14px; height: 14px; flex-shrink: 0; }
 .quick-search-input { font-size: 16px; min-width: 0 !important; width: 100% !important; flex: 1 1 0% !important; box-sizing: border-box !important; text-overflow: ellipsis; }
 .header-right { order: 3; display: flex; align-items: center; margin-left: 0; gap: 6px; flex-shrink: 0; }
@@ -8002,12 +8005,12 @@ flex-shrink: 0; border: none; cursor: pointer; touch-action: manipulation; trans
 .voice-wave.wave-2 { animation-delay: 0.6s; }
 .voice-wave.wave-3 { animation-delay: 1.2s; }
 @keyframes wavePulse { 0% { transform: scale(1); opacity: 0.9; } 100% { transform: scale(1.6); opacity: 0; } }
-.mazii-voice-info { display: flex; flex-direction: column; gap: 3px; min-width: 0; }
-.mazii-voice-title { font-size: 13.5px; font-weight: 700; color: var(--primary, #ff5a36); }
-.mazii-voice-transcript { font-size: 13px; color: var(--text-muted); font-style: italic; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.mazii-voice-info { display: flex; flex-direction: column; gap: 3px; min-width: 0; flex: 1; }
+.mazii-voice-title { font-size: 13.5px; font-weight: 700; color: var(--primary, #ff5a36); line-height: 1.3; }
+.mazii-voice-transcript { font-size: 13px; color: var(--text-muted); font-style: italic; white-space: normal; word-break: break-word; overflow-wrap: anywhere; line-height: 1.45; }
 .mazii-voice-transcript.has-text { color: var(--text-primary); font-style: normal; font-weight: 600; }
 .mazii-voice-retry-perm-btn {
-display: inline-flex; align-items: center; gap: 6px; padding: 6px 14px; margin-top: 6px;
+display: inline-flex; align-items: center; justify-content: center; gap: 6px; padding: 6px 14px; margin-top: 8px; max-width: 100%; box-sizing: border-box;
 background: var(--primary, #ff5a36); color: #ffffff; font-weight: 700; font-size: 12.5px; border: none; border-radius: 8px; cursor: pointer; touch-action: manipulation; min-height: 44px;
 }
 .mazii-voice-retry-perm-btn:hover { background: #c93b2e; }
@@ -8115,6 +8118,41 @@ font-size: 42px; font-weight: 800; font-family: 'Shippori Mincho', 'Noto Serif J
 [data-theme="dark"] .mazii-canvas { background: #0d131f; border-color: rgba(239, 68, 68, 0.5); }
 [data-theme="dark"] .mazii-search-input { background: #0d131f; color: #f1f5f9; border-color: rgba(255, 255, 255, 0.14); }
 
+@media (max-width: 1024px), (pointer: coarse) {
+.search-clear-btn,
+.search-voice-btn {
+width: 44px;
+height: 44px;
+min-width: 44px;
+min-height: 44px;
+touch-action: manipulation;
+}
+.search-box-wrapper {
+min-height: 44px;
+padding-right: 4px;
+}
+.mazii-btn-voice,
+.mazii-btn-clear {
+min-width: 44px;
+min-height: 44px;
+width: 44px;
+height: 44px;
+touch-action: manipulation;
+}
+}
+
+@media (min-width: 769px) and (max-width: 1024px) {
+.header-search-container .search-dropdown {
+min-width: min(460px, calc(100vw - 24px));
+left: 50%;
+right: auto;
+transform: translateX(-50%) translateY(-6px);
+}
+.header-search-container .search-dropdown.active {
+transform: translateX(-50%) translateY(0) scale(1);
+}
+}
+
 @media (max-width: 768px) {
 .mazii-dict-studio { padding: 8px 10px 110px 10px; }
 .mazii-hero-card { padding: 12px 14px; margin-bottom: 10px; border-radius: 14px; }
@@ -8122,8 +8160,13 @@ font-size: 42px; font-weight: 800; font-family: 'Shippori Mincho', 'Noto Serif J
 .mazii-hero-desc { display: none !important; }
 .mazii-search-panel { padding: 12px 10px; border-radius: 14px; margin-bottom: 10px; }
 .mazii-search-row { gap: 8px; }
-.mazii-search-input { min-height: 48px; padding: 10px 118px 10px 12px; font-size: 16px; border-radius: 12px; }
+.mazii-search-input { min-height: 48px; padding: 10px 104px 10px 12px; font-size: 16px; border-radius: 12px; }
 .mazii-btn-voice { min-width: 44px; min-height: 44px; width: 44px; height: 44px; touch-action: manipulation; }
+.mazii-voice-panel { padding: 10px 12px; }
+.mazii-voice-top-row { flex-direction: column; align-items: stretch; gap: 10px; }
+.mazii-voice-status { width: 100%; align-items: flex-start; gap: 10px; }
+.mazii-voice-info { width: 100%; flex: 1; min-width: 0; }
+.mazii-voice-actions { width: 100%; justify-content: space-between; }
 .mazii-hw-box-btn { min-height: 48px; height: 48px; padding: 0 12px; border-radius: 12px; touch-action: manipulation; }
 .mazii-hw-box-icon { font-size: 16px; }
 .mazii-hw-box-text { font-size: 13px; }
@@ -8144,7 +8187,11 @@ font-size: 42px; font-weight: 800; font-family: 'Shippori Mincho', 'Noto Serif J
 .dict-audio-btn { width: 42px; height: 42px; min-width: 42px; min-height: 42px; }
 .dict-mean-text { font-size: 14px; }
 }
-@media (max-width: 520px) { .mazii-header-btn { min-width: 44px !important; min-height: 44px !important; } }
+@media (max-width: 520px) {
+.mazii-header-btn { min-width: 44px !important; min-height: 44px !important; }
+.mazii-hw-box-text { display: none; }
+.mazii-hw-box-btn { min-width: 48px; width: 48px; padding: 0; }
+}
 .btn-hw-ai {
 display: none !important;
 min-height: 44px; padding: 6px 16px; border-radius: 10px;

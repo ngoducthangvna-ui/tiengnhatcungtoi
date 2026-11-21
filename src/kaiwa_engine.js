@@ -12,7 +12,7 @@
   'use strict';
 
   const STORAGE_KEY = 'minna_kaiwa_progress_v1';
-  const ASSET_VERSION = '20261121_17';
+  const ASSET_VERSION = '20261121_18';
 
   function resolveSpriteRuntimeUrl(audioSrc) {
     if (!audioSrc || typeof audioSrc !== 'string') return audioSrc;
@@ -87,6 +87,7 @@
     playingUserVoiceLineId: null,
     loopingLineId: null,
     recordingLineId: null,
+    stoppingRecordingLineId: null,
     openEvalByLine: {},
     openExpByLine: {},
     activeExpLineId: null,
@@ -115,6 +116,7 @@
   let activeSilenceTimer = null;
   let activeMaxRecordTimer = null;
   let activeFinishRecording = null;
+  let activeForceStopRecording = null;
   const SILENCE_TIMEOUT_MS = 5000;
   const MAX_RECORD_TIMEOUT_MS = 30000;
   const RECOGNITION_TAIL_MS = 700;
@@ -1576,7 +1578,8 @@
     const isPassed = score !== null && score >= 70;
     const isPlaying = state.playingLineId === line.id;
     const isLooping = state.loopingLineId === line.id;
-    const isRecording = state.recordingLineId === line.id;
+    const isStopping = state.stoppingRecordingLineId === line.id;
+    const isRecording = state.recordingLineId === line.id && !isStopping;
     const isOpenEval = !!state.openEvalByLine[line.id];
     const isOpenExp = !!state.openExpByLine[line.id];
     const evalInfo = (state.progress.evalData && state.progress.evalData[line.id]) || null;
@@ -1648,7 +1651,7 @@
             ${showSpeakerBtn ? `<button type="button" class="kaiwa-circle-btn kaiwa-btn-speaker ${isPlaying ? 'is-playing' : ''} ${isLooping ? 'is-looping' : ''}" title="Chạm để nghe phát âm mẫu • Nhấn giữ nếu muốn lặp" aria-label="Chạm để nghe phát âm mẫu, nhấn giữ nếu muốn lặp" onpointerdown="KaiwaEngine.onSpeakerDown('${line.id}', event)" onpointerup="KaiwaEngine.onSpeakerUp('${line.id}', event)" onpointerleave="KaiwaEngine.onSpeakerUp('${line.id}', event)" onpointercancel="KaiwaEngine.onSpeakerUp('${line.id}', event)" oncontextmenu="return KaiwaEngine.onSpeakerContextMenu('${line.id}', event)" onclick="KaiwaEngine.onSpeakerClick('${line.id}', event)">${KAIWA_ICONS.speaker}</button>` : ''}
             ${hasUserVoice && !isShadowing ? `<button type="button" class="kaiwa-circle-btn kaiwa-btn-user-voice ${isPlayingUser ? 'is-playing' : ''}" title="${getRecordingLabel(line.id)}" aria-label="${getRecordingLabel(line.id)}" onclick="KaiwaEngine.playUserVoice('${line.id}')">${KAIWA_ICONS.userVoice}</button>` : ''}
             ${showLoopBtn ? `<button type="button" class="kaiwa-circle-btn kaiwa-btn-loop ${isLooping ? 'is-looping' : ''}" title="Bật/tắt lặp câu này để nhại theo" aria-label="Lặp câu này" onclick="KaiwaEngine.toggleLoopLine('${line.id}')">${KAIWA_ICONS.repeat}</button>` : ''}
-            ${showMicBtn ? `<button type="button" class="kaiwa-circle-btn kaiwa-btn-mic ${isRecording ? 'is-recording' : ''}" title="Chạm để thu âm chấm điểm" aria-label="Chạm để thu âm chấm điểm" onclick="KaiwaEngine.recordLine('${line.id}')">${KAIWA_ICONS.mic}</button>` : ''}
+            ${showMicBtn ? `<button type="button" class="kaiwa-circle-btn kaiwa-btn-mic ${isRecording ? 'is-recording' : (isStopping ? 'is-stopping' : '')}" title="${isRecording ? 'Đang thu âm... Chạm để dừng và chấm điểm' : (isStopping ? 'Đang chấm điểm... Chạm lần nữa để chốt ngay' : 'Chạm để thu âm chấm điểm')}" aria-label="${isRecording ? 'Đang thu âm, chạm để dừng' : (isStopping ? 'Đang xử lý kết quả' : 'Chạm để thu âm chấm điểm')}" onclick="KaiwaEngine.recordLine('${line.id}')">${KAIWA_ICONS.mic}</button>` : ''}
           </div>
         </div>
 
@@ -1805,7 +1808,8 @@
           ? state.progress.scores[rcLineId]
           : null;
         const rcEvalInfo = (state.progress.evalData && state.progress.evalData[rcLineId]) || null;
-        const isRcRecording = state.recordingLineId === rcLineId;
+        const isRcStopping = state.stoppingRecordingLineId === rcLineId;
+        const isRcRecording = state.recordingLineId === rcLineId && !isRcStopping;
         const isRcPlaying = state.playingLineId === rcLineId;
         const isRcOpenEval = !!state.openEvalByLine[rcLineId];
         const isPlayingUser = state.playingUserVoiceLineId === rcLineId;
@@ -1848,7 +1852,7 @@
                 ${rcScore !== null ? `<button type="button" class="kaiwa-score-pill ${rcScoreBadgeClass} ${isRcOpenEval ? 'is-open' : ''}" title="Bấm để xem chi tiết ngữ điệu ${endPitchArrow} &amp; nghe lại giọng (${rcScore}/100)" aria-label="Điểm phát âm ${rcScore} trên 100. Bấm để xem chi tiết ngữ điệu và nghe lại giọng" aria-expanded="${isRcOpenEval ? 'true' : 'false'}" onclick="KaiwaEngine.toggleEvalPanel('${rcLineId}')">${rcScore}/100</button>` : ''}
                 <button type="button" class="kaiwa-circle-btn kaiwa-btn-speaker ${isRcPlaying ? 'is-playing' : ''}" title="Chạm để nghe phát âm mẫu" aria-label="Chạm để nghe phát âm mẫu" onclick="KaiwaEngine.playLine('${rcLineId}')">${KAIWA_ICONS.speaker}</button>
                 ${hasUserVoice ? `<button type="button" class="kaiwa-circle-btn kaiwa-btn-user-voice ${isPlayingUser ? 'is-playing' : ''}" title="${getRecordingLabel(rcLineId)}" aria-label="${getRecordingLabel(rcLineId)}" onclick="KaiwaEngine.playUserVoice('${rcLineId}')">${KAIWA_ICONS.userVoice}</button>` : ''}
-                <button type="button" class="kaiwa-circle-btn kaiwa-btn-mic ${isRcRecording ? 'is-recording' : ''}" title="Chạm để thu âm chấm điểm" aria-label="Chạm để thu âm chấm điểm" onclick="KaiwaEngine.recordLine('${rcLineId}')">${KAIWA_ICONS.mic}</button>
+                <button type="button" class="kaiwa-circle-btn kaiwa-btn-mic ${isRcRecording ? 'is-recording' : (isRcStopping ? 'is-stopping' : '')}" title="${isRcRecording ? 'Đang thu âm... Chạm để dừng và chấm điểm' : (isRcStopping ? 'Đang chấm điểm... Chạm lần nữa để chốt ngay' : 'Chạm để thu âm chấm điểm')}" aria-label="${isRcRecording ? 'Đang thu âm, chạm để dừng' : (isRcStopping ? 'Đang xử lý kết quả' : 'Chạm để thu âm chấm điểm')}" onclick="KaiwaEngine.recordLine('${rcLineId}')">${KAIWA_ICONS.mic}</button>
               </div>
             </div>
             ${rcEvalPanelHtml}
@@ -3415,6 +3419,7 @@
       activeMaxRecordTimer = null;
     }
     activeFinishRecording = null;
+    activeForceStopRecording = null;
     if (activePitchTimer) {
       clearInterval(activePitchTimer);
       activePitchTimer = null;
@@ -3468,6 +3473,7 @@
     const rec = activeRecognition;
     activeRecognition = null;
     state.recordingLineId = null;
+    state.stoppingRecordingLineId = null;
     if (state.isRoleplaying) {
       state.isRoleplaying = false;
       clearTimeout(roleplayTimer);
@@ -3497,6 +3503,7 @@
     // Không tự động bung khung chi tiết sau khi chấm (tránh che câu thoại tiếp theo)
     state.openEvalByLine[lineId] = false;
     state.recordingLineId = null;
+    state.stoppingRecordingLineId = null;
     saveProgress();
     rerender();
     return evalResult;
@@ -3510,7 +3517,11 @@
     }
 
     if (state.recordingLineId === lineId) {
-      activeFinishRecording?.();
+      if (state.stoppingRecordingLineId === lineId) {
+        activeForceStopRecording?.();
+      } else {
+        activeFinishRecording?.();
+      }
       return null;
     }
     if (activeRecording) {
@@ -3523,6 +3534,7 @@
 
     root.stopVoiceSearchForRecording?.();
     state.recordingLineId = lineId;
+    state.stoppingRecordingLineId = null;
     state.isPlayingAll = false;
     state.playingLineId = null;
     state.loopingLineId = null;
@@ -3605,12 +3617,17 @@
         ? Number((line.time[1] - line.time[0]).toFixed(2))
         : (line.audioDuration || null);
 
+      const targetCleanLen = normalizeJapaneseForCompare(line.rawJp || line.jp).length;
+      const capturedCleanLen = normalizeJapaneseForCompare(bestCapturedTranscript || '').length;
+      const isTruncatedTranscript = targetCleanLen >= 4 && capturedCleanLen < Math.ceil(targetCleanLen * 0.4);
       const recognitionEndedEarly = mobile && recognitionEndTime !== null && lastVoiceTime !== null &&
-        lastVoiceTime - recognitionEndTime > RECOGNITION_TAIL_MS;
+        lastVoiceTime - recognitionEndTime > RECOGNITION_TAIL_MS &&
+        (!bestCapturedTranscript || isTruncatedTranscript);
       if (!bestCapturedTranscript || recognitionEndedEarly) {
         state.recordingLineId = null;
+        state.stoppingRecordingLineId = null;
         const canRetryWithoutRecorder = mobile && Boolean(rec) && canRecord && !recognitionOnly &&
-            (!errorCode || errorCode === 'no-speech' || errorCode === 'audio-capture');
+            (!errorCode || errorCode === 'no-speech' || errorCode === 'audio-capture' || errorCode === 'start-failed');
         if (canRetryWithoutRecorder) recognitionOnlyLines.add(recordingKey);
         if (typeof root.showToast === 'function') {
           if (!rec && recordingStarted && !captureError) {
@@ -3699,6 +3716,7 @@
       if (!isCurrent()) return;
       activeRecognition = null;
       activeRecording = null;
+      state.stoppingRecordingLineId = null;
       cleanupAudioCapture(true);
       if (state.currentLessonId === lessonId) return finalizeEvaluation();
       state.recordingLineId = null;
@@ -3706,19 +3724,35 @@
       if (typeof onComplete === 'function') onComplete(null);
     };
 
+    const isFatalRecognitionError = function(code) {
+      return code === 'not-allowed' ||
+        code === 'service-not-allowed' ||
+        code === 'network' ||
+        code === 'language-not-supported' ||
+        code === 'start-failed';
+    };
+
     const finishRecordingDueToSilence = function() {
       if (!isCurrent() || stopping) return;
       stopping = true;
       recordStopTime = Date.now();
       stopRecorder();
-      if (recognitionEnded || (rec && !recStarted)) {
+      if (recognitionEnded || (rec && !recStarted) || isFatalRecognitionError(errorCode)) {
         recognitionEnded = true;
         return completeRecognition();
       }
+      state.stoppingRecordingLineId = lineId;
+      rerender();
+      activeForceStopRecording = function() {
+        if (!isCurrent()) return;
+        recognitionEnded = true;
+        completeRecognition();
+        try { rec.abort(); } catch (e) {}
+      };
       activeRecognitionEndTimer = setTimeout(() => {
         completeRecognition();
         try { rec.abort(); } catch (e) {}
-      }, mobile ? 4500 : 2000);
+      }, mobile ? 1500 : 1200);
       // stop() can produce a final result before onend.
       try { rec.stop(); } catch (e) { completeRecognition(); }
     };
@@ -3735,7 +3769,7 @@
       } catch (e) {
         errorCode = e?.name === 'NotAllowedError' ? 'not-allowed' : 'start-failed';
         recognitionEnded = true;
-        if (!canRecord || recognitionOnly) completeRecognition();
+        if (!canRecord || recognitionOnly || isFatalRecognitionError(errorCode)) completeRecognition();
       }
     };
 
@@ -3799,7 +3833,6 @@
               const f0 = mobile ? null : detectPitchF0FromBuffer(timeBuf, activeAudioCtx.sampleRate);
               if (f0) capturedPitchSamples.push(f0);
               if (f0 || rms > 0.02) markVoice();
-              else if (mobile && rms > 0.006) markVoice();
             }, 50);
           } catch (ctxErr) {}
         }
@@ -3957,6 +3990,10 @@
       if (!isCurrent() || recognitionEnded) return;
       recognitionEnded = true;
       recognitionEndTime = Date.now();
+      // Lỗi hệ thống / quyền / mạng phải kết thúc & báo ngay cho người dùng trên mobile/tablet
+      if (isFatalRecognitionError(errorCode)) {
+        return completeRecognition();
+      }
       // Android/iOS may end recognition after one phrase while the recorder is still running.
       if (mobile && wantsCapture && !captureError && !stopping) return;
       completeRecognition();

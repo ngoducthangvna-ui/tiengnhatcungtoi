@@ -1043,6 +1043,13 @@
   animation: kaiwaPulse 1.1s infinite;
 }
 
+.kaiwa-circle-btn.is-stopping {
+  background: var(--accent-amber, #f59e0b);
+  border-color: var(--accent-amber, #f59e0b);
+  color: #ffffff;
+  opacity: 0.88;
+}
+
 .kaiwa-circle-btn.kaiwa-btn-user-voice {
   color: #38bdf8;
   border-color: #0284c7;

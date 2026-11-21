@@ -6836,6 +6836,9 @@ function initQuickSearch() {
       } catch (err) {}
       headerSpeechRecognition = null;
     }
+    if (container && !input.value.trim() && !dropdown.classList.contains('active')) {
+      container.classList.remove('mobile-active');
+    }
   };
 
   window.stopHeaderVoiceSearch = stopHeaderVoiceSearch;
@@ -6881,7 +6884,7 @@ function initQuickSearch() {
     try {
       const isMobileVoice = isMobileVoiceDevice();
       headerSpeechRecognition = new SpeechRec();
-      headerSpeechRecognition.lang = 'ja-JP';
+      headerSpeechRecognition.lang = (typeof maziiVoiceLang === 'string' && maziiVoiceLang) ? maziiVoiceLang : 'ja-JP';
       headerSpeechRecognition.continuous = true;
       if (isMobileVoice) headerSpeechRecognition.continuous = false;
       headerSpeechRecognition.interimResults = true;
@@ -7543,6 +7546,14 @@ function initQuickSearch() {
           container.classList.remove('mobile-active');
         }
       }
+    });
+  }
+
+  if (typeof window !== 'undefined' && window.addEventListener) {
+    window.addEventListener('hashchange', () => {
+      stopHeaderVoiceSearch();
+      dropdown.classList.remove('active');
+      if (container) container.classList.remove('mobile-active');
     });
   }
 }
@@ -10752,15 +10763,24 @@ function commitVoiceSearchResult(transcript, alternatives) {
 
 
 function toggleMaziiVoiceSearch() {
+  const panel = document.getElementById('mazii-voice-panel');
+  const isPanelVisible = Boolean(panel && panel.style.display !== 'none');
+
   if (maziiIsVoiceListening || maziiShouldKeepListening) {
     if (maziiLastVoiceText) {
-      commitVoiceSearchResult(maziiLastVoiceText, []);
+      commitVoiceSearchResult(maziiLastVoiceText, maziiLastVoiceAlternatives || []);
     } else {
       stopMaziiVoiceSearch(true);
     }
-  } else {
-    startMaziiVoiceSearch(maziiVoiceLang);
+    return;
   }
+
+  if (isPanelVisible) {
+    stopMaziiVoiceSearch(true);
+    return;
+  }
+
+  startMaziiVoiceSearch(maziiVoiceLang);
 }
 
 
@@ -10803,6 +10823,14 @@ async function retryMicrophonePermission() {
 
   if (isInsecure) {
     if (transcriptEl) transcriptEl.innerHTML = 'Micro yêu cầu kết nối bảo mật HTTPS (trình duyệt chặn Micro trên HTTP mạng LAN). Vui lòng truy cập qua tên miền HTTPS.';
+    return;
+  }
+
+  // Trên điện thoại & máy tính bảng (đặc biệt iOS/iPadOS Safari), SpeechRecognition.start()
+  // phải được gọi đồng bộ ngay trong user gesture, không được chờ await getUserMedia trước.
+  const hasSpeechRec = typeof window !== 'undefined' && Boolean(window.SpeechRecognition || window.webkitSpeechRecognition);
+  if (isMobileOrTabletVoiceDevice() && hasSpeechRec) {
+    startMaziiVoiceSearch(maziiVoiceLang);
     return;
   }
 
@@ -11069,6 +11097,12 @@ function startMaziiVoiceSearch(lang = 'ja-JP', isAutoRestart = false) {
             clearTimeout(maziiSilenceHintTimer);
             maziiShouldKeepListening = false;
             setVoiceMicActiveVisual(false);
+            if (titleEl && /^Đang nghe/i.test((titleEl.textContent || '').trim())) {
+              titleEl.textContent = 'Đã dừng nghe';
+              if (transcriptEl && (!transcriptEl.textContent || transcriptEl.textContent.includes('Hãy nói'))) {
+                transcriptEl.textContent = 'Chạm vào biểu tượng Micro để nói lại.';
+              }
+            }
           }
           return;
         }
