@@ -20,9 +20,9 @@
       "Yêu cầu dịch vụ tại bưu điện bằng mẫu: これ、<ruby>船便<rt>ふなびん</rt></ruby>で <ruby>お願いします<rt>おねがいします</rt></ruby>."
     ],
     "audioSrc": "audio/kaiwa/lesson_11.mp3",
-    "audioDuration": 24.55,
+    "audioDuration": 45.51,
     "renshuuAudioSrc": "audio/kaiwa/renshuu_11.mp3",
-    "renshuuAudioDuration": 48.5,
+    "renshuuAudioDuration": 48.4,
     "characters": [
       {
         "id": "wang",
@@ -84,8 +84,8 @@
         ],
         "explanation": "「[Vật]、[Đích đến] まで <ruby>お願いします<rt>おねがいします</rt></ruby>」dùng khi gửi hàng ở bưu điện.",
         "time": [
-          0,
-          2.93
+          21.71,
+          24.44
         ]
       },
       {
@@ -116,8 +116,8 @@
         ],
         "explanation": "<ruby>航空便<rt>こうくうびん</rt></ruby> (こうくうびん): đường hàng không; <ruby>船便<rt>ふなびん</rt></ruby> (ふなびん): đường tàu biển.",
         "time": [
-          3.31,
-          6.5
+          24.92,
+          27.84
         ]
       },
       {
@@ -145,8 +145,8 @@
         ],
         "explanation": "Hỏi cước phí trước khi quyết định.",
         "time": [
-          6.96,
-          8.76
+          28.17,
+          30.02
         ]
       },
       {
@@ -172,8 +172,8 @@
         ],
         "explanation": "Nhân viên cân kiện hàng và báo giá.",
         "time": [
-          9.22,
-          11.11
+          30.04,
+          31.85
         ]
       },
       {
@@ -195,8 +195,8 @@
         ],
         "explanation": "Lược bỏ「いくらですか」trong hội thoại tự nhiên.",
         "time": [
-          11.5,
-          12.58
+          32.07,
+          33.27
         ]
       },
       {
@@ -222,8 +222,8 @@
         ],
         "explanation": "Cước phí đường biển rẻ hơn một nửa so với đường bay.",
         "time": [
-          13.03,
-          15.31
+          33.27,
+          35.33
         ]
       },
       {
@@ -252,8 +252,8 @@
         ],
         "explanation": "「どのくらい かかりますか」hỏi tổng thời gian hoặc chi phí cần thiết.",
         "time": [
-          15.7,
-          17.33
+          35.59,
+          37.35
         ]
       },
       {
@@ -289,8 +289,8 @@
         ],
         "explanation": "「ぐらい」biểu thị số lượng ước chừng (khoảng chừng).",
         "time": [
-          17.78,
-          21.7
+          37.56,
+          40.83
         ]
       },
       {
@@ -319,8 +319,8 @@
         ],
         "explanation": "Chốt phương thức gửi hàng với nhân viên.",
         "time": [
-          22.08,
-          24.55
+          40.88,
+          42.9
         ]
       }
     ],
@@ -365,12 +365,12 @@
             ],
             "lineTimings": [
               [
-                0,
-                3.74
+                0.12,
+                3.65
               ],
               [
-                4.13,
-                6.48
+                4.01,
+                6.12
               ]
             ],
             "lineMeta": [
@@ -440,12 +440,12 @@
             ],
             "lineTimings": [
               [
-                6.86,
-                9.96
+                6.48,
+                9.32
               ],
               [
-                10.34,
-                12.67
+                9.68,
+                11.72
               ]
             ],
             "lineMeta": [
@@ -492,6 +492,10 @@
                   0.35
                 ]
               }
+            ],
+            "viLines": [
+              "Xin lỗi, bán cho tôi 10 tờ bưu thiếp.",
+              "Vâng. Tổng cộng là 500 yên ạ."
             ]
           },
           {
@@ -513,12 +517,12 @@
             ],
             "lineTimings": [
               [
-                13.06,
-                16.15
+                12.08,
+                14.95
               ],
               [
-                16.54,
-                19.22
+                15.31,
+                17.73
               ]
             ],
             "lineMeta": [
@@ -563,6 +567,10 @@
                   0.35
                 ]
               }
+            ],
+            "viLines": [
+              "Xin lỗi, bán cho tôi 3 chiếc phong bì.",
+              "Vâng. Tổng cộng là 240 yên ạ."
             ]
           }
         ]
@@ -604,12 +612,12 @@
             ],
             "lineTimings": [
               [
-                19.61,
-                21.26
+                18.05,
+                20.11
               ],
               [
-                21.65,
-                24.84
+                20.47,
+                23.87
               ]
             ],
             "lineMeta": [
@@ -670,12 +678,12 @@
             ],
             "lineTimings": [
               [
-                19.61,
-                21.26
+                18.05,
+                20.11
               ],
               [
-                25.22,
-                29.26
+                24.23,
+                28.76
               ]
             ],
             "lineMeta": [
@@ -738,12 +746,12 @@
             ],
             "lineTimings": [
               [
-                19.61,
-                21.26
+                18.05,
+                20.11
               ],
               [
-                29.64,
-                33.7
+                29.12,
+                33.79
               ]
             ],
             "lineMeta": [
@@ -834,12 +842,12 @@
             ],
             "lineTimings": [
               [
-                34.08,
-                36.65
+                34.15,
+                36.39
               ],
               [
-                37.03,
-                39.14
+                36.75,
+                38.95
               ]
             ],
             "lineMeta": [
@@ -908,12 +916,12 @@
             ],
             "lineTimings": [
               [
-                39.53,
-                41.57
+                39.31,
+                41.16
               ],
               [
-                41.95,
-                43.42
+                41.52,
+                43.12
               ]
             ],
             "lineMeta": [
@@ -976,12 +984,12 @@
             ],
             "lineTimings": [
               [
-                43.8,
-                46.18
+                43.45,
+                45.71
               ],
               [
-                46.56,
-                48.5
+                46.07,
+                48.2
               ]
             ],
             "lineMeta": [
@@ -1169,9 +1177,9 @@
       "Diễn tả so sánh bậc nhất trong một phạm vi: ～で <ruby>何<rt>なん</rt></ruby>が いちばん A ですか."
     ],
     "audioSrc": "audio/kaiwa/lesson_12.mp3",
-    "audioDuration": 28.46,
+    "audioDuration": 35.5,
     "renshuuAudioSrc": "audio/kaiwa/renshuu_12.mp3",
-    "renshuuAudioDuration": 47.64,
+    "renshuuAudioDuration": 45.27,
     "characters": [
       {
         "id": "miller",
@@ -1221,9 +1229,9 @@
         "speakerColor": "amber",
         "voice": "en-US-BrianMultilingualNeural",
         "emotion": "statement",
-        "jp": "ただいま <ruby>帰<rt>かえ</rt></ruby>りました。",
-        "rawJp": "ただいま 帰りました。",
-        "vi": "Tôi vừa đi về đây ạ.",
+        "jp": "ただいま。",
+        "rawJp": "ただいま。",
+        "vi": "Tôi đã về rồi đây.",
         "endPitch": "down",
         "pitchCurve": [
           0.32,
@@ -1238,8 +1246,8 @@
         ],
         "explanation": "Cách nói lịch sự của「ただいま」khi đi xa trở về.",
         "time": [
-          0,
-          1.7
+          7.25,
+          7.96
         ]
       },
       {
@@ -1249,9 +1257,9 @@
         "speakerColor": "emerald",
         "voice": "ja-JP-KeitaNeural",
         "emotion": "greeting_gratitude",
-        "jp": "あ、<ruby>お帰りなさい<rt>おかえりなさい</rt></ruby>。",
-        "rawJp": "あ、お帰りなさい。",
-        "vi": "Ồ, mừng anh đã về.",
+        "jp": "お<ruby>帰<rt>かえ</rt></ruby>りなさい。",
+        "rawJp": "お帰りなさい。",
+        "vi": "Mừng anh đã về.",
         "endPitch": "down",
         "pitchCurve": [
           0.35,
@@ -1264,8 +1272,8 @@
         ],
         "explanation": "Đáp lại lời chào khi người nhà hoặc khách quen đi về.",
         "time": [
-          2.09,
-          3.65
+          8.2,
+          9.44
         ]
       },
       {
@@ -1293,8 +1301,8 @@
         ],
         "explanation": "Trao quà đặc sản vùng Kyoto.",
         "time": [
-          4.03,
-          6.5
+          9.51,
+          10.45
         ]
       },
       {
@@ -1320,8 +1328,8 @@
         ],
         "explanation": "Nhận quà với thái độ trân trọng.",
         "time": [
-          6.89,
-          8.38
+          10.45,
+          12.99
         ]
       },
       {
@@ -1349,8 +1357,8 @@
         ],
         "explanation": "「どうでしたか」hỏi cảm nhận về sự việc đã diễn ra trong quá khứ.",
         "time": [
-          8.76,
-          10.46
+          13.64,
+          15.78
         ]
       },
       {
@@ -1386,8 +1394,8 @@
         ],
         "explanation": "Chia quá khứ tính từ い (おもしろかった) và tính từ な (にぎやかでした).",
         "time": [
-          10.92,
-          14.38
+          16.12,
+          19.11
         ]
       },
       {
@@ -1423,8 +1431,8 @@
         ],
         "explanation": "「<ruby>京都<rt>きょうと</rt></ruby>の<ruby>祭<rt>まつ</rt></ruby>りで いちばん <ruby>有名<rt>ゆうめい</rt></ruby>」: nổi tiếng nhất trong phạm vi các lễ hội ở Kyoto.",
         "time": [
-          14.76,
-          18.38
+          19.31,
+          23.37
         ]
       },
       {
@@ -1460,8 +1468,8 @@
         ],
         "explanation": "Khoe ảnh chụp chuyến đi.",
         "time": [
-          18.77,
-          23.45
+          23.37,
+          27.87
         ]
       },
       {
@@ -1471,9 +1479,9 @@
         "speakerColor": "blue",
         "voice": "ja-JP-NanamiNeural",
         "emotion": "exclamation",
-        "jp": "わあ、すごい <ruby>人<rt>ひと</rt></ruby>ですね。",
-        "rawJp": "わあ、すごい 人ですね。",
-        "vi": "Chà, đông người ghê nhỉ!",
+        "jp": "うわあ、すごい <ruby>人<rt>ひと</rt></ruby>ですね。",
+        "rawJp": "うわあ、すごい 人ですね。",
+        "vi": "Ồ, đông người quá nhỉ.",
         "endPitch": "down",
         "pitchCurve": [
           0.36,
@@ -1488,8 +1496,8 @@
         ],
         "explanation": "「すごい<ruby>人<rt>ひと</rt></ruby>」trong ngữ cảnh lễ hội nghĩa là lượng người đông nghịt.",
         "time": [
-          23.83,
-          25.8
+          28.04,
+          30.79
         ]
       },
       {
@@ -1518,8 +1526,8 @@
         ],
         "explanation": "Chia sẻ cảm giác thực tế sau chuyến đi đông người.",
         "time": [
-          26.18,
-          28.46
+          30.79,
+          32.94
         ]
       }
     ],
@@ -1564,12 +1572,12 @@
             ],
             "lineTimings": [
               [
-                0,
-                1.61
+                0.12,
+                1.56
               ],
               [
-                1.99,
-                5.57
+                1.92,
+                5.22
               ]
             ],
             "lineMeta": [
@@ -1637,12 +1645,12 @@
             ],
             "lineTimings": [
               [
-                5.95,
-                7.78
+                5.58,
+                7.28
               ],
               [
-                8.16,
-                12.36
+                7.64,
+                11.47
               ]
             ],
             "lineMeta": [
@@ -1711,12 +1719,12 @@
             ],
             "lineTimings": [
               [
-                12.74,
-                14.45
+                11.83,
+                13.34
               ],
               [
-                14.83,
-                18.34
+                13.7,
+                16.84
               ]
             ],
             "lineMeta": [
@@ -1807,12 +1815,12 @@
             ],
             "lineTimings": [
               [
-                18.72,
-                21.07
+                17.2,
+                19.93
               ],
               [
-                21.46,
-                23.18
+                20.29,
+                21.75
               ]
             ],
             "lineMeta": [
@@ -1881,12 +1889,12 @@
             ],
             "lineTimings": [
               [
-                23.57,
-                25.63
+                22.11,
+                24.55
               ],
               [
-                26.02,
-                27.7
+                24.91,
+                26.42
               ]
             ],
             "lineMeta": [
@@ -1949,12 +1957,12 @@
             ],
             "lineTimings": [
               [
-                28.08,
-                30.26
+                26.78,
+                29.3
               ],
               [
-                30.65,
-                32.47
+                29.66,
+                31.27
               ]
             ],
             "lineMeta": [
@@ -2037,12 +2045,12 @@
             ],
             "lineTimings": [
               [
-                32.86,
-                35.54
+                31.63,
+                34.03
               ],
               [
-                35.93,
-                37.73
+                34.39,
+                36.04
               ]
             ],
             "lineMeta": [
@@ -2109,12 +2117,12 @@
             ],
             "lineTimings": [
               [
-                38.11,
-                40.58
+                36.4,
+                38.59
               ],
               [
-                40.97,
-                42.82
+                38.95,
+                40.69
               ]
             ],
             "lineMeta": [
@@ -2163,6 +2171,10 @@
                   0.35
                 ]
               }
+            ],
+            "viLines": [
+              "Trong các môn thể thao thì bạn thích môn gì nhất?",
+              "Tôi thích bóng đá nhất."
             ]
           },
           {
@@ -2181,12 +2193,12 @@
             ],
             "lineTimings": [
               [
-                43.2,
-                45.53
+                41.05,
+                43.16
               ],
               [
-                45.91,
-                47.64
+                43.52,
+                45.07
               ]
             ],
             "lineMeta": [
@@ -2231,6 +2243,10 @@
                   0.35
                 ]
               }
+            ],
+            "viLines": [
+              "Trong một năm thì bạn thích tháng mấy nhất?",
+              "Tôi thích tháng 5 nhất."
             ]
           }
         ]
@@ -2374,9 +2390,9 @@
       "Yêu cầu thanh toán tiền riêng từng người tại quầy thu ngân: <ruby>別々に<rt>べつべつに</rt></ruby> <ruby>お願いします<rt>おねがいします</rt></ruby>."
     ],
     "audioSrc": "audio/kaiwa/lesson_13.mp3",
-    "audioDuration": 36.74,
+    "audioDuration": 58.1,
     "renshuuAudioSrc": "audio/kaiwa/renshuu_13.mp3",
-    "renshuuAudioDuration": 43.99,
+    "renshuuAudioDuration": 43.06,
     "characters": [
       {
         "id": "yamada",
@@ -2452,8 +2468,8 @@
         ],
         "explanation": "「<ruby>食<rt>た</rt></ruby>べに <ruby>行<rt>い</rt></ruby>きます」: đi để ăn (cấu trúc chỉ mục đích của động từ di chuyển).",
         "time": [
-          0,
-          3.53
+          7.34,
+          10.88
         ]
       },
       {
@@ -2475,8 +2491,8 @@
         ],
         "explanation": "Đồng ý đi ăn trưa cùng đồng nghiệp.",
         "time": [
-          3.98,
-          4.54
+          11.13,
+          11.67
         ]
       },
       {
@@ -2486,9 +2502,9 @@
         "speakerColor": "emerald",
         "voice": "ja-JP-KeitaNeural",
         "emotion": "question",
-        "jp": "どこへ <ruby>行<rt>い</rt></ruby>きましょうか。",
-        "rawJp": "どこへ 行きましょうか。",
-        "vi": "Chúng mình đi quán nào bây giờ nhỉ?",
+        "jp": "どこへ <ruby>行<rt>い</rt></ruby>きますか。",
+        "rawJp": "どこへ 行きますか。",
+        "vi": "Chúng ta đi đâu đây?",
         "endPitch": "up",
         "pitchCurve": [
           0.32,
@@ -2504,8 +2520,8 @@
         ],
         "explanation": "Hỏi ý kiến người đi cùng.",
         "time": [
-          4.92,
-          6.29
+          12.49,
+          13.59
         ]
       },
       {
@@ -2541,8 +2557,8 @@
         ],
         "explanation": "「V-たいです」diễn tả nguyện vọng của bản thân; đối tượng có thể dùng が hoặc を.",
         "time": [
-          6.74,
-          10.68
+          13.95,
+          17.68
         ]
       },
       {
@@ -2572,8 +2588,8 @@
         ],
         "explanation": "Đề xuất một quán ăn Nhật quen thuộc.",
         "time": [
-          11.06,
-          13.06
+          18.03,
+          20.01
         ]
       },
       {
@@ -2595,8 +2611,8 @@
         ],
         "explanation": "Câu hỏi gọi món ngắn gọn của nhân viên phục vụ.",
         "time": [
-          13.44,
-          14.64
+          28.01,
+          28.95
         ]
       },
       {
@@ -2623,8 +2639,8 @@
         ],
         "explanation": "「<ruby>定食<rt>ていしょく</rt></ruby>」(ていしょく) là suất cơm phần gồm món chính, cơm, súp miso và đồ chua.",
         "time": [
-          15.1,
-          17.06
+          29.29,
+          30.69
         ]
       },
       {
@@ -2648,8 +2664,8 @@
         ],
         "explanation": "「<ruby>牛丼<rt>ぎゅうどん</rt></ruby>」(ぎゅうどん) là cơm bát tô phủ thịt bò hầm hành tây.",
         "time": [
-          17.45,
-          18.72
+          31.35,
+          32.49
         ]
       },
       {
@@ -2685,8 +2701,8 @@
         ],
         "explanation": "Nhân viên xác nhận lại đơn hàng và xin khách chờ.",
         "time": [
-          19.1,
-          23.57
+          33.27,
+          36.94
         ]
       },
       {
@@ -2716,8 +2732,8 @@
         ],
         "explanation": "Nhân viên thông báo tổng số tiền tại quầy thu ngân.",
         "time": [
-          23.88,
-          26.69
+          44.41,
+          46.45
         ]
       },
       {
@@ -2749,8 +2765,8 @@
         ],
         "explanation": "「<ruby>別々に<rt>べつべつに</rt></ruby><ruby>お願いします<rt>おねがいします</rt></ruby>」(べつべつにおねがいします): văn hóa chia tiền sòng phẳng (Warikan/tính riêng) rất phổ biến ở Nhật.",
         "time": [
-          27.07,
-          30.5
+          47,
+          49.26
         ]
       },
       {
@@ -2786,8 +2802,8 @@
         ],
         "explanation": "Nhân viên tách hóa đơn riêng cho từng người.",
         "time": [
-          30.89,
-          36.74
+          49.86,
+          55.6
         ]
       }
     ],
@@ -2826,12 +2842,12 @@
             ],
             "lineTimings": [
               [
-                0,
-                2.21
+                0.12,
+                2.77
               ],
               [
-                2.59,
-                4.73
+                3.13,
+                5.05
               ]
             ],
             "lineMeta": [
@@ -2892,11 +2908,11 @@
             ],
             "lineTimings": [
               [
-                0,
-                2.21
+                0.12,
+                2.77
               ],
               [
-                5.11,
+                5.41,
                 6.58
               ]
             ],
@@ -2937,6 +2953,10 @@
                   0.35
                 ]
               }
+            ],
+            "viLines": [
+              "Bây giờ bạn muốn có thứ gì nhất?",
+              "Tôi muốn có một chiếc xe hơi."
             ]
           },
           {
@@ -2952,12 +2972,12 @@
             ],
             "lineTimings": [
               [
-                0,
-                2.21
+                0.12,
+                2.77
               ],
               [
-                6.96,
-                8.62
+                6.94,
+                8.27
               ]
             ],
             "lineMeta": [
@@ -3000,6 +3020,10 @@
                   0.35
                 ]
               }
+            ],
+            "viLines": [
+              "Bây giờ bạn muốn có thứ gì nhất?",
+              "Tôi muốn có một chiếc máy ảnh kỹ thuật số."
             ]
           }
         ]
@@ -3055,20 +3079,20 @@
             ],
             "lineTimings": [
               [
-                9,
-                11.06
+                8.63,
+                10.68
               ],
               [
-                11.45,
-                13.13
+                11.04,
+                12.58
               ],
               [
-                13.51,
-                15.77
+                12.94,
+                15.35
               ],
               [
-                16.15,
-                17.74
+                15.71,
+                17.2
               ]
             ],
             "lineMeta": [
@@ -3166,20 +3190,20 @@
             ],
             "lineTimings": [
               [
-                9,
-                11.06
+                8.63,
+                10.68
               ],
               [
-                18.12,
-                20.02
+                17.56,
+                19.12
               ],
               [
-                13.51,
-                15.77
+                12.94,
+                15.35
               ],
               [
-                20.4,
-                21.91
+                19.48,
+                21.16
               ]
             ],
             "lineMeta": [
@@ -3279,20 +3303,20 @@
             ],
             "lineTimings": [
               [
-                9,
-                11.06
+                8.63,
+                10.68
               ],
               [
-                22.3,
-                23.98
+                21.52,
+                22.96
               ],
               [
-                13.51,
-                15.77
+                12.94,
+                15.35
               ],
               [
-                24.36,
-                25.9
+                23.32,
+                24.71
               ]
             ],
             "lineMeta": [
@@ -3423,16 +3447,16 @@
             ],
             "lineTimings": [
               [
-                26.28,
-                27.84
+                25.07,
+                26.67
               ],
               [
-                28.22,
-                30.62
+                27.03,
+                29.58
               ],
               [
-                31.01,
-                33.05
+                29.94,
+                31.71
               ]
             ],
             "lineMeta": [
@@ -3512,16 +3536,16 @@
             ],
             "lineTimings": [
               [
-                33.43,
-                35.09
+                32.07,
+                33.59
               ],
               [
-                35.47,
-                38.47
+                33.95,
+                37.1
               ],
               [
-                31.01,
-                33.05
+                29.94,
+                31.71
               ]
             ],
             "lineMeta": [
@@ -3604,16 +3628,16 @@
             ],
             "lineTimings": [
               [
-                38.86,
-                40.68
+                37.46,
+                39.25
               ],
               [
-                41.06,
-                43.99
+                39.61,
+                42.86
               ],
               [
-                31.01,
-                33.05
+                29.94,
+                31.71
               ]
             ],
             "lineMeta": [
@@ -3825,9 +3849,9 @@
       "Đưa tiền thanh toán và nhận tiền thừa trên xe taxi."
     ],
     "audioSrc": "audio/kaiwa/lesson_14.mp3",
-    "audioDuration": 25.94,
+    "audioDuration": 52.69,
     "renshuuAudioSrc": "audio/kaiwa/renshuu_14.mp3",
-    "renshuuAudioDuration": 41.06,
+    "renshuuAudioDuration": 39.99,
     "characters": [
       {
         "id": "karina",
@@ -3864,9 +3888,9 @@
         "speakerColor": "rose",
         "voice": "en-US-EmmaMultilingualNeural",
         "emotion": "statement",
-        "jp": "<ruby>梅田<rt>うめだ</rt></ruby>まで <ruby>行<rt>い</rt></ruby>って ください。",
-        "rawJp": "梅田まで 行って ください。",
-        "vi": "Cho tôi đi đến Umeda với ạ.",
+        "jp": "みどり<ruby>町<rt>まち</rt></ruby>まで お<ruby>願<rt>ねが</rt></ruby>いします。",
+        "rawJp": "みどり町まで お願いします。",
+        "vi": "Làm ơn cho tôi đến phố Midori.",
         "endPitch": "down",
         "pitchCurve": [
           0.32,
@@ -3883,8 +3907,8 @@
         ],
         "explanation": "「V-てください」dùng để yêu cầu hoặc hướng dẫn lịch sự.",
         "time": [
-          0,
-          1.87
+          7.21,
+          9.08
         ]
       },
       {
@@ -3906,8 +3930,8 @@
         ],
         "explanation": "Tài xế nhận điểm đến và khởi hành.",
         "time": [
-          2.26,
-          2.78
+          9.15,
+          9.85
         ]
       },
       {
@@ -3943,8 +3967,8 @@
         ],
         "explanation": "「<ruby>信号<rt>しんごう</rt></ruby>を <ruby>右<rt>みぎ</rt></ruby>へ <ruby>曲<rt>ま</rt></ruby>がる」: rẽ phải tại cột đèn giao thông.",
         "time": [
-          3.17,
-          7.54
+          17.83,
+          21.71
         ]
       },
       {
@@ -3966,8 +3990,8 @@
         ],
         "explanation": "Tài xế xác nhận lại hướng rẽ.",
         "time": [
-          7.92,
-          8.83
+          22.15,
+          23.06
         ]
       },
       {
@@ -3989,8 +4013,8 @@
         ],
         "explanation": "Khẳng định lại với tài xế.",
         "time": [
-          9.22,
-          9.82
+          23.17,
+          24.01
         ]
       },
       {
@@ -4015,8 +4039,8 @@
         ],
         "explanation": "「まっすぐ」nghĩa là đi thẳng.",
         "time": [
-          10.2,
-          11.3
+          25.68,
+          26.92
         ]
       },
       {
@@ -4047,8 +4071,8 @@
         ],
         "explanation": "Yêu cầu tài xế tiếp tục đi thẳng.",
         "time": [
-          11.76,
-          14.09
+          27.13,
+          29.48
         ]
       },
       {
@@ -4080,8 +4104,8 @@
         ],
         "explanation": "「<ruby>止<rt>と</rt></ruby>めてください」(とめてください): xin hãy dừng xe lại.",
         "time": [
-          14.4,
-          17.26
+          31.09,
+          33.42
         ]
       },
       {
@@ -4109,8 +4133,8 @@
         ],
         "explanation": "Tài xế dừng xe và báo cước phí trên đồng hồ.",
         "time": [
-          17.64,
-          19.82
+          33.6,
+          43.16
         ]
       },
       {
@@ -4137,8 +4161,8 @@
         ],
         "explanation": "「<ruby>これでお願いします<rt>これでおねがいします</rt></ruby>」dùng khi đưa tờ tiền mệnh giá lớn để thanh toán.",
         "time": [
-          20.21,
-          21.94
+          43.57,
+          44.93
         ]
       },
       {
@@ -4174,8 +4198,8 @@
         ],
         "explanation": "「<ruby>お釣り<rt>おつり</rt></ruby>」(おつり) là tiền thừa trả lại (Karina đã đưa tờ 5.000 yên).",
         "time": [
-          22.32,
-          25.94
+          46.61,
+          50.15
         ]
       }
     ],
@@ -4217,12 +4241,12 @@
             ],
             "lineTimings": [
               [
-                0,
-                3.91
+                0.12,
+                4.01
               ],
               [
-                4.3,
-                5.3
+                4.37,
+                5.19
               ]
             ],
             "lineMeta": [
@@ -4283,12 +4307,12 @@
             ],
             "lineTimings": [
               [
-                5.69,
-                10.27
+                5.55,
+                10.47
               ],
               [
-                10.66,
-                12.77
+                10.83,
+                12.56
               ]
             ],
             "lineMeta": [
@@ -4337,6 +4361,10 @@
                   0.35
                 ]
               }
+            ],
+            "viLines": [
+              "Xin lỗi, hãy viết địa chỉ và tên vào đây.",
+              "Vâng, tôi hiểu rồi ạ."
             ]
           },
           {
@@ -4355,12 +4383,12 @@
             ],
             "lineTimings": [
               [
-                13.15,
-                16.99
+                12.92,
+                17.01
               ],
               [
-                17.38,
-                19.08
+                17.37,
+                18.68
               ]
             ],
             "lineMeta": [
@@ -4406,6 +4434,10 @@
                   0.38
                 ]
               }
+            ],
+            "viLines": [
+              "Xin lỗi, hãy cho tôi mượn chiếc bút bi.",
+              "Vâng, xin mời bạn."
             ]
           }
         ]
@@ -4444,12 +4476,12 @@
             ],
             "lineTimings": [
               [
-                19.46,
-                22.51
+                19.04,
+                22.04
               ],
               [
-                22.9,
-                25.3
+                22.4,
+                24.18
               ]
             ],
             "lineMeta": [
@@ -4513,12 +4545,12 @@
             ],
             "lineTimings": [
               [
-                25.68,
-                29.09
+                24.54,
+                28.01
               ],
               [
-                22.9,
-                25.3
+                22.4,
+                24.18
               ]
             ],
             "lineMeta": [
@@ -4582,12 +4614,12 @@
             ],
             "lineTimings": [
               [
-                29.47,
-                33.07
+                28.37,
+                31.87
               ],
               [
-                22.9,
-                25.3
+                22.4,
+                24.18
               ]
             ],
             "lineMeta": [
@@ -4674,12 +4706,12 @@
             ],
             "lineTimings": [
               [
-                33.46,
-                35.18
+                32.23,
+                34.3
               ],
               [
-                35.57,
-                37.08
+                34.66,
+                36.07
               ]
             ],
             "lineMeta": [
@@ -4732,12 +4764,12 @@
             ],
             "lineTimings": [
               [
-                33.46,
-                35.18
+                32.23,
+                34.3
               ],
               [
-                37.46,
-                39.1
+                36.43,
+                38
               ]
             ],
             "lineMeta": [
@@ -4790,12 +4822,12 @@
             ],
             "lineTimings": [
               [
-                33.46,
-                35.18
+                32.23,
+                34.3
               ],
               [
-                39.48,
-                41.06
+                38.36,
+                39.79
               ]
             ],
             "lineMeta": [
@@ -4976,9 +5008,9 @@
       "Trò chuyện tự nhiên về các thành viên trong gia đình."
     ],
     "audioSrc": "audio/kaiwa/lesson_15.mp3",
-    "audioDuration": 29.26,
+    "audioDuration": 36.26,
     "renshuuAudioSrc": "audio/kaiwa/renshuu_15.mp3",
-    "renshuuAudioDuration": 51.6,
+    "renshuuAudioDuration": 47.7,
     "characters": [
       {
         "id": "kimura",
@@ -5031,8 +5063,8 @@
         ],
         "explanation": "Nhận xét về bộ phim vừa xem xong.",
         "time": [
-          0,
-          1.56
+          6.48,
+          7.97
         ]
       },
       {
@@ -5066,8 +5098,8 @@
         ],
         "explanation": "「<ruby>思<rt>おも</rt></ruby>い<ruby>出<rt>だ</rt></ruby>します」(おもいだします): nhớ lại, hồi tưởng.",
         "time": [
-          1.94,
-          5.18
+          7.97,
+          11.13
         ]
       },
       {
@@ -5100,8 +5132,8 @@
         ],
         "explanation": "「ご<ruby>家族<rt>かぞく</rt></ruby>」là cách gọi tôn kính gia đình của người nghe.",
         "time": [
-          5.57,
-          8.83
+          11.33,
+          14.82
         ]
       },
       {
@@ -5129,8 +5161,8 @@
         ],
         "explanation": "Khi kể về người thân của mình cho người ngoài, dùng từ khiêm nhường: <ruby>両親<rt>りょうしん</rt></ruby> (bố mẹ), <ruby>姉<rt>あね</rt></ruby> (chị gái).",
         "time": [
-          9.29,
-          11.54
+          15.05,
+          17.33
         ]
       },
       {
@@ -5160,8 +5192,8 @@
         ],
         "explanation": "「いらっしゃいます」là tôn kính ngữ của います.",
         "time": [
-          11.93,
-          13.7
+          17.41,
+          19.45
         ]
       },
       {
@@ -5197,8 +5229,8 @@
         ],
         "explanation": "「[Địa điểm] に <ruby>住<rt>す</rt></ruby>んで います」chỉ nơi cư trú hiện tại.",
         "time": [
-          14.16,
-          17.21
+          19.69,
+          22.07
         ]
       },
       {
@@ -5229,8 +5261,8 @@
         ],
         "explanation": "「<ruby>働<rt>はたら</rt></ruby>いています」chỉ nghề nghiệp/công việc đang làm lâu dài.",
         "time": [
-          17.52,
-          19.87
+          22.47,
+          24.59
         ]
       },
       {
@@ -5257,8 +5289,8 @@
         ],
         "explanation": "Hỏi lại về gia đình của chị Kimura.",
         "time": [
-          20.18,
-          22.08
+          25.08,
+          26.66
         ]
       },
       {
@@ -5287,8 +5319,8 @@
         ],
         "explanation": "Giới thiệu nghề nghiệp của bố mình.",
         "time": [
-          22.54,
-          26.09
+          27.33,
+          30.57
         ]
       },
       {
@@ -5320,8 +5352,8 @@
         ],
         "explanation": "「<ruby>教<rt>おし</rt></ruby>えています」diễn tả công việc giảng dạy hiện tại.",
         "time": [
-          26.4,
-          29.26
+          31.09,
+          33.79
         ]
       }
     ],
@@ -5363,12 +5395,12 @@
             ],
             "lineTimings": [
               [
-                0,
-                3.43
+                0.12,
+                3.48
               ],
               [
-                3.82,
-                5.9
+                3.84,
+                5.42
               ]
             ],
             "lineMeta": [
@@ -5436,12 +5468,12 @@
             ],
             "lineTimings": [
               [
-                6.29,
-                9.67
+                5.78,
+                9.2
               ],
               [
-                10.06,
-                13.51
+                9.56,
+                12.68
               ]
             ],
             "lineMeta": [
@@ -5515,12 +5547,12 @@
             ],
             "lineTimings": [
               [
-                13.9,
-                17.38
+                13.04,
+                17.09
               ],
               [
-                17.76,
-                19.97
+                17.45,
+                18.99
               ]
             ],
             "lineMeta": [
@@ -5607,12 +5639,12 @@
             ],
             "lineTimings": [
               [
-                20.35,
-                22.44
+                19.35,
+                21.32
               ],
               [
-                22.82,
-                25.27
+                21.68,
+                23.43
               ]
             ],
             "lineMeta": [
@@ -5677,12 +5709,12 @@
             ],
             "lineTimings": [
               [
-                25.66,
-                27.43
+                23.79,
+                25.48
               ],
               [
-                22.82,
-                25.27
+                21.68,
+                23.43
               ]
             ],
             "lineMeta": [
@@ -5743,12 +5775,12 @@
             ],
             "lineTimings": [
               [
-                27.82,
-                29.86
+                25.84,
+                27.9
               ],
               [
-                22.82,
-                25.27
+                21.68,
+                23.43
               ]
             ],
             "lineMeta": [
@@ -5850,20 +5882,20 @@
             ],
             "lineTimings": [
               [
-                30.24,
-                32.52
+                28.23,
+                30.44
               ],
               [
-                32.9,
-                34.8
+                30.8,
+                32.16
               ],
               [
-                35.18,
-                36.72
+                32.52,
+                34.12
               ],
               [
-                37.1,
-                38.86
+                34.48,
+                35.96
               ]
             ],
             "lineMeta": [
@@ -5957,20 +5989,20 @@
             ],
             "lineTimings": [
               [
-                39.24,
-                41.74
+                36.32,
+                38.57
               ],
               [
-                42.12,
-                44.23
+                38.93,
+                40.58
               ],
               [
-                35.18,
-                36.72
+                32.52,
+                34.12
               ],
               [
-                44.62,
-                46.73
+                40.94,
+                42.77
               ]
             ],
             "lineMeta": [
@@ -6052,6 +6084,12 @@
                   0.35
                 ]
               }
+            ],
+            "viLines": [
+              "Anh Santos đã kết hôn chưa?",
+              "Vâng, anh ấy đã kết hôn rồi.",
+              "Công việc của anh ấy là gì?",
+              "Anh ấy đang làm việc tại hãng hàng không Brazil Air."
             ]
           },
           {
@@ -6073,20 +6111,20 @@
             ],
             "lineTimings": [
               [
-                47.11,
-                49.46
+                43.13,
+                45.24
               ],
               [
-                32.9,
-                34.8
+                30.8,
+                32.16
               ],
               [
-                35.18,
-                36.72
+                32.52,
+                34.12
               ],
               [
-                49.85,
-                51.6
+                45.6,
+                47.5
               ]
             ],
             "lineMeta": [
@@ -6160,6 +6198,12 @@
                   0.35
                 ]
               }
+            ],
+            "viLines": [
+              "Thầy Watt đã kết hôn chưa?",
+              "Chưa, thầy ấy còn độc thân.",
+              "Công việc của thầy ấy là gì?",
+              "Thầy ấy đang giảng dạy tại trường đại học."
             ]
           }
         ]
@@ -6303,9 +6347,9 @@
       "Biết cách hỏi và hướng dẫn quy trình thao tác máy móc (カードの <ruby>入<rt>い</rt></ruby>れ<ruby>方<rt>かた</rt></ruby>、お<ruby>金<rt>かね</rt></ruby>の <ruby>下<rt>お</rt></ruby>ろし<ruby>方<rt>かた</rt></ruby>)."
     ],
     "audioSrc": "audio/kaiwa/lesson_16.mp3",
-    "audioDuration": 33.5,
+    "audioDuration": 41.93,
     "renshuuAudioSrc": "audio/kaiwa/renshuu_16.mp3",
-    "renshuuAudioDuration": 51.22,
+    "renshuuAudioDuration": 53.76,
     "characters": [
       {
         "id": "maria",
@@ -6368,8 +6412,8 @@
         ],
         "explanation": "「<ruby>使<rt>つか</rt></ruby>い<ruby>方<rt>かた</rt></ruby>」(つかいかた): cách sử dụng (V-bỏ ます + <ruby>方<rt>かた</rt></ruby>).",
         "time": [
-          0,
-          3.24
+          7.33,
+          10.76
         ]
       },
       {
@@ -6395,8 +6439,8 @@
         ],
         "explanation": "「お<ruby>引<rt>ひ</rt></ruby>き<ruby>出<rt>だ</rt></ruby>し」(おひきだし) là thuật ngữ ngân hàng chỉ giao dịch rút tiền mặt.",
         "time": [
-          3.62,
-          4.9
+          11.19,
+          12.63
         ]
       },
       {
@@ -6418,8 +6462,8 @@
         ],
         "explanation": "Xác nhận nhu cầu rút tiền.",
         "time": [
-          5.35,
-          6.19
+          12.67,
+          13.8
         ]
       },
       {
@@ -6451,8 +6495,8 @@
         ],
         "explanation": "「まず」: đầu tiên, trước hết.",
         "time": [
-          6.58,
-          8.98
+          13.8,
+          16.37
         ]
       },
       {
@@ -6474,8 +6518,8 @@
         ],
         "explanation": "Làm theo bước 1.",
         "time": [
-          9.36,
-          9.86
+          17.24,
+          17.74
         ]
       },
       {
@@ -6511,8 +6555,8 @@
         ],
         "explanation": "「<ruby>暗証番号<rt>あんしょうばんごう</rt></ruby>」(あんしょうばんごう) là mật khẩu / mã PIN 4 chữ số của thẻ ngân hàng.",
         "time": [
-          10.25,
-          15.19
+          17.74,
+          21.59
         ]
       },
       {
@@ -6537,8 +6581,8 @@
         ],
         "explanation": "Báo đã nhập xong mã PIN.",
         "time": [
-          15.58,
-          17.09
+          21.64,
+          24.02
         ]
       },
       {
@@ -6570,8 +6614,8 @@
         ],
         "explanation": "「<ruby>金額<rt>きんがく</rt></ruby>」(きんがく): số tiền.",
         "time": [
-          17.47,
-          20.06
+          24.26,
+          26.61
         ]
       },
       {
@@ -6605,8 +6649,8 @@
         ],
         "explanation": "Trên máy ATM Nhật có phím đơn vị「<ruby>万<rt>まん</rt></ruby>」và「<ruby>千<rt>せん</rt></ruby>」nên không cần bấm 4 số 0.",
         "time": [
-          20.45,
-          24.6
+          26.78,
+          29.2
         ]
       },
       {
@@ -6616,9 +6660,9 @@
         "speakerColor": "blue",
         "voice": "ja-JP-NanamiNeural",
         "emotion": "statement",
-        "jp": "いいえ、ここの「5」と「<ruby>万<rt>まん</rt></ruby>」を <ruby>押<rt>お</rt></ruby>して ください。",
-        "rawJp": "いいえ、ここの「5」と「万」を 押して ください。",
-        "vi": "Không ạ, chị hãy bấm số \"5\" và chữ \"Vạn (万)\" ở đây nhé.",
+        "jp": "いいえ、この「<ruby>万円<rt>まんえん</rt></ruby>」を <ruby>押<rt>お</rt></ruby>します。それから…",
+        "rawJp": "いいえ、この「万円」を 押します。それから…",
+        "vi": "Không, chị nhấn nút 'Man-en' (vạn yên) này. Sau đó...",
         "endPitch": "down",
         "pitchCurve": [
           0.32,
@@ -6641,8 +6685,8 @@
         ],
         "explanation": "Bấm「5」rồi bấm「<ruby>万<rt>まん</rt></ruby>」thay vì bấm 50000.",
         "time": [
-          25.06,
-          28.78
+          29.47,
+          34.27
         ]
       },
       {
@@ -6652,9 +6696,9 @@
         "speakerColor": "blue",
         "voice": "ja-JP-NanamiNeural",
         "emotion": "statement",
-        "jp": "あと、「<ruby>確認<rt>かくにん</rt></ruby>」を <ruby>押<rt>お</rt></ruby>して ください。",
-        "rawJp": "あと、「確認」を 押して ください。",
-        "vi": "Cuối cùng, chị bấm nút \"Xác nhận (確認)\" là xong ạ.",
+        "jp": "この「<ruby>確認<rt>かくにん</rt></ruby>」ボタンを <ruby>押<rt>お</rt></ruby>して ください。",
+        "rawJp": "この「確認」ボタンを 押して ください。",
+        "vi": "Xin nhấn nút 'Xác nhận' này ạ.",
         "endPitch": "down",
         "pitchCurve": [
           0.32,
@@ -6672,8 +6716,8 @@
         ],
         "explanation": "「<ruby>確認<rt>かくにん</rt></ruby>」(かくにん) là nút xác nhận hoàn tất giao dịch.",
         "time": [
-          29.09,
-          31.42
+          34.27,
+          36.53
         ]
       },
       {
@@ -6705,8 +6749,8 @@
         ],
         "explanation": "Cảm ơn nhân viên sau khi rút được tiền.",
         "time": [
-          31.8,
-          33.5
+          36.86,
+          39.17
         ]
       }
     ],
@@ -6748,12 +6792,12 @@
             ],
             "lineTimings": [
               [
-                0,
-                1.87
+                0.12,
+                2.06
               ],
               [
-                2.26,
-                6.74
+                2.42,
+                7.77
               ]
             ],
             "lineMeta": [
@@ -6820,12 +6864,12 @@
             ],
             "lineTimings": [
               [
-                0,
-                1.87
+                0.12,
+                2.06
               ],
               [
-                7.13,
-                12.17
+                8.13,
+                13.93
               ]
             ],
             "lineMeta": [
@@ -6874,6 +6918,10 @@
                   0.35
                 ]
               }
+            ],
+            "viLines": [
+              "Hôm qua bạn đã làm gì?",
+              "Tôi chạy bộ ở công viên, tắm vòi sen, rồi sau đó ăn sáng."
             ]
           },
           {
@@ -6892,12 +6940,12 @@
             ],
             "lineTimings": [
               [
-                0,
-                1.87
+                0.12,
+                2.06
               ],
               [
-                12.55,
-                17.45
+                14.29,
+                20.12
               ]
             ],
             "lineMeta": [
@@ -6946,6 +6994,10 @@
                   0.35
                 ]
               }
+            ],
+            "viLines": [
+              "Hôm qua bạn đã làm gì?",
+              "Tôi xem phim ở Umeda, uống trà ở quán cà phê, rồi sau đó về nhà."
             ]
           }
         ]
@@ -6987,12 +7039,12 @@
             ],
             "lineTimings": [
               [
-                17.83,
-                19.9
+                20.48,
+                22.58
               ],
               [
-                20.28,
-                23.93
+                22.94,
+                26.41
               ]
             ],
             "lineMeta": [
@@ -7062,12 +7114,12 @@
             ],
             "lineTimings": [
               [
-                24.31,
-                26.38
+                26.73,
+                29.16
               ],
               [
-                26.76,
-                30.82
+                29.52,
+                33.32
               ]
             ],
             "lineMeta": [
@@ -7119,6 +7171,10 @@
                   0.35
                 ]
               }
+            ],
+            "viLines": [
+              "Bạn đi đến bệnh viện bằng cách nào?",
+              "Tôi lên xe buýt từ trước nhà, rồi xuống ở bến xe buýt thứ 3."
             ]
           },
           {
@@ -7137,12 +7193,12 @@
             ],
             "lineTimings": [
               [
-                31.2,
-                33.41
+                33.68,
+                36.17
               ],
               [
-                33.79,
-                37.49
+                36.53,
+                40.08
               ]
             ],
             "lineMeta": [
@@ -7195,6 +7251,10 @@
                   0.35
                 ]
               }
+            ],
+            "viLines": [
+              "Bạn đi đến bảo tàng mỹ thuật bằng cách nào?",
+              "Tôi đi tàu điện ngầm đến Umeda, rồi đi bộ khoảng 5 phút."
             ]
           }
         ]
@@ -7236,12 +7296,12 @@
             ],
             "lineTimings": [
               [
-                37.87,
-                41.11
+                40.44,
+                43.41
               ],
               [
-                41.5,
-                43.46
+                43.77,
+                46.28
               ]
             ],
             "lineMeta": [
@@ -7308,12 +7368,12 @@
             ],
             "lineTimings": [
               [
-                43.85,
-                47.28
+                46.64,
+                49.77
               ],
               [
-                41.5,
-                43.46
+                43.77,
+                46.28
               ]
             ],
             "lineMeta": [
@@ -7380,12 +7440,12 @@
             ],
             "lineTimings": [
               [
-                47.66,
-                51.22
+                50.13,
+                53.56
               ],
               [
-                41.5,
-                43.46
+                43.77,
+                46.28
               ]
             ],
             "lineMeta": [
@@ -7577,9 +7637,9 @@
       "Diễn tả nghĩa vụ bắt buộc phải làm: V-なければ なりません và không cần thiết: V-なくても いいです."
     ],
     "audioSrc": "audio/kaiwa/lesson_17.mp3",
-    "audioDuration": 33.26,
+    "audioDuration": 41.27,
     "renshuuAudioSrc": "audio/kaiwa/renshuu_17.mp3",
-    "renshuuAudioDuration": 62.86,
+    "renshuuAudioDuration": 59.14,
     "characters": [
       {
         "id": "doctor",
@@ -7631,8 +7691,8 @@
         ],
         "explanation": "Câu hỏi mở đầu của bác sĩ khi bệnh nhân vào khám.",
         "time": [
-          0,
-          1.25
+          6.53,
+          7.8
         ]
       },
       {
@@ -7668,8 +7728,8 @@
         ],
         "explanation": "Nối các triệu chứng bệnh bằng thể て (<ruby>痛<rt>いた</rt></ruby>くて).",
         "time": [
-          1.7,
-          5.18
+          8.5,
+          11.88
         ]
       },
       {
@@ -7705,8 +7765,8 @@
         ],
         "explanation": "Bác sĩ kiểm tra cổ họng bệnh nhân.",
         "time": [
-          5.57,
-          8.81
+          11.92,
+          15.67
         ]
       },
       {
@@ -7742,8 +7802,8 @@
         ],
         "explanation": "Chẩn đoán cảm lạnh (かぜ) và khuyên nghỉ ngơi.",
         "time": [
-          9.12,
-          12.79
+          17.44,
+          21.23
         ]
       },
       {
@@ -7779,8 +7839,8 @@
         ],
         "explanation": "「V-なければ なりません」diễn tả việc bắt buộc phải làm do trách nhiệm công việc.",
         "time": [
-          13.3,
-          18.1
+          21.53,
+          25.82
         ]
       },
       {
@@ -7816,8 +7876,8 @@
         ],
         "explanation": "Lời dặn dò điều trị nhanh của bác sĩ.",
         "time": [
-          18.48,
-          21.94
+          26.02,
+          30.02
         ]
       },
       {
@@ -7839,8 +7899,8 @@
         ],
         "explanation": "Tiếp nhận lời khuyên.",
         "time": [
-          22.32,
-          23.04
+          30.02,
+          30.72
         ]
       },
       {
@@ -7876,8 +7936,8 @@
         ],
         "explanation": "「V-ないで ください」dùng để khuyên can không nên làm việc gì có hại cho sức khỏe.",
         "time": [
-          23.42,
-          26.59
+          30.73,
+          33.73
         ]
       },
       {
@@ -7903,8 +7963,8 @@
         ],
         "explanation": "Đồng ý làm theo chỉ dẫn.",
         "time": [
-          26.98,
-          28.68
+          33.73,
+          35.54
         ]
       },
       {
@@ -7928,8 +7988,8 @@
         ],
         "explanation": "「<ruby>お大事に<rt>おだいじに</rt></ruby>」(おだいじに) là câu chúc sức khỏe bắt buộc dành cho người đang bị ốm.",
         "time": [
-          29.06,
-          30.84
+          35.66,
+          36.78
         ]
       },
       {
@@ -7961,8 +8021,8 @@
         ],
         "explanation": "Cảm ơn bác sĩ trước khi rời phòng khám.",
         "time": [
-          31.22,
-          33.26
+          36.78,
+          38.5
         ]
       }
     ],
@@ -8011,16 +8071,16 @@
             ],
             "lineTimings": [
               [
-                0,
-                1.25
+                0.12,
+                1.18
               ],
               [
-                1.63,
-                2.9
+                1.54,
+                3.53
               ],
               [
-                3.29,
-                8.11
+                3.89,
+                8.57
               ]
             ],
             "lineMeta": [
@@ -8097,16 +8157,16 @@
             ],
             "lineTimings": [
               [
-                0,
-                1.25
+                0.12,
+                1.18
               ],
               [
-                8.5,
-                10.01
+                8.93,
+                10.17
               ],
               [
-                10.39,
-                15.19
+                10.53,
+                15.02
               ]
             ],
             "lineMeta": [
@@ -8185,16 +8245,16 @@
             ],
             "lineTimings": [
               [
-                0,
-                1.25
+                0.12,
+                1.18
               ],
               [
-                15.58,
-                17.02
+                15.36,
+                16.69
               ],
               [
-                17.4,
-                22.25
+                17.05,
+                21.33
               ]
             ],
             "lineMeta": [
@@ -8292,12 +8352,12 @@
             ],
             "lineTimings": [
               [
-                22.63,
-                28.58
+                21.69,
+                26.82
               ],
               [
-                28.97,
-                31.08
+                27.14,
+                29.91
               ]
             ],
             "lineMeta": [
@@ -8359,12 +8419,12 @@
             ],
             "lineTimings": [
               [
-                31.46,
-                37.49
+                30.23,
+                35.58
               ],
               [
-                28.97,
-                31.08
+                27.14,
+                29.91
               ]
             ],
             "lineMeta": [
@@ -8426,12 +8486,12 @@
             ],
             "lineTimings": [
               [
-                37.87,
-                44.28
+                35.94,
+                41.43
               ],
               [
-                28.97,
-                31.08
+                27.14,
+                29.91
               ]
             ],
             "lineMeta": [
@@ -8519,12 +8579,12 @@
             ],
             "lineTimings": [
               [
-                44.66,
-                46.9
+                41.79,
+                44
               ],
               [
-                47.28,
-                49.99
+                44.36,
+                46.62
               ]
             ],
             "lineMeta": [
@@ -8593,12 +8653,12 @@
             ],
             "lineTimings": [
               [
-                50.38,
-                53.21
+                46.98,
+                49.83
               ],
               [
-                53.59,
-                56.47
+                50.19,
+                52.8
               ]
             ],
             "lineMeta": [
@@ -8671,12 +8731,12 @@
             ],
             "lineTimings": [
               [
-                56.86,
-                59.62
+                53.16,
+                55.93
               ],
               [
-                60,
-                62.86
+                56.29,
+                58.94
               ]
             ],
             "lineMeta": [
@@ -8874,9 +8934,9 @@
       "Sử dụng mẫu V1-る <ruby>前<rt>まえ</rt></ruby>に、V2 để chỉ việc làm trước một mốc thời gian hoặc hành động."
     ],
     "audioSrc": "audio/kaiwa/lesson_18.mp3",
-    "audioDuration": 29.38,
+    "audioDuration": 36.15,
     "renshuuAudioSrc": "audio/kaiwa/renshuu_18.mp3",
-    "renshuuAudioDuration": 35.04,
+    "renshuuAudioDuration": 34.24,
     "characters": [
       {
         "id": "yamada",
@@ -8948,8 +9008,8 @@
         ],
         "explanation": "「<ruby>趣味<rt>しゅみ</rt></ruby>は<ruby>何ですか<rt>なんですか</rt></ruby>」: câu hỏi mở chuyện kinh điển về sở thích.",
         "time": [
-          0,
-          1.94
+          6.88,
+          8.53
         ]
       },
       {
@@ -8971,8 +9031,8 @@
         ],
         "explanation": "Trả lời trực tiếp bằng danh từ.",
         "time": [
-          2.4,
-          3.34
+          9.17,
+          9.93
         ]
       },
       {
@@ -9001,8 +9061,8 @@
         ],
         "explanation": "Hỏi sâu hơn về chủ đề nhiếp ảnh của đối phương.",
         "time": [
-          3.72,
-          5.38
+          10.15,
+          12.07
         ]
       },
       {
@@ -9035,8 +9095,8 @@
         ],
         "explanation": "「<ruby>特<rt>とく</rt></ruby>に」(とくに): đặc biệt là.",
         "time": [
-          5.83,
-          9.26
+          12.51,
+          15.97
         ]
       },
       {
@@ -9067,8 +9127,8 @@
         ],
         "explanation": "「へえ」biểu thị sự ngạc nhiên và thích thú trước thông tin mới.",
         "time": [
-          9.65,
-          11.76
+          16.11,
+          18.56
         ]
       },
       {
@@ -9078,9 +9138,9 @@
         "speakerColor": "emerald",
         "voice": "ja-JP-KeitaNeural",
         "emotion": "greeting_gratitude",
-        "jp": "<ruby>日本<rt>にほん</rt></ruby>へ <ruby>来<rt>く</rt></ruby>る <ruby>前<rt>まえ</rt></ruby>に、<ruby>馬<rt>うま</rt></ruby>に <ruby>乗<rt>の</rt></ruby>りましたか。",
-        "rawJp": "日本へ 来る 前に、馬に 乗りましたか。",
-        "vi": "Trước khi đến Nhật, anh có hay cưỡi ngựa không?",
+        "jp": "<ruby>日本<rt>にほん</rt></ruby>へ <ruby>来<rt>く</rt></ruby>てから、<ruby>馬<rt>うま</rt></ruby>の <ruby>写真<rt>しゃしん</rt></ruby>を <ruby>撮<rt>と</rt></ruby>りましたか。",
+        "rawJp": "日本へ 来てから、馬の 写真を 撮りましたか。",
+        "vi": "Sau khi đến Nhật, anh có chụp ảnh ngựa chưa?",
         "endPitch": "up",
         "pitchCurve": [
           0.35,
@@ -9101,8 +9161,8 @@
         ],
         "explanation": "「<ruby>日本<rt>にほん</rt></ruby>へ <ruby>来<rt>く</rt></ruby>る <ruby>前<rt>まえ</rt></ruby>に」: trước khi đến Nhật (V-る + <ruby>前<rt>まえ</rt></ruby>に); cưỡi ngựa dùng trợ từ に (<ruby>馬<rt>うま</rt></ruby>に<ruby>乗<rt>の</rt></ruby>ります).",
         "time": [
-          12.14,
-          14.81
+          19.02,
+          22.22
         ]
       },
       {
@@ -9112,9 +9172,9 @@
         "speakerColor": "purple",
         "voice": "en-US-AndrewMultilingualNeural",
         "emotion": "statement",
-        "jp": "ええ、ブラジルで よく <ruby>乗<rt>の</rt></ruby>りました。",
-        "rawJp": "ええ、ブラジルで よく 乗りました。",
-        "vi": "Vâng, hồi ở Brazil tôi thường xuyên cưỡi ngựa lắm.",
+        "jp": "いいえ、<ruby>日本<rt>にほん</rt></ruby>では なかなか <ruby>馬<rt>うま</rt></ruby>を <ruby>見<rt>み</rt></ruby>る ことが できません。",
+        "rawJp": "いいえ、日本では なかなか 馬を 見る ことが できません。",
+        "vi": "Chưa, ở Nhật khó mà thấy được ngựa lắm.",
         "endPitch": "down",
         "pitchCurve": [
           0.32,
@@ -9134,8 +9194,8 @@
         ],
         "explanation": "Kể về trải nghiệm ở quê nhà.",
         "time": [
-          15.26,
-          17.69
+          22.57,
+          26.68
         ]
       },
       {
@@ -9145,9 +9205,9 @@
         "speakerColor": "emerald",
         "voice": "ja-JP-KeitaNeural",
         "emotion": "statement",
-        "jp": "わたしは <ruby>日本<rt>にほん</rt></ruby>で <ruby>馬<rt>うま</rt></ruby>を <ruby>見<rt>み</rt></ruby>る ことは できますが、<ruby>乗<rt>の</rt></ruby>る ことは なかなか できません。",
-        "rawJp": "わたしは 日本で 馬を 見る ことは できますが、乗る ことは なかなか できません。",
-        "vi": "Ở Nhật thì việc ngắm ngựa có thể làm được, chứ việc cưỡi ngựa thì mãi chẳng có dịp thực hiện được.",
+        "jp": "<ruby>北海道<rt>ほっかいどう</rt></ruby>に <ruby>馬<rt>うま</rt></ruby>が たくさん いますよ。",
+        "rawJp": "北海道に 馬が たくさん いますよ。",
+        "vi": "Ở Hokkaido có rất nhiều ngựa đấy.",
         "endPitch": "down",
         "pitchCurve": [
           0.32,
@@ -9171,8 +9231,8 @@
         ],
         "explanation": "「なかなか + Phủ định」nghĩa là \"mãi mà không thể / rất khó để làm được\".",
         "time": [
-          18.07,
-          22.7
+          26.85,
+          29.42
         ]
       },
       {
@@ -9182,9 +9242,9 @@
         "speakerColor": "purple",
         "voice": "en-US-AndrewMultilingualNeural",
         "emotion": "statement",
-        "jp": "<ruby>北海道<rt>ほっかいどう</rt></ruby>で <ruby>乗<rt>の</rt></ruby>る ことが できますよ。",
-        "rawJp": "北海道で 乗る ことが できますよ。",
-        "vi": "Ở Hokkaido có thể cưỡi ngựa được đấy anh ạ.",
+        "jp": "<ruby>本当<rt>ほんとう</rt></ruby>ですか。",
+        "rawJp": "本当ですか。",
+        "vi": "Thật sao ạ?",
         "endPitch": "down",
         "pitchCurve": [
           0.32,
@@ -9204,8 +9264,8 @@
         ],
         "explanation": "Gợi ý địa điểm có trang trại ngựa nổi tiếng ở Nhật.",
         "time": [
-          23.09,
-          25.25
+          29.71,
+          30.81
         ]
       },
       {
@@ -9241,8 +9301,8 @@
         ],
         "explanation": "「ぜひ」đi với「V-たいです」nhấn mạnh mong muốn mãnh liệt (\"nhất định\").",
         "time": [
-          25.63,
-          29.38
+          31.55,
+          33.73
         ]
       }
     ],
@@ -9281,12 +9341,12 @@
             ],
             "lineTimings": [
               [
-                0,
-                1.46
+                0.12,
+                1.5
               ],
               [
-                1.85,
-                5.9
+                1.86,
+                5.39
               ]
             ],
             "lineMeta": [
@@ -9348,12 +9408,12 @@
             ],
             "lineTimings": [
               [
-                6.29,
-                8.28
+                5.71,
+                7.93
               ],
               [
-                1.85,
-                5.9
+                1.86,
+                5.39
               ]
             ],
             "lineMeta": [
@@ -9420,12 +9480,12 @@
             ],
             "lineTimings": [
               [
-                8.66,
-                11.21
+                8.29,
+                11.17
               ],
               [
-                1.85,
-                5.9
+                1.86,
+                5.39
               ]
             ],
             "lineMeta": [
@@ -9516,12 +9576,12 @@
             ],
             "lineTimings": [
               [
-                11.59,
-                12.89
+                11.53,
+                12.8
               ],
               [
-                13.27,
-                15.5
+                13.16,
+                15.47
               ]
             ],
             "lineMeta": [
@@ -9575,12 +9635,12 @@
             ],
             "lineTimings": [
               [
-                11.59,
-                12.89
+                11.53,
+                12.8
               ],
               [
-                15.89,
-                17.38
+                15.83,
+                17.18
               ]
             ],
             "lineMeta": [
@@ -9615,6 +9675,10 @@
                   0.35
                 ]
               }
+            ],
+            "viLines": [
+              "Sở thích của bạn là gì?",
+              "Là vẽ tranh."
             ]
           },
           {
@@ -9630,12 +9694,12 @@
             ],
             "lineTimings": [
               [
-                11.59,
-                12.89
+                11.53,
+                12.8
               ],
               [
-                17.76,
-                19.97
+                17.54,
+                19.78
               ]
             ],
             "lineMeta": [
@@ -9674,6 +9738,10 @@
                   0.35
                 ]
               }
+            ],
+            "viLines": [
+              "Sở thích của bạn là gì?",
+              "Là xem phim nước ngoài."
             ]
           }
         ]
@@ -9715,12 +9783,12 @@
             ],
             "lineTimings": [
               [
-                20.35,
-                23.02
+                20.14,
+                22.74
               ],
               [
-                23.4,
-                24.72
+                23.1,
+                24.2
               ]
             ],
             "lineMeta": [
@@ -9778,12 +9846,12 @@
             ],
             "lineTimings": [
               [
-                25.1,
-                28.03
+                24.56,
+                27.48
               ],
               [
-                28.42,
-                29.95
+                27.84,
+                29.29
               ]
             ],
             "lineMeta": [
@@ -9845,12 +9913,12 @@
             ],
             "lineTimings": [
               [
-                30.34,
-                33.48
+                29.65,
+                32.64
               ],
               [
-                33.86,
-                35.04
+                33,
+                34.04
               ]
             ],
             "lineMeta": [
@@ -10034,9 +10102,9 @@
       "Diễn tả sự biến đổi trạng thái với tính từ và danh từ: A-く / A-に / N-に なります."
     ],
     "audioSrc": "audio/kaiwa/lesson_19.mp3",
-    "audioDuration": 29.52,
+    "audioDuration": 46.71,
     "renshuuAudioSrc": "audio/kaiwa/renshuu_19.mp3",
-    "renshuuAudioDuration": 47.14,
+    "renshuuAudioDuration": 45.34,
     "characters": [
       {
         "id": "yamada",
@@ -10081,15 +10149,15 @@
     "dialogue": [
       {
         "id": "k19-1",
-        "speakerId": "sato",
-        "speakerBadge": "<ruby>佐藤<rt>さとう</rt></ruby>",
-        "speakerColor": "blue",
-        "voice": "ja-JP-NanamiNeural",
+        "speakerId": "yamada",
+        "speakerBadge": "<ruby>山田<rt>やまだ</rt></ruby>",
+        "speakerColor": "emerald",
+        "voice": "ja-JP-KeitaNeural",
         "emotion": "statement",
-        "jp": "マリアさん、あまり <ruby>食<rt>た</rt></ruby>べませんね。",
-        "rawJp": "マリアさん、あまり 食べませんね。",
-        "vi": "Chị Maria này, sao chị không ăn mấy thế?",
-        "endPitch": "down",
+        "jp": "<ruby>乾杯<rt>かんぱい</rt></ruby>！",
+        "rawJp": "乾杯！",
+        "vi": "Cạn ly!",
+        "endPitch": "up",
         "pitchCurve": [
           0.32,
           0.68,
@@ -10106,14 +10174,49 @@
           0.48,
           0.35
         ],
-        "explanation": "Chủ nhà quan tâm khi thấy khách ăn ít.",
         "time": [
-          0,
-          2.5
+          12.66,
+          13.72
         ]
       },
       {
         "id": "k19-2",
+        "speakerId": "sato",
+        "speakerBadge": "<ruby>佐藤<rt>さとう</rt></ruby>",
+        "speakerColor": "blue",
+        "voice": "ja-JP-NanamiNeural",
+        "emotion": "statement",
+        "jp": "マリアさん、あまり <ruby>食<rt>た</rt></ruby>べませんね。",
+        "rawJp": "マリアさん、あまり 食べませんね。",
+        "vi": "Chị Maria, chị ăn ít quá nhỉ.",
+        "endPitch": "down",
+        "pitchCurve": [
+          0.32,
+          0.68,
+          0.64,
+          0.61,
+          0.57,
+          0.54,
+          0.54,
+          0.57,
+          0.59,
+          0.59,
+          0.56,
+          0.52,
+          0.49,
+          0.49,
+          0.51,
+          0.54,
+          0.48,
+          0.35
+        ],
+        "time": [
+          13.83,
+          15.35
+        ]
+      },
+      {
+        "id": "k19-3",
         "speakerId": "maria",
         "speakerBadge": "マリア",
         "speakerColor": "rose",
@@ -10121,7 +10224,7 @@
         "emotion": "statement",
         "jp": "ええ。きのうから ダイエットを して います。",
         "rawJp": "ええ。きのうから ダイエットを して います。",
-        "vi": "Vâng. Từ hôm qua tôi đang thực hiện chế độ ăn kiêng ạ.",
+        "vi": "Vâng. Từ hôm qua tôi đang ăn kiêng.",
         "endPitch": "down",
         "pitchCurve": [
           0.32,
@@ -10143,60 +10246,22 @@
           0.48,
           0.35
         ],
-        "explanation": "「ダイエットをしています」: đang ăn kiêng giảm cân.",
         "time": [
-          2.88,
-          5.45
-        ]
-      },
-      {
-        "id": "k19-3",
-        "speakerId": "sato",
-        "speakerBadge": "<ruby>佐藤<rt>さとう</rt></ruby>",
-        "speakerColor": "blue",
-        "voice": "ja-JP-NanamiNeural",
-        "emotion": "statement",
-        "jp": "そうですか。わたしも よく ダイエットを します。",
-        "rawJp": "そうですか。わたしも よく ダイエットを します。",
-        "vi": "Thế ạ. Tôi cũng hay ăn kiêng lắm.",
-        "endPitch": "down",
-        "pitchCurve": [
-          0.32,
-          0.68,
-          0.64,
-          0.61,
-          0.57,
-          0.54,
-          0.54,
-          0.57,
-          0.59,
-          0.59,
-          0.56,
-          0.52,
-          0.49,
-          0.49,
-          0.51,
-          0.54,
-          0.48,
-          0.35
-        ],
-        "explanation": "Chia sẻ sự đồng cảm của phái nữ.",
-        "time": [
-          5.83,
-          9.34
+          15.74,
+          18.52
         ]
       },
       {
         "id": "k19-4",
-        "speakerId": "maria",
-        "speakerBadge": "マリア",
-        "speakerColor": "rose",
-        "voice": "en-US-AvaMultilingualNeural",
+        "speakerId": "sato",
+        "speakerBadge": "<ruby>佐藤<rt>さとう</rt></ruby>",
+        "speakerColor": "blue",
+        "voice": "ja-JP-NanamiNeural",
         "emotion": "question",
-        "jp": "どんな ダイエットを した ことが ありますか。",
-        "rawJp": "どんな ダイエットを した ことが ありますか。",
-        "vi": "Chị đã từng thử phương pháp ăn kiêng như thế nào rồi ạ?",
-        "endPitch": "up",
+        "jp": "そうですか。<ruby>私<rt>わたし</rt></ruby>も ダイエットを した ことが あります。",
+        "rawJp": "そうですか。私も ダイエットを した ことが あります。",
+        "vi": "Vậy à. Tôi cũng từng ăn kiêng rồi đấy.",
+        "endPitch": "down",
         "pitchCurve": [
           0.32,
           0.68,
@@ -10217,23 +10282,22 @@
           0.62,
           0.85
         ],
-        "explanation": "「V-た ことが あります」hỏi về trải nghiệm trong quá khứ.",
         "time": [
-          9.72,
-          11.9
+          18.82,
+          22.24
         ]
       },
       {
         "id": "k19-5",
-        "speakerId": "sato",
-        "speakerBadge": "<ruby>佐藤<rt>さとう</rt></ruby>",
-        "speakerColor": "blue",
-        "voice": "ja-JP-NanamiNeural",
+        "speakerId": "maria",
+        "speakerBadge": "マリア",
+        "speakerColor": "rose",
+        "voice": "en-US-AvaMultilingualNeural",
         "emotion": "statement",
-        "jp": "<ruby>毎日<rt>まいにち</rt></ruby> りんごだけ <ruby>食<rt>た</rt></ruby>べたり、<ruby>水<rt>みず</rt></ruby>を たくさん <ruby>飲<rt>の</rt></ruby>んだり しました。",
-        "rawJp": "毎日 りんごだけ 食べたり、水を たくさん 飲んだり しました。",
-        "vi": "Nào là mỗi ngày chỉ ăn toàn táo, nào là uống thật nhiều nước...",
-        "endPitch": "down",
+        "jp": "どんな ダイエットですか。",
+        "rawJp": "どんな ダイエットですか。",
+        "vi": "Chị ăn kiêng kiểu gì vậy?",
+        "endPitch": "up",
         "pitchCurve": [
           0.32,
           0.68,
@@ -10254,22 +10318,21 @@
           0.48,
           0.35
         ],
-        "explanation": "「V1-たり、V2-たり しました」liệt kê các phương pháp tiêu biểu đã thử.",
         "time": [
-          12.36,
-          16.49
+          22.4,
+          23.86
         ]
       },
       {
         "id": "k19-6",
-        "speakerId": "yamada",
-        "speakerBadge": "<ruby>山田<rt>やまだ</rt></ruby>",
-        "speakerColor": "emerald",
-        "voice": "ja-JP-KeitaNeural",
+        "speakerId": "sato",
+        "speakerBadge": "<ruby>佐藤<rt>さとう</rt></ruby>",
+        "speakerColor": "blue",
+        "voice": "ja-JP-NanamiNeural",
         "emotion": "empathy_apology",
-        "jp": "しかし、<ruby>無理<rt>むり</rt></ruby>な ダイエットは <ruby>体<rt>からだ</rt></ruby>に よくないですよ。",
-        "rawJp": "しかし、無理な ダイエットは 体に よくないですよ。",
-        "vi": "Tuy nhiên, việc ăn kiêng quá sức thì không tốt cho cơ thể đâu nhé.",
+        "jp": "<ruby>毎日<rt>まいにち</rt></ruby> りんごだけ <ruby>食<rt>た</rt></ruby>べたり、<ruby>水<rt>みず</rt></ruby>を たくさん <ruby>飲<rt>の</rt></ruby>んだり しました。",
+        "rawJp": "毎日 りんごだけ 食べたり、水を たくさん 飲んだり しました。",
+        "vi": "Ngày nào tôi cũng chỉ ăn táo hoặc uống thật nhiều nước.",
         "endPitch": "down",
         "pitchCurve": [
           0.29,
@@ -10291,22 +10354,21 @@
           0.43,
           0.32
         ],
-        "explanation": "「<ruby>無理<rt>むり</rt></ruby>な」(むりな): quá sức, ép xác.",
         "time": [
-          16.87,
-          20.62
+          24.14,
+          28.22
         ]
       },
       {
         "id": "k19-7",
-        "speakerId": "maria",
-        "speakerBadge": "マリア",
-        "speakerColor": "rose",
-        "voice": "en-US-AvaMultilingualNeural",
+        "speakerId": "yamada",
+        "speakerBadge": "<ruby>山田<rt>やまだ</rt></ruby>",
+        "speakerColor": "emerald",
+        "voice": "ja-JP-KeitaNeural",
         "emotion": "empathy_apology",
-        "jp": "そうですね。",
-        "rawJp": "そうですね。",
-        "vi": "Vâng, đúng thế thật ạ.",
+        "jp": "でも、<ruby>無理<rt>むり</rt></ruby>な ダイエットは <ruby>体<rt>からだ</rt></ruby>に よくないですね。",
+        "rawJp": "でも、無理な ダイエットは 体に よくないですね。",
+        "vi": "Nhưng mà ăn kiêng quá sức thì không tốt cho cơ thể đâu.",
         "endPitch": "down",
         "pitchCurve": [
           0.29,
@@ -10315,22 +10377,21 @@
           0.43,
           0.32
         ],
-        "explanation": "Tán đồng với lời khuyên của anh Yamada.",
         "time": [
-          21,
-          21.96
+          29,
+          32.91
         ]
       },
       {
         "id": "k19-8",
-        "speakerId": "sato",
-        "speakerBadge": "<ruby>佐藤<rt>さとう</rt></ruby>",
-        "speakerColor": "blue",
-        "voice": "ja-JP-NanamiNeural",
+        "speakerId": "maria",
+        "speakerBadge": "マリア",
+        "speakerColor": "rose",
+        "voice": "en-US-AvaMultilingualNeural",
         "emotion": "statement",
-        "jp": "マリアさん、この ケーキ、おいしいですよ。",
-        "rawJp": "マリアさん、この ケーキ、おいしいですよ。",
-        "vi": "Chị Maria ơi, món bánh kem này ngon lắm đấy.",
+        "jp": "そうですね。",
+        "rawJp": "そうですね。",
+        "vi": "Đúng vậy ạ.",
         "endPitch": "down",
         "pitchCurve": [
           0.32,
@@ -10351,22 +10412,21 @@
           0.48,
           0.35
         ],
-        "explanation": "Mời món tráng miệng hấp dẫn.",
         "time": [
-          22.34,
-          25.32
+          33.48,
+          34.12
         ]
       },
       {
         "id": "k19-9",
-        "speakerId": "maria",
-        "speakerBadge": "マリア",
-        "speakerColor": "rose",
-        "voice": "en-US-AvaMultilingualNeural",
+        "speakerId": "sato",
+        "speakerBadge": "<ruby>佐藤<rt>さとう</rt></ruby>",
+        "speakerColor": "blue",
+        "voice": "ja-JP-NanamiNeural",
         "emotion": "hesitation",
-        "jp": "そうですか。…じゃ、ダイエットは あしたから します。",
-        "rawJp": "そうですか。…じゃ、ダイエットは あしたから します。",
-        "vi": "Thế ạ?... Vậy thì chuyện ăn kiêng để từ ngày mai tôi sẽ làm vậy!",
+        "jp": "マリアさん、この アイスクリーム、おいしいですよ。",
+        "rawJp": "マリアさん、この アイスクリーム、おいしいですよ。",
+        "vi": "Chị Maria, món kem này ngon lắm đấy.",
         "endPitch": "down",
         "pitchCurve": [
           0.29,
@@ -10388,10 +10448,32 @@
           0.42,
           0.32
         ],
-        "explanation": "Câu kết hài hước rất nổi tiếng của Bài 19 Minna no Nihongo.",
         "time": [
-          25.7,
-          29.52
+          34.55,
+          39.37
+        ]
+      },
+      {
+        "id": "k19-10",
+        "speakerId": "maria",
+        "speakerBadge": "マリア",
+        "speakerColor": "rose",
+        "voice": "en-US-AvaMultilingualNeural",
+        "emotion": "statement",
+        "jp": "そうですか。ダイエットは また あしたから します。",
+        "rawJp": "そうですか。ダイエットは また あしたから します。",
+        "vi": "Vậy ạ? Vậy thì việc ăn kiêng để mai làm tiếp vậy!",
+        "endPitch": "down",
+        "pitchCurve": [
+          0.45,
+          0.65,
+          0.6,
+          0.45,
+          0.3
+        ],
+        "time": [
+          39.75,
+          44.07
         ]
       }
     ],
@@ -10433,12 +10515,12 @@
             ],
             "lineTimings": [
               [
-                0,
-                2.16
+                0.12,
+                2.2
               ],
               [
-                2.54,
-                6.07
+                2.56,
+                5.84
               ]
             ],
             "lineMeta": [
@@ -10507,12 +10589,12 @@
             ],
             "lineTimings": [
               [
-                6.46,
-                8.86
+                6.2,
+                8.51
               ],
               [
-                9.24,
-                13.01
+                8.87,
+                12.3
               ]
             ],
             "lineMeta": [
@@ -10565,6 +10647,10 @@
                   0.38
                 ]
               }
+            ],
+            "viLines": [
+              "Bạn đã từng leo núi Phú Sĩ bao giờ chưa?",
+              "Chưa, chưa một lần nào cả. Nhất định tôi rất muốn leo thử."
             ]
           },
           {
@@ -10583,12 +10669,12 @@
             ],
             "lineTimings": [
               [
-                13.39,
-                15.65
+                12.62,
+                14.9
               ],
               [
-                16.03,
-                19.78
+                15.26,
+                18.74
               ]
             ],
             "lineMeta": [
@@ -10640,6 +10726,10 @@
                   0.38
                 ]
               }
+            ],
+            "viLines": [
+              "Bạn đã từng tắm suối nước nóng Onsen bao giờ chưa?",
+              "Chưa, chưa một lần nào cả. Nhất định tôi rất muốn tắm thử."
             ]
           }
         ]
@@ -10678,12 +10768,12 @@
             ],
             "lineTimings": [
               [
-                20.16,
-                22.37
+                19.1,
+                21.66
               ],
               [
-                22.75,
-                25.9
+                22.02,
+                25.14
               ]
             ],
             "lineMeta": [
@@ -10749,12 +10839,12 @@
             ],
             "lineTimings": [
               [
-                20.16,
-                22.37
+                19.1,
+                21.66
               ],
               [
-                26.28,
-                28.97
+                25.5,
+                28.01
               ]
             ],
             "lineMeta": [
@@ -10801,6 +10891,10 @@
                   0.35
                 ]
               }
+            ],
+            "viLines": [
+              "Vào ngày nghỉ bạn thường làm gì?",
+              "Lúc thì tôi dọn dẹp, lúc thì giặt giũ."
             ]
           },
           {
@@ -10816,12 +10910,12 @@
             ],
             "lineTimings": [
               [
-                20.16,
-                22.37
+                19.1,
+                21.66
               ],
               [
-                29.35,
-                32.21
+                28.37,
+                31.12
               ]
             ],
             "lineMeta": [
@@ -10871,6 +10965,10 @@
                   0.35
                 ]
               }
+            ],
+            "viLines": [
+              "Vào ngày nghỉ bạn thường làm gì?",
+              "Lúc thì tôi đi mua sắm, lúc thì xem phim."
             ]
           }
         ]
@@ -10912,12 +11010,12 @@
             ],
             "lineTimings": [
               [
-                32.59,
-                34.85
+                31.48,
+                33.63
               ],
               [
-                35.23,
-                37.34
+                33.99,
+                36.01
               ]
             ],
             "lineMeta": [
@@ -10978,12 +11076,12 @@
             ],
             "lineTimings": [
               [
-                37.73,
-                39.82
+                36.37,
+                38.28
               ],
               [
-                40.2,
-                42.31
+                38.64,
+                40.56
               ]
             ],
             "lineMeta": [
@@ -11026,6 +11124,10 @@
                   0.35
                 ]
               }
+            ],
+            "viLines": [
+              "Trời mát mẻ hơn rồi nhỉ.",
+              "Vâng, sắp sửa sang mùa thu rồi nhỉ."
             ]
           },
           {
@@ -11044,12 +11146,12 @@
             ],
             "lineTimings": [
               [
-                42.7,
-                44.66
+                40.92,
+                42.83
               ],
               [
-                45.05,
-                47.14
+                43.19,
+                45.14
               ]
             ],
             "lineMeta": [
@@ -11091,6 +11193,10 @@
                   0.35
                 ]
               }
+            ],
+            "viLines": [
+              "Trời lạnh dần đi rồi nhỉ.",
+              "Vâng, sắp sửa sang mùa đông rồi nhỉ."
             ]
           }
         ]
@@ -11223,8 +11329,8 @@
     "id": "kaiwa-20",
     "lesson": 20,
     "level": "Sơ cấp 1",
-    "titleJp": "<ruby>夏休<rt>なつやす</rt></ruby>みは どう するの？",
-    "titleVi": "Kỳ nghỉ hè cậu tính sao?",
+    "titleJp": "<ruby>一緒<rt>いっしょ</rt></ruby>に <ruby>行<rt>い</rt></ruby>かない？",
+    "titleVi": "Đi cùng không?",
     "subtitleVi": "Hội thoại thân mật (Thể thông thường - 普通形)",
     "sceneType": "summer_plan",
     "context": "Hai đồng nghiệp thân thiết là anh Kobayashi và anh <ruby>鈴木<rt>すずき</rt></ruby> (Suzuki) trò chuyện bằng thể thông thường (<ruby>普通形<rt>ふつうけい</rt></ruby>) về kế hoạch leo núi Phú Sĩ trong kỳ nghỉ hè sắp tới.",
@@ -11234,35 +11340,35 @@
       "Đáp lại tự nhiên bằng うん (Ừ / Có) và ううん (Không)."
     ],
     "audioSrc": "audio/kaiwa/lesson_20.mp3",
-    "audioDuration": 29.35,
+    "audioDuration": 31.97,
     "renshuuAudioSrc": "audio/kaiwa/renshuu_20.mp3",
-    "renshuuAudioDuration": 40.2,
+    "renshuuAudioDuration": 37.44,
     "characters": [
       {
         "id": "kobayashi",
         "badgeJp": "<ruby>小林<rt>こばやし</rt></ruby>",
         "fullNameJp": "<ruby>小林<rt>こばやし</rt></ruby>",
-        "roleVi": "anh Kobayashi · người quen / nhân viên",
-        "color": "purple",
+        "roleVi": "anh Kobayashi · bạn của Thawaphon",
+        "color": "blue",
         "gender": "male",
-        "pitch": 0.97,
-        "rate": 0.95,
+        "pitch": 1,
+        "rate": 0.96,
         "voice": "de-DE-FlorianMultilingualNeural",
         "speechGenVoice": "Florian",
         "voiceName": "Florian (Nam lịch thiệp)"
       },
       {
-        "id": "suzuki",
-        "badgeJp": "<ruby>鈴木<rt>すずき</rt></ruby>",
-        "fullNameJp": "<ruby>鈴木<rt>すずき</rt></ruby>",
-        "roleVi": "chị Suzuki · đồng nghiệp / nhân viên Nhật Bản",
+        "id": "thawaphon",
+        "badgeJp": "タワポン",
+        "fullNameJp": "タワポン",
+        "roleVi": "anh Thawaphon · du học sinh Thái Lan",
         "color": "emerald",
-        "gender": "female",
-        "pitch": 1.03,
+        "gender": "male",
+        "pitch": 1.02,
         "rate": 0.96,
-        "voice": "fr-FR-VivienneMultilingualNeural",
-        "speechGenVoice": "Vivienne",
-        "voiceName": "Vivienne (Nữ đồng nghiệp)"
+        "voice": "en-US-AndrewMultilingualNeural",
+        "speechGenVoice": "Andrew",
+        "voiceName": "Andrew (Nam trầm ấm)"
       }
     ],
     "dialogue": [
@@ -11270,12 +11376,12 @@
         "id": "k20-1",
         "speakerId": "kobayashi",
         "speakerBadge": "<ruby>小林<rt>こばやし</rt></ruby>",
-        "speakerColor": "purple",
+        "speakerColor": "blue",
         "voice": "de-DE-FlorianMultilingualNeural",
         "emotion": "question",
-        "jp": "<ruby>鈴木<rt>すずき</rt></ruby>くん、<ruby>夏休<rt>なつやす</rt></ruby>みは どこへ <ruby>行<rt>い</rt></ruby>くの？",
-        "rawJp": "鈴木くん、夏休みは どこへ 行くの？",
-        "vi": "Suzuki này, nghỉ hè cậu định đi đâu đấy?",
+        "jp": "<ruby>夏休<rt>なつやす</rt></ruby>みは <ruby>国<rt>くに</rt></ruby>へ <ruby>帰<rt>かえ</rt></ruby>る？",
+        "rawJp": "夏休みは 国へ 帰る？",
+        "vi": "Nghỉ hè cậu có về nước không?",
         "endPitch": "up",
         "pitchCurve": [
           0.32,
@@ -11293,23 +11399,22 @@
           0.62,
           0.85
         ],
-        "explanation": "「<ruby>行<rt>い</rt></ruby>くの？」(lên giọng) là cách hỏi thân mật của「どこへ <ruby>行<rt>い</rt></ruby>きますか」.",
         "time": [
-          0,
-          2.86
+          6.48,
+          8.19
         ]
       },
       {
         "id": "k20-2",
-        "speakerId": "suzuki",
-        "speakerBadge": "<ruby>鈴木<rt>すずき</rt></ruby>",
+        "speakerId": "thawaphon",
+        "speakerBadge": "タワポン",
         "speakerColor": "emerald",
-        "voice": "fr-FR-VivienneMultilingualNeural",
+        "voice": "en-US-AndrewMultilingualNeural",
         "emotion": "question",
-        "jp": "まだ <ruby>決<rt>き</rt></ruby>めて いないよ。<ruby>小林<rt>こばやし</rt></ruby>くんは？",
-        "rawJp": "まだ 決めて いないよ。小林くんは？",
-        "vi": "Tớ vẫn chưa quyết định nữa. Thế còn cậu thì sao Kobayashi?",
-        "endPitch": "up",
+        "jp": "うーん、<ruby>帰<rt>かえ</rt></ruby>りたいけど…。",
+        "rawJp": "うーん、帰りたいけど…。",
+        "vi": "Ừm, cũng muốn về nhưng mà...",
+        "endPitch": "down",
         "pitchCurve": [
           0.32,
           0.68,
@@ -11326,23 +11431,22 @@
           0.62,
           0.85
         ],
-        "explanation": "「<ruby>決<rt>き</rt></ruby>めていないよ」= <ruby>決<rt>き</rt></ruby>めていません (vẫn chưa quyết định).",
         "time": [
-          3.31,
-          6
+          8.69,
+          10.66
         ]
       },
       {
         "id": "k20-3",
         "speakerId": "kobayashi",
         "speakerBadge": "<ruby>小林<rt>こばやし</rt></ruby>",
-        "speakerColor": "purple",
+        "speakerColor": "blue",
         "voice": "de-DE-FlorianMultilingualNeural",
         "emotion": "statement",
-        "jp": "ぼくは <ruby>友だち<rt>ともだち</rt></ruby>と <ruby>富士山<rt>ふじさん</rt></ruby>に <ruby>登<rt>のぼ</rt></ruby>るんだ。",
-        "rawJp": "ぼくは 友だちと 富士山に 登るんだ。",
-        "vi": "Tớ định đi leo núi Phú Sĩ với bạn đấy.",
-        "endPitch": "down",
+        "jp": "そう。タワポンくん、<ruby>富士山<rt>ふじさん</rt></ruby>に <ruby>登<rt>のぼ</rt></ruby>った こと ある？",
+        "rawJp": "そう。タワポンくん、富士山に 登った こと ある？",
+        "vi": "Thế à. Thawaphon này, cậu đã leo núi Phú Sĩ bao giờ chưa?",
+        "endPitch": "up",
         "pitchCurve": [
           0.32,
           0.68,
@@ -11360,23 +11464,22 @@
           0.48,
           0.35
         ],
-        "explanation": "「ぼく」là đại từ xưng \"tớ/tôi\" thân mật của nam giới.",
         "time": [
-          6.46,
-          8.95
+          10.8,
+          14.63
         ]
       },
       {
         "id": "k20-4",
-        "speakerId": "suzuki",
-        "speakerBadge": "<ruby>鈴木<rt>すずき</rt></ruby>",
+        "speakerId": "thawaphon",
+        "speakerBadge": "タワポン",
         "speakerColor": "emerald",
-        "voice": "fr-FR-VivienneMultilingualNeural",
+        "voice": "en-US-AndrewMultilingualNeural",
         "emotion": "question",
-        "jp": "へえ、いいね。もう <ruby>何回も<rt>なんかいも</rt></ruby> <ruby>登<rt>のぼ</rt></ruby>った ことが あるの？",
-        "rawJp": "へえ、いいね。もう 何回も 登った ことが あるの？",
-        "vi": "Ồ, tuyệt thế! Cậu đã từng leo nhiều lần rồi hả?",
-        "endPitch": "up",
+        "jp": "うーん、ない。",
+        "rawJp": "うーん、ない。",
+        "vi": "Ừm, chưa.",
+        "endPitch": "down",
         "pitchCurve": [
           0.32,
           0.68,
@@ -11397,22 +11500,21 @@
           0.62,
           0.85
         ],
-        "explanation": "「いいね」= いいですね;「あるの？」= ありますか.",
         "time": [
-          9.34,
-          13.06
+          15.35,
+          16.65
         ]
       },
       {
         "id": "k20-5",
         "speakerId": "kobayashi",
         "speakerBadge": "<ruby>小林<rt>こばやし</rt></ruby>",
-        "speakerColor": "purple",
+        "speakerColor": "blue",
         "voice": "de-DE-FlorianMultilingualNeural",
         "emotion": "question",
-        "jp": "ううん、<ruby>初めて<rt>はじめて</rt></ruby>だよ。<ruby>鈴木<rt>すずき</rt></ruby>くんも <ruby>一緒に<rt>いっしょに</rt></ruby> <ruby>行<rt>い</rt></ruby>かない？",
-        "rawJp": "ううん、初めてだよ。鈴木くんも 一緒に 行かない？",
-        "vi": "Không, đây là lần đầu tiên đấy. Suzuki cũng đi cùng bọn tớ không?",
+        "jp": "じゃあ、よかったら <ruby>一緒<rt>いっしょ</rt></ruby>に <ruby>行<rt>い</rt></ruby>かない？",
+        "rawJp": "じゃあ、よかったら 一緒に 行かない？",
+        "vi": "Vậy nếu được thì đi cùng bọn mình không?",
         "endPitch": "up",
         "pitchCurve": [
           0.32,
@@ -11434,22 +11536,21 @@
           0.62,
           0.85
         ],
-        "explanation": "「ううん」= いいえ (Không);「<ruby>行<rt>い</rt></ruby>かない？」= <ruby>行<rt>い</rt></ruby>きませんか (Rủ rê thân mật).",
         "time": [
-          13.51,
-          17.5
+          16.65,
+          19.34
         ]
       },
       {
         "id": "k20-6",
-        "speakerId": "suzuki",
-        "speakerBadge": "<ruby>鈴木<rt>すずき</rt></ruby>",
+        "speakerId": "thawaphon",
+        "speakerBadge": "タワポン",
         "speakerColor": "emerald",
-        "voice": "fr-FR-VivienneMultilingualNeural",
+        "voice": "en-US-AndrewMultilingualNeural",
         "emotion": "question",
-        "jp": "うん、<ruby>行<rt>い</rt></ruby>きたいけど、いつから？",
-        "rawJp": "うん、行きたいけど、いつから？",
-        "vi": "Ừ, tớ cũng muốn đi lắm nhưng mà từ bao giờ thế?",
+        "jp": "うん、いつごろ？",
+        "rawJp": "うん、いつごろ？",
+        "vi": "Ừ, khoảng bao giờ thế?",
         "endPitch": "up",
         "pitchCurve": [
           0.32,
@@ -11465,23 +11566,22 @@
           0.62,
           0.85
         ],
-        "explanation": "「うん」= はい (Ừ);「～けど」= ～が (nhưng mà).",
         "time": [
-          17.95,
-          20.38
+          19.57,
+          21.01
         ]
       },
       {
         "id": "k20-7",
         "speakerId": "kobayashi",
         "speakerBadge": "<ruby>小林<rt>こばやし</rt></ruby>",
-        "speakerColor": "purple",
+        "speakerColor": "blue",
         "voice": "de-DE-FlorianMultilingualNeural",
         "emotion": "statement",
-        "jp": "8<ruby>月<rt>がつ</rt></ruby> 10<ruby>日<rt>にち</rt></ruby>から 12<ruby>日<rt>にち</rt></ruby>までだよ。",
-        "rawJp": "8月 10日から 12日までだよ。",
-        "vi": "Từ ngày 10 đến ngày 12 tháng 8 đấy.",
-        "endPitch": "down",
+        "jp": "8<ruby>月<rt>がつ</rt></ruby>の <ruby>初<rt>はじ</rt></ruby>めごろは どう？",
+        "rawJp": "8月の 初めごろは どう？",
+        "vi": "Khoảng đầu tháng 8 thì sao?",
+        "endPitch": "up",
         "pitchCurve": [
           0.32,
           0.68,
@@ -11498,22 +11598,21 @@
           0.48,
           0.35
         ],
-        "explanation": "Thêm「だよ」ở cuối câu danh từ để truyền đạt thông tin thân mật.",
         "time": [
-          20.83,
-          23.38
+          21.86,
+          23.64
         ]
       },
       {
         "id": "k20-8",
-        "speakerId": "suzuki",
-        "speakerBadge": "<ruby>鈴木<rt>すずき</rt></ruby>",
+        "speakerId": "thawaphon",
+        "speakerBadge": "タワポン",
         "speakerColor": "emerald",
-        "voice": "fr-FR-VivienneMultilingualNeural",
+        "voice": "en-US-AndrewMultilingualNeural",
         "emotion": "statement",
-        "jp": "ちょっと <ruby>考<rt>かんが</rt></ruby>えさせて。あした <ruby>電話<rt>でんわ</rt></ruby>するよ。",
-        "rawJp": "ちょっと 考えさせて。あした 電話するよ。",
-        "vi": "Cho tớ suy nghĩ một chút nhé. Ngày mai tớ sẽ gọi điện cho cậu.",
+        "jp": "いいよ。",
+        "rawJp": "いいよ。",
+        "vi": "Được đấy.",
         "endPitch": "down",
         "pitchCurve": [
           0.32,
@@ -11534,22 +11633,21 @@
           0.48,
           0.35
         ],
-        "explanation": "「<ruby>電話<rt>でんわ</rt></ruby>するよ」= <ruby>電話<rt>でんわ</rt></ruby>します.",
         "time": [
-          23.76,
-          26.74
+          24.01,
+          24.85
         ]
       },
       {
         "id": "k20-9",
         "speakerId": "kobayashi",
         "speakerBadge": "<ruby>小林<rt>こばやし</rt></ruby>",
-        "speakerColor": "purple",
+        "speakerColor": "blue",
         "voice": "de-DE-FlorianMultilingualNeural",
         "emotion": "statement",
-        "jp": "わかった。<ruby>待<rt>ま</rt></ruby>って いるよ。",
-        "rawJp": "わかった。待って いるよ。",
-        "vi": "Ok tớ hiểu rồi. Tớ chờ điện thoại của cậu nhé.",
+        "jp": "じゃあ、いろいろ <ruby>調<rt>しら</rt></ruby>べて、また <ruby>電話<rt>でんわ</rt></ruby>するよ。",
+        "rawJp": "じゃあ、いろいろ 調べて、また 電話するよ。",
+        "vi": "Vậy để mình tìm hiểu kỹ rồi gọi điện lại cho cậu nhé.",
         "endPitch": "down",
         "pitchCurve": [
           0.32,
@@ -11563,10 +11661,32 @@
           0.48,
           0.35
         ],
-        "explanation": "「わかった」= わかりました.",
         "time": [
-          27.12,
-          29.35
+          24.99,
+          27.7
+        ]
+      },
+      {
+        "id": "k20-10",
+        "speakerId": "thawaphon",
+        "speakerBadge": "タワポン",
+        "speakerColor": "emerald",
+        "voice": "en-US-AndrewMultilingualNeural",
+        "emotion": "statement",
+        "jp": "ありがとう。<ruby>待<rt>ま</rt></ruby>ってるよ。",
+        "rawJp": "ありがとう。待ってるよ。",
+        "vi": "Cảm ơn cậu. Mình sẽ chờ.",
+        "endPitch": "down",
+        "pitchCurve": [
+          0.45,
+          0.65,
+          0.6,
+          0.45,
+          0.3
+        ],
+        "time": [
+          27.71,
+          29.56
         ]
       }
     ],
@@ -11608,12 +11728,12 @@
             ],
             "lineTimings": [
               [
-                0,
-                1.73
+                0.12,
+                1.75
               ],
               [
                 2.11,
-                3.5
+                3.02
               ]
             ],
             "lineMeta": [
@@ -11667,12 +11787,12 @@
             ],
             "lineTimings": [
               [
-                3.89,
-                5.74
+                3.38,
+                5.35
               ],
               [
-                6.12,
-                8.95
+                5.71,
+                8.93
               ]
             ],
             "lineMeta": [
@@ -11722,6 +11842,10 @@
                   0.35
                 ]
               }
+            ],
+            "viLines": [
+              "Ngày mai đi xem phim không?",
+              "Ừ, nhưng ngày mai tớ có việc bận rồi."
             ]
           },
           {
@@ -11740,12 +11864,12 @@
             ],
             "lineTimings": [
               [
-                9.34,
-                11.33
+                9.29,
+                11.25
               ],
               [
-                11.71,
-                13.13
+                11.61,
+                12.62
               ]
             ],
             "lineMeta": [
@@ -11784,6 +11908,10 @@
                   0.35
                 ]
               }
+            ],
+            "viLines": [
+              "Ngày mai đi uống bia không?",
+              "Ừ, đi thôi!"
             ]
           }
         ]
@@ -11825,12 +11953,12 @@
             ],
             "lineTimings": [
               [
-                13.51,
-                15.12
+                12.98,
+                13.97
               ],
               [
-                15.5,
-                17.98
+                14.29,
+                16.41
               ]
             ],
             "lineMeta": [
@@ -11885,12 +12013,12 @@
             ],
             "lineTimings": [
               [
-                18.36,
-                20.18
+                16.77,
+                17.98
               ],
               [
-                20.57,
-                23.76
+                18.34,
+                21.92
               ]
             ],
             "lineMeta": [
@@ -11932,6 +12060,10 @@
                   0.35
                 ]
               }
+            ],
+            "viLines": [
+              "Cậu có mang theo bút chì không?",
+              "Không, tớ không mang theo rồi. Nè, cậu dùng đi."
             ]
           },
           {
@@ -11950,12 +12082,12 @@
             ],
             "lineTimings": [
               [
-                24.14,
-                26.21
+                22.28,
+                23.66
               ],
               [
-                15.5,
-                17.98
+                14.29,
+                16.41
               ]
             ],
             "lineMeta": [
@@ -11995,6 +12127,10 @@
                   0.35
                 ]
               }
+            ],
+            "viLines": [
+              "Cậu có mang theo bản đồ Kyoto không?",
+              "Ừ, có đây. Nè, cậu dùng đi."
             ]
           }
         ]
@@ -12036,12 +12172,12 @@
             ],
             "lineTimings": [
               [
-                26.59,
-                28.82
+                24.02,
+                26.65
               ],
               [
-                29.21,
-                30.67
+                27.01,
+                28.2
               ]
             ],
             "lineMeta": [
@@ -12102,12 +12238,12 @@
             ],
             "lineTimings": [
               [
-                31.06,
-                33.74
+                28.54,
+                31.46
               ],
               [
-                34.13,
-                35.74
+                31.82,
+                33.2
               ]
             ],
             "lineMeta": [
@@ -12154,6 +12290,10 @@
                   0.35
                 ]
               }
+            ],
+            "viLines": [
+              "Trận bóng đá hôm qua thế nào?",
+              "Hấp dẫn lắm cậu ạ."
             ]
           },
           {
@@ -12172,12 +12312,12 @@
             ],
             "lineTimings": [
               [
-                36.12,
-                38.21
+                33.56,
+                35.39
               ],
               [
-                38.59,
-                40.2
+                35.75,
+                37.24
               ]
             ],
             "lineMeta": [
@@ -12217,6 +12357,10 @@
                   0.35
                 ]
               }
+            ],
+            "viLines": [
+              "Bài kiểm tra hôm qua thế nào?",
+              "Khó lắm cậu ạ."
             ]
           }
         ]

@@ -2,8 +2,10 @@
  * DANH MỤC METADATA 50 ĐỀ THI JLPT N5 & N4 (EXAMS MANIFEST)
  * data/exams_manifest.js
  * --------------------------------------------------------------------------
- * Cung cấp danh sách metadata siêu nhẹ cho toàn bộ 50 đề thi, nạp tức thì
- * vào trang chủ mà không làm tăng dung lượng tải trang.
+ * Cung cấp danh sách metadata siêu nhẹ cho toàn bộ 50 đề thi chuẩn JLPT mới:
+ * - 25 Đề N5: 67 câu / 60 phút (Block 1 Từ vựng 20p + Block 2 Ngữ pháp & Đọc hiểu 40p)
+ * - 25 Đề N4: 70 câu / 80 phút (Block 1 Từ vựng 25p + Block 2 Ngữ pháp & Đọc hiểu 55p)
+ * - Thang điểm chuẩn khối Đọc/Viết: 120 / 180 điểm (Qua điểm liệt >= 38 điểm)
  */
 (function(root) {
   'use strict';
@@ -12,9 +14,339 @@
   "totalExams": 50,
   "n5Count": 25,
   "n4Count": 25,
-  "totalQuestions": 1000,
-  "defaultTimeLimitMinutes": 30,
-  "passBenchmarkPercent": 60,
+  "totalQuestions": 3425,
+  "defaultTimeLimitMinutes": 60,
+  "maxScaledScore": 120,
+  "minPassCutoffScore": 38,
+  "passBenchmarkPercent": 50,
+  "levelConfigs": {
+    "N5": {
+      "totalQuestions": 67,
+      "totalTimeMinutes": 60,
+      "maxScaledScore": 120,
+      "minPassCutoffScore": 38,
+      "recommendedPassScore": 60,
+      "blocks": [
+        {
+          "id": "vocab",
+          "title": "Phần 1: Từ Vựng (文字・語彙)",
+          "shortTitle": "Từ vựng",
+          "questionCount": 35,
+          "timeLimitMinutes": 20,
+          "timeLimitSeconds": 1200,
+          "questionRange": [
+            1,
+            35
+          ],
+          "mondais": [
+            {
+              "id": "V1",
+              "mondai": 1,
+              "skill": "vocabulary",
+              "title": "Cách đọc Kanji (漢字読み)",
+              "count": 12,
+              "range": [
+                1,
+                12
+              ],
+              "pointsPerQ": 1
+            },
+            {
+              "id": "V2",
+              "mondai": 2,
+              "skill": "vocabulary",
+              "title": "Viết Hiragana / Kanji (表記)",
+              "count": 8,
+              "range": [
+                13,
+                20
+              ],
+              "pointsPerQ": 1
+            },
+            {
+              "id": "V3",
+              "mondai": 3,
+              "skill": "vocabulary",
+              "title": "Điền từ theo ngữ cảnh (文脈規定)",
+              "count": 10,
+              "range": [
+                21,
+                30
+              ],
+              "pointsPerQ": 1
+            },
+            {
+              "id": "V4",
+              "mondai": 4,
+              "skill": "vocabulary",
+              "title": "Tìm từ đồng nghĩa (言い換え類義)",
+              "count": 5,
+              "range": [
+                31,
+                35
+              ],
+              "pointsPerQ": 2
+            }
+          ]
+        },
+        {
+          "id": "grammar_reading",
+          "title": "Phần 2: Ngữ Pháp & Đọc Hiểu (文法・読解)",
+          "shortTitle": "Ngữ pháp & Đọc hiểu",
+          "questionCount": 32,
+          "timeLimitMinutes": 40,
+          "timeLimitSeconds": 2400,
+          "questionRange": [
+            36,
+            67
+          ],
+          "mondais": [
+            {
+              "id": "G1",
+              "mondai": 1,
+              "skill": "grammar",
+              "title": "Chọn dạng ngữ pháp phù hợp (文の文法1)",
+              "count": 16,
+              "range": [
+                36,
+                51
+              ],
+              "pointsPerQ": 1.5
+            },
+            {
+              "id": "G2",
+              "mondai": 2,
+              "skill": "grammar",
+              "title": "Sắp xếp trật tự từ — Dấu sao ★ (文の文法2)",
+              "count": 5,
+              "range": [
+                52,
+                56
+              ],
+              "pointsPerQ": 2
+            },
+            {
+              "id": "G3",
+              "mondai": 3,
+              "skill": "grammar",
+              "title": "Ngữ pháp theo mạch đoạn văn (文章の文法)",
+              "count": 5,
+              "range": [
+                57,
+                61
+              ],
+              "pointsPerQ": 2
+            },
+            {
+              "id": "R1",
+              "mondai": 4,
+              "skill": "reading",
+              "title": "Đọc hiểu đoạn văn ngắn (内容理解・短文)",
+              "count": 3,
+              "range": [
+                62,
+                64
+              ],
+              "pointsPerQ": 5
+            },
+            {
+              "id": "R2",
+              "mondai": 5,
+              "skill": "reading",
+              "title": "Đọc hiểu đoạn văn trung bình (内容理解・中文)",
+              "count": 2,
+              "range": [
+                65,
+                66
+              ],
+              "pointsPerQ": 7
+            },
+            {
+              "id": "R3",
+              "mondai": 6,
+              "skill": "reading",
+              "title": "Tìm kiếm thông tin bảng biểu, tờ rơi (情報検索)",
+              "count": 1,
+              "range": [
+                67,
+                67
+              ],
+              "pointsPerQ": 7
+            }
+          ]
+        }
+      ]
+    },
+    "N4": {
+      "totalQuestions": 70,
+      "totalTimeMinutes": 80,
+      "maxScaledScore": 120,
+      "minPassCutoffScore": 38,
+      "recommendedPassScore": 63,
+      "blocks": [
+        {
+          "id": "vocab",
+          "title": "Phần 1: Từ Vựng (文字・語彙)",
+          "shortTitle": "Từ vựng",
+          "questionCount": 35,
+          "timeLimitMinutes": 25,
+          "timeLimitSeconds": 1500,
+          "questionRange": [
+            1,
+            35
+          ],
+          "mondais": [
+            {
+              "id": "V1",
+              "mondai": 1,
+              "skill": "vocabulary",
+              "title": "Cách đọc Kanji (漢字読み)",
+              "count": 9,
+              "range": [
+                1,
+                9
+              ],
+              "pointsPerQ": 1
+            },
+            {
+              "id": "V2",
+              "mondai": 2,
+              "skill": "vocabulary",
+              "title": "Viết Hiragana / Kanji (表記)",
+              "count": 6,
+              "range": [
+                10,
+                15
+              ],
+              "pointsPerQ": 1
+            },
+            {
+              "id": "V3",
+              "mondai": 3,
+              "skill": "vocabulary",
+              "title": "Điền từ theo ngữ cảnh (文脈規定)",
+              "count": 10,
+              "range": [
+                16,
+                25
+              ],
+              "pointsPerQ": 1
+            },
+            {
+              "id": "V4",
+              "mondai": 4,
+              "skill": "vocabulary",
+              "title": "Tìm từ đồng nghĩa (言い換え類義)",
+              "count": 5,
+              "range": [
+                26,
+                30
+              ],
+              "pointsPerQ": 1.5
+            },
+            {
+              "id": "V5",
+              "mondai": 5,
+              "skill": "vocabulary",
+              "title": "Cách sử dụng từ đúng (用法)",
+              "count": 5,
+              "range": [
+                31,
+                35
+              ],
+              "pointsPerQ": 1.5
+            }
+          ]
+        },
+        {
+          "id": "grammar_reading",
+          "title": "Phần 2: Ngữ Pháp & Đọc Hiểu (文法・読解)",
+          "shortTitle": "Ngữ pháp & Đọc hiểu",
+          "questionCount": 35,
+          "timeLimitMinutes": 55,
+          "timeLimitSeconds": 3300,
+          "questionRange": [
+            36,
+            70
+          ],
+          "mondais": [
+            {
+              "id": "G1",
+              "mondai": 1,
+              "skill": "grammar",
+              "title": "Chọn dạng ngữ pháp phù hợp (文の文法1)",
+              "count": 15,
+              "range": [
+                36,
+                50
+              ],
+              "pointsPerQ": 1.5
+            },
+            {
+              "id": "G2",
+              "mondai": 2,
+              "skill": "grammar",
+              "title": "Sắp xếp trật tự từ — Dấu sao ★ (文の文法2)",
+              "count": 5,
+              "range": [
+                51,
+                55
+              ],
+              "pointsPerQ": 2
+            },
+            {
+              "id": "G3",
+              "mondai": 3,
+              "skill": "grammar",
+              "title": "Ngữ pháp theo mạch đoạn văn (文章の文法)",
+              "count": 5,
+              "range": [
+                56,
+                60
+              ],
+              "pointsPerQ": 2.5
+            },
+            {
+              "id": "R1",
+              "mondai": 4,
+              "skill": "reading",
+              "title": "Đọc hiểu đoạn văn ngắn (内容理解・短文)",
+              "count": 4,
+              "range": [
+                61,
+                64
+              ],
+              "pointsPerQ": 3
+            },
+            {
+              "id": "R2",
+              "mondai": 5,
+              "skill": "reading",
+              "title": "Đọc hiểu đoạn văn trung bình (内容理解・中文)",
+              "count": 4,
+              "range": [
+                65,
+                68
+              ],
+              "pointsPerQ": 4
+            },
+            {
+              "id": "R3",
+              "mondai": 6,
+              "skill": "reading",
+              "title": "Tìm kiếm thông tin bảng biểu, tờ rơi (情報検索)",
+              "count": 2,
+              "range": [
+                69,
+                70
+              ],
+              "pointsPerQ": 3.5
+            }
+          ]
+        }
+      ]
+    }
+  },
   "exams": [
     {
       "id": "exam-n5-01",
@@ -23,8 +355,13 @@
       "index": 1,
       "title": "Đề N5-01: Trợ từ cơ bản は‧の‧も‧か  & Câu danh từ (Bài 1–2) — Nguồn: Nihongo Quiz N5 & JLPT",
       "minnaLesson": "1–2",
-      "timeLimitMinutes": 30,
-      "questionCount": 20,
+      "timeLimitMinutes": 60,
+      "block1Minutes": 20,
+      "block2Minutes": 40,
+      "questionCount": 67,
+      "maxScaledScore": 120,
+      "minPassCutoffScore": 38,
+      "recommendedPassScore": 60,
       "hasPassage": true
     },
     {
@@ -34,8 +371,13 @@
       "index": 2,
       "title": "Đề N5-02: Chỉ định từ ここ‧そこ‧あそこ  & Thời gian に‧から‧まで  (Bài 3–4) — Nguồn: Nihongo NET",
       "minnaLesson": "3–4",
-      "timeLimitMinutes": 30,
-      "questionCount": 20,
+      "timeLimitMinutes": 60,
+      "block1Minutes": 20,
+      "block2Minutes": 40,
+      "questionCount": 67,
+      "maxScaledScore": 120,
+      "minPassCutoffScore": 38,
+      "recommendedPassScore": 60,
       "hasPassage": true
     },
     {
@@ -45,8 +387,13 @@
       "index": 3,
       "title": "Đề N5-03: Phương tiện で , Phương hướng へ  & Đồng hành と  (Bài 5) — Nguồn: GoJapan N5 Đề 2",
       "minnaLesson": "5",
-      "timeLimitMinutes": 30,
-      "questionCount": 20,
+      "timeLimitMinutes": 60,
+      "block1Minutes": 20,
+      "block2Minutes": 40,
+      "questionCount": 67,
+      "maxScaledScore": 120,
+      "minPassCutoffScore": 38,
+      "recommendedPassScore": 60,
       "hasPassage": true
     },
     {
@@ -56,8 +403,13 @@
       "index": 4,
       "title": "Đề N5-04: Tân ngữ を , Nơi hành động で  & Rủ rê ませんか‧ましょう  (Bài 6) — Nguồn: Nihongo NET Part",
       "minnaLesson": "6",
-      "timeLimitMinutes": 30,
-      "questionCount": 20,
+      "timeLimitMinutes": 60,
+      "block1Minutes": 20,
+      "block2Minutes": 40,
+      "questionCount": 67,
+      "maxScaledScore": 120,
+      "minPassCutoffScore": 38,
+      "recommendedPassScore": 60,
       "hasPassage": true
     },
     {
@@ -67,8 +419,13 @@
       "index": 5,
       "title": "Đề N5-05: Công cụ で  & Cho – Nhận あげます‧もらいます  (Bài 7) — Nguồn: Nihongo NET Part 3",
       "minnaLesson": "7",
-      "timeLimitMinutes": 30,
-      "questionCount": 20,
+      "timeLimitMinutes": 60,
+      "block1Minutes": 20,
+      "block2Minutes": 40,
+      "questionCount": 67,
+      "maxScaledScore": 120,
+      "minPassCutoffScore": 38,
+      "recommendedPassScore": 60,
       "hasPassage": true
     },
     {
@@ -78,8 +435,13 @@
       "index": 6,
       "title": "Đề N5-06: Tính từ đuôi い  và Tính từ đuôi な  (Bài 8) — Nguồn: Nihongo Quiz N5",
       "minnaLesson": "8",
-      "timeLimitMinutes": 30,
-      "questionCount": 20,
+      "timeLimitMinutes": 60,
+      "block1Minutes": 20,
+      "block2Minutes": 40,
+      "questionCount": 67,
+      "maxScaledScore": 120,
+      "minPassCutoffScore": 38,
+      "recommendedPassScore": 60,
       "hasPassage": true
     },
     {
@@ -87,10 +449,15 @@
       "code": "N5-07",
       "level": "N5",
       "index": 7,
-      "title": "Đề N5-07: Sở thích 好き‧上⼿ , Nguyên nhân から  & Phó từ mức độ (Bài 9) — Nguồn: Nihongo NET Part",
+      "title": "Đề N5-07: Sở thích 好き‧上手 , Nguyên nhân から  & Phó từ mức độ (Bài 9) — Nguồn: Nihongo NET Part",
       "minnaLesson": "9",
-      "timeLimitMinutes": 30,
-      "questionCount": 20,
+      "timeLimitMinutes": 60,
+      "block1Minutes": 20,
+      "block2Minutes": 40,
+      "questionCount": 67,
+      "maxScaledScore": 120,
+      "minPassCutoffScore": 38,
+      "recommendedPassScore": 60,
       "hasPassage": true
     },
     {
@@ -100,8 +467,13 @@
       "index": 8,
       "title": "Đề N5-08: Tồn tại あります‧います , Vị trí & Liệt kê や‧など  (Bài 10) — Nguồn: JLPT Official N5-",
       "minnaLesson": "10",
-      "timeLimitMinutes": 30,
-      "questionCount": 20,
+      "timeLimitMinutes": 60,
+      "block1Minutes": 20,
+      "block2Minutes": 40,
+      "questionCount": 67,
+      "maxScaledScore": 120,
+      "minPassCutoffScore": 38,
+      "recommendedPassScore": 60,
       "hasPassage": true
     },
     {
@@ -111,8 +483,13 @@
       "index": 9,
       "title": "Đề N5-09: Lượng từ đếm まい‧にん‧さつ‧ひき  & Khoảng thời gian (Bài 11) — Nguồn: Nihongo Quiz",
       "minnaLesson": "11",
-      "timeLimitMinutes": 30,
-      "questionCount": 20,
+      "timeLimitMinutes": 60,
+      "block1Minutes": 20,
+      "block2Minutes": 40,
+      "questionCount": 67,
+      "maxScaledScore": 120,
+      "minPassCutoffScore": 38,
+      "recommendedPassScore": 60,
       "hasPassage": true
     },
     {
@@ -122,8 +499,13 @@
       "index": 10,
       "title": "Đề N5-10: Quá khứ Tính từ & So sánh より‧ほうが‧いちばん  (Bài 12) — Nguồn: Nihongo NET Part 5",
       "minnaLesson": "12",
-      "timeLimitMinutes": 30,
-      "questionCount": 20,
+      "timeLimitMinutes": 60,
+      "block1Minutes": 20,
+      "block2Minutes": 40,
+      "questionCount": 67,
+      "maxScaledScore": 120,
+      "minPassCutoffScore": 38,
+      "recommendedPassScore": 60,
       "hasPassage": true
     },
     {
@@ -131,10 +513,15 @@
       "code": "N5-11",
       "level": "N5",
       "index": 11,
-      "title": "Đề N5-11: Mong muốn ほしい‧たいです  & Mục đích に⾏きます  (Bài 13) — Nguồn: JLPT Official N5-",
+      "title": "Đề N5-11: Mong muốn ほしい‧たいです  & Mục đích に行きます  (Bài 13) — Nguồn: JLPT Official N5-",
       "minnaLesson": "13",
-      "timeLimitMinutes": 30,
-      "questionCount": 20,
+      "timeLimitMinutes": 60,
+      "block1Minutes": 20,
+      "block2Minutes": 40,
+      "questionCount": 67,
+      "maxScaledScore": 120,
+      "minPassCutoffScore": 38,
+      "recommendedPassScore": 60,
       "hasPassage": true
     },
     {
@@ -144,8 +531,13 @@
       "index": 12,
       "title": "Đề N5-12: Chia thể て , Yêu cầu てください  & Tiếp diễn ています  (Bài 14) — Nguồn: GoJapan N5 Đề 8",
       "minnaLesson": "14",
-      "timeLimitMinutes": 30,
-      "questionCount": 20,
+      "timeLimitMinutes": 60,
+      "block1Minutes": 20,
+      "block2Minutes": 40,
+      "questionCount": 67,
+      "maxScaledScore": 120,
+      "minPassCutoffScore": 38,
+      "recommendedPassScore": 60,
       "hasPassage": true
     },
     {
@@ -155,8 +547,13 @@
       "index": 13,
       "title": "Đề N5-13: Xin phép てもいいですか  & Cấm đoán てはいけません  (Bài 15) — Nguồn: Nihongo NET Part 6",
       "minnaLesson": "15",
-      "timeLimitMinutes": 30,
-      "questionCount": 20,
+      "timeLimitMinutes": 60,
+      "block1Minutes": 20,
+      "block2Minutes": 40,
+      "questionCount": 67,
+      "maxScaledScore": 120,
+      "minPassCutoffScore": 38,
+      "recommendedPassScore": 60,
       "hasPassage": true
     },
     {
@@ -166,8 +563,13 @@
       "index": 14,
       "title": "Đề N5-14: Nối câu bằng V て‧ A くて‧で  & Trình tự てから  (Bài 16) — Nguồn: Nihongo Quiz N5",
       "minnaLesson": "16",
-      "timeLimitMinutes": 30,
-      "questionCount": 20,
+      "timeLimitMinutes": 60,
+      "block1Minutes": 20,
+      "block2Minutes": 40,
+      "questionCount": 67,
+      "maxScaledScore": 120,
+      "minPassCutoffScore": 38,
+      "recommendedPassScore": 60,
       "hasPassage": true
     },
     {
@@ -177,8 +579,13 @@
       "index": 15,
       "title": "Đề N5-15: Thể ない , Yêu cầu ないでください  & なければなりません  (Bài 17) — Nguồn: GoJapan N5 Đề 8",
       "minnaLesson": "17",
-      "timeLimitMinutes": 30,
-      "questionCount": 20,
+      "timeLimitMinutes": 60,
+      "block1Minutes": 20,
+      "block2Minutes": 40,
+      "questionCount": 67,
+      "maxScaledScore": 120,
+      "minPassCutoffScore": 38,
+      "recommendedPassScore": 60,
       "hasPassage": true
     },
     {
@@ -188,8 +595,13 @@
       "index": 16,
       "title": "Đề N5-16: Thể từ điển V る , ことができます  & Trước khi まえに  (Bài 18) — Nguồn: Nihongo Quiz N5",
       "minnaLesson": "18",
-      "timeLimitMinutes": 30,
-      "questionCount": 20,
+      "timeLimitMinutes": 60,
+      "block1Minutes": 20,
+      "block2Minutes": 40,
+      "questionCount": 67,
+      "maxScaledScore": 120,
+      "minPassCutoffScore": 38,
+      "recommendedPassScore": 60,
       "hasPassage": true
     },
     {
@@ -199,8 +611,13 @@
       "index": 17,
       "title": "Đề N5-17: Thể た , Kinh nghiệm たことがあります  & Liệt kê たり〜たり  (Bài 19) — Nguồn: GoJapan N5 Đề",
       "minnaLesson": "19",
-      "timeLimitMinutes": 30,
-      "questionCount": 20,
+      "timeLimitMinutes": 60,
+      "block1Minutes": 20,
+      "block2Minutes": 40,
+      "questionCount": 67,
+      "maxScaledScore": 120,
+      "minPassCutoffScore": 38,
+      "recommendedPassScore": 60,
       "hasPassage": true
     },
     {
@@ -210,8 +627,13 @@
       "index": 18,
       "title": "Đề N5-18: Thể thông thường ( 普通形 ) & Đàm thoại thân mật (Bài 20) — Nguồn: Nihongo NET Part 7",
       "minnaLesson": "20",
-      "timeLimitMinutes": 30,
-      "questionCount": 20,
+      "timeLimitMinutes": 60,
+      "block1Minutes": 20,
+      "block2Minutes": 40,
+      "questionCount": 67,
+      "maxScaledScore": 120,
+      "minPassCutoffScore": 38,
+      "recommendedPassScore": 60,
       "hasPassage": true
     },
     {
@@ -219,10 +641,15 @@
       "code": "N5-19",
       "level": "N5",
       "index": 19,
-      "title": "Đề N5-19: Trích dẫn と思います‧と⾔いました  & Xác nhận でしょう  (Bài 21) — Nguồn: Nihongo NET",
+      "title": "Đề N5-19: Trích dẫn と思います‧と言いました  & Xác nhận でしょう  (Bài 21) — Nguồn: Nihongo NET",
       "minnaLesson": "21",
-      "timeLimitMinutes": 30,
-      "questionCount": 20,
+      "timeLimitMinutes": 60,
+      "block1Minutes": 20,
+      "block2Minutes": 40,
+      "questionCount": 67,
+      "maxScaledScore": 120,
+      "minPassCutoffScore": 38,
+      "recommendedPassScore": 60,
       "hasPassage": true
     },
     {
@@ -232,8 +659,13 @@
       "index": 20,
       "title": "Đề N5-20: Mệnh đề định ngữ bổ nghĩa danh từ ( 連体修飾  — Bài 22) — Nguồn: Nihongo NET Part 9",
       "minnaLesson": "",
-      "timeLimitMinutes": 30,
-      "questionCount": 20,
+      "timeLimitMinutes": 60,
+      "block1Minutes": 20,
+      "block2Minutes": 40,
+      "questionCount": 67,
+      "maxScaledScore": 120,
+      "minPassCutoffScore": 38,
+      "recommendedPassScore": 60,
       "hasPassage": true
     },
     {
@@ -243,8 +675,13 @@
       "index": 21,
       "title": "Đề N5-21: Mệnh đề thời gian とき  & Điều kiện tất yếu と  (Bài 23) — Nguồn: Nihongo NET Part 10",
       "minnaLesson": "23",
-      "timeLimitMinutes": 30,
-      "questionCount": 20,
+      "timeLimitMinutes": 60,
+      "block1Minutes": 20,
+      "block2Minutes": 40,
+      "questionCount": 67,
+      "maxScaledScore": 120,
+      "minPassCutoffScore": 38,
+      "recommendedPassScore": 60,
       "hasPassage": true
     },
     {
@@ -254,8 +691,13 @@
       "index": 22,
       "title": "Đề N5-22: Cho – Nhận Hành Động てあげます‧てくれます‧てもらいます  (Bài 24) — Nguồn: Nihongo",
       "minnaLesson": "24",
-      "timeLimitMinutes": 30,
-      "questionCount": 20,
+      "timeLimitMinutes": 60,
+      "block1Minutes": 20,
+      "block2Minutes": 40,
+      "questionCount": 67,
+      "maxScaledScore": 120,
+      "minPassCutoffScore": 38,
+      "recommendedPassScore": 60,
       "hasPassage": true
     },
     {
@@ -265,8 +707,13 @@
       "index": 23,
       "title": "Đề N5-23: Giả định たら  & Nhượng bộ ても‧でも  (Bài 25) — Nguồn: Nihongo NET Part 12",
       "minnaLesson": "25",
-      "timeLimitMinutes": 30,
-      "questionCount": 20,
+      "timeLimitMinutes": 60,
+      "block1Minutes": 20,
+      "block2Minutes": 40,
+      "questionCount": 67,
+      "maxScaledScore": 120,
+      "minPassCutoffScore": 38,
+      "recommendedPassScore": 60,
       "hasPassage": true
     },
     {
@@ -276,8 +723,13 @@
       "index": 24,
       "title": "Đề N5-24: Tổng ôn Ngữ pháp N5 — Đề Thi Thực Chiến Quốc Tế Số 1 — Nguồn: JLPT Official N5G",
       "minnaLesson": "",
-      "timeLimitMinutes": 30,
-      "questionCount": 20,
+      "timeLimitMinutes": 60,
+      "block1Minutes": 20,
+      "block2Minutes": 40,
+      "questionCount": 67,
+      "maxScaledScore": 120,
+      "minPassCutoffScore": 38,
+      "recommendedPassScore": 60,
       "hasPassage": true
     },
     {
@@ -287,8 +739,13 @@
       "index": 25,
       "title": "Đề N5-25: Tổng ôn Ngữ pháp N5 — Đề Thi Thực Chiến Quốc Tế Số 2 — Nguồn: Uno Japano N5 (D03)",
       "minnaLesson": "",
-      "timeLimitMinutes": 30,
-      "questionCount": 20,
+      "timeLimitMinutes": 60,
+      "block1Minutes": 20,
+      "block2Minutes": 40,
+      "questionCount": 67,
+      "maxScaledScore": 120,
+      "minPassCutoffScore": 38,
+      "recommendedPassScore": 60,
       "hasPassage": true
     },
     {
@@ -298,8 +755,13 @@
       "index": 26,
       "title": "Đề N4-01: Cấu trúc giải thích のです‧んです  & たらいいですか  (Bài 26) — Nguồn: Nihongo NET N4 Part",
       "minnaLesson": "26",
-      "timeLimitMinutes": 30,
-      "questionCount": 20,
+      "timeLimitMinutes": 80,
+      "block1Minutes": 25,
+      "block2Minutes": 55,
+      "questionCount": 70,
+      "maxScaledScore": 120,
+      "minPassCutoffScore": 38,
+      "recommendedPassScore": 63,
       "hasPassage": true
     },
     {
@@ -309,8 +771,13 @@
       "index": 27,
       "title": "Đề N4-02: Động từ khả năng ( 可能動詞 ) & みえます‧きこえます  (Bài 27) — Nguồn: Nihongo NET N4",
       "minnaLesson": "27",
-      "timeLimitMinutes": 30,
-      "questionCount": 20,
+      "timeLimitMinutes": 80,
+      "block1Minutes": 25,
+      "block2Minutes": 55,
+      "questionCount": 70,
+      "maxScaledScore": 120,
+      "minPassCutoffScore": 38,
+      "recommendedPassScore": 63,
       "hasPassage": true
     },
     {
@@ -320,8 +787,13 @@
       "index": 28,
       "title": "Đề N4-03: Hành động song song ながら , Thói quen ています  & し  (Bài 28) — Nguồn: Nihongo NET N4",
       "minnaLesson": "28",
-      "timeLimitMinutes": 30,
-      "questionCount": 20,
+      "timeLimitMinutes": 80,
+      "block1Minutes": 25,
+      "block2Minutes": 55,
+      "questionCount": 70,
+      "maxScaledScore": 120,
+      "minPassCutoffScore": 38,
+      "recommendedPassScore": 63,
       "hasPassage": true
     },
     {
@@ -331,8 +803,13 @@
       "index": 29,
       "title": "Đề N4-04: Trạng thái Tự động từ ています  & Hoàn tất てしまいました  (Bài 29) — Nguồn: Nihongo NET",
       "minnaLesson": "29",
-      "timeLimitMinutes": 30,
-      "questionCount": 20,
+      "timeLimitMinutes": 80,
+      "block1Minutes": 25,
+      "block2Minutes": 55,
+      "questionCount": 70,
+      "maxScaledScore": 120,
+      "minPassCutoffScore": 38,
+      "recommendedPassScore": 63,
       "hasPassage": true
     },
     {
@@ -342,8 +819,13 @@
       "index": 30,
       "title": "Đề N4-05: Trạng thái có chủ đích てあります  & Chuẩn bị ておきます  (Bài 30) — Nguồn: Nihongo NET N4",
       "minnaLesson": "30",
-      "timeLimitMinutes": 30,
-      "questionCount": 20,
+      "timeLimitMinutes": 80,
+      "block1Minutes": 25,
+      "block2Minutes": 55,
+      "questionCount": 70,
+      "maxScaledScore": 120,
+      "minPassCutoffScore": 38,
+      "recommendedPassScore": 63,
       "hasPassage": true
     },
     {
@@ -353,8 +835,13 @@
       "index": 31,
       "title": "Đề N4-06: Thể ý chí ( 意向形 ), Dự định と思っています  & つもりです  (Bài 31) — Nguồn: Nihongo NET N4",
       "minnaLesson": "31",
-      "timeLimitMinutes": 30,
-      "questionCount": 20,
+      "timeLimitMinutes": 80,
+      "block1Minutes": 25,
+      "block2Minutes": 55,
+      "questionCount": 70,
+      "maxScaledScore": 120,
+      "minPassCutoffScore": 38,
+      "recommendedPassScore": 63,
       "hasPassage": true
     },
     {
@@ -364,8 +851,13 @@
       "index": 32,
       "title": "Đề N4-07: Lời khuyên ほうがいいです  & Suy đoán でしょう‧かもしれません  (Bài 32) — Nguồn: Nihongo",
       "minnaLesson": "32",
-      "timeLimitMinutes": 30,
-      "questionCount": 20,
+      "timeLimitMinutes": 80,
+      "block1Minutes": 25,
+      "block2Minutes": 55,
+      "questionCount": 70,
+      "maxScaledScore": 120,
+      "minPassCutoffScore": 38,
+      "recommendedPassScore": 63,
       "hasPassage": true
     },
     {
@@ -375,8 +867,13 @@
       "index": 33,
       "title": "Đề N4-08: Thể mệnh lệnh, Cấm chỉ & Định nghĩa という‧という意味  (Bài 33) — Nguồn: Nihongo NET",
       "minnaLesson": "33",
-      "timeLimitMinutes": 30,
-      "questionCount": 20,
+      "timeLimitMinutes": 80,
+      "block1Minutes": 25,
+      "block2Minutes": 55,
+      "questionCount": 70,
+      "maxScaledScore": 120,
+      "minPassCutoffScore": 38,
+      "recommendedPassScore": 63,
       "hasPassage": true
     },
     {
@@ -386,8 +883,13 @@
       "index": 34,
       "title": "Đề N4-09: Làm theo とおりに  & Sau khi たあとで‧ないで  (Bài 34) — Nguồn: Nihongo NET N4 Part 9",
       "minnaLesson": "34",
-      "timeLimitMinutes": 30,
-      "questionCount": 20,
+      "timeLimitMinutes": 80,
+      "block1Minutes": 25,
+      "block2Minutes": 55,
+      "questionCount": 70,
+      "maxScaledScore": 120,
+      "minPassCutoffScore": 38,
+      "recommendedPassScore": 63,
       "hasPassage": true
     },
     {
@@ -397,8 +899,13 @@
       "index": 35,
       "title": "Đề N4-10: Thể điều kiện ( 条件形  〜ば‧〜なら ) & ば〜ほど  (Bài 35) — Nguồn: Nihongo NET N4 Part 10",
       "minnaLesson": "35",
-      "timeLimitMinutes": 30,
-      "questionCount": 20,
+      "timeLimitMinutes": 80,
+      "block1Minutes": 25,
+      "block2Minutes": 55,
+      "questionCount": 70,
+      "maxScaledScore": 120,
+      "minPassCutoffScore": 38,
+      "recommendedPassScore": 63,
       "hasPassage": true
     },
     {
@@ -408,8 +915,13 @@
       "index": 36,
       "title": "Đề N4-11: Mục đích ように  & Biến đổi năng lực ようになりました  (Bài 36) — Nguồn: Nihongo NET N4",
       "minnaLesson": "36",
-      "timeLimitMinutes": 30,
-      "questionCount": 20,
+      "timeLimitMinutes": 80,
+      "block1Minutes": 25,
+      "block2Minutes": 55,
+      "questionCount": 70,
+      "maxScaledScore": 120,
+      "minPassCutoffScore": 38,
+      "recommendedPassScore": 63,
       "hasPassage": true
     },
     {
@@ -417,10 +929,15 @@
       "code": "N4-12",
       "level": "N4",
       "index": 37,
-      "title": "Đề N4-12: Thể bị động ( 受⾝動詞  — Trực tiếp & Sở hữu — Bài 37) — Nguồn: Nihongo NET N4 Part 12",
+      "title": "Đề N4-12: Thể bị động ( 受身動詞  — Trực tiếp & Sở hữu — Bài 37) — Nguồn: Nihongo NET N4 Part 12",
       "minnaLesson": "",
-      "timeLimitMinutes": 30,
-      "questionCount": 20,
+      "timeLimitMinutes": 80,
+      "block1Minutes": 25,
+      "block2Minutes": 55,
+      "questionCount": 70,
+      "maxScaledScore": 120,
+      "minPassCutoffScore": 38,
+      "recommendedPassScore": 63,
       "hasPassage": true
     },
     {
@@ -430,8 +947,13 @@
       "index": 38,
       "title": "Đề N4-13: Danh hóa mệnh đề bằng の  ( 〜のは‧〜のが‧〜のを  — Bài 38) — Nguồn: Nihongo NET N4",
       "minnaLesson": "",
-      "timeLimitMinutes": 30,
-      "questionCount": 20,
+      "timeLimitMinutes": 80,
+      "block1Minutes": 25,
+      "block2Minutes": 55,
+      "questionCount": 70,
+      "maxScaledScore": 120,
+      "minPassCutoffScore": 38,
+      "recommendedPassScore": 63,
       "hasPassage": true
     },
     {
@@ -441,8 +963,13 @@
       "index": 39,
       "title": "Đề N4-14: Nguyên nhân て‧くて‧で  & Liên từ ので  (Bài 39) — Nguồn: Nihongo NET N4 Part 14",
       "minnaLesson": "39",
-      "timeLimitMinutes": 30,
-      "questionCount": 20,
+      "timeLimitMinutes": 80,
+      "block1Minutes": 25,
+      "block2Minutes": 55,
+      "questionCount": 70,
+      "maxScaledScore": 120,
+      "minPassCutoffScore": 38,
+      "recommendedPassScore": 63,
       "hasPassage": true
     },
     {
@@ -452,8 +979,13 @@
       "index": 40,
       "title": "Đề N4-15: Câu hỏi gián tiếp か‧かどうか  & Làm thử てみます  (Bài 40) — Nguồn: Nihongo NET N4 Part",
       "minnaLesson": "40",
-      "timeLimitMinutes": 30,
-      "questionCount": 20,
+      "timeLimitMinutes": 80,
+      "block1Minutes": 25,
+      "block2Minutes": 55,
+      "questionCount": 70,
+      "maxScaledScore": 120,
+      "minPassCutoffScore": 38,
+      "recommendedPassScore": 63,
       "hasPassage": true
     },
     {
@@ -463,8 +995,13 @@
       "index": 41,
       "title": "Đề N4-16: Cho – Nhận Kính Ngữ いただきます‧くださいます‧やります  (Bài 41) — Nguồn: Nihongo NET",
       "minnaLesson": "41",
-      "timeLimitMinutes": 30,
-      "questionCount": 20,
+      "timeLimitMinutes": 80,
+      "block1Minutes": 25,
+      "block2Minutes": 55,
+      "questionCount": 70,
+      "maxScaledScore": 120,
+      "minPassCutoffScore": 38,
+      "recommendedPassScore": 63,
       "hasPassage": true
     },
     {
@@ -474,8 +1011,13 @@
       "index": 42,
       "title": "Đề N4-17: Mục đích ために  & Công dụng のに  (Bài 42) — Nguồn: Nihongo NET N4 Part 17",
       "minnaLesson": "42",
-      "timeLimitMinutes": 30,
-      "questionCount": 20,
+      "timeLimitMinutes": 80,
+      "block1Minutes": 25,
+      "block2Minutes": 55,
+      "questionCount": 70,
+      "maxScaledScore": 120,
+      "minPassCutoffScore": 38,
+      "recommendedPassScore": 63,
       "hasPassage": true
     },
     {
@@ -485,8 +1027,13 @@
       "index": 43,
       "title": "Đề N4-18: Suy đoán thị giác そうです  & Đi rồi quay lại てきます  (Bài 43) — Nguồn: Nihongo NET N4 Part",
       "minnaLesson": "43",
-      "timeLimitMinutes": 30,
-      "questionCount": 20,
+      "timeLimitMinutes": 80,
+      "block1Minutes": 25,
+      "block2Minutes": 55,
+      "questionCount": 70,
+      "maxScaledScore": 120,
+      "minPassCutoffScore": 38,
+      "recommendedPassScore": 63,
       "hasPassage": true
     },
     {
@@ -496,8 +1043,13 @@
       "index": 44,
       "title": "Đề N4-19: Quá mức すぎる , Dễ/Khó やすい‧にくい  & Làm cho く / にします  (Bài 44) — Nguồn: Nihongo",
       "minnaLesson": "44",
-      "timeLimitMinutes": 30,
-      "questionCount": 20,
+      "timeLimitMinutes": 80,
+      "block1Minutes": 25,
+      "block2Minutes": 55,
+      "questionCount": 70,
+      "maxScaledScore": 120,
+      "minPassCutoffScore": 38,
+      "recommendedPassScore": 63,
       "hasPassage": true
     },
     {
@@ -507,8 +1059,13 @@
       "index": 45,
       "title": "Đề N4-20: Trường hợp 場合は  & Trái kỳ vọng のに  (Bài 45) — Nguồn: Nihongo NET N4 Part 20",
       "minnaLesson": "45",
-      "timeLimitMinutes": 30,
-      "questionCount": 20,
+      "timeLimitMinutes": 80,
+      "block1Minutes": 25,
+      "block2Minutes": 55,
+      "questionCount": 70,
+      "maxScaledScore": 120,
+      "minPassCutoffScore": 38,
+      "recommendedPassScore": 63,
       "hasPassage": true
     },
     {
@@ -518,8 +1075,13 @@
       "index": 46,
       "title": "Đề N4-21: Thời điểm ところだ , Vừa mới たばかり  & Chắc chắn はずだ  (Bài 46) — Nguồn: Nihongo NET",
       "minnaLesson": "46",
-      "timeLimitMinutes": 30,
-      "questionCount": 20,
+      "timeLimitMinutes": 80,
+      "block1Minutes": 25,
+      "block2Minutes": 55,
+      "questionCount": 70,
+      "maxScaledScore": 120,
+      "minPassCutoffScore": 38,
+      "recommendedPassScore": 63,
       "hasPassage": true
     },
     {
@@ -529,8 +1091,13 @@
       "index": 47,
       "title": "Đề N4-22: Nghe nói そうです  & Hình như ようです  (Bài 47) — Nguồn: Nihongo NET N4 Part 22",
       "minnaLesson": "47",
-      "timeLimitMinutes": 30,
-      "questionCount": 20,
+      "timeLimitMinutes": 80,
+      "block1Minutes": 25,
+      "block2Minutes": 55,
+      "questionCount": 70,
+      "maxScaledScore": 120,
+      "minPassCutoffScore": 38,
+      "recommendedPassScore": 63,
       "hasPassage": true
     },
     {
@@ -540,8 +1107,13 @@
       "index": 48,
       "title": "Đề N4-23: Thể sai khiến ( 使役動詞 ) & Xin phép させてください  (Bài 48) — Nguồn: Nihongo NET N4 Part",
       "minnaLesson": "48",
-      "timeLimitMinutes": 30,
-      "questionCount": 20,
+      "timeLimitMinutes": 80,
+      "block1Minutes": 25,
+      "block2Minutes": 55,
+      "questionCount": 70,
+      "maxScaledScore": 120,
+      "minPassCutoffScore": 38,
+      "recommendedPassScore": 63,
       "hasPassage": true
     },
     {
@@ -551,8 +1123,13 @@
       "index": 49,
       "title": "Đề N4-24: Tôn Kính Ngữ ( 尊敬語  — お〜になります‧ Đặc biệt — Bài 49) — Nguồn: Nihongo NET N4 Part",
       "minnaLesson": "",
-      "timeLimitMinutes": 30,
-      "questionCount": 20,
+      "timeLimitMinutes": 80,
+      "block1Minutes": 25,
+      "block2Minutes": 55,
+      "questionCount": 70,
+      "maxScaledScore": 120,
+      "minPassCutoffScore": 38,
+      "recommendedPassScore": 63,
       "hasPassage": true
     },
     {
@@ -562,8 +1139,13 @@
       "index": 50,
       "title": "Đề N4-25: Khiêm Nhường Ngữ ( 謙譲語 ) & Quyết Định ことになった  (Bài 50) — Nguồn: Nihongo NET N4",
       "minnaLesson": "50",
-      "timeLimitMinutes": 30,
-      "questionCount": 20,
+      "timeLimitMinutes": 80,
+      "block1Minutes": 25,
+      "block2Minutes": 55,
+      "questionCount": 70,
+      "maxScaledScore": 120,
+      "minPassCutoffScore": 38,
+      "recommendedPassScore": 63,
       "hasPassage": true
     }
   ]

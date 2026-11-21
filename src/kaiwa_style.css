@@ -1373,6 +1373,152 @@
   margin-bottom: 2px;
 }
 
+/* Expert Phonetic Coaching Cards & NHK Compact Mora Pitch Step Strip */
+.kaiwa-expert-cards-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.kaiwa-expert-card {
+  padding: 7px 10px;
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid var(--border-color);
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+[data-theme="light"] .kaiwa-expert-card {
+  background: rgba(255, 255, 255, 0.85);
+}
+
+.kaiwa-expert-card-head {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  flex-wrap: wrap;
+}
+
+.kaiwa-expert-badge {
+  font-size: 0.72rem;
+  font-weight: 800;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: rgba(255, 90, 54, 0.14);
+  color: var(--primary, #ff5a36);
+  border: 1px solid rgba(255, 90, 54, 0.30);
+  flex-shrink: 0;
+}
+
+.kaiwa-expert-card.is-master-praise .kaiwa-expert-badge {
+  background: rgba(16, 185, 129, 0.15);
+  color: var(--accent-green, #10b981);
+  border-color: rgba(16, 185, 129, 0.32);
+}
+
+.kaiwa-expert-diag {
+  font-size: 0.80rem;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.kaiwa-expert-tip {
+  font-size: 0.78rem;
+  color: var(--text-secondary);
+  line-height: 1.5;
+}
+
+.kaiwa-accent-strip-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin: 4px 0 10px;
+  padding-bottom: 8px;
+  border-bottom: 1px dashed var(--border-color);
+}
+
+.kaiwa-accent-strip-meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  flex-wrap: wrap;
+  font-size: 0.76rem;
+}
+
+.kaiwa-accent-pattern-badge {
+  font-weight: 700;
+  color: var(--accent-indigo, #38bdf8);
+  background: rgba(56, 189, 248, 0.12);
+  border: 1px solid rgba(56, 189, 248, 0.28);
+  padding: 2px 9px;
+  border-radius: 999px;
+}
+
+.kaiwa-accent-drop-tag {
+  color: var(--text-secondary);
+  font-size: 0.76rem;
+}
+
+.kaiwa-accent-drop-tag strong {
+  color: var(--primary, #ff5a36);
+  font-family: var(--font-mincho, 'Shippori Mincho', serif);
+}
+
+.kaiwa-mora-pitch-strip {
+  display: flex;
+  align-items: flex-end;
+  gap: 3px;
+  overflow-x: auto;
+  padding: 6px 2px 2px;
+  scrollbar-width: none;
+}
+
+.kaiwa-mora-pitch-strip::-webkit-scrollbar {
+  display: none;
+}
+
+.kaiwa-mora-step {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 26px;
+  padding: 3px 5px;
+  font-family: var(--font-mincho, 'Shippori Mincho', serif);
+  font-size: 0.86rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  flex-shrink: 0;
+  user-select: none;
+}
+
+.kaiwa-mora-step.is-high {
+  border-top: 2.5px solid var(--accent-indigo, #38bdf8);
+  padding-top: 4px;
+}
+
+.kaiwa-mora-step.is-low {
+  border-bottom: 2px solid rgba(148, 163, 184, 0.45);
+  color: var(--text-secondary);
+}
+
+.kaiwa-mora-step.has-drop-nucleus {
+  border-top: 2.5px solid var(--primary, #ff5a36);
+  border-right: 2.5px solid var(--primary, #ff5a36);
+  border-top-right-radius: 3px;
+  color: var(--primary, #ff5a36);
+  font-weight: 700;
+}
+
+.kaiwa-mora-step.is-pitch-mismatch {
+  background: rgba(245, 158, 11, 0.12);
+  border-radius: 4px;
+}
+
 /* Pitch Contour Box */
 .kaiwa-pitch-box {
   background: var(--bg-card-inner, var(--bg-secondary));

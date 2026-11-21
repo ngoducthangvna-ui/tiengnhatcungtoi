@@ -756,22 +756,36 @@ async function handleRequest(req, res) {
 
       const answers = (body.answers && typeof body.answers === 'object') ? body.answers : {};
       const exam = findExamOnServer(normalizedCode);
+      const isN5 = normalizedCode.startsWith('N5');
+      const totalQuestions = (exam && Array.isArray(exam.questions) && exam.questions.length > 0)
+        ? exam.questions.length
+        : (isN5 ? 67 : 70);
 
       // Chấm điểm chuẩn xác từ phía máy chủ: các câu chưa làm tính là 0 điểm
       let verifiedScore = 0;
+      let weightedSum = 0;
+      let maxWeighted = 0;
       if (exam && Array.isArray(exam.questions)) {
         exam.questions.forEach(q => {
+          const pts = (typeof q.points === 'number' && q.points > 0) ? q.points : (120 / totalQuestions);
+          maxWeighted += pts;
           if (answers[q.id] === q.correct) {
             verifiedScore++;
+            weightedSum += pts;
           }
         });
       } else if (typeof body.clientScore === 'number') {
-        verifiedScore = Math.max(0, Math.min(20, Math.round(body.clientScore)));
+        verifiedScore = Math.max(0, Math.min(totalQuestions, Math.round(body.clientScore)));
+        weightedSum = (verifiedScore / totalQuestions) * 120;
+        maxWeighted = 120;
       }
 
+      const scaledScore = maxWeighted > 0 ? Math.round((weightedSum / maxWeighted) * 120) : 0;
       const sessionId = body.sessionId || `sess_${normalizedCode}_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`;
       const reason = body.reason || 'exit_trigger';
-      const isPass = verifiedScore >= 12;
+      const passedCutoff = scaledScore >= 38;
+      const passTarget = isN5 ? 60 : 63;
+      const isPass = passedCutoff && scaledScore >= passTarget;
 
       const sessionRecord = {
         sessionId,
@@ -780,7 +794,10 @@ async function handleRequest(req, res) {
         locked: true,
         reason,
         score: verifiedScore,
-        total: 20,
+        total: totalQuestions,
+        scaledScore,
+        maxScaledScore: 120,
+        passedCutoff,
         isPass,
         answers,
         submittedAt: Date.now(),
@@ -802,7 +819,10 @@ async function handleRequest(req, res) {
         sessionId,
         examCode: normalizedCode,
         score: verifiedScore,
-        total: 20,
+        total: totalQuestions,
+        scaledScore,
+        maxScaledScore: 120,
+        passedCutoff,
         isPass,
         reason,
         message: 'Bài thi đã được tự động kết thúc, chấm điểm và khóa phiên làm việc an toàn.'

@@ -260,6 +260,64 @@
         kunyomi: safeTrim(raw.kunyomi || raw.kun || ''),
         mnemonic: safeTrim(raw.mnemonic || '')
       };
+    },
+
+    /**
+     * Chuẩn hóa cấu trúc đề thi JLPT N5 (67 câu) / N4 (70 câu) với 2 Block thời gian độc lập
+     */
+    normalizeExamData(raw) {
+      if (!raw || typeof raw !== 'object') return null;
+      const level = raw.level === 'N4' || String(raw.code || '').toUpperCase().startsWith('N4') ? 'N4' : 'N5';
+      const isN5 = level === 'N5';
+      const questions = safeArray(raw.questions).map((q, idx) => {
+        const qId = typeof q.id === 'number' ? q.id : (idx + 1);
+        const block = q.block || (qId <= 35 ? 'vocab' : 'grammar_reading');
+        const skill = q.skill || (block === 'vocab' ? 'vocabulary' : (q.mondai >= 4 ? 'reading' : 'grammar'));
+        return {
+          ...q,
+          id: qId,
+          block,
+          skill,
+          mondai: typeof q.mondai === 'number' ? q.mondai : 1,
+          mondaiCode: safeTrim(q.mondaiCode || (block === 'vocab' ? 'V1' : 'G1')),
+          points: typeof q.points === 'number' && q.points > 0 ? q.points : 1.0,
+          options: safeArray(q.options).slice(0, 4).map(o => safeTrim(o)),
+          correct: typeof q.correct === 'number' && q.correct >= 1 && q.correct <= 4 ? q.correct : 1,
+          correctText: safeTrim(q.correctText || ''),
+          explanation: safeTrim(q.explanation || '')
+        };
+      });
+
+      const defaultBlocks = [
+        {
+          id: 'vocab',
+          title: 'Phần 1: Từ Vựng (文字・語彙)',
+          shortTitle: 'Từ vựng',
+          questionCount: 35,
+          timeLimitMinutes: isN5 ? 20 : 25,
+          timeLimitSeconds: isN5 ? 1200 : 1500,
+          questionRange: [1, 35]
+        },
+        {
+          id: 'grammar_reading',
+          title: 'Phần 2: Ngữ Pháp & Đọc Hiểu (文法・読解)',
+          shortTitle: 'Ngữ pháp & Đọc hiểu',
+          questionCount: isN5 ? 32 : 35,
+          timeLimitMinutes: isN5 ? 40 : 55,
+          timeLimitSeconds: isN5 ? 2400 : 3300,
+          questionRange: [36, isN5 ? 67 : 70]
+        }
+      ];
+
+      return {
+        ...raw,
+        level,
+        timeLimitMinutes: typeof raw.timeLimitMinutes === 'number' ? raw.timeLimitMinutes : (isN5 ? 60 : 80),
+        blocks: Array.isArray(raw.blocks) && raw.blocks.length === 2 ? raw.blocks : defaultBlocks,
+        passage: safeTrim(raw.passage || ''),
+        readingPassages: safeArray(raw.readingPassages),
+        questions
+      };
     }
   };
 

@@ -31,3 +31,7 @@ yarn-error.log*
 dist/
 build/
 .cache/
+
+# 6. Agent State & Milestones (Protected)
+.agent/state/
+

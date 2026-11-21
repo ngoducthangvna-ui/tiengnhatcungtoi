@@ -559,10 +559,17 @@ export default {
           );
         }
 
-        const clientScore = typeof body.clientScore === 'number' ? Math.max(0, Math.min(20, Math.round(body.clientScore))) : 0;
+        const isN5 = normalizedCode.startsWith('N5');
+        const totalQuestions = typeof body.total === 'number' && body.total > 0 ? Math.round(body.total) : (isN5 ? 67 : 70);
+        const clientScore = typeof body.clientScore === 'number' ? Math.max(0, Math.min(totalQuestions, Math.round(body.clientScore))) : 0;
+        const scaledScore = typeof body.scaledScore === 'number'
+          ? Math.max(0, Math.min(120, Math.round(body.scaledScore)))
+          : Math.round((clientScore / totalQuestions) * 120);
         const sessionId = body.sessionId || `sess_${normalizedCode}_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`;
         const reason = body.reason || 'exit_trigger';
-        const isPass = clientScore >= 12;
+        const passedCutoff = scaledScore >= 38;
+        const passTarget = isN5 ? 60 : 63;
+        const isPass = passedCutoff && scaledScore >= passTarget;
 
         return applySecurityHeaders(
           new Response(JSON.stringify({
@@ -572,7 +579,10 @@ export default {
             sessionId,
             examCode: normalizedCode,
             score: clientScore,
-            total: 20,
+            total: totalQuestions,
+            scaledScore,
+            maxScaledScore: 120,
+            passedCutoff,
             isPass,
             reason,
             message: 'Bài thi đã được tự động kết thúc, chấm điểm và khóa phiên làm việc an toàn tại Edge.'

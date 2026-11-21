@@ -829,15 +829,28 @@ function loadScriptAsync(src) {
       resolve();
       return;
     }
-    const existing = document.querySelector(`script[src*="${src}"]`);
+    const existing = (typeof document.querySelector === 'function')
+      ? document.querySelector(`script[src*="${src}"]`)
+      : null;
     if (existing) {
       _loadedScriptUrls.add(src);
       syncLoadedData();
       resolve();
       return;
     }
+    let resolvedSrc = src;
+    if (!/^(?:data|blob):/i.test(src) && !/[?&]v=/.test(src) && typeof document.querySelector === 'function') {
+      const appScriptEl = document.querySelector('script[src*="app.js?v="]');
+      const appAttr = appScriptEl
+        ? ((typeof appScriptEl.getAttribute === 'function' ? appScriptEl.getAttribute('src') : '') || appScriptEl.src || '')
+        : '';
+      const vMatch = appAttr.match(/[?&]v=([0-9A-Za-z_]+)/);
+      if (vMatch) {
+        resolvedSrc = src + (src.includes('?') ? '&' : '?') + 'v=' + vMatch[1];
+      }
+    }
     const script = document.createElement('script');
-    script.src = src;
+    script.src = resolvedSrc;
     script.async = true;
     script.onload = () => {
       _loadedScriptUrls.add(src);
@@ -945,6 +958,7 @@ function prefetchRemainingDataForSearch() {
   _searchPrefetchStarted = true;
 
   const allUrls = [
+    'data/reference_hub_data.js',
     'data/lessons_6_10.js', 'data/lessons_11_15.js', 'data/lessons_16_20.js',
     'data/lessons_21_25.js', 'data/lessons_26_30.js', 'data/lessons_31_35.js',
     'data/lessons_36_40.js', 'data/lessons_41_45.js', 'data/lessons_46_50.js',
@@ -953,7 +967,8 @@ function prefetchRemainingDataForSearch() {
     'data/kanji_1_5.js', 'data/kanji_6_10.js', 'data/kanji_11_15.js',
     'data/kanji_16_20.js', 'data/kanji_21_25.js', 'data/kanji_26_30.js',
     'data/kanji_31_35.js', 'data/kanji_36_40.js', 'data/kanji_41_45.js',
-    'data/kanji_46_50.js'
+    'data/kanji_46_50.js',
+    'data/kaiwa_1_25.js', 'data/kaiwa_26_50.js'
   ];
 
   let i = 0;
@@ -1632,9 +1647,10 @@ function renderSidebar() {
         const id = btn.getAttribute('data-id');
         if (!id) return;
         const isComp = isModuleCompleted(id);
+        const isRefHubRoute = currentActiveId === 'reference-hub' || currentActiveId === 'master-hub' || currentActiveId === 'conjugation-lab' || currentActiveId === 'mistake-notebook' || currentActiveId === 'analytics-hub' || currentActiveId === 'streak-zen';
+        const curSub = (window.StudyToolsEngine && window.StudyToolsEngine.state && window.StudyToolsEngine.state.refSubTab) || 'kana';
         const isCur = (id === currentActiveId) ||
-          (id === 'conjugation-lab' && currentActiveId === 'master-hub') ||
-          (id === 'analytics-hub' && currentActiveId === 'streak-zen');
+          (isRefHubRoute && id === `ref-${curSub}`);
         btn.classList.toggle('active', isCur);
         const tag = btn.querySelector ? btn.querySelector('.item-tag') : null;
         if (tag) {
@@ -1710,13 +1726,14 @@ function renderSidebar() {
 
   const masterHubQuickEl = document.createElement('div');
   masterHubQuickEl.className = 'sidebar-mazii-quick';
+  const isRefQuickActive = currentActiveId === 'reference-hub' || currentActiveId === 'master-hub' || String(currentActiveId).startsWith('ref-');
   masterHubQuickEl.innerHTML = `
-    <button type="button" class="sidebar-mazii-btn ${currentActiveId === 'master-hub' ? 'active' : ''}" onclick="switchModule('master-hub')" title="Đấu trường Chia Thể, Sổ Tay Cá Nhân, Lượng Từ &amp; Chuỗi Ngày Học">
+    <button type="button" class="sidebar-mazii-btn ${isRefQuickActive ? 'active' : ''}" onclick="switchModule('reference-hub')" title="Tra cứu nhanh: Kana, Lượng từ, Trợ từ, Thời gian &amp; Kính ngữ">
       <span class="mazii-quick-left">
-        <span class="mazii-icon">${APP_ICONS.bolt || '<svg class="icon-svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M13.5 2.5L5.5 13.5H12L10.5 21.5L18.5 10.5H12L13.5 2.5Z"></path></svg>'}</span>
-        <span class="mazii-title">Phòng Lab &amp; Sổ Tay</span>
+        <span class="mazii-icon">${(window.MASTER_SUITE_ICONS && window.MASTER_SUITE_ICONS.reference) || APP_ICONS.radicalsGrid || APP_ICONS.book}</span>
+        <span class="mazii-title">Tra Cứu Kiến Thức</span>
       </span>
-      <span class="mazii-badge">Master V4</span>
+      <span class="mazii-badge">5 Bảng</span>
     </button>
   `;
   if (fragment) {
@@ -1839,37 +1856,44 @@ function renderSidebar() {
     },
     {
       id: "group-master-suite",
-      title: "Trung Tâm Phản Xạ & Sổ Tay",
-      icon: sidebarIcons.masterSuite || APP_ICONS.exercise,
+      title: "Tra Cứu Kiến Thức",
+      icon: sidebarIcons.masterSuite || APP_ICONS.radicalsGrid,
       isOpenDefault: false,
       items: [
         {
-          id: 'conjugation-lab',
-          label: 'Đấu Trường Chia Thể',
-          sub: '10 Thể V/A',
-          icon: APP_ICONS.bolt || '',
-          isCurrent: currentActiveId === 'conjugation-lab' || (currentActiveId === 'master-hub' && (!window.StudyToolsEngine || !window.StudyToolsEngine.state || window.StudyToolsEngine.state.activeTab === 'conjugation'))
-        },
-        {
-          id: 'mistake-notebook',
-          label: 'Sổ Tay & Kho Câu Sai',
-          sub: 'SRS Phục Thù',
-          icon: (window.MASTER_SUITE_ICONS && window.MASTER_SUITE_ICONS.notebook) || APP_ICONS.exercise || '',
-          isCurrent: currentActiveId === 'mistake-notebook' || (currentActiveId === 'master-hub' && window.StudyToolsEngine && window.StudyToolsEngine.state && window.StudyToolsEngine.state.activeTab === 'notebook')
-        },
-        {
-          id: 'reference-hub',
-          label: 'Bảng Tra Cứu Toàn Thư',
-          sub: '5 Chuyên Đề',
+          id: 'ref-kana',
+          label: 'Bảng Kana & Biến Âm',
+          sub: '150 Chữ',
           icon: (window.MASTER_SUITE_ICONS && window.MASTER_SUITE_ICONS.reference) || APP_ICONS.radicalsGrid || '',
-          isCurrent: currentActiveId === 'reference-hub' || (currentActiveId === 'master-hub' && window.StudyToolsEngine && window.StudyToolsEngine.state && window.StudyToolsEngine.state.activeTab === 'reference')
+          isCurrent: currentActiveId === 'ref-kana' || currentActiveId === 'reference-hub' || currentActiveId === 'master-hub'
         },
         {
-          id: 'analytics-hub',
-          label: 'Streak, Radar & Zen',
-          sub: 'Streak & Zen',
-          icon: (window.MASTER_SUITE_ICONS && window.MASTER_SUITE_ICONS.radar) || '',
-          isCurrent: currentActiveId === 'analytics-hub' || currentActiveId === 'streak-zen' || (currentActiveId === 'master-hub' && window.StudyToolsEngine && window.StudyToolsEngine.state && window.StudyToolsEngine.state.activeTab === 'analytics')
+          id: 'ref-counters',
+          label: 'Bảng Đếm Lượng Từ',
+          sub: '10 Nhóm',
+          icon: (window.MASTER_SUITE_ICONS && window.MASTER_SUITE_ICONS.notebook) || APP_ICONS.cards || '',
+          isCurrent: currentActiveId === 'ref-counters'
+        },
+        {
+          id: 'ref-particles',
+          label: 'Trợ Từ Đối Chiếu',
+          sub: '16 Cặp',
+          icon: APP_ICONS.bolt || '',
+          isCurrent: currentActiveId === 'ref-particles'
+        },
+        {
+          id: 'ref-time',
+          label: 'Thời Gian & Từ Hỏi 5W1H',
+          sub: 'Mốc & Phó từ',
+          icon: (window.MASTER_SUITE_ICONS && window.MASTER_SUITE_ICONS.timer) || '',
+          isCurrent: currentActiveId === 'ref-time'
+        },
+        {
+          id: 'ref-keigo',
+          label: 'Tự–Tha Động Từ & Kính Ngữ',
+          sub: 'N4 Trọng tâm',
+          icon: (window.MASTER_SUITE_ICONS && window.MASTER_SUITE_ICONS.star) || '',
+          isCurrent: currentActiveId === 'ref-keigo'
         }
       ]
     },
@@ -1883,7 +1907,7 @@ function renderSidebar() {
         return {
           id: ex.id,
           label: `${ex.code}: ${ex.title.replace(/^Đề\s+[Nn][45]-\d+:\s*/, '').split('—')[0].trim()}`,
-          sub: `${ex.level} • 20 câu`,
+          sub: `${ex.level} • ${ex.questionCount || (ex.level === 'N5' ? 67 : 70)} câu`,
           isCurrent: isCur
         };
       })
@@ -1915,9 +1939,7 @@ function renderSidebar() {
         <ul class="accordion-menu-list">
           ${group.items.map(it => {
             const isComp = isModuleCompleted(it.id);
-            const isCur = (it.id === currentActiveId) ||
-              (it.id === 'conjugation-lab' && currentActiveId === 'master-hub') ||
-              (it.id === 'analytics-hub' && currentActiveId === 'streak-zen');
+            const isCur = Boolean(it.isCurrent) || (it.id === currentActiveId);
             const activeClass = isCur ? 'active' : '';
             const tagClass = isComp ? 'item-tag completed' : (isCur ? 'item-tag current' : 'item-tag');
             const tagLabel = isComp ? 'Đã xong' : it.sub;
@@ -2156,6 +2178,37 @@ function renderModuleFooterNav(lessonNum, activeMode) {
 if (typeof window !== 'undefined') window.renderModuleFooterNav = renderModuleFooterNav;
 
 
+function resolveNavigationDirection(prevId, nextId) {
+  if (!prevId || !nextId || prevId === nextId) return 'up';
+  const prevStr = String(prevId);
+  const nextStr = String(nextId);
+  const getCategoryInfo = (routeId) => {
+    const prefixes = ['bai-', 'kaiwa-', 'kanji-', 'quiz-', 'dokkai-', 'radicals-', 'exam-n5-', 'exam-n4-'];
+    for (let i = 0; i < prefixes.length; i++) {
+      if (routeId.startsWith(prefixes[i])) {
+        const num = parseInt(routeId.slice(prefixes[i].length), 10) || 0;
+        return { prefix: prefixes[i], weight: i, num };
+      }
+    }
+    const tabWeights = {
+      'conjugation-lab': 10, 'master-hub': 10, 'mistake-notebook': 11,
+      'reference-hub': 12, 'ref-kana': 12, 'ref-counters': 12.1, 'ref-particles': 12.2, 'ref-time': 12.3, 'ref-keigo': 12.4,
+      'analytics-hub': 13, 'streak-zen': 13,
+      'mazii-dict': 14, 'exam': 6
+    };
+    return { prefix: routeId, weight: tabWeights[routeId] ?? 20, num: 0 };
+  };
+  const p = getCategoryInfo(prevStr);
+  const n = getCategoryInfo(nextStr);
+  if (p.prefix === n.prefix && p.num > 0 && n.num > 0) {
+    return n.num >= p.num ? 'next' : 'prev';
+  }
+  if (p.weight !== n.weight) {
+    return n.weight >= p.weight ? 'next' : 'prev';
+  }
+  return 'up';
+}
+
 function renderContent(id) {
   const content = document.getElementById('lesson-content');
   if (!content) return;
@@ -2204,30 +2257,28 @@ function renderContent(id) {
   if (contentTransitionTimer) clearTimeout(contentTransitionTimer);
   content.classList.remove('content-entering');
   if (lastAnimatedRouteId !== id) {
+    const navDir = resolveNavigationDirection(lastAnimatedRouteId, id);
     lastAnimatedRouteId = id;
+    if (content.setAttribute) content.setAttribute('data-nav-dir', navDir);
     safeRAF(() => {
       if (transitionToken !== contentTransitionToken) return;
       content.classList.add('content-entering');
       contentTransitionTimer = setTimeout(() => {
         if (transitionToken === contentTransitionToken) content.classList.remove('content-entering');
         contentTransitionTimer = null;
-      }, 400);
+      }, 260);
     });
   }
 
   const isCompleted = isModuleCompleted(id);
 
-  if (id === 'master-hub' || id === 'conjugation-lab' || id === 'mistake-notebook' || id === 'reference-hub' || id === 'analytics-hub' || id === 'streak-zen' || String(id).startsWith('master-hub-')) {
-    let initialTab = 'conjugation';
-    if (id === 'mistake-notebook' || id === 'master-hub-notebook') {
-      initialTab = 'notebook';
-    } else if (id === 'reference-hub' || id === 'master-hub-reference') {
-      initialTab = 'reference';
-    } else if (id === 'analytics-hub' || id === 'streak-zen' || id === 'master-hub-analytics') {
-      initialTab = 'analytics';
+  if (id === 'master-hub' || id === 'conjugation-lab' || id === 'mistake-notebook' || id === 'reference-hub' || id === 'analytics-hub' || id === 'streak-zen' || String(id).startsWith('master-hub-') || String(id).startsWith('ref-')) {
+    let initialSub = 'kana';
+    if (String(id).startsWith('ref-')) {
+      initialSub = String(id).slice(4);
     }
     if (typeof StudyToolsEngine !== 'undefined' && typeof StudyToolsEngine.renderMasterHub === 'function') {
-      StudyToolsEngine.renderMasterHub(content, initialTab);
+      StudyToolsEngine.renderMasterHub(content, initialSub);
     }
     restoreScrollPosition(getModuleScroll(id));
     return;
@@ -2931,6 +2982,7 @@ function saveKanjiLearnedSet(lessonNum, learnedSet) {
 }
 
 window.switchKanjiTab = function(tabName, shouldScroll = false) {
+  const prevTab = currentKanjiTab;
   currentKanjiTab = tabName === 'flashcard' ? 'flashcard' : 'list';
   if (typeof window !== 'undefined') window.currentKanjiTab = currentKanjiTab;
 
@@ -2950,6 +3002,17 @@ window.switchKanjiTab = function(tabName, shouldScroll = false) {
 
   if (listPane) listPane.style.display = currentKanjiTab === 'list' ? 'block' : 'none';
   if (fcPane) fcPane.style.display = currentKanjiTab === 'flashcard' ? 'block' : 'none';
+
+  const activePane = currentKanjiTab === 'flashcard' ? fcPane : listPane;
+  if (activePane && prevTab !== currentKanjiTab && activePane.classList) {
+    const dir = currentKanjiTab === 'flashcard' ? 'next' : 'prev';
+    activePane.classList.remove('ios-pane-entering');
+    if (activePane.setAttribute) activePane.setAttribute('data-nav-dir', dir);
+    safeRAF(() => {
+      activePane.classList.add('ios-pane-entering');
+      setTimeout(() => activePane.classList.remove('ios-pane-entering'), 260);
+    });
+  }
 
   const syncTabs = document.querySelectorAll ? document.querySelectorAll('.sync-tab-btn') : [];
   syncTabs.forEach(btn => {
@@ -4281,6 +4344,7 @@ function renderRadicalSection(sectionId, forcedTab = null) {
 }
 
 function switchRadicalTab(tabName, shouldScroll = false) {
+  const prevTab = currentRadicalTab;
   currentRadicalTab = tabName === 'flashcard' ? 'flashcard' : 'list';
   if (typeof window !== 'undefined') window.currentRadicalTab = currentRadicalTab;
 
@@ -4300,6 +4364,17 @@ function switchRadicalTab(tabName, shouldScroll = false) {
 
   if (listPane) listPane.style.display = currentRadicalTab === 'list' ? 'block' : 'none';
   if (fcPane) fcPane.style.display = currentRadicalTab === 'flashcard' ? 'block' : 'none';
+
+  const activePane = currentRadicalTab === 'flashcard' ? fcPane : listPane;
+  if (activePane && prevTab !== currentRadicalTab && activePane.classList) {
+    const dir = currentRadicalTab === 'flashcard' ? 'next' : 'prev';
+    activePane.classList.remove('ios-pane-entering');
+    if (activePane.setAttribute) activePane.setAttribute('data-nav-dir', dir);
+    safeRAF(() => {
+      activePane.classList.add('ios-pane-entering');
+      setTimeout(() => activePane.classList.remove('ios-pane-entering'), 260);
+    });
+  }
 
   if (currentRadicalTab === 'flashcard') {
     if (currentRadicalGroup) {
@@ -6201,45 +6276,330 @@ window.resetDokkaiProgress = function(dokkaiId) {
 
 function normalizeSearch(str) {
   if (!str) return '';
-  return str.normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/đ/g, 'd').replace(/Đ/g, 'D').toLowerCase().trim();
+  return String(str).normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/đ/g, 'd').replace(/Đ/g, 'D').toLowerCase().trim();
 }
 
-function searchEverything(keyword) {
-  const query = normalizeSearch(keyword);
-  const raw = keyword.trim().toLowerCase();
-  if (!query) return [];
+const QUICK_SEARCH_HISTORY_KEY = 'minna_quick_search_history_v1';
+
+function getQuickSearchHistory() {
+  try {
+    if (typeof StorageEngine !== 'undefined' && typeof StorageEngine.secureGetJson === 'function') {
+      const arr = StorageEngine.secureGetJson(QUICK_SEARCH_HISTORY_KEY, []);
+      return Array.isArray(arr) ? arr.slice(0, 8) : [];
+    }
+    const raw = typeof localStorage !== 'undefined' ? localStorage.getItem(QUICK_SEARCH_HISTORY_KEY) : null;
+    if (!raw) return [];
+    const parsed = JSON.parse(raw);
+    return Array.isArray(parsed) ? parsed.slice(0, 8) : [];
+  } catch (_e) {
+    return [];
+  }
+}
+
+function saveQuickSearchHistory(term) {
+  if (!term || typeof term !== 'string') return;
+  const clean = term.trim();
+  if (!clean || clean.length < 1) return;
+  try {
+    const list = getQuickSearchHistory().filter(x => x && x.toLowerCase() !== clean.toLowerCase());
+    list.unshift(clean);
+    const trimmed = list.slice(0, 8);
+    if (typeof StorageEngine !== 'undefined' && typeof StorageEngine.secureSet === 'function') {
+      StorageEngine.secureSet(QUICK_SEARCH_HISTORY_KEY, JSON.stringify(trimmed));
+    } else if (typeof localStorage !== 'undefined') {
+      localStorage.setItem(QUICK_SEARCH_HISTORY_KEY, JSON.stringify(trimmed));
+    }
+  } catch (_e) {}
+}
+
+function clearQuickSearchHistory() {
+  try {
+    if (typeof StorageEngine !== 'undefined' && typeof StorageEngine.secureSet === 'function') {
+      StorageEngine.secureSet(QUICK_SEARCH_HISTORY_KEY, JSON.stringify([]));
+    } else if (typeof localStorage !== 'undefined') {
+      localStorage.removeItem(QUICK_SEARCH_HISTORY_KEY);
+    }
+  } catch (_e) {}
+}
+
+function highlightMatchedSnippet(text, query) {
+  const safeText = escapeHtml(String(text || ''));
+  if (!query || typeof query !== 'string') return safeText;
+  const cleanQ = query.trim().replace(/^@[a-z]+\s*/i, '');
+  if (!cleanQ || cleanQ.length < 2) return safeText;
+  try {
+    const escapedQ = escapeHtml(cleanQ).replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
+    const rx = new RegExp(`(${escapedQ})`, 'ig');
+    return safeText.replace(rx, '<mark class="search-hl-mark">$1</mark>');
+  } catch (_e) {
+    return safeText;
+  }
+}
+
+function scoreMasterTextField(text, ctx, weight = 1.0) {
+  if (!text) return 0;
+  const rawStr = String(text);
+  const lower = rawStr.toLowerCase();
+  const norm = normalizeSearch(rawStr);
+  const { queryLower, queryNoTone, hasTone, phonetics, deinflected } = ctx;
+  if (!queryNoTone && !queryLower) return 0;
+
+  let base = scoreDictMatch(lower, queryLower, norm, queryNoTone, hasTone);
+  if (phonetics) {
+    if (phonetics.hira && phonetics.hira !== queryLower) {
+      base = Math.max(base, scoreDictMatch(lower, phonetics.hira, lower, phonetics.hira, true));
+    }
+    if (phonetics.kata && phonetics.kata !== queryLower) {
+      base = Math.max(base, scoreDictMatch(lower, phonetics.kata, lower, phonetics.kata, true));
+    }
+    if (phonetics.kataLong && phonetics.kataLong !== phonetics.kata) {
+      base = Math.max(base, scoreDictMatch(lower, phonetics.kataLong, lower, phonetics.kataLong, true));
+    }
+  }
+  if (Array.isArray(deinflected) && deinflected.length > 0) {
+    for (const d of deinflected) {
+      if (d.root && (lower === d.root || lower.includes(d.root))) {
+        base = Math.max(base, lower === d.root ? 185 : 115);
+      }
+    }
+  }
+  return Math.round(base * weight);
+}
+
+function searchEverything(keyword, scopeOverride = null) {
+  if (!keyword || typeof keyword !== 'string') return [];
+  const ctx = getMasterSearchContext(keyword);
+  const activeScope = (scopeOverride && scopeOverride !== 'all') ? scopeOverride : (ctx.dsl.scope || 'all');
+  const query = ctx.queryNoTone;
+  const raw = ctx.queryLower;
+  const hiraQ = (ctx.phonetics && ctx.phonetics.hira) || raw;
 
   const results = [];
+  const seenKeys = new Set();
 
+  const pushScored = (item) => {
+    if (!item || !item.title || !item.targetId) return;
+    if (activeScope !== 'all' && item.scope && item.scope !== activeScope && item.scope !== 'direct') return;
+    const dedupKey = `${item.category}|${item.targetId}|${item.title}`;
+    if (seenKeys.has(dedupKey)) return;
+    seenKeys.add(dedupKey);
+    results.push(item);
+  };
+
+  // 0. Lệnh điều hướng trực tiếp (VD: "bài 12", "kaiwa 5", "kanji 10")
+  if (ctx.dsl.directCommand) {
+    const cmd = ctx.dsl.directCommand;
+    pushScored({
+      category: cmd.category,
+      scope: 'direct',
+      title: cmd.title,
+      sub: `Nhảy thẳng tới ${cmd.badge} • Phím tắt điều hướng Master`,
+      targetId: cmd.targetId,
+      highlight: '',
+      score: 2500
+    });
+  }
+
+  // Nếu người dùng chỉ gõ tiền tố lệnh (VD: "@kaiwa", "@ref", "@kanji") mà chưa gõ từ khóa phụ
+  if (!query && activeScope !== 'all') {
+    const scopeDefaults = {
+      vocab: { category: 'Bài Học', title: 'Từ Vựng & Ngữ Pháp Bài 1', sub: 'Gõ thêm từ vựng, Romaji hoặc nghĩa tiếng Việt', targetId: 'bai-1' },
+      kanji: { category: 'Chữ Hán & Mẹo Nhớ', title: 'Chữ Hán & Mẹo Nhớ Bài 1', sub: 'Gõ chữ Hán, âm Hán-Việt hoặc nghĩa để lọc', targetId: 'kanji-1' },
+      grammar: { category: 'Ngữ Pháp', title: 'Ngữ Pháp Trọng Tâm Bài 1', sub: 'Gõ mẫu câu ngữ pháp N5 - N4 để tra cứu', targetId: 'bai-1' },
+      kaiwa: { category: 'Hội Thoại Kaiwa', title: 'Hội Thoại Kaiwa Bài 1: はじめまして', sub: '50 bài hội thoại thực tế & Luyện tập C', targetId: 'kaiwa-1' },
+      ref: { category: 'Bảng Tra Cứu', title: 'Tra Cứu Kiến Thức Nhanh (5 Chuyên Đề)', sub: 'Kana, Lượng từ, 16 cặp Trợ từ, Thời gian & Kính ngữ', targetId: 'ref-kana' },
+      exam: { category: 'Đề Thi JLPT', title: 'Phòng Thi Thử JLPT N5 & N4 (50 Đề)', sub: 'Luyện đề chuẩn cấu trúc JLPT có bấm giờ', targetId: 'exam' },
+      dokkai: { category: 'Đọc Hiểu', title: 'Đọc Hiểu Dokkai Bài 1', sub: '50 bài đọc hiểu song ngữ Nhật - Việt', targetId: 'dokkai-1' },
+      quiz: { category: 'Luyện Tập', title: 'Bài Tập Trắc Nghiệm Bài 1', sub: '3.500 câu hỏi trắc nghiệm phản xạ', targetId: 'quiz-1' },
+      radical: { category: 'Bộ Thủ', title: '214 Bộ Thủ Kanji Chuẩn Quốc Tế', sub: 'Học bộ thủ kèm hoạt họa thứ tự nét viết', targetId: 'radicals-1' }
+    };
+    if (scopeDefaults[activeScope]) {
+      pushScored(Object.assign({ scope: activeScope, highlight: '', score: 1000 }, scopeDefaults[activeScope]));
+    }
+    return results;
+  }
+
+  if (!query) return results;
+
+  // 1. Quét Bảng Tra Cứu Kiến Thức Nhanh (5 Chuyên đề Reference Hub)
+  const refShortcuts = [
+    { kw: ['kana', 'hiragana', 'katakana', 'bang chu cai', 'bien am', 'dakuon', 'yoon', '50 am'], title: 'Bảng Chữ Cái Kana & Biến Âm (150 chữ)', sub: 'Tra Cứu Nhanh • Hiragana, Katakana, Đục âm & Ảo âm', targetId: 'ref-kana' },
+    { kw: ['luong tu', 'dem', 'counter', 'rendaku', 'josuushi', 'tsu', 'nin', 'hon', 'mai', 'hiki', 'dai'], title: 'Bảng Đếm Lượng Từ & Biến Âm Rendaku (10 nhóm)', sub: 'Tra Cứu Nhanh • Đồ vật, người, vật thon dài, máy móc, tầng lầu', targetId: 'ref-counters' },
+    { kw: ['tro tu', 'particle', 'wa ga', 'ni de', 'ni e', 'dake shika', 'kara node', 'tara nara'], title: 'Bảng Đối Chiếu 16 Cặp Trợ Từ Trọng Tâm N5 – N4', sub: 'Tra Cứu Nhanh • Phân biệt は/が, に/で, に/へ, から/ので, だけ/しか...', targetId: 'ref-particles' },
+    { kw: ['thoi gian', '5w1h', 'pho tu', 'hom nay', 'ngay mai', 'hom qua', 'tuan', 'thang', 'nam', 'itsu', 'doko', 'dare', 'nani', 'dou'], title: 'Hệ Thống Mốc Thời Gian, Phó Từ & Từ Hỏi 5W1H', sub: 'Tra Cứu Nhanh • Quá khứ - Hiện tại - Tương lai & Phó từ tần suất', targetId: 'ref-time' },
+    { kw: ['kinh ngu', 'keigo', 'sonkeigo', 'kenjougo', 'teineigo', 'tu dong tu', 'tha dong tu', 'jidoushi', 'tadoushi', 'ton trong', 'khiem nhuong'], title: 'Cặp Tự – Tha Động Từ & Bảng Kính Ngữ N4 Trọng Tâm', sub: 'Tra Cứu Nhanh • 12 cặp Tự-Tha động từ & Tôn kính ngữ / Khiêm nhường ngữ', targetId: 'ref-keigo' }
+  ];
+  for (const rs of refShortcuts) {
+    if (rs.kw.some(k => k.includes(query) || query.includes(k))) {
+      pushScored({
+        category: 'Bảng Tra Cứu',
+        scope: 'ref',
+        title: rs.title,
+        sub: rs.sub,
+        targetId: rs.targetId,
+        highlight: raw,
+        score: 680
+      });
+    }
+  }
+
+  const refData = (typeof REFERENCE_HUB_DATA !== 'undefined' && REFERENCE_HUB_DATA) ? REFERENCE_HUB_DATA : null;
+  if (refData) {
+    // Quét Lượng từ
+    for (const c of (refData.counters || [])) {
+      const s = Math.max(
+        scoreMasterTextField(c.kanji, ctx, 1.5),
+        scoreMasterTextField(c.reading, ctx, 1.4),
+        scoreMasterTextField(c.meaning, ctx, 1.2)
+      );
+      if (s >= 45) {
+        pushScored({
+          category: 'Bảng Tra Cứu',
+          scope: 'ref',
+          title: `Lượng từ ${c.kanji} (${c.reading}) - ${c.meaning}`,
+          sub: `${c.usage || 'Bảng đếm lượng từ'} • Chuyên đề Lượng Từ`,
+          targetId: 'ref-counters',
+          highlight: c.kanji,
+          score: s + 120
+        });
+      }
+    }
+    // Quét 16 cặp Trợ từ
+    const allParticles = [...(refData.particles || []), ...(refData.extraParticles || []), ...(refData.focusedAdvancedParticles || [])];
+    for (const p of allParticles) {
+      if (!p) continue;
+      const s = Math.max(
+        scoreMasterTextField(p.pairTitle, ctx, 1.5),
+        scoreMasterTextField(p.keyRule, ctx, 1.1),
+        scoreMasterTextField(p.formula, ctx, 1.1)
+      );
+      if (s >= 45) {
+        pushScored({
+          category: 'Bảng Tra Cứu',
+          scope: 'ref',
+          title: `Trợ từ: ${p.pairTitle}`,
+          sub: `${(p.keyRule || '').slice(0, 58)}... • Chuyên đề Trợ Từ`,
+          targetId: 'ref-particles',
+          highlight: p.pairTitle,
+          score: s + 110
+        });
+      }
+    }
+    // Quét Kính ngữ & Tự-Tha động từ
+    for (const k of (refData.keigoTable || [])) {
+      const plain = k.dict || k.plain || '';
+      const s = Math.max(
+        scoreMasterTextField(plain, ctx, 1.4),
+        scoreMasterTextField(k.sonkeigo, ctx, 1.5),
+        scoreMasterTextField(k.kenjougo, ctx, 1.5),
+        scoreMasterTextField(k.meaning, ctx, 1.2)
+      );
+      if (s >= 45) {
+        pushScored({
+          category: 'Bảng Tra Cứu',
+          scope: 'ref',
+          title: `Kính ngữ: ${plain} ➔ ${k.sonkeigo} / ${k.kenjougo}`,
+          sub: `${k.meaning} • Bảng Kính Ngữ N4`,
+          targetId: 'ref-keigo',
+          highlight: plain,
+          score: s + 120
+        });
+      }
+    }
+    for (const tp of (refData.transitivityPairs || [])) {
+      const intr = (tp.intransitive && tp.intransitive.jp) || '';
+      const tr = (tp.transitive && tp.transitive.jp) || '';
+      const s = Math.max(
+        scoreMasterTextField(intr, ctx, 1.5),
+        scoreMasterTextField(tr, ctx, 1.5),
+        scoreMasterTextField(tp.meaning, ctx, 1.2)
+      );
+      if (s >= 45) {
+        pushScored({
+          category: 'Bảng Tra Cứu',
+          scope: 'ref',
+          title: `Tự – Tha động từ: ${intr} ⇄ ${tr}`,
+          sub: `${tp.meaning} • ${tp.ruleHint || 'Cặp động từ đối ứng'}`,
+          targetId: 'ref-keigo',
+          highlight: intr,
+          score: s + 115
+        });
+      }
+    }
+  }
+
+  // 2. Quét Bài Học, Từ Vựng & Ngữ Pháp (lessonsData)
   if (Array.isArray(lessonsData)) {
     lessonsData.forEach(l => {
-      if (normalizeSearch(l.title).includes(query)) {
-        results.push({ category: "Bài Học", title: l.title, sub: l.level, targetId: l.id, highlight: raw });
+      const sTitle = scoreMasterTextField(l.title, ctx, 1.3);
+      if (sTitle >= 45) {
+        pushScored({ category: 'Bài Học', scope: 'vocab', title: l.title, sub: l.level, targetId: l.id, highlight: raw, score: sTitle + 80 });
       }
-      l.vocabulary.forEach(v => {
-        const matchMean = normalizeSearch(v.meaning).includes(query);
-        const matchHira = v.hiragana.toLowerCase().includes(raw);
-        const matchKanji = cleanSpeechText(v.kanji).toLowerCase().includes(raw);
-        if (matchMean || matchHira || matchKanji) {
+      (l.vocabulary || []).forEach(v => {
+        const cleanK = cleanSpeechText(v.kanji);
+        const sKanji = scoreMasterTextField(cleanK, ctx, 1.6);
+        const sHira = scoreMasterTextField(v.hiragana, ctx, 1.5);
+        const sMean = scoreMasterTextField(v.meaning, ctx, 1.2);
+        const bestV = Math.max(sKanji, sHira, sMean);
+        if (bestV >= 40) {
           const hasKanji = hasKanjiCharacter(v.kanji);
           const displayTitle = hasKanji ? `${v.kanji.replace(/<[^>]*>?/gm, '')} (${v.hiragana})` : v.hiragana;
-          results.push({ category: "Từ Vựng", title: displayTitle, sub: `${v.meaning} • ${l.title.split(':')[0]}`, targetId: l.id, highlight: raw });
+          const hl = sKanji >= sMean ? cleanK : (sHira >= sMean ? v.hiragana : raw);
+          pushScored({
+            category: 'Từ Vựng',
+            scope: 'vocab',
+            title: displayTitle,
+            sub: `${v.meaning} • ${l.title.split(':')[0]}`,
+            targetId: l.id,
+            highlight: hl,
+            score: bestV + 100
+          });
         }
       });
-      l.grammar.forEach(g => {
-        if (normalizeSearch(g.structure).includes(query) || normalizeSearch(g.explanation).includes(query)) {
-          results.push({ category: "Ngữ Pháp", title: g.structure, sub: `${g.explanation.slice(0, 45)}...`, targetId: l.id, highlight: raw });
+      (l.grammar || []).forEach(g => {
+        const sStruct = scoreMasterTextField(g.structure, ctx, 1.5);
+        const sExp = scoreMasterTextField(g.explanation, ctx, 1.1);
+        const bestG = Math.max(sStruct, sExp);
+        if (bestG >= 40) {
+          pushScored({
+            category: 'Ngữ Pháp',
+            scope: 'grammar',
+            title: g.structure,
+            sub: `${(g.explanation || '').slice(0, 52)}...`,
+            targetId: l.id,
+            highlight: raw,
+            score: bestG + 90
+          });
         } else if (g.examples && Array.isArray(g.examples)) {
           for (const ex of g.examples) {
-            if (ex.type === 'dialogue') {
-              const foundLine = ex.lines.find(line => normalizeSearch(line.vi).includes(query) || (line.rawJp && line.rawJp.toLowerCase().includes(raw)));
+            if (ex.type === 'dialogue' && Array.isArray(ex.lines)) {
+              const foundLine = ex.lines.find(line =>
+                scoreMasterTextField(line.vi, ctx, 1.0) >= 45 ||
+                scoreMasterTextField(line.rawJp, ctx, 1.2) >= 45
+              );
               if (foundLine) {
-                results.push({ category: "Ví Dụ Ngữ Pháp", title: foundLine.rawJp || foundLine.jp.replace(/<[^>]*>?/gm, ''), sub: `${foundLine.vi} • ${g.structure.split(' ')[1] || g.structure}`, targetId: l.id, highlight: raw });
+                pushScored({
+                  category: 'Ví Dụ Ngữ Pháp',
+                  scope: 'grammar',
+                  title: foundLine.rawJp || (foundLine.jp || '').replace(/<[^>]*>?/gm, ''),
+                  sub: `${foundLine.vi} • ${g.structure.split(' ')[1] || g.structure}`,
+                  targetId: l.id,
+                  highlight: hiraQ || raw,
+                  score: 110
+                });
                 break;
               }
             } else {
-              if (normalizeSearch(ex.vi).includes(query) || (ex.rawJp && ex.rawJp.toLowerCase().includes(raw))) {
-                results.push({ category: "Ví Dụ Ngữ Pháp", title: ex.rawJp || ex.jp.replace(/<[^>]*>?/gm, ''), sub: `${ex.vi} • ${g.structure.split(' ')[1] || g.structure}`, targetId: l.id, highlight: raw });
+              if (scoreMasterTextField(ex.vi, ctx, 1.0) >= 45 || scoreMasterTextField(ex.rawJp, ctx, 1.2) >= 45) {
+                pushScored({
+                  category: 'Ví Dụ Ngữ Pháp',
+                  scope: 'grammar',
+                  title: ex.rawJp || (ex.jp || '').replace(/<[^>]*>?/gm, ''),
+                  sub: `${ex.vi} • ${g.structure.split(' ')[1] || g.structure}`,
+                  targetId: l.id,
+                  highlight: hiraQ || raw,
+                  score: 110
+                });
                 break;
               }
             }
@@ -6249,35 +6609,40 @@ function searchEverything(keyword) {
     });
   }
 
-  if (Array.isArray(dokkaiData)) {
-    dokkaiData.forEach(d => {
-      const matchTitle = normalizeSearch(d.title).includes(query) || normalizeSearch(d.subTitle).includes(query);
-      const matchPassage = d.passage && normalizeSearch(d.passage).includes(query);
-      const matchTrans = d.translation && normalizeSearch(d.translation).includes(query);
-      if (matchTitle || matchPassage || matchTrans) {
-        let snippet = d.subTitle;
-        if (matchPassage && d.passage) {
-          snippet = d.passage.replace(/<[^>]*>?/gm, '').slice(0, 50) + '...';
-        } else if (matchTrans && d.translation) {
-          snippet = d.translation.slice(0, 50) + '...';
-        }
-        results.push({ category: "Đọc Hiểu", title: d.title, sub: snippet, targetId: d.id, highlight: raw });
-      }
-    });
-  }
-
-  if (typeof practiceQuizData !== 'undefined') {
-    Object.keys(practiceQuizData).forEach(qId => {
-      const i = qId.replace('quiz-', '');
-      const qList = practiceQuizData[qId] || [];
-      if ("bai tap".includes(query) || "quiz".includes(query) || "luyen tap".includes(query) || `bai ${i}`.includes(query)) {
-        results.push({ category: "Luyện Tập", title: `Bài Tập Trắc Nghiệm Bài ${i}`, sub: `${qList.length} câu • Trọng tâm bài ${i}`, targetId: qId, highlight: raw });
-      } else {
-        for (let idx = 0; idx < qList.length; idx++) {
-          const q = qList[idx];
-          const matchQ = (q.question && normalizeSearch(q.question).includes(query)) || (q.explanation && normalizeSearch(q.explanation).includes(query));
-          if (matchQ) {
-            results.push({ category: "Câu Hỏi Trắc Nghiệm", title: `Bài ${i} - Câu ${idx + 1}`, sub: (q.question || '').slice(0, 50) + '...', targetId: qId, highlight: raw });
+  // 3. Quét 50 Bài Hội Thoại Kaiwa (kaiwaLessonsData)
+  if (typeof kaiwaLessonsData !== 'undefined' && Array.isArray(kaiwaLessonsData)) {
+    kaiwaLessonsData.forEach(kl => {
+      const sTitle = Math.max(
+        scoreMasterTextField(kl.titleJp, ctx, 1.5),
+        scoreMasterTextField(kl.titleVi, ctx, 1.3),
+        scoreMasterTextField(kl.context, ctx, 1.0)
+      );
+      if (sTitle >= 45) {
+        pushScored({
+          category: 'Hội Thoại Kaiwa',
+          scope: 'kaiwa',
+          title: `Kaiwa Bài ${kl.lesson}: ${kl.titleJp} (${kl.titleVi})`,
+          sub: `${(kl.context || '').slice(0, 56)}... • ${kl.level || 'Minna'}`,
+          targetId: kl.id || `kaiwa-${kl.lesson}`,
+          highlight: kl.titleJp,
+          score: sTitle + 95
+        });
+      } else if (Array.isArray(kl.dialogue)) {
+        for (const dLine of kl.dialogue) {
+          const sLine = Math.max(
+            scoreMasterTextField(dLine.rawJp, ctx, 1.3),
+            scoreMasterTextField(dLine.vi, ctx, 1.1)
+          );
+          if (sLine >= 50) {
+            pushScored({
+              category: 'Hội Thoại Kaiwa',
+              scope: 'kaiwa',
+              title: dLine.rawJp || stripRubyText(dLine.jp || ''),
+              sub: `${dLine.vi} • Kaiwa Bài ${kl.lesson}`,
+              targetId: kl.id || `kaiwa-${kl.lesson}`,
+              highlight: dLine.rawJp || raw,
+              score: sLine + 75
+            });
             break;
           }
         }
@@ -6285,80 +6650,148 @@ function searchEverything(keyword) {
     });
   }
 
-  if (typeof radicalsData !== 'undefined') {
-    radicalsData.forEach(group => {
-      if (normalizeSearch(group.title).includes(query) || "bo thu".includes(query)) {
-        results.push({ category: "Bộ Thủ", title: group.title, sub: `${group.items.length} bộ thủ chuẩn`, targetId: group.id, highlight: raw });
-      }
-      group.items.forEach(rad => {
-        const matchName = normalizeSearch(rad.name).includes(query);
-        const matchMean = normalizeSearch(rad.meaning).includes(query);
-        const matchChar = rad.character.includes(raw);
-        const matchEx = rad.examples && rad.examples.some(ex => normalizeSearch(ex.amHan).includes(query) || normalizeSearch(ex.nghia).includes(query) || ex.kanji.includes(raw));
-        if (matchName || matchMean || matchChar || matchEx) {
-          results.push({ category: "Bộ Thủ", title: `${rad.name} - ${rad.meaning}`, sub: `${group.title} • ${(rad.kanjiMeaning || '').slice(0, 45)}...`, targetId: group.id, highlight: raw });
-        }
-      });
-    });
-  }
-
-  if (typeof kanjiLessonsData !== 'undefined') {
+  // 4. Quét Chữ Hán & Mẹo Nhớ (kanjiLessonsData)
+  if (typeof kanjiLessonsData !== 'undefined' && Array.isArray(kanjiLessonsData)) {
     kanjiLessonsData.forEach(kl => {
-      if (normalizeSearch(kl.title).includes(query) || "chu han".includes(query) || "kanji".includes(query) || "meo nho".includes(query)) {
-        results.push({
-          category: "Chữ Hán & Mẹo Nhớ",
+      if (normalizeSearch(kl.title).includes(query) || 'chu han'.includes(query) || 'kanji'.includes(query) || 'meo nho'.includes(query)) {
+        pushScored({
+          category: 'Chữ Hán & Mẹo Nhớ',
+          scope: 'kanji',
           title: kl.title,
           sub: `${kl.items.length} chữ Hán • ${kl.level}`,
           targetId: kl.id,
-          highlight: raw
+          highlight: raw,
+          score: 120
         });
       }
-      kl.items.forEach(item => {
+      (kl.items || []).forEach(item => {
         const itemWord = item.word || item.kanji || '';
-        const matchChar = itemWord.includes(raw) || (item.kanji && item.kanji.includes(raw));
-        const matchReading = item.reading && (item.reading.toLowerCase().includes(raw) || normalizeSearch(item.reading).includes(query));
-        const matchHV = normalizeSearch(item.hanViet).includes(query);
-        const matchMean = normalizeSearch(item.meaning).includes(query);
-        const matchMnemonic = normalizeSearch(item.mnemonic).includes(query);
-        const matchOn = (item.onyomi || '').toLowerCase().includes(raw);
-        const matchKun = (item.kunyomi || '').toLowerCase().includes(raw);
-        if (matchChar || matchReading || matchHV || matchMean || matchMnemonic || matchOn || matchKun) {
+        const sChar = scoreMasterTextField(itemWord, ctx, 1.7);
+        const sRead = scoreMasterTextField(item.reading, ctx, 1.5);
+        const sHV = scoreMasterTextField(item.hanViet, ctx, 1.5);
+        const sMean = scoreMasterTextField(item.meaning, ctx, 1.2);
+        const sMnem = scoreMasterTextField(item.mnemonic, ctx, 0.9);
+        const bestK = Math.max(sChar, sRead, sHV, sMean, sMnem);
+        if (bestK >= 40) {
           const displayWord = item.word || item.kanji;
           const displayReading = item.reading ? ` [${item.reading}]` : '';
           const cleanMnemonic = (item.mnemonic || '').replace(/【.*?】\s*:?/g, '').replace(/\n/g, ' ').replace(/\s+/g, ' ').trim();
-          results.push({
-            category: "Chữ Hán & Mẹo Nhớ",
-            title: `${displayWord}${displayReading} (${item.hanViet}) - ${item.meaning.slice(0, 35)}`,
+          pushScored({
+            category: 'Chữ Hán & Mẹo Nhớ',
+            scope: 'kanji',
+            title: `${displayWord}${displayReading} (${item.hanViet}) - ${(item.meaning || '').slice(0, 35)}`,
             sub: `Mẹo nhớ: ${cleanMnemonic.slice(0, 50)}... • Bài ${kl.lesson}`,
             targetId: kl.id,
-            highlight: raw
+            highlight: displayWord,
+            score: bestK + 95
           });
         }
       });
     });
   }
 
+  // 5. Quét Bộ Thủ (radicalsData)
+  if (typeof radicalsData !== 'undefined' && Array.isArray(radicalsData)) {
+    radicalsData.forEach(group => {
+      if (normalizeSearch(group.title).includes(query) || 'bo thu'.includes(query)) {
+        pushScored({ category: 'Bộ Thủ', scope: 'radical', title: group.title, sub: `${group.items.length} bộ thủ chuẩn`, targetId: group.id, highlight: raw, score: 115 });
+      }
+      (group.items || []).forEach(rad => {
+        const sChar = rad.character === raw ? 350 : (rad.character.includes(raw) ? 180 : 0);
+        const sName = scoreMasterTextField(rad.name, ctx, 1.5);
+        const sMean = scoreMasterTextField(rad.meaning, ctx, 1.3);
+        const bestR = Math.max(sChar, sName, sMean);
+        if (bestR >= 45) {
+          pushScored({
+            category: 'Bộ Thủ',
+            scope: 'radical',
+            title: `${rad.character} ${rad.name} - ${rad.meaning}`,
+            sub: `${group.title} • ${(rad.kanjiMeaning || '').slice(0, 45)}...`,
+            targetId: group.id,
+            highlight: rad.character,
+            score: bestR + 90
+          });
+        }
+      });
+    });
+  }
+
+  // 6. Quét Đọc Hiểu Dokkai (dokkaiData)
+  if (Array.isArray(dokkaiData)) {
+    dokkaiData.forEach(d => {
+      const sTitle = Math.max(scoreMasterTextField(d.title, ctx, 1.3), scoreMasterTextField(d.subTitle, ctx, 1.3));
+      const sPass = scoreMasterTextField(d.passage, ctx, 1.1);
+      const sTrans = scoreMasterTextField(d.translation, ctx, 1.0);
+      const bestD = Math.max(sTitle, sPass, sTrans);
+      if (bestD >= 45) {
+        let snippet = d.subTitle;
+        if (sPass >= sTitle && d.passage) {
+          snippet = d.passage.replace(/<[^>]*>?/gm, '').slice(0, 50) + '...';
+        } else if (sTrans >= sTitle && d.translation) {
+          snippet = d.translation.slice(0, 50) + '...';
+        }
+        pushScored({ category: 'Đọc Hiểu', scope: 'dokkai', title: d.title, sub: snippet, targetId: d.id, highlight: raw, score: bestD + 70 });
+      }
+    });
+  }
+
+  // 7. Quét Bài Tập Trắc Nghiệm (practiceQuizData) & Phòng Thi JLPT
+  if (typeof practiceQuizData !== 'undefined') {
+    Object.keys(practiceQuizData).forEach(qId => {
+      const i = qId.replace('quiz-', '');
+      const qList = practiceQuizData[qId] || [];
+      if ('bai tap'.includes(query) || 'quiz'.includes(query) || 'luyen tap'.includes(query) || `bai ${i}` === query) {
+        pushScored({ category: 'Luyện Tập', scope: 'quiz', title: `Bài Tập Trắc Nghiệm Bài ${i}`, sub: `${qList.length} câu • Trọng tâm bài ${i}`, targetId: qId, highlight: raw, score: 110 });
+      } else {
+        for (let idx = 0; idx < qList.length; idx++) {
+          const q = qList[idx];
+          const sQ = Math.max(scoreMasterTextField(q.question, ctx, 1.1), scoreMasterTextField(q.explanation, ctx, 0.9));
+          if (sQ >= 50) {
+            pushScored({ category: 'Câu Hỏi Trắc Nghiệm', scope: 'quiz', title: `Bài ${i} - Câu ${idx + 1}`, sub: (q.question || '').slice(0, 50) + '...', targetId: qId, highlight: raw, score: sQ + 55 });
+            break;
+          }
+        }
+      }
+    });
+  }
+
+  if ('jlpt'.includes(query) || 'de thi'.includes(query) || 'thi thu'.includes(query) || query === 'n5' || query === 'n4') {
+    pushScored({
+      category: 'Đề Thi JLPT',
+      scope: 'exam',
+      title: 'Phòng Thi Thử & Khảo Thí JLPT N5 – N4 (50 Đề)',
+      sub: '25 đề N5 & 25 đề N4 có đồng hồ đếm ngược và giải thích chi tiết',
+      targetId: 'exam',
+      highlight: '',
+      score: 450
+    });
+  }
+
+  // 8. Quét Chỉ mục nén SEARCH_INDEX cho các bài học chưa nạp
   if (typeof SEARCH_INDEX !== 'undefined' && Array.isArray(SEARCH_INDEX)) {
     const loadedLessonIds = new Set((Array.isArray(lessonsData) ? lessonsData : []).map(l => l.id));
     SEARCH_INDEX.forEach(([type, lessonId, text1, text2, meaning]) => {
       if (loadedLessonIds.has(lessonId)) return;
       const lessonNum = lessonId.replace('bai-', '');
       if (type === 'v') {
-        const matchMean = normalizeSearch(meaning).includes(query);
-        const matchHira = text2.toLowerCase().includes(raw);
-        const matchKanji = text1.toLowerCase().includes(raw);
-        if (matchMean || matchHira || matchKanji) {
+        const sK = scoreMasterTextField(text1, ctx, 1.6);
+        const sH = scoreMasterTextField(text2, ctx, 1.5);
+        const sM = scoreMasterTextField(meaning, ctx, 1.2);
+        const best = Math.max(sK, sH, sM);
+        if (best >= 40) {
           const displayTitle = text1 ? `${text1} (${text2})` : text2;
-          results.push({ category: "Từ Vựng", title: displayTitle, sub: `${meaning} • Bài ${lessonNum}`, targetId: lessonId, highlight: raw });
+          pushScored({ category: 'Từ Vựng', scope: 'vocab', title: displayTitle, sub: `${meaning} • Bài ${lessonNum}`, targetId: lessonId, highlight: text1 || text2 || raw, score: best + 95 });
         }
       } else if (type === 'g') {
-        if (normalizeSearch(text1).includes(query) || normalizeSearch(meaning).includes(query)) {
-          results.push({ category: "Ngữ Pháp", title: text1, sub: `${meaning.slice(0, 45)}... • Bài ${lessonNum}`, targetId: lessonId, highlight: raw });
+        const sG = Math.max(scoreMasterTextField(text1, ctx, 1.5), scoreMasterTextField(meaning, ctx, 1.1));
+        if (sG >= 40) {
+          pushScored({ category: 'Ngữ Pháp', scope: 'grammar', title: text1, sub: `${(meaning || '').slice(0, 45)}... • Bài ${lessonNum}`, targetId: lessonId, highlight: raw, score: sG + 85 });
         }
       }
     });
   }
 
+  results.sort((a, b) => (b.score || 0) - (a.score || 0));
   return results;
 }
 
@@ -6407,10 +6840,37 @@ function initQuickSearch() {
 
   window.stopHeaderVoiceSearch = stopHeaderVoiceSearch;
 
+  const isMobileVoiceDevice = () => {
+    const ua = (typeof navigator !== 'undefined' && navigator.userAgent) || '';
+    return /Android|iPhone|iPad|iPod/i.test(ua) ||
+      (/Macintosh/i.test(ua) && typeof navigator !== 'undefined' && navigator.maxTouchPoints > 1);
+  };
+
+  const getVoiceInsecureMessage = () => {
+    if (typeof window === 'undefined' || !window.location) return '';
+    if (window.location.protocol === 'file:') {
+      return 'Trình duyệt chặn Micro khi mở file://. Hãy chạy qua web server cục bộ hoặc HTTPS.';
+    }
+    const host = window.location.hostname;
+    if (window.isSecureContext === false && host !== 'localhost' && host !== '127.0.0.1') {
+      return 'Micro trên điện thoại/tablet yêu cầu kết nối HTTPS bảo mật.';
+    }
+    return '';
+  };
+
   const startHeaderVoiceSearch = () => {
     const SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
     if (!SpeechRec) {
-      alert('Trình duyệt của bạn chưa hỗ trợ Web Speech API. Bạn có thể sử dụng biểu tượng Micro trên bàn phím ảo hoặc trình duyệt Chrome/Edge.');
+      const msg = 'Trình duyệt của bạn chưa hỗ trợ nhận giọng nói. Bạn có thể dùng micro trên bàn phím ảo hoặc trình duyệt Chrome/Safari.';
+      if (typeof showToast === 'function') showToast(msg);
+      else alert(msg);
+      return;
+    }
+
+    const insecureMsg = getVoiceInsecureMessage();
+    if (insecureMsg) {
+      if (typeof showToast === 'function') showToast(insecureMsg);
+      else alert(insecureMsg);
       return;
     }
 
@@ -6419,9 +6879,11 @@ function initQuickSearch() {
     stopMaziiVoiceSearch(true);
 
     try {
+      const isMobileVoice = isMobileVoiceDevice();
       headerSpeechRecognition = new SpeechRec();
       headerSpeechRecognition.lang = 'ja-JP';
       headerSpeechRecognition.continuous = true;
+      if (isMobileVoice) headerSpeechRecognition.continuous = false;
       headerSpeechRecognition.interimResults = true;
       headerSpeechRecognition.maxAlternatives = 3;
 
@@ -6435,16 +6897,20 @@ function initQuickSearch() {
         container.classList.add('mobile-active');
       }
 
+      headerSpeechRecognition.onstart = () => {
+        resetHeaderSilenceTimer();
+      };
+
       headerSpeechRecognition.onresult = (event) => {
         resetHeaderSilenceTimer();
         let interim = '';
         let final = '';
-        for (let i = event.resultIndex; i < event.results.length; ++i) {
+        for (let i = 0; i < event.results.length; ++i) {
           const item = event.results[i];
           if (item.isFinal) {
-            final += item[0].transcript;
+            final += (item[0] && item[0].transcript) || '';
           } else {
-            interim += item[0].transcript;
+            interim += (item[0] && item[0].transcript) || '';
           }
         }
         const text = (final || interim).trim();
@@ -6456,9 +6922,25 @@ function initQuickSearch() {
       };
 
       headerSpeechRecognition.onerror = (event) => {
-        console.warn('[HeaderVoiceSearch] Lỗi nhận diện:', event.error);
-        if (event.error === 'no-speech') {
-          return;
+        const code = event && event.error;
+        console.warn('[HeaderVoiceSearch] Lỗi nhận diện:', code);
+        if (code === 'no-speech') {
+          if (isMobileVoice && typeof showToast === 'function') {
+            showToast('Chưa nghe thấy giọng nói. Hãy chạm Micro và nói lại gần hơn.');
+          }
+          if (!isMobileVoice) return;
+        } else if (code === 'not-allowed' || code === 'service-not-allowed') {
+          if (typeof showToast === 'function') {
+            showToast('Micro đang bị chặn quyền. Vui lòng cấp quyền Micro trong cài đặt trình duyệt.');
+          }
+        } else if (code === 'audio-capture') {
+          if (typeof showToast === 'function') {
+            showToast('Không thể mở Micro. Hãy kiểm tra mic có đang bị ứng dụng khác sử dụng.');
+          }
+        } else if (code === 'network') {
+          if (typeof showToast === 'function') {
+            showToast('Không kết nối được dịch vụ nhận giọng. Hãy kiểm tra mạng.');
+          }
         }
         stopHeaderVoiceSearch();
       };
@@ -6471,6 +6953,9 @@ function initQuickSearch() {
       resetHeaderSilenceTimer();
     } catch (err) {
       console.warn('[HeaderVoiceSearch] Không thể khởi động mic:', err);
+      if (typeof showToast === 'function') {
+        showToast('Không thể khởi động Micro trên trình duyệt này.');
+      }
       stopHeaderVoiceSearch();
     }
   };
@@ -6501,6 +6986,74 @@ function initQuickSearch() {
     });
   }
 
+  let searchTimer = null;
+  let selectedIndex = -1;
+  let searchRequestId = 0;
+  let activeSearchScope = 'all';
+
+  const SEARCH_SCOPE_TABS = [
+    { id: 'all', label: 'Tất cả' },
+    { id: 'vocab', label: 'Từ vựng' },
+    { id: 'kanji', label: 'Chữ Hán' },
+    { id: 'grammar', label: 'Ngữ pháp' },
+    { id: 'kaiwa', label: 'Kaiwa' },
+    { id: 'ref', label: 'Bảng tra cứu' }
+  ];
+
+  const renderScopeChipsBar = (currentScope) => {
+    const chips = SEARCH_SCOPE_TABS.map(t => (
+      `<button type="button" class="search-scope-chip ${currentScope === t.id ? 'is-active' : ''}" data-search-scope="${t.id}">${t.label}</button>`
+    )).join('');
+    return `<div class="search-scope-bar" role="tablist" aria-label="Bộ lọc chuyên mục tìm kiếm">${chips}</div>`;
+  };
+
+  const renderIdleSearchPalette = () => {
+    const history = getQuickSearchHistory();
+    const historyHtml = history.length > 0 ? `
+      <div class="search-section-divider">
+        <div class="search-section-title" style="justify-content:space-between;">
+          <span>Tra cứu gần đây</span>
+          <button type="button" class="search-clear-history-btn" data-action="clear-search-history">Xóa lịch sử</button>
+        </div>
+      </div>
+      <div class="search-history-chips">
+        ${history.map(h => `<button type="button" class="search-history-pill" data-history-query="${escapeHtml(h)}">${escapeHtml(h)}</button>`).join('')}
+      </div>
+    ` : '';
+
+    const quickShortcuts = [
+      { label: 'Bảng Kana (150 chữ)', target: 'ref-kana', badge: 'Tra cứu' },
+      { label: '16 Cặp Trợ Từ N5–N4', target: 'ref-particles', badge: 'Tra cứu' },
+      { label: 'Lượng Từ & Biến Âm', target: 'ref-counters', badge: 'Tra cứu' },
+      { label: 'Tự–Tha Động Từ & Kính Ngữ', target: 'ref-keigo', badge: 'Tra cứu' },
+      { label: 'Hội Thoại Kaiwa Bài 1', target: 'kaiwa-1', badge: 'Kaiwa' },
+      { label: 'Phòng Thi Thử JLPT N5–N4', target: 'exam', badge: 'Thi thử' }
+    ];
+
+    return `
+      ${renderScopeChipsBar(activeSearchScope)}
+      ${historyHtml}
+      <div class="search-section-divider">
+        <div class="search-section-title">
+          <span>Lối Tắt &amp; Cú Pháp Tìm Kiếm Master</span>
+        </div>
+      </div>
+      <div class="search-dsl-hints">
+        <span class="search-dsl-tag" data-dsl-insert="watashi">Gõ Romaji: <strong>watashi</strong> ➔ わたし</span>
+        <span class="search-dsl-tag" data-dsl-insert="食べて">Gõ thể chia: <strong>食べて</strong> ➔ 食べる</span>
+        <span class="search-dsl-tag" data-dsl-insert="bài 15">Lệnh nhanh: <strong>bài 15</strong>, <strong>kaiwa 5</strong></span>
+      </div>
+      ${quickShortcuts.map((s, idx) => `
+        <div class="search-result-item" data-index="${idx}" data-target="${s.target}" data-highlight="">
+          <div class="search-item-left">
+            <div class="search-item-main">${escapeHtml(s.label)}</div>
+          </div>
+          <span class="search-badge">${escapeHtml(s.badge)}</span>
+        </div>
+      `).join('')}
+    `;
+  };
+
   if (input.addEventListener) {
     input.addEventListener('focus', () => {
       if (typeof SEARCH_INDEX === 'undefined' && typeof NavigationEngine !== 'undefined') {
@@ -6514,7 +7067,8 @@ function initQuickSearch() {
       if (input.value.trim()) {
         dropdown.classList.add('active');
       } else {
-        dropdown.classList.remove('active');
+        list.innerHTML = renderIdleSearchPalette();
+        dropdown.classList.add('active');
       }
     });
 
@@ -6532,17 +7086,13 @@ function initQuickSearch() {
       e.stopPropagation();
       stopHeaderVoiceSearch();
       input.value = '';
+      activeSearchScope = 'all';
       clearBtn.style.display = 'none';
-      dropdown.classList.remove('active');
-      list.innerHTML = '';
+      list.innerHTML = renderIdleSearchPalette();
       if (label) label.textContent = 'Nhập từ khóa để tra cứu';
       input.focus();
     });
   }
-
-  let searchTimer = null;
-  let selectedIndex = -1;
-  let searchRequestId = 0;
 
   const triggerSearchAutoTranslate = (queryText, reqId) => {
     if (typeof DictionaryEngine === 'undefined' || typeof DictionaryEngine.translateText !== 'function') {
@@ -6597,6 +7147,51 @@ function initQuickSearch() {
 
   if (list.addEventListener) {
     list.addEventListener('click', (e) => {
+      const scopeChip = e.target.closest ? e.target.closest('.search-scope-chip') : null;
+      if (scopeChip) {
+        e.stopPropagation();
+        const nextScope = scopeChip.getAttribute('data-search-scope') || 'all';
+        activeSearchScope = nextScope;
+        if (input.value.trim()) {
+          input.dispatchEvent(new Event('input', { bubbles: true }));
+        } else {
+          list.innerHTML = renderIdleSearchPalette();
+        }
+        return;
+      }
+
+      const clearHistoryBtn = e.target.closest ? e.target.closest('[data-action="clear-search-history"]') : null;
+      if (clearHistoryBtn) {
+        e.stopPropagation();
+        clearQuickSearchHistory();
+        list.innerHTML = renderIdleSearchPalette();
+        return;
+      }
+
+      const historyPill = e.target.closest ? e.target.closest('.search-history-pill') : null;
+      if (historyPill) {
+        e.stopPropagation();
+        const q = historyPill.getAttribute('data-history-query') || '';
+        if (q) {
+          input.value = q;
+          if (clearBtn) clearBtn.style.display = 'inline-flex';
+          input.dispatchEvent(new Event('input', { bubbles: true }));
+        }
+        return;
+      }
+
+      const dslTag = e.target.closest ? e.target.closest('.search-dsl-tag') : null;
+      if (dslTag) {
+        e.stopPropagation();
+        const sample = dslTag.getAttribute('data-dsl-insert') || '';
+        if (sample) {
+          input.value = sample;
+          if (clearBtn) clearBtn.style.display = 'inline-flex';
+          input.focus();
+          input.dispatchEvent(new Event('input', { bubbles: true }));
+        }
+        return;
+      }
 
       const audioBtn = e.target.closest ? e.target.closest('.search-dict-audio-btn') : null;
       if (audioBtn) {
@@ -6626,6 +7221,7 @@ function initQuickSearch() {
         const query = (dictOpenBtn && dictOpenBtn.getAttribute('data-mazii-query'))
           || (dictCard && dictCard.getAttribute('data-dict-word'))
           || input.value.trim();
+        saveQuickSearchHistory(query);
         dropdown.classList.remove('active');
         if (container) container.classList.remove('mobile-active');
         if (typeof openMaziiWithQuery === 'function') {
@@ -6638,6 +7234,10 @@ function initQuickSearch() {
 
       const item = e.target.closest ? e.target.closest('.search-result-item') : null;
       if (!item) return;
+
+      if (input.value.trim()) {
+        saveQuickSearchHistory(input.value.trim());
+      }
 
       const maziiQuery = item.getAttribute('data-mazii-query');
       if (maziiQuery) {
@@ -6669,33 +7269,41 @@ function initQuickSearch() {
       }
 
       if (!val) {
-        dropdown.classList.remove('active');
-        list.innerHTML = '';
+        list.innerHTML = renderIdleSearchPalette();
+        dropdown.classList.add('active');
         if (label) label.textContent = 'Nhập từ khóa để tra cứu';
         return;
       }
 
       searchTimer = setTimeout(() => {
         const currentReqId = ++searchRequestId;
+        const ctx = getMasterSearchContext(val);
+        const effectiveScope = ctx.dsl.scope !== 'all' ? ctx.dsl.scope : activeSearchScope;
+        const effectiveQuery = ctx.effectiveRaw || val;
 
         let dictWords = [];
         let dictKanjis = [];
+        let deinflectedHints = ctx.deinflected || [];
         if (typeof searchInternalDictionary === 'function') {
-          const dictRes = searchInternalDictionary(val, 'word');
-          if (dictRes && Array.isArray(dictRes.data)) {
-            dictWords = dictRes.data.slice(0, 3);
+          if (effectiveScope === 'all' || effectiveScope === 'vocab') {
+            const dictRes = searchInternalDictionary(effectiveQuery, 'word');
+            if (dictRes && Array.isArray(dictRes.data)) {
+              dictWords = dictRes.data.slice(0, 3);
+            }
           }
-          const kanjiRes = searchInternalDictionary(val, 'kanji');
-          if (kanjiRes && Array.isArray(kanjiRes.data)) {
-            dictKanjis = kanjiRes.data.slice(0, 2);
+          if (effectiveScope === 'all' || effectiveScope === 'kanji') {
+            const kanjiRes = searchInternalDictionary(effectiveQuery, 'kanji');
+            if (kanjiRes && Array.isArray(kanjiRes.data)) {
+              dictKanjis = kanjiRes.data.slice(0, 2);
+            }
           }
         }
 
-        const lessonResults = searchEverything(val);
+        const lessonResults = searchEverything(val, activeSearchScope);
 
         dropdown.classList.add('active');
 
-        const isPhraseOrSentence = /\s+/.test(val) || val.length >= 8;
+        const isPhraseOrSentence = /\s+/.test(effectiveQuery) || effectiveQuery.length >= 8;
         let needAutoTranslate = false;
 
         const totalMatches = dictWords.length + dictKanjis.length + lessonResults.length + (isPhraseOrSentence ? 1 : 0);
@@ -6705,116 +7313,131 @@ function initQuickSearch() {
             : `Kết quả cho "${val}":`;
         }
 
-        let html = '';
+        let html = renderScopeChipsBar(effectiveScope);
 
-        html += `
-          <div class="search-section-divider">
-            <div class="search-section-title">
-              <span class="search-section-icon">${APP_ICONS.book || '📖'}</span>
-              <span>Tra Cứu Từ Điển Nhật - Việt</span>
-            </div>
-          </div>
-        `;
-
-        // Nếu là cụm từ hoặc câu văn (có khoảng trắng hoặc dài >= 8 ký tự): Luôn đưa thẻ dịch tự động lên đầu tiên
-        if (isPhraseOrSentence) {
-          needAutoTranslate = true;
+        if (deinflectedHints.length > 0 && (effectiveScope === 'all' || effectiveScope === 'vocab' || effectiveScope === 'grammar')) {
+          const topD = deinflectedHints[0];
           html += `
-            <div class="search-dict-card" data-dict-word="${escapeHtml(val)}">
-              <div class="search-dict-main-row">
-                <div class="search-dict-term-wrap">
-                  <span class="search-dict-term">${escapeHtml(val)}</span>
-                </div>
-                <div class="search-dict-actions">
-                  <button type="button" class="search-dict-audio-btn" data-speak-word="" title="Phát âm" aria-label="Phát âm" style="display:none;">
-                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                      <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
-                      <path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path>
-                    </svg>
-                  </button>
-                  <button type="button" class="search-dict-open-btn" data-mazii-query="${escapeHtml(val)}" title="Xem chi tiết &amp; nét viết trong Từ điển">Mở từ điển →</button>
-                </div>
-              </div>
-              <div class="search-dict-mean-row search-dict-auto-mean" data-query="${escapeHtml(val)}">
-                <span style="color:var(--text-muted);font-style:italic;">Đang dịch...</span>
-              </div>
+            <div class="search-deinflect-banner" data-mazii-query="${escapeHtml(topD.root)}">
+              <span class="search-deinflect-badge">Khử chia thể AI</span>
+              <span class="search-deinflect-text">
+                <strong lang="ja">${escapeHtml(effectiveQuery)}</strong> ➔ Gốc từ điển: <strong class="search-deinflect-root" lang="ja">${escapeHtml(topD.root)}</strong>
+                <small>(${escapeHtml(topD.formLabel)})</small>
+              </span>
             </div>
           `;
         }
 
-        if (dictWords.length > 0 || dictKanjis.length > 0) {
-          dictWords.forEach(dw => {
-            const primaryMean = (dw.means && dw.means[0] && dw.means[0].mean) || '';
-            const kindTag = (dw.means && dw.means[0] && dw.means[0].kind && dw.means[0].kind !== 'Từ vựng') ? `[${dw.means[0].kind}] ` : '';
-            html += `
-              <div class="search-dict-card" data-dict-word="${escapeHtml(dw.word)}">
-                <div class="search-dict-main-row">
-                  <div class="search-dict-term-wrap">
-                    <span class="search-dict-term">${escapeHtml(dw.word)}</span>
-                    ${dw.phonetic && dw.phonetic !== dw.word ? `<span class="search-dict-phonetic">${escapeHtml(dw.phonetic)}</span>` : ''}
-                    ${dw.han ? `<span class="search-dict-han">[${escapeHtml(dw.han)}]</span>` : ''}
-                  </div>
-                  <div class="search-dict-actions">
-                    <button type="button" class="search-dict-audio-btn" data-speak-word="${escapeHtml(dw.word)}" title="Phát âm tiếng Nhật" aria-label="Phát âm">
-                      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                        <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
-                        <path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path>
-                      </svg>
-                    </button>
-                    <button type="button" class="search-dict-open-btn" data-mazii-query="${escapeHtml(dw.word)}" title="Xem chi tiết &amp; nét viết trong Từ điển">Mở từ điển →</button>
-                  </div>
-                </div>
-                ${primaryMean ? `<div class="search-dict-mean-row">${escapeHtml(kindTag + primaryMean)}</div>` : ''}
-              </div>
-            `;
-          });
-
-          dictKanjis.forEach(dk => {
-            html += `
-              <div class="search-dict-card" data-dict-word="${escapeHtml(dk.kanji)}">
-                <div class="search-dict-main-row">
-                  <div class="search-dict-term-wrap">
-                    <span class="search-dict-term" style="color:var(--accent-primary);font-size:18px;">${escapeHtml(dk.kanji)}</span>
-                    <span class="search-dict-han">Hán-Việt: ${escapeHtml(dk.mean || '')}</span>
-                    ${dk.on ? `<span class="search-dict-phonetic">Âm On: ${escapeHtml(dk.on)}</span>` : ''}
-                  </div>
-                  <div class="search-dict-actions">
-                    <button type="button" class="search-dict-audio-btn" data-speak-word="${escapeHtml(dk.kanji)}" title="Phát âm tiếng Nhật" aria-label="Phát âm">
-                      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                        <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
-                        <path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path>
-                      </svg>
-                    </button>
-                    <button type="button" class="search-dict-open-btn" data-mazii-query="${escapeHtml(dk.kanji)}" title="Xem cách viết Hán tự trong Từ điển">Nét viết →</button>
-                  </div>
-                </div>
-              </div>
-            `;
-          });
-        } else if (!isPhraseOrSentence) {
-          // Từ đơn lẻ không có trong từ điển nội bộ: kích hoạt dịch tự động cho từ đơn
-          needAutoTranslate = true;
+        if (effectiveScope === 'all' || effectiveScope === 'vocab' || effectiveScope === 'kanji') {
           html += `
-            <div class="search-dict-card" data-dict-word="${escapeHtml(val)}">
-              <div class="search-dict-main-row">
-                <div class="search-dict-term-wrap">
-                  <span class="search-dict-term">${escapeHtml(val)}</span>
-                </div>
-                <div class="search-dict-actions">
-                  <button type="button" class="search-dict-audio-btn" data-speak-word="" title="Phát âm" aria-label="Phát âm" style="display:none;">
-                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                      <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
-                      <path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path>
-                    </svg>
-                  </button>
-                  <button type="button" class="search-dict-open-btn" data-mazii-query="${escapeHtml(val)}" title="Xem chi tiết &amp; nét viết trong Từ điển">Mở từ điển →</button>
-                </div>
-              </div>
-              <div class="search-dict-mean-row search-dict-auto-mean" data-query="${escapeHtml(val)}">
-                <span style="color:var(--text-muted);font-style:italic;">Đang dịch...</span>
+            <div class="search-section-divider">
+              <div class="search-section-title">
+                <span class="search-section-icon">${APP_ICONS.book || '📖'}</span>
+                <span>Tra Cứu Từ Điển Nhật - Việt</span>
               </div>
             </div>
           `;
+
+          if (isPhraseOrSentence) {
+            needAutoTranslate = true;
+            html += `
+              <div class="search-dict-card" data-dict-word="${escapeHtml(effectiveQuery)}">
+                <div class="search-dict-main-row">
+                  <div class="search-dict-term-wrap">
+                    <span class="search-dict-term">${escapeHtml(effectiveQuery)}</span>
+                  </div>
+                  <div class="search-dict-actions">
+                    <button type="button" class="search-dict-audio-btn" data-speak-word="" title="Phát âm" aria-label="Phát âm" style="display:none;">
+                      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+                        <path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+                      </svg>
+                    </button>
+                    <button type="button" class="search-dict-open-btn" data-mazii-query="${escapeHtml(effectiveQuery)}" title="Xem chi tiết &amp; nét viết trong Từ điển">Mở từ điển →</button>
+                  </div>
+                </div>
+                <div class="search-dict-mean-row search-dict-auto-mean" data-query="${escapeHtml(effectiveQuery)}">
+                  <span style="color:var(--text-muted);font-style:italic;">Đang dịch...</span>
+                </div>
+              </div>
+            `;
+          }
+
+          if (dictWords.length > 0 || dictKanjis.length > 0) {
+            dictWords.forEach(dw => {
+              const primaryMean = (dw.means && dw.means[0] && dw.means[0].mean) || '';
+              const kindTag = (dw.means && dw.means[0] && dw.means[0].kind && dw.means[0].kind !== 'Từ vựng') ? `[${dw.means[0].kind}] ` : '';
+              const deinflectTag = dw.deinflectNote ? `<span class="search-deinflect-mini">${escapeHtml(dw.deinflectNote)}</span>` : '';
+              html += `
+                <div class="search-dict-card" data-dict-word="${escapeHtml(dw.word)}">
+                  <div class="search-dict-main-row">
+                    <div class="search-dict-term-wrap">
+                      <span class="search-dict-term" lang="ja">${escapeHtml(dw.word)}</span>
+                      ${dw.phonetic && dw.phonetic !== dw.word ? `<span class="search-dict-phonetic" lang="ja">${escapeHtml(dw.phonetic)}</span>` : ''}
+                      ${dw.han ? `<span class="search-dict-han">[${escapeHtml(dw.han)}]</span>` : ''}
+                      ${deinflectTag}
+                    </div>
+                    <div class="search-dict-actions">
+                      <button type="button" class="search-dict-audio-btn" data-speak-word="${escapeHtml(dw.word)}" title="Phát âm tiếng Nhật" aria-label="Phát âm">
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                          <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+                          <path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+                        </svg>
+                      </button>
+                      <button type="button" class="search-dict-open-btn" data-mazii-query="${escapeHtml(dw.word)}" title="Xem chi tiết &amp; nét viết trong Từ điển">Mở từ điển →</button>
+                    </div>
+                  </div>
+                  ${primaryMean ? `<div class="search-dict-mean-row">${highlightMatchedSnippet(kindTag + primaryMean, effectiveQuery)}</div>` : ''}
+                </div>
+              `;
+            });
+
+            dictKanjis.forEach(dk => {
+              html += `
+                <div class="search-dict-card" data-dict-word="${escapeHtml(dk.kanji)}">
+                  <div class="search-dict-main-row">
+                    <div class="search-dict-term-wrap">
+                      <span class="search-dict-term" lang="ja" style="color:var(--accent-primary);font-size:18px;">${escapeHtml(dk.kanji)}</span>
+                      <span class="search-dict-han">Hán-Việt: ${escapeHtml(dk.mean || '')}</span>
+                      ${dk.on ? `<span class="search-dict-phonetic" lang="ja">Âm đọc: ${escapeHtml(dk.on)}</span>` : ''}
+                    </div>
+                    <div class="search-dict-actions">
+                      <button type="button" class="search-dict-audio-btn" data-speak-word="${escapeHtml(dk.kanji)}" title="Phát âm tiếng Nhật" aria-label="Phát âm">
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                          <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+                          <path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+                        </svg>
+                      </button>
+                      <button type="button" class="search-dict-open-btn" data-mazii-query="${escapeHtml(dk.kanji)}" title="Xem cách viết Hán tự trong Từ điển">Nét viết →</button>
+                    </div>
+                  </div>
+                </div>
+              `;
+            });
+          } else if (!isPhraseOrSentence) {
+            needAutoTranslate = true;
+            html += `
+              <div class="search-dict-card" data-dict-word="${escapeHtml(effectiveQuery)}">
+                <div class="search-dict-main-row">
+                  <div class="search-dict-term-wrap">
+                    <span class="search-dict-term">${escapeHtml(effectiveQuery)}</span>
+                  </div>
+                  <div class="search-dict-actions">
+                    <button type="button" class="search-dict-audio-btn" data-speak-word="" title="Phát âm" aria-label="Phát âm" style="display:none;">
+                      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+                        <path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+                      </svg>
+                    </button>
+                    <button type="button" class="search-dict-open-btn" data-mazii-query="${escapeHtml(effectiveQuery)}" title="Xem chi tiết &amp; nét viết trong Từ điển">Mở từ điển →</button>
+                  </div>
+                </div>
+                <div class="search-dict-mean-row search-dict-auto-mean" data-query="${escapeHtml(effectiveQuery)}">
+                  <span style="color:var(--text-muted);font-style:italic;">Đang dịch...</span>
+                </div>
+              </div>
+            `;
+          }
         }
 
         if (lessonResults.length > 0) {
@@ -6827,7 +7450,7 @@ function initQuickSearch() {
                     <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
                   </svg>
                 </span>
-                <span>Bài Học &amp; Ngữ Pháp Liên Quan (${lessonResults.length})</span>
+                <span>Kết Quả Giáo Trình &amp; Tra Cứu (${lessonResults.length})</span>
               </div>
             </div>
           `;
@@ -6835,24 +7458,24 @@ function initQuickSearch() {
           html += lessonResults.slice(0, 15).map((r, idx) => `
             <div class="search-result-item" data-index="${idx}" data-target="${escapeHtml(r.targetId)}" data-highlight="${encodeURIComponent(r.highlight || '')}">
               <div class="search-item-left">
-                <div class="search-item-main">${escapeHtml(r.title)}</div>
-                <div class="search-item-sub">${escapeHtml(r.sub)}</div>
+                <div class="search-item-main">${highlightMatchedSnippet(r.title, effectiveQuery)}</div>
+                <div class="search-item-sub">${highlightMatchedSnippet(r.sub, effectiveQuery)}</div>
               </div>
               <span class="search-badge">${escapeHtml(r.category)}</span>
             </div>
           `).join('');
         } else {
           html += `
-            <div class="search-empty-sub">Không có bài học giáo trình nào chứa "${escapeHtml(val)}"</div>
+            <div class="search-empty-sub">Không có mục giáo trình nào khớp với "${escapeHtml(val)}"</div>
           `;
         }
 
         list.innerHTML = html;
 
         if (needAutoTranslate) {
-          triggerSearchAutoTranslate(val, currentReqId);
+          triggerSearchAutoTranslate(effectiveQuery, currentReqId);
         }
-      }, 120);
+      }, 100);
     });
 
     input.addEventListener('keydown', (e) => {
@@ -6944,7 +7567,7 @@ window.handleSearchClick = function(targetId, highlightText = '') {
     setTimeout(() => {
       const mainContainer = document.getElementById('main-content');
       if (!mainContainer || !mainContainer.querySelectorAll) return;
-      const candidates = mainContainer.querySelectorAll('tr, .grammar-item-card, .radical-card, .kanji-study-card, .quiz-card, .example-card, .dokkai-passage-sticky-card');
+      const candidates = mainContainer.querySelectorAll('tr, .grammar-item-card, .radical-card, .kanji-study-card, .quiz-card, .example-card, .dokkai-passage-sticky-card, details.ms-topic-card, .kaiwa-line-card');
       let foundEl = null;
       for (const el of candidates) {
         if ((el.textContent || '').toLowerCase().includes(rawTarget)) {
@@ -6952,8 +7575,16 @@ window.handleSearchClick = function(targetId, highlightText = '') {
           break;
         }
       }
-      if (foundEl && foundEl.scrollIntoView) {
-        foundEl.scrollIntoView({ block: 'center', behavior: 'smooth' });
+      if (foundEl) {
+        if (foundEl.tagName === 'DETAILS') {
+          foundEl.open = true;
+        } else if (foundEl.closest) {
+          const parentDetails = foundEl.closest('details.ms-topic-card');
+          if (parentDetails) parentDetails.open = true;
+        }
+        if (foundEl.scrollIntoView) {
+          foundEl.scrollIntoView({ block: 'center', behavior: 'smooth' });
+        }
         foundEl.classList.add('search-highlight-target');
         setTimeout(() => {
           foundEl.classList.remove('search-highlight-target');
@@ -6969,8 +7600,6 @@ let mobileNavNavigationToken = 0;
 function setMobileNavVisualIndex(idx) {
   const nav = document.getElementById('mobile-bottom-nav');
   if (!nav || idx < 0 || idx > 4) return;
-  const oldIndex = nav.getAttribute ? nav.getAttribute('data-active-index') : null;
-  if (oldIndex === String(idx)) return;
   nav.setAttribute('data-active-index', String(idx));
   if (nav.style && nav.style.setProperty) nav.style.setProperty('--slider-index', idx);
   const items = nav.querySelectorAll ? nav.querySelectorAll('.mobile-nav-item') : [];
@@ -7026,6 +7655,7 @@ function initMobileBottomNavSliderTouch() {
   const navTypes = ['lesson', 'kanji', 'quiz', 'dokkai', 'exam'];
   let hasSwiped = false;
   let lastHoveredIndex = -1;
+  let touchStartX = 0;
   let touchNavRect = null;
 
   const getIndexFromTouch = (touch) => {
@@ -7043,6 +7673,7 @@ function initMobileBottomNavSliderTouch() {
     if (!e.touches || e.touches.length !== 1) return;
     lastMobileNavInteraction = Date.now();
     touchNavRect = nav.getBoundingClientRect();
+    touchStartX = e.touches[0].clientX;
     lastHoveredIndex = getIndexFromTouch(e.touches[0]);
     hasSwiped = false;
   }, { passive: true });
@@ -7050,19 +7681,35 @@ function initMobileBottomNavSliderTouch() {
   nav.addEventListener('touchmove', (e) => {
     if (lastHoveredIndex < 0 || !e.touches || e.touches.length !== 1) return;
     lastMobileNavInteraction = Date.now();
-    const idx = getIndexFromTouch(e.touches[0]);
+    const touch = e.touches[0];
+    const idx = getIndexFromTouch(touch);
+    const movedEnough = Math.abs(touch.clientX - touchStartX) >= 4 || (idx >= 0 && idx !== lastHoveredIndex);
+    if (movedEnough && touchNavRect && touchNavRect.width > 0) {
+      const relativeX = touch.clientX - touchNavRect.left;
+      const tabWidth = touchNavRect.width / 5;
+      const continuousIdx = Math.max(0, Math.min(4, (relativeX / tabWidth) - 0.5));
+      if (nav.classList) nav.classList.add('is-scrubbing');
+      if (nav.style && nav.style.setProperty) {
+        nav.style.setProperty('--slider-index', continuousIdx.toFixed(3));
+      }
+      hasSwiped = true;
+    }
     if (idx >= 0 && idx !== lastHoveredIndex) {
       hasSwiped = true;
       lastHoveredIndex = idx;
-      setMobileNavVisualIndex(idx);
+      if (nav.setAttribute) nav.setAttribute('data-active-index', String(idx));
+      const items = nav.querySelectorAll ? nav.querySelectorAll('.mobile-nav-item') : [];
+      if (items && items.forEach) items.forEach((btn, i) => btn.classList.toggle('active', i === idx));
       if (typeof triggerHaptic === 'function') triggerHaptic(8);
     }
   }, { passive: true });
 
   nav.addEventListener('touchend', (e) => {
     if (lastHoveredIndex < 0 || (e.touches && e.touches.length > 0)) return;
+    if (nav.classList) nav.classList.remove('is-scrubbing');
     touchNavRect = null;
     if (hasSwiped) {
+      setMobileNavVisualIndex(lastHoveredIndex);
       const targetType = navTypes[lastHoveredIndex];
       e.preventDefault();
       if (typeof handleMobileBottomNav === 'function') {
@@ -7074,6 +7721,7 @@ function initMobileBottomNavSliderTouch() {
   }, { passive: false });
 
   nav.addEventListener('touchcancel', () => {
+    if (nav.classList) nav.classList.remove('is-scrubbing');
     touchNavRect = null;
     lastHoveredIndex = -1;
     if (hasSwiped) syncMobileBottomNav();
@@ -7305,8 +7953,7 @@ window.switchModule = function(targetId, updateHash = true) {
     document.querySelectorAll('.menu-item-btn').forEach(b => {
       const bid = b.getAttribute('data-id');
       const isTarget = (bid === targetId) ||
-        (targetId === 'master-hub' && bid === 'conjugation-lab') ||
-        (targetId === 'streak-zen' && bid === 'analytics-hub');
+        ((targetId === 'reference-hub' || targetId === 'master-hub') && bid === 'ref-kana');
       b.classList.toggle('active', isTarget);
       if (isTarget) targetBtn = b;
     });
@@ -7338,6 +7985,35 @@ window.switchModule = function(targetId, updateHash = true) {
   }
 
   renderContent(targetId);
+};
+
+window.syncActiveModuleRoute = function(targetId) {
+  if (!targetId) return;
+  currentActiveId = targetId;
+  pendingModuleId = targetId;
+  lastAnimatedRouteId = targetId;
+  safeSetStorage(STORAGE_LAST_ACTIVE_KEY, targetId);
+
+  if (typeof window !== 'undefined' && window.location && window.location.hash.replace('#', '') !== targetId) {
+    if (window.history && typeof window.history.replaceState === 'function') {
+      try {
+        window.history.replaceState(window.history.state, '', `#${targetId}`);
+      } catch (_err) {
+        window.location.hash = targetId;
+      }
+    } else {
+      window.location.hash = targetId;
+    }
+  }
+
+  if (typeof document !== 'undefined' && document.querySelectorAll) {
+    document.querySelectorAll('.menu-item-btn').forEach(btn => {
+      const bid = btn.getAttribute('data-id');
+      if (bid) {
+        btn.classList.toggle('active', bid === targetId || (targetId === 'ref-kana' && bid === 'reference-hub'));
+      }
+    });
+  }
 };
 
 if (typeof window !== 'undefined' && typeof window.addEventListener === 'function') {
@@ -7565,6 +8241,18 @@ function initMenuToggle() {
   const toggleMenu = () => {
     const currentIsMobile = usesDrawerNavigation();
     if (currentIsMobile) {
+      sidebar.classList.remove('is-dragging');
+      if (sidebar.style) {
+        if (sidebar.style.removeProperty) sidebar.style.removeProperty('transform');
+        else sidebar.style.transform = '';
+      }
+      if (overlay) {
+        overlay.classList.remove('is-dragging');
+        if (overlay.style) {
+          if (overlay.style.removeProperty) overlay.style.removeProperty('opacity');
+          else overlay.style.opacity = '';
+        }
+      }
       const isOpen = sidebar.classList.toggle('mobile-open');
       if (overlay) overlay.classList.toggle('active', isOpen);
       if (document.body && document.body.classList) {
@@ -7670,27 +8358,194 @@ function initMenuToggle() {
 function closeMobileSidebar() {
   const sidebar = document.getElementById('sidebar');
   const overlay = document.getElementById('sidebar-overlay');
-  if (sidebar) sidebar.classList.remove('mobile-open');
-  if (overlay) overlay.classList.remove('active');
+  if (sidebar) {
+    sidebar.classList.remove('is-dragging');
+    if (sidebar.style) {
+      if (sidebar.style.removeProperty) sidebar.style.removeProperty('transform');
+      else sidebar.style.transform = '';
+    }
+    sidebar.classList.remove('mobile-open');
+  }
+  if (overlay) {
+    overlay.classList.remove('is-dragging');
+    if (overlay.style) {
+      if (overlay.style.removeProperty) overlay.style.removeProperty('opacity');
+      else overlay.style.opacity = '';
+    }
+    overlay.classList.remove('active');
+  }
   if (document.body && document.body.classList) {
     document.body.classList.remove('sidebar-open-lock');
   }
   updateMenuButtonState();
 }
 
+function initIOSTouchGestures() {
+  const sidebar = document.getElementById('sidebar');
+  const overlay = document.getElementById('sidebar-overlay');
+  if (sidebar && sidebar.addEventListener) {
+    let sbStartX = 0;
+    let sbStartY = 0;
+    let sbStartTime = 0;
+    let sbDragging = false;
+    let sbAxisLocked = null;
+    let sbLastDeltaX = 0;
+
+    const onSbTouchStart = (e) => {
+      if (!e.touches || e.touches.length !== 1 || !sidebar.classList.contains('mobile-open')) return;
+      sbStartX = e.touches[0].clientX;
+      sbStartY = e.touches[0].clientY;
+      sbStartTime = Date.now();
+      sbDragging = false;
+      sbAxisLocked = null;
+      sbLastDeltaX = 0;
+    };
+
+    const onSbTouchMove = (e) => {
+      if (!e.touches || e.touches.length !== 1 || !sidebar.classList.contains('mobile-open')) return;
+      const dx = e.touches[0].clientX - sbStartX;
+      const dy = e.touches[0].clientY - sbStartY;
+      if (!sbAxisLocked) {
+        if (Math.abs(dx) < 6 && Math.abs(dy) < 6) return;
+        sbAxisLocked = (dx < -6 && Math.abs(dx) > Math.abs(dy) * 1.15) ? 'x' : 'y';
+      }
+      if (sbAxisLocked !== 'x') return;
+      sbDragging = true;
+      sbLastDeltaX = Math.min(0, dx);
+      sidebar.classList.add('is-dragging');
+      if (overlay) overlay.classList.add('is-dragging');
+      const sbWidth = sidebar.offsetWidth || 300;
+      if (sidebar.style) {
+        if (sidebar.style.setProperty) sidebar.style.setProperty('transform', `translate3d(${sbLastDeltaX}px, 0, 0)`, 'important');
+        else sidebar.style.transform = `translate3d(${sbLastDeltaX}px, 0, 0)`;
+      }
+      if (overlay && overlay.style) {
+        const ratio = Math.max(0, 1 + (sbLastDeltaX / sbWidth));
+        if (overlay.style.setProperty) overlay.style.setProperty('opacity', ratio.toFixed(3), 'important');
+        else overlay.style.opacity = ratio.toFixed(3);
+      }
+    };
+
+    const onSbTouchEnd = () => {
+      if (!sbDragging) return;
+      sbDragging = false;
+      const elapsed = Math.max(1, Date.now() - sbStartTime);
+      const velocity = sbLastDeltaX / elapsed;
+      sidebar.classList.remove('is-dragging');
+      if (overlay) overlay.classList.remove('is-dragging');
+      if (sbLastDeltaX < -72 || velocity < -0.35) {
+        closeMobileSidebar();
+      } else {
+        if (sidebar.style) {
+          if (sidebar.style.removeProperty) sidebar.style.removeProperty('transform');
+          else sidebar.style.transform = '';
+        }
+        if (overlay && overlay.style) {
+          if (overlay.style.removeProperty) overlay.style.removeProperty('opacity');
+          else overlay.style.opacity = '';
+        }
+      }
+    };
+
+    sidebar.addEventListener('touchstart', onSbTouchStart, { passive: true });
+    sidebar.addEventListener('touchmove', onSbTouchMove, { passive: true });
+    sidebar.addEventListener('touchend', onSbTouchEnd, { passive: true });
+    sidebar.addEventListener('touchcancel', onSbTouchEnd, { passive: true });
+  }
+
+  if (typeof document !== 'undefined' && document.querySelectorAll) {
+    const modals = document.querySelectorAll('.voice-modal-backdrop:not(.confirm-modal-backdrop)');
+    modals.forEach(backdrop => {
+      const card = backdrop.querySelector('.voice-modal-card');
+      if (!card || !card.addEventListener) return;
+      let shStartY = 0;
+      let shStartX = 0;
+      let shStartTime = 0;
+      let shDragging = false;
+      let shCanDrag = false;
+      let shLastDeltaY = 0;
+
+      card.addEventListener('touchstart', (e) => {
+        if (!e.touches || e.touches.length !== 1) return;
+        const isSheetMode = usesDrawerNavigation() || (typeof window !== 'undefined' && window.innerWidth <= 640);
+        if (!isSheetMode || !backdrop.classList.contains('show-modal')) return;
+        const target = e.target;
+        if (target && target.closest && target.closest('input, select, textarea')) {
+          shCanDrag = false;
+          return;
+        }
+        const inHeader = target && target.closest && target.closest('.voice-modal-header');
+        const body = card.querySelector('.voice-modal-body');
+        const atTop = !body || body.scrollTop <= 0;
+        shCanDrag = Boolean(inHeader || atTop);
+        if (!shCanDrag) return;
+        shStartY = e.touches[0].clientY;
+        shStartX = e.touches[0].clientX;
+        shStartTime = Date.now();
+        shDragging = false;
+        shLastDeltaY = 0;
+      }, { passive: true });
+
+      card.addEventListener('touchmove', (e) => {
+        if (!shCanDrag || !e.touches || e.touches.length !== 1) return;
+        const dy = e.touches[0].clientY - shStartY;
+        const dx = e.touches[0].clientX - shStartX;
+        if (!shDragging) {
+          if (dy < 6 || Math.abs(dy) <= Math.abs(dx) * 1.15) return;
+          shDragging = true;
+          card.classList.add('is-dragging');
+        }
+        shLastDeltaY = Math.max(0, dy);
+        if (card.style) card.style.setProperty('transform', `translate3d(0, ${shLastDeltaY}px, 0)`, 'important');
+      }, { passive: true });
+
+      const finishSheetDrag = () => {
+        if (!shDragging) {
+          shCanDrag = false;
+          return;
+        }
+        shDragging = false;
+        shCanDrag = false;
+        const elapsed = Math.max(1, Date.now() - shStartTime);
+        const velocity = shLastDeltaY / elapsed;
+        card.classList.remove('is-dragging');
+        if (card.style) card.style.removeProperty('transform');
+        if (shLastDeltaY > 68 || velocity > 0.35) {
+          const closeBtn = card.querySelector('.voice-modal-close');
+          if (closeBtn && typeof closeBtn.click === 'function') {
+            closeBtn.click();
+          } else {
+            backdrop.classList.remove('show-modal');
+          }
+        }
+      };
+
+      card.addEventListener('touchend', finishSheetDrag, { passive: true });
+      card.addEventListener('touchcancel', finishSheetDrag, { passive: true });
+    });
+  }
+}
+
 
 let selectedCoverTarget = null;
+
+let coverTransitionTimer = null;
 
 window.enterApp = function(targetHash) {
   try {
     const cover = document.getElementById('cover-page-slide');
     if (cover) {
-      cover.classList.add('hide-cover');
+      if (coverTransitionTimer) clearTimeout(coverTransitionTimer);
+      cover.classList.remove('is-opening');
+      cover.classList.add('is-closing');
       cover.style.pointerEvents = 'none';
       cover.style.opacity = '0';
-      setTimeout(() => {
+      coverTransitionTimer = setTimeout(() => {
+        cover.classList.add('hide-cover');
+        cover.classList.remove('is-closing');
         cover.style.display = 'none';
-      }, 200);
+        coverTransitionTimer = null;
+      }, 250);
       try { sessionStorage.setItem('minna_cover_closed', 'true'); } catch (e) {}
     }
 
@@ -7724,11 +8579,21 @@ window.returnToCoverPage = function() {
   } catch (e) {}
   const cover = document.getElementById('cover-page-slide');
   if (cover) {
+    if (coverTransitionTimer) {
+      clearTimeout(coverTransitionTimer);
+      coverTransitionTimer = null;
+    }
+    cover.classList.remove('hide-cover', 'is-closing');
+    cover.classList.add('is-opening');
     cover.style.display = 'flex';
     cover.style.pointerEvents = 'auto';
     cover.style.opacity = '1';
-    cover.classList.remove('hide-cover');
     cover.scrollTop = 0;
+    safeRAF(() => {
+      safeRAF(() => {
+        cover.classList.remove('is-opening');
+      });
+    });
   }
   try {
     if (window.history && window.history.replaceState) {
@@ -8581,9 +9446,11 @@ let maziiIsVoiceListening = false;
 let maziiShouldKeepListening = false;
 let maziiVoiceLang = 'ja-JP';
 let maziiVoiceRestartTimer = null;
+let maziiVoiceRestartCount = 0;
 let maziiFinalizeTimer = null;
 let maziiSilenceHintTimer = null;
 let maziiLastVoiceText = '';
+let maziiLastVoiceAlternatives = [];
 const maziiCache = new Map();
 
 let hwStrokes = [];
@@ -9128,27 +9995,81 @@ function scoreDictMatch(text, query, textNoTone, queryNoTone, hasTone) {
   if (t.startsWith(query)) return 120;
   if (!hasTone && textNoTone.startsWith(queryNoTone)) return 100;
 
-  const wordRegex = new RegExp('(?:^|[^a-zà-ỹ0-9])' + query.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&') + '(?:$|[^a-zà-ỹ0-9])', 'i');
+  const escapedQ = query.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
+  const wordRegex = new RegExp('(?:^|[^a-zà-ỹ0-9])' + escapedQ + '(?:$|[^a-zà-ỹ0-9])', 'i');
   if (wordRegex.test(t)) return 110;
 
-  if (!hasTone) {
-    const wordNoToneRegex = new RegExp('(?:^|[^a-z0-9])' + queryNoTone.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&') + '(?:$|[^a-z0-9])', 'i');
+  if (!hasTone && queryNoTone) {
+    const escapedNT = queryNoTone.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
+    const wordNoToneRegex = new RegExp('(?:^|[^a-z0-9])' + escapedNT + '(?:$|[^a-z0-9])', 'i');
     if (wordNoToneRegex.test(textNoTone)) return 80;
   }
 
   if (t.includes(query)) return 50;
-  if (!hasTone && textNoTone.includes(queryNoTone)) return 30;
+  if (!hasTone && queryNoTone && textNoTone.includes(queryNoTone)) return 30;
+
+  // Fuzzy Edit Distance Tolerance cho từ khóa >= 4 ký tự (sai số 1 ký tự gõ phím)
+  if (queryNoTone && queryNoTone.length >= 4 && textNoTone && Math.abs(textNoTone.length - queryNoTone.length) <= 1) {
+    const de = (typeof DictionaryEngine !== 'undefined' && typeof DictionaryEngine.computeEditDistance === 'function')
+      ? DictionaryEngine.computeEditDistance(textNoTone, queryNoTone, 1)
+      : 99;
+    if (de === 1) return 35;
+  }
   return 0;
 }
 
+function getMasterSearchContext(rawKeyword) {
+  const de = typeof DictionaryEngine !== 'undefined' ? DictionaryEngine : null;
+  const dsl = (de && typeof de.parseSearchDSL === 'function')
+    ? de.parseSearchDSL(rawKeyword)
+    : { raw: String(rawKeyword || '').trim(), cleanQuery: String(rawKeyword || '').trim(), scope: 'all', directCommand: null };
+  const effectiveRaw = dsl.cleanQuery || '';
+  const queryLower = effectiveRaw.toLowerCase();
+  const queryNoTone = removeVietnameseTones(effectiveRaw);
+  const hasTone = queryLower !== queryNoTone;
+  const phonetics = (de && typeof de.toPhoneticVariants === 'function')
+    ? de.toPhoneticVariants(effectiveRaw)
+    : {
+        raw: queryLower,
+        hira: typeof romajiToHiragana === 'function' ? romajiToHiragana(queryLower) : queryLower,
+        kata: '',
+        kataLong: ''
+      };
+  const deinflected = (de && typeof de.deinflectJapanese === 'function')
+    ? de.deinflectJapanese(effectiveRaw)
+    : [];
+  if (phonetics.hira && phonetics.hira !== effectiveRaw && de && typeof de.deinflectJapanese === 'function') {
+    const extraDeinflect = de.deinflectJapanese(phonetics.hira);
+    const seenRoots = new Set(deinflected.map(d => d.root));
+    for (const ed of extraDeinflect) {
+      if (!seenRoots.has(ed.root)) {
+        seenRoots.add(ed.root);
+        deinflected.push(ed);
+      }
+    }
+  }
+  return {
+    dsl,
+    effectiveRaw,
+    queryLower,
+    queryNoTone,
+    hasTone,
+    phonetics,
+    deinflected
+  };
+}
 
 function searchInternalDictionary(q, type = 'word') {
   if (!q || typeof q !== 'string') return { status: 200, data: [], isInternal: true };
-  const query = q.trim();
+  const ctx = getMasterSearchContext(q);
+  const query = ctx.effectiveRaw;
   if (!query) return { status: 200, data: [], isInternal: true };
-  const queryLower = query.toLowerCase();
-  const queryNoTone = removeVietnameseTones(query);
-  const hasTone = queryLower !== queryNoTone;
+  const { queryLower, queryNoTone, hasTone, phonetics, deinflected } = ctx;
+  const hiraQ = phonetics.hira || '';
+  const kataQ = phonetics.kata || '';
+  const kataLongQ = phonetics.kataLong || '';
+  const rootSet = new Set(deinflected.map(d => d.root));
+  const rootLabelMap = new Map(deinflected.map(d => [d.root, d.formLabel]));
   const candidates = [];
   const seen = new Set();
 
@@ -9170,10 +10091,30 @@ function searchInternalDictionary(q, type = 'word') {
       const hNT = removeVietnameseTones(h);
       const mNT = removeVietnameseTones(m);
 
-      const sWord = scoreDictMatch(wLower, queryLower, wNT, queryNoTone, hasTone);
-      const sPhonetic = scoreDictMatch(pLower, queryLower, pNT, queryNoTone, hasTone);
+      let sWord = scoreDictMatch(wLower, queryLower, wNT, queryNoTone, hasTone);
+      let sPhonetic = scoreDictMatch(pLower, queryLower, pNT, queryNoTone, hasTone);
       const sHan = scoreDictMatch(hLower, queryLower, hNT, queryNoTone, hasTone);
       const sMean = scoreDictMatch(mLower, queryLower, mNT, queryNoTone, hasTone);
+
+      // Khớp chuyển âm Romaji <-> Hiragana / Katakana / Trường âm
+      if (hiraQ && hiraQ !== queryLower) {
+        sPhonetic = Math.max(sPhonetic, scoreDictMatch(pLower, hiraQ, pLower, hiraQ, true));
+        sWord = Math.max(sWord, scoreDictMatch(wLower, hiraQ, wLower, hiraQ, true));
+      }
+      if (kataQ && kataQ !== queryLower) {
+        sWord = Math.max(sWord, scoreDictMatch(wLower, kataQ, wLower, kataQ, true));
+        sPhonetic = Math.max(sPhonetic, scoreDictMatch(pLower, kataQ, pLower, kataQ, true));
+      }
+      if (kataLongQ && kataLongQ !== kataQ) {
+        sWord = Math.max(sWord, scoreDictMatch(wLower, kataLongQ, wLower, kataLongQ, true));
+      }
+
+      // Khớp gốc từ khử chia thể (De-inflected Dictionary Form Match)
+      let deinflectNote = '';
+      if (rootSet.has(wLower) || rootSet.has(pLower)) {
+        sWord = Math.max(sWord, 185);
+        deinflectNote = rootLabelMap.get(wLower) || rootLabelMap.get(pLower) || '';
+      }
 
       const bestScore = Math.max(sWord * 1.5, sPhonetic * 1.4, sHan * 1.3, sMean);
       if (bestScore >= 30) {
@@ -9185,6 +10126,7 @@ function searchInternalDictionary(q, type = 'word') {
               word: w,
               phonetic: p || '',
               han: h || '',
+              deinflectNote,
               means: [{ kind: pos || 'Từ vựng', mean: m || '' }]
             }
           });
@@ -9209,8 +10151,27 @@ function searchInternalDictionary(q, type = 'word') {
       }
     }
 
+    const refHub = (typeof REFERENCE_HUB_DATA !== 'undefined' && REFERENCE_HUB_DATA) ? REFERENCE_HUB_DATA : null;
+    if (refHub) {
+      for (const vb of (refHub.verbBank || [])) {
+        evaluateWord(vb.kanji, vb.reading, '', vb.meaning, `Động từ Nhóm ${vb.group || 1}`);
+      }
+      for (const ab of (refHub.adjectiveBank || [])) {
+        evaluateWord(ab.kanji, ab.reading, '', ab.meaning, `Tính từ đuôi ${String(ab.type || 'i').toUpperCase()}`);
+      }
+    }
+
+    if (typeof SEARCH_INDEX !== 'undefined' && Array.isArray(SEARCH_INDEX)) {
+      const loadedLessonIds = new Set(lList.map(l => l.id));
+      for (const [idxType, lessonId, text1, text2, meaning] of SEARCH_INDEX) {
+        if (idxType === 'v' && !loadedLessonIds.has(lessonId)) {
+          evaluateWord(text1 || text2, text2, '', meaning, 'Từ vựng');
+        }
+      }
+    }
+
     candidates.sort((a, b) => b.score - a.score);
-    return { status: 200, data: candidates.slice(0, 20).map(c => c.item), isInternal: true };
+    return { status: 200, data: candidates.slice(0, 20).map(c => c.item), deinflected, isInternal: true };
   }
 
   if (type === 'kanji') {
@@ -9737,26 +10698,33 @@ function setVoiceMicActiveVisual(isActive) {
 }
 
 
+function isMobileOrTabletVoiceDevice() {
+  const ua = (typeof navigator !== 'undefined' && navigator.userAgent) || '';
+  return /Android|iPhone|iPad|iPod/i.test(ua) ||
+    (/Macintosh/i.test(ua) && typeof navigator !== 'undefined' && navigator.maxTouchPoints > 1);
+}
+
+
 function scheduleVoiceRestart(lang) {
   if (!maziiShouldKeepListening) return;
+  if (maziiVoiceRestartCount >= 2) {
+    maziiShouldKeepListening = false;
+    setVoiceMicActiveVisual(false);
+    return;
+  }
+  maziiVoiceRestartCount++;
   clearTimeout(maziiVoiceRestartTimer);
   maziiVoiceRestartTimer = setTimeout(() => {
     if (maziiShouldKeepListening && !maziiIsVoiceListening) {
       try {
-        if (maziiVoiceRecognition) {
-          maziiVoiceRecognition.start();
-        } else {
-          startMaziiVoiceSearch(lang || maziiVoiceLang);
-        }
-      } catch (err) {
-        try {
-          startMaziiVoiceSearch(lang || maziiVoiceLang);
-        } catch (e) {
-          console.warn('[VoiceSearch] Không thể tự khởi động lại:', e);
-        }
+        startMaziiVoiceSearch(lang || maziiVoiceLang, true);
+      } catch (e) {
+        maziiShouldKeepListening = false;
+        setVoiceMicActiveVisual(false);
+        console.warn('[VoiceSearch] Không thể tự khởi động lại:', e);
       }
     }
-  }, 120);
+  }, 150);
 }
 
 
@@ -9888,16 +10856,21 @@ function setMaziiVoiceLang(lang) {
 }
 
 
-function startMaziiVoiceSearch(lang = 'ja-JP') {
+function startMaziiVoiceSearch(lang = 'ja-JP', isAutoRestart = false) {
   window.stopHeaderVoiceSearch?.();
   window.KaiwaEngine?.cancelRecording?.();
   maziiVoiceLang = lang || 'ja-JP';
   maziiShouldKeepListening = true;
-  maziiLastVoiceText = '';
+  if (!isAutoRestart) {
+    maziiVoiceRestartCount = 0;
+    maziiLastVoiceText = '';
+    maziiLastVoiceAlternatives = [];
+  }
   clearTimeout(maziiVoiceRestartTimer);
   clearTimeout(maziiFinalizeTimer);
   clearTimeout(maziiSilenceHintTimer);
 
+  const isMobileVoice = isMobileOrTabletVoiceDevice();
   const panel = document.getElementById('mazii-voice-panel');
   const titleEl = document.getElementById('mazii-voice-title');
   const transcriptEl = document.getElementById('mazii-voice-transcript');
@@ -9922,7 +10895,7 @@ function startMaziiVoiceSearch(lang = 'ja-JP') {
       ? 'Đang nghe tiếng Nhật...'
       : 'Đang nghe tiếng Việt...';
   }
-  if (transcriptEl) {
+  if (transcriptEl && !maziiLastVoiceText) {
     transcriptEl.textContent = 'Hãy nói từ muốn tra...';
     transcriptEl.classList.remove('has-text');
   }
@@ -9936,20 +10909,40 @@ function startMaziiVoiceSearch(lang = 'ja-JP') {
     });
   }
 
+  const isFileProtocol = typeof window !== 'undefined' && window.location && window.location.protocol === 'file:';
+  const isInsecureOrigin = typeof window !== 'undefined' && window.isSecureContext === false &&
+    window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1';
+  if (isFileProtocol || isInsecureOrigin) {
+    maziiShouldKeepListening = false;
+    setVoiceMicActiveVisual(false);
+    if (titleEl) titleEl.textContent = 'Micrô đang bị chặn';
+    if (transcriptEl) {
+      transcriptEl.innerHTML = isFileProtocol
+        ? 'Chrome chặn Micro khi mở file trực tiếp (file://). Hãy mở qua HTTP/HTTPS (Live Server, Cloudflare).'
+        : 'Micro yêu cầu kết nối bảo mật HTTPS. Trình duyệt chặn Micro trên HTTP mạng nội bộ LAN.';
+    }
+    return;
+  }
+
   setVoiceMicActiveVisual(true);
 
-  maziiSilenceHintTimer = setTimeout(() => {
-    if (maziiShouldKeepListening && !maziiLastVoiceText && transcriptEl) {
-      stopMaziiVoiceSearch(false);
-      transcriptEl.textContent = 'Đã tắt mic do không phát hiện giọng nói trong 5 giây. Chạm vào Micro để nói lại.';
-    }
-  }, 5000);
+  const armSilenceHintTimer = (delayMs = 5000) => {
+    clearTimeout(maziiSilenceHintTimer);
+    maziiSilenceHintTimer = setTimeout(() => {
+      if (maziiShouldKeepListening && !maziiLastVoiceText && transcriptEl) {
+        stopMaziiVoiceSearch(false);
+        transcriptEl.textContent = 'Đã tắt mic do không phát hiện giọng nói trong 5 giây. Chạm vào Micro để nói lại.';
+      }
+    }, delayMs);
+  };
+  armSilenceHintTimer(12000);
 
   const isSupported = (typeof DictionaryEngine !== 'undefined' && typeof DictionaryEngine.isVoiceSearchSupported === 'function')
     ? DictionaryEngine.isVoiceSearchSupported()
     : Boolean(typeof window !== 'undefined' && (window.SpeechRecognition || window.webkitSpeechRecognition));
 
   if (!isSupported) {
+    clearTimeout(maziiSilenceHintTimer);
     maziiShouldKeepListening = false;
     setVoiceMicActiveVisual(false);
     if (titleEl) titleEl.textContent = 'Trình duyệt chưa hỗ trợ';
@@ -9974,10 +10967,13 @@ function startMaziiVoiceSearch(lang = 'ja-JP') {
       onStart: () => {
         maziiIsVoiceListening = true;
         setVoiceMicActiveVisual(true);
+        armSilenceHintTimer(5000);
       },
       onResult: ({ transcript, isFinal, alternatives }) => {
         if (!transcript) return;
         maziiLastVoiceText = transcript;
+        maziiLastVoiceAlternatives = Array.isArray(alternatives) ? alternatives : [];
+        maziiVoiceRestartCount = 0;
         clearTimeout(maziiSilenceHintTimer);
 
         if (transcriptEl) {
@@ -10002,30 +10998,22 @@ function startMaziiVoiceSearch(lang = 'ja-JP') {
         }, 5000);
       },
       onError: (err) => {
-        console.warn('[VoiceSearch] Thông báo:', err && err.code ? err.code : err);
+        const code = (err && err.code) || '';
+        console.warn('[VoiceSearch] Thông báo:', code || err);
 
-        if (err && err.code === 'no-speech') {
-          if (maziiShouldKeepListening && !maziiIsVoiceListening) {
-            scheduleVoiceRestart(maziiVoiceLang);
-            return;
-          }
-        }
-        if (err && err.code === 'aborted') {
+        if (code === 'aborted') {
           return;
         }
 
-        if (err && (err.code === 'not-allowed' || (err.message && (err.message.includes('not-allowed') || err.message.includes('quyền Micro'))))) {
+        if (code === 'not-allowed' || code === 'service-not-allowed' || (err && err.message && (err.message.includes('not-allowed') || err.message.includes('quyền Micro')))) {
+          clearTimeout(maziiSilenceHintTimer);
           maziiShouldKeepListening = false;
           maziiIsVoiceListening = false;
           setVoiceMicActiveVisual(false);
-          if (titleEl) titleEl.textContent = 'Micrô đang bị chặn';
+          if (titleEl) titleEl.textContent = code === 'service-not-allowed' ? 'Nhận giọng bị tắt' : 'Micrô đang bị chặn';
           if (transcriptEl) {
-            const isFile = typeof window !== 'undefined' && window.location && window.location.protocol === 'file:';
-            const isInsecure = typeof window !== 'undefined' && window.isSecureContext === false && window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1';
-            if (isFile) {
-              transcriptEl.innerHTML = 'Chrome chặn Micro khi mở file trực tiếp (file://). Hãy mở qua HTTP/HTTPS (Live Server, Cloudflare).';
-            } else if (isInsecure) {
-              transcriptEl.innerHTML = 'Micro yêu cầu kết nối bảo mật HTTPS. Trình duyệt chặn Micro trên HTTP mạng nội bộ LAN.';
+            if (code === 'service-not-allowed') {
+              transcriptEl.innerHTML = 'Trình duyệt/hệ điều hành đang tắt nhận diện giọng nói (trên iPhone/iPad hãy bật <b>Đọc chính tả / Dictation</b> trong Cài đặt &gt; Cài đặt chung &gt; Bàn phím). <button type="button" class="mazii-voice-retry-perm-btn" onclick="retryMicrophonePermission()">🔄 Thử lại</button>';
             } else {
               transcriptEl.innerHTML = 'Trang web chưa được cấp quyền Micro. <button type="button" class="mazii-voice-retry-perm-btn" onclick="retryMicrophonePermission()">🔓 Yêu cầu cấp quyền Micro</button>';
             }
@@ -10033,17 +11021,57 @@ function startMaziiVoiceSearch(lang = 'ja-JP') {
           return;
         }
 
+        if (code === 'audio-capture' || code === 'network' || code === 'language-not-supported' || code === 'NOT_SUPPORTED') {
+          clearTimeout(maziiSilenceHintTimer);
+          maziiShouldKeepListening = false;
+          maziiIsVoiceListening = false;
+          setVoiceMicActiveVisual(false);
+          if (titleEl) titleEl.textContent = 'Không thể mở Micrô';
+          if (transcriptEl) {
+            transcriptEl.innerHTML = `${escapeHtml((err && err.message) || 'Không thể thu âm từ Micro.')} <button type="button" class="mazii-voice-retry-perm-btn" onclick="retryMicrophonePermission()">🔄 Thử lại</button>`;
+          }
+          return;
+        }
+
+        if (code === 'no-speech') {
+          if (isMobileVoice) {
+            clearTimeout(maziiSilenceHintTimer);
+            maziiShouldKeepListening = false;
+            maziiIsVoiceListening = false;
+            setVoiceMicActiveVisual(false);
+            if (titleEl) titleEl.textContent = 'Chưa nghe thấy giọng nói';
+            if (transcriptEl) transcriptEl.textContent = 'Chạm vào biểu tượng Micro và nói gần micro hơn.';
+            return;
+          }
+          if (maziiShouldKeepListening && !maziiIsVoiceListening) {
+            scheduleVoiceRestart(maziiVoiceLang);
+            return;
+          }
+        }
+
         if (transcriptEl) {
           transcriptEl.textContent = (err && err.message) || 'Không thể nhận diện giọng nói. Vui lòng chạm vào Micro để thử lại.';
         }
-        if (maziiShouldKeepListening) {
+        if (maziiShouldKeepListening && !isMobileVoice) {
           scheduleVoiceRestart(maziiVoiceLang);
         } else {
+          maziiShouldKeepListening = false;
           setVoiceMicActiveVisual(false);
         }
       },
       onEnd: () => {
         maziiIsVoiceListening = false;
+
+        if (isMobileVoice) {
+          if (maziiShouldKeepListening && maziiLastVoiceText) {
+            commitVoiceSearchResult(maziiLastVoiceText, maziiLastVoiceAlternatives);
+          } else {
+            clearTimeout(maziiSilenceHintTimer);
+            maziiShouldKeepListening = false;
+            setVoiceMicActiveVisual(false);
+          }
+          return;
+        }
 
         if (maziiShouldKeepListening) {
           scheduleVoiceRestart(maziiVoiceLang);
@@ -10054,12 +11082,12 @@ function startMaziiVoiceSearch(lang = 'ja-JP') {
     };
 
     if (typeof DictionaryEngine !== 'undefined' && typeof DictionaryEngine.createVoiceRecognition === 'function') {
-      maziiVoiceRecognition = DictionaryEngine.createVoiceRecognition(callbacks, maziiVoiceLang, { maxAlternatives: 5, continuous: true });
+      maziiVoiceRecognition = DictionaryEngine.createVoiceRecognition(callbacks, maziiVoiceLang, { maxAlternatives: 5, continuous: !isMobileVoice });
     } else {
       const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
       const rec = new SpeechRecognition();
       rec.lang = maziiVoiceLang || 'ja-JP';
-      rec.continuous = true;
+      rec.continuous = !isMobileVoice;
       rec.interimResults = true;
       rec.maxAlternatives = 5;
       rec.onstart = callbacks.onStart;
@@ -10068,15 +11096,15 @@ function startMaziiVoiceSearch(lang = 'ja-JP') {
         let final = '';
         const alts = [];
         const clean = (s) => (s || '').replace(/[。、.,?!？！]/g, '').trim();
-        for (let i = e.resultIndex; i < e.results.length; ++i) {
+        for (let i = 0; i < e.results.length; ++i) {
           if (e.results[i].isFinal) {
-            final += e.results[i][0].transcript;
+            final += (e.results[i][0] && e.results[i][0].transcript) || '';
             for (let j = 0; j < e.results[i].length; ++j) {
-              const a = clean(e.results[i][j].transcript);
+              const a = clean(e.results[i][j] && e.results[i][j].transcript);
               if (a && !alts.includes(a)) alts.push(a);
             }
           } else {
-            interim += e.results[i][0].transcript;
+            interim += (e.results[i][0] && e.results[i][0].transcript) || '';
           }
         }
         callbacks.onResult({
@@ -10101,6 +11129,7 @@ function startMaziiVoiceSearch(lang = 'ja-JP') {
     }
   } catch (err) {
     console.error('[VoiceSearch] Lỗi khởi động:', err);
+    clearTimeout(maziiSilenceHintTimer);
     maziiShouldKeepListening = false;
     setVoiceMicActiveVisual(false);
     if (transcriptEl) {
@@ -10551,11 +11580,33 @@ function renderAccountAvatar(element, user, fallback) {
   element.replaceChildren(image);
 }
 
+function updateAchievementStats(uid) {
+  const stats = (window.AuthEngine && typeof window.AuthEngine.calculateUserStats === 'function')
+    ? window.AuthEngine.calculateUserStats(uid)
+    : {};
+  const fields = {
+    'stat-lessons-count': `${stats.completedModulesCount || 0}/50`,
+    'stat-kanji-count': String(stats.learnedKanjiCount || 0),
+    'stat-radicals-count': `${stats.learnedRadicalsCount || 0}/191`,
+    'stat-quiz-count': String(stats.quizCompletedCount || 0),
+    'stat-kaiwa-count': `${stats.kaiwaPracticedCount || 0}/50`,
+    'stat-exam-count': String(stats.examsTakenCount || 0)
+  };
+  for (const [id, value] of Object.entries(fields)) {
+    const el = (typeof document !== 'undefined' && typeof document.getElementById === 'function')
+      ? document.getElementById(id)
+      : null;
+    if (el) el.textContent = value;
+  }
+  return stats;
+}
+
 function renderUserAccountUI() {
   renderUserAccountChips();
+  const user = window.AuthEngine?.getCurrentUser?.() || null;
+  const stats = updateAchievementStats(user ? user.uid : 'guest');
   const engine = window.GoogleAccountEngine;
   if (!engine) return;
-  const user = window.AuthEngine?.getCurrentUser();
   const { configured, status } = engine.getStatus();
   const byId = id => document.getElementById(id);
   const profile = byId('google-account-profile');
@@ -10571,7 +11622,7 @@ function renderUserAccountUI() {
   renderAccountAvatar(byId('profile-display-avatar'), user, getAvatarPreset('daruma').svg);
   byId('profile-display-name').textContent = user.displayName;
   byId('profile-display-username').textContent = user.email;
-  byId('profile-display-xp').textContent = window.AuthEngine.calculateUserStats(user.uid).totalXp + ' XP';
+  byId('profile-display-xp').textContent = (stats.totalXp || 0) + ' XP';
   byId('google-import-guest').hidden = Object.keys(window.StorageEngine.exportUserProgressSnapshot('guest').data).length === 0;
   const legacy = window.AuthEngine.getLegacyImportSource();
   const legacyImport = byId('google-import-legacy');
@@ -10709,16 +11760,14 @@ function initPressFeedback() {
     const progress = animation.effect.getComputedTiming().progress ?? 0;
     const scale = 1 - (1 - depth) * progress;
     if (!rebound) {
-      animateScale(control, [{ scale }, { scale: 1 }], { duration: 120, easing: 'ease-out' });
+      animateScale(control, [{ scale }, { scale: 1 }], { duration: 120, easing: 'cubic-bezier(0.32, 0.72, 0, 1)' });
       return;
     }
 
     animateScale(control, [
-      { scale, offset: 0, easing: 'cubic-bezier(0.2, 0.7, 0.3, 1)' },
-      { scale: Math.min(scale, depth + 0.01), offset: 0.17, easing: 'ease-out' },
-      { scale: 1 + (1 - depth) * 0.35, offset: 0.55, easing: 'ease-in-out' },
-      { scale: 1, offset: 1 }
-    ], { duration: 235 });
+      { scale },
+      { scale: 1 }
+    ], { duration: 165, easing: 'cubic-bezier(0.32, 0.72, 0, 1)' });
   }
 
   const capture = { capture: true, passive: true };
@@ -10726,6 +11775,7 @@ function initPressFeedback() {
     if (!event.isPrimary || event.button !== 0 || !motionEnabled()) return;
     const control = findControl(event.target);
     if (typeof control?.animate !== 'function') return;
+    if (event.pointerType === 'touch' && control.matches('.ms-subtab-btn, .ms-mode-chip, summary')) return;
     releasePress(false);
 
     const depth = control.matches('[role="button"]:not(button), summary') ? 0.98 : 0.95;
@@ -10752,7 +11802,10 @@ function initPressFeedback() {
     if (event.detail !== 0 || !motionEnabled()) return;
     const control = findControl(event.target);
     if (typeof control?.animate !== 'function') return;
-    animateScale(control, [{ scale: 1 }, { scale: 0.97, offset: 0.22 }, { scale: 1.01, offset: 0.58 }, { scale: 1 }], { duration: 235 });
+    animateScale(control, [{ scale: 1 }, { scale: 0.96, offset: 0.35 }, { scale: 1 }], {
+      duration: 165,
+      easing: 'cubic-bezier(0.32, 0.72, 0, 1)'
+    });
   }, capture);
 }
 
@@ -10781,6 +11834,7 @@ if (document && document.addEventListener) {
     initVoiceSettingsModal();
     initSidebarGearMenu();
     initMobileBottomNavSliderTouch();
+    initIOSTouchGestures();
     initUserAccountUI();
 
     renderSidebar();

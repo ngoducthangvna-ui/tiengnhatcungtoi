@@ -1342,10 +1342,14 @@ body:not(:has(#examRunnerView)) #examMiniTimerWidget,
 }
 
 .passage-content {
-  font-size: 1.08rem;
-  line-height: 2.1;
+  font-family: var(--font-mincho, 'Shippori Mincho', 'Noto Serif JP', 'Hiragino Mincho ProN', 'Be Vietnam Pro', Georgia, serif);
+  font-feature-settings: "palt" 1;
+  font-size: 1.15rem;
+  font-weight: 600;
+  line-height: 2.15;
   color: var(--text-primary);
   word-break: break-word;
+  letter-spacing: 0.02em;
 }
 
 .passage-blank {
@@ -1420,11 +1424,14 @@ body:not(:has(#examRunnerView)) #examMiniTimerWidget,
 }
 
 .q-prompt-text {
-  font-size: 1.05rem;
+  font-family: var(--font-mincho, 'Shippori Mincho', 'Noto Serif JP', 'Hiragino Mincho ProN', 'Be Vietnam Pro', Georgia, serif);
+  font-feature-settings: "palt" 1;
+  font-size: 1.12rem;
   font-weight: 600;
-  line-height: 1.6;
+  line-height: 1.75;
   color: var(--text-primary);
   margin-bottom: 14px;
+  letter-spacing: 0.02em;
 }
 
 /* Options Grid */
@@ -1481,9 +1488,13 @@ body:not(:has(#examRunnerView)) #examMiniTimerWidget,
 }
 
 .choice-text {
-  font-size: 0.98rem;
+  font-family: var(--font-mincho, 'Shippori Mincho', 'Noto Serif JP', 'Hiragino Mincho ProN', 'Be Vietnam Pro', Georgia, serif);
+  font-feature-settings: "palt" 1;
+  font-size: 1.04rem;
+  font-weight: 600;
   color: var(--text-primary);
-  line-height: 1.4;
+  line-height: 1.5;
+  letter-spacing: 0.02em;
 }
 
 /* Result states on choices */
@@ -2118,4 +2129,205 @@ body:has(#examRunnerView) .header-search-container {
   font-size: 1.05rem;
   line-height: 1.95;
   color: var(--text-primary, #2d3748);
+}
+
+/* ==========================================================================
+   JLPT 67/70 STRUCTURE: 2-BLOCK STEPPER, UNDERLINE, INFO TABLE & 120-PT BREAKDOWN
+   ========================================================================== */
+.runner-block-pill {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 10px;
+  border-radius: 999px;
+  font-size: 0.76rem;
+  font-weight: 700;
+  color: var(--text-secondary, #4a5568);
+  background: transparent;
+  border: 1px solid var(--border-color);
+  white-space: nowrap;
+}
+
+.exam-block-stepper {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin: 14px 0 20px;
+}
+
+.block-step-tab {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 48px;
+  padding: 10px 14px;
+  background: transparent;
+  border: 1.5px solid var(--border-color);
+  border-radius: 10px;
+  cursor: pointer;
+  text-align: left;
+  color: var(--text-primary);
+  transition: border-color 0.2s ease, background-color 0.2s ease;
+}
+
+.block-step-tab.active {
+  border-color: var(--primary, #ff5a36);
+  background: rgba(255, 90, 54, 0.08);
+}
+
+.block-step-tab.is-locked {
+  opacity: 0.68;
+  cursor: not-allowed;
+}
+
+.block-step-tab .step-num {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.82rem;
+  font-weight: 800;
+  background: var(--border-color);
+  color: var(--text-primary);
+  flex-shrink: 0;
+}
+
+.block-step-tab.active .step-num {
+  background: var(--primary, #ff5a36);
+  color: #ffffff;
+}
+
+.block-step-tab .step-text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.block-step-tab .step-text strong {
+  font-size: 0.88rem;
+  line-height: 1.25;
+}
+
+.block-step-tab .step-text small {
+  font-size: 0.74rem;
+  color: var(--text-muted);
+}
+
+.exam-target-underline {
+  text-decoration: underline;
+  text-decoration-thickness: 2px;
+  text-underline-offset: 4px;
+  text-decoration-color: var(--primary, #ff5a36);
+  font-weight: 700;
+}
+
+.info-table-intro {
+  margin: 0 0 12px;
+  font-size: 0.96rem;
+  color: var(--text-secondary);
+}
+
+.exam-info-table-wrap {
+  width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  background: transparent;
+}
+
+.exam-info-table-heading {
+  padding: 10px 14px;
+  font-weight: 800;
+  font-size: 0.98rem;
+  border-bottom: 1px solid var(--border-color);
+  color: var(--text-primary);
+}
+
+.exam-info-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.92rem;
+}
+
+.exam-info-table th,
+.exam-info-table td {
+  padding: 9px 12px;
+  border-bottom: 1px solid var(--border-color);
+  border-right: 1px solid var(--border-color);
+  text-align: left;
+  vertical-align: top;
+}
+
+.exam-info-table th:last-child,
+.exam-info-table td:last-child {
+  border-right: none;
+}
+
+.exam-info-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.exam-info-table th {
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.exam-info-table-notes {
+  padding: 10px 14px;
+  border-top: 1px dashed var(--border-color);
+  font-size: 0.84rem;
+  color: var(--text-muted);
+}
+
+.exam-info-table-notes p {
+  margin: 0;
+}
+
+.result-skill-breakdown {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  margin-top: 14px;
+}
+
+.skill-stat-chip {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  padding: 10px 12px;
+  border-radius: 8px;
+  border: 1px solid var(--border-color);
+  background: transparent;
+}
+
+.skill-stat-chip .skill-label {
+  font-size: 0.74rem;
+  color: var(--text-muted);
+}
+
+.skill-stat-chip strong {
+  font-size: 0.95rem;
+  color: var(--text-primary);
+}
+
+.skill-stat-chip small {
+  font-size: 0.76rem;
+  font-weight: 700;
+  color: var(--primary, #ff5a36);
+}
+
+@media (max-width: 640px) {
+  .runner-block-pill {
+    display: none;
+  }
+  .exam-block-stepper {
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+  .result-skill-breakdown {
+    grid-template-columns: 1fr;
+  }
 }

@@ -29,7 +29,9 @@
     kanjiBadge: `<svg class="icon-svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 3H21V21H3Z M3 9H21 M3 15H21 M9 3V21 M15 3V21 M5 5.5H7 M6 4.5V7.5 M11 5.5H13 M12 4.5V7.5 M17 5.5H19 M5 11.5H7 M11 11.5H13 M17 11.5H19 M5 17.5H7 M11 17.5H13 M17 17.5H19"></path></svg>`,
     torii: `<svg class="icon-svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 6C8 7.2 16 7.2 21 6L20.2 8C15.5 9 8.5 9 3.8 8Z M4.2 11H19.8 M4.2 12.5H19.8 M12 8.7V11 M7 8.5V21 M8.6 8.6V21 M15.4 8.6V21 M17 8.5V21 M6.2 21H9.4 M14.6 21H17.8"></path></svg>`,
     alert: `<svg class="icon-svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10.29 3.86L2.2 18a2 2 0 0 0 1.71 3h16.18a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>`,
-    zap: `<svg class="icon-svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polygon points="13.5 2.5 5.5 13.5 12 13.5 10.5 21.5 18.5 10.5 12 10.5 13.5 2.5"></polygon></svg>`
+    zap: `<svg class="icon-svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polygon points="13.5 2.5 5.5 13.5 12 13.5 10.5 21.5 18.5 10.5 12 10.5 13.5 2.5"></polygon></svg>`,
+    lock: `<svg class="icon-svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="2"></rect><path d="M8 11V7a4 4 0 0 1 8 0v4"></path></svg>`,
+    arrowRight: `<svg class="icon-svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>`
   };
 
   // Trạng thái phiên thi cử runtime
@@ -38,16 +40,19 @@
     activeExamCode: null,
     activeExamData: null,
     activeSessionId: null,
-    examMode: 'timed', // 'timed' (30 phút đếm ngược) hoặc 'practice' (không giới hạn)
+    activeBlockIndex: 0, // 0 = Block 1 (Từ vựng), 1 = Block 2 (Ngữ pháp & Đọc hiểu)
+    lockedBlocks: {}, // { [examCode]: { vocab: boolean, grammar_reading: boolean } }
+    block1ElapsedSeconds: 0,
+    examMode: 'timed', // 'timed' (2 Block đếm ngược chuẩn JLPT) hoặc 'practice' (tự do)
     furiganaMode: 'on', // 'on' (Kanji + Furigana), 'hide' (Ẩn Furigana), 'hiragana' (Chuyển sang Hiragana)
-    timeRemainingSeconds: 1800, // 30 phút * 60
+    timeRemainingSeconds: 1200, // Block 1 N5: 20p (1200s), Block 2 N5: 40p (2400s); N4: 25p (1500s) + 55p (3300s)
     timerInterval: null,
     scrollListenerAttached: false,
     userAnswers: {}, // { [examCode]: { [qId]: optionNum } }
     submittedExams: {}, // { [examCode]: resultObj }
     lockedSessions: {}, // { [examCode]: sessionObj }
     filterQuery: '',
-    isBarCollapsed: false, // Thu gọn thanh Top Bar thành mini widget góc trên phải khi làm bài
+    isBarCollapsed: false,
     isAutoSubmitting: false,
     autoAdvanceTimeout: null
   };
@@ -105,7 +110,7 @@
     const link = document.createElement('link');
     link.id = 'exam-engine-styles';
     link.rel = 'stylesheet';
-    link.href = 'src/exam_style.css?v=20261117_20';
+    link.href = 'src/exam_style.css?v=20261121_17';
     document.head.appendChild(link);
   }
 
@@ -115,12 +120,12 @@
   function ensureFuriganaMapLoaded() {
     if (root.EXAM_FURIGANA && typeof root.EXAM_FURIGANA === 'object') return Promise.resolve();
     if (root.NavigationEngine && typeof root.NavigationEngine.loadScriptAsync === 'function') {
-      return root.NavigationEngine.loadScriptAsync('data/exam_furigana.js?v=20261117_03');
+      return root.NavigationEngine.loadScriptAsync('data/exam_furigana.js?v=20261121_17');
     }
     return new Promise((resolve) => {
       if (typeof document === 'undefined') return resolve();
       const s = document.createElement('script');
-      s.src = 'data/exam_furigana.js?v=20261117_03';
+      s.src = 'data/exam_furigana.js?v=20261121_17';
       s.onload = () => resolve();
       s.onerror = () => resolve();
       document.head.appendChild(s);
@@ -142,7 +147,7 @@
       return Promise.all(promises);
     }
 
-    const scriptUrl = isN5 ? 'data/exams_n5.js?v=20261117_03' : 'data/exams_n4.js?v=20261117_03';
+    const scriptUrl = isN5 ? 'data/exams_n5.js?v=20261121_17' : 'data/exams_n4.js?v=20261121_17';
     if (root.NavigationEngine && typeof root.NavigationEngine.loadScriptAsync === 'function') {
       promises.push(root.NavigationEngine.loadScriptAsync(scriptUrl));
       return Promise.all(promises);
@@ -203,41 +208,194 @@
     return cachedFuriganaRegex;
   }
 
-  function renderJapaneseText(text) {
+  /**
+   * Lấy cấu hình 2 Block thời gian độc lập cho đề thi N5 (20p+40p) hoặc N4 (25p+55p)
+   */
+  function getExamBlocksConfig(exam) {
+    const isN5 = !exam || exam.level === 'N5' || String(exam.code || '').startsWith('N5');
+    if (exam && Array.isArray(exam.blocks) && exam.blocks.length === 2) {
+      return exam.blocks;
+    }
+    return [
+      {
+        id: 'vocab',
+        title: 'Phần 1: Từ Vựng (文字・語彙)',
+        shortTitle: 'Từ vựng',
+        questionCount: 35,
+        timeLimitMinutes: isN5 ? 20 : 25,
+        timeLimitSeconds: isN5 ? 1200 : 1500,
+        questionRange: [1, 35]
+      },
+      {
+        id: 'grammar_reading',
+        title: 'Phần 2: Ngữ Pháp & Đọc Hiểu (文法・読解)',
+        shortTitle: 'Ngữ pháp & Đọc hiểu',
+        questionCount: isN5 ? 32 : 35,
+        timeLimitMinutes: isN5 ? 40 : 55,
+        timeLimitSeconds: isN5 ? 2400 : 3300,
+        questionRange: [36, isN5 ? 67 : 70]
+      }
+    ];
+  }
+
+  /**
+   * Tính điểm quy đổi chuẩn JLPT thang 120 điểm (Từ vựng + Ngữ pháp + Đọc hiểu)
+   * Ngưỡng qua điểm liệt: >= 38 / 120 điểm
+   * Ngưỡng đạt chuẩn khuyến nghị: >= 60 / 120 (N5), >= 63 / 120 (N4)
+   */
+  function calculateJlptScore(exam, answers) {
+    const qs = (exam && Array.isArray(exam.questions)) ? exam.questions : [];
+    const total = qs.length || (exam && exam.level === 'N4' ? 70 : 67);
+    const isN5 = !exam || exam.level === 'N5' || String(exam.code || '').startsWith('N5');
+    const ansMap = answers || {};
+
+    let correctCount = 0;
+    let totalWeighted = 0;
+    let maxWeighted = 0;
+
+    let vocabCorrect = 0, vocabTotal = 0, vocabPts = 0, vocabMax = 0;
+    let grammarCorrect = 0, grammarTotal = 0, grammarPts = 0, grammarMax = 0;
+    let readingCorrect = 0, readingTotal = 0, readingPts = 0, readingMax = 0;
+
+    qs.forEach(q => {
+      const pts = (typeof q.points === 'number' && q.points > 0) ? q.points : (120 / total);
+      const isRight = ansMap[q.id] === q.correct;
+      maxWeighted += pts;
+      if (isRight) {
+        correctCount++;
+        totalWeighted += pts;
+      }
+
+      const skill = q.skill || (q.block === 'vocab' ? 'vocabulary' : (q.mondai >= 4 ? 'reading' : 'grammar'));
+      if (skill === 'vocabulary') {
+        vocabTotal++;
+        vocabMax += pts;
+        if (isRight) { vocabCorrect++; vocabPts += pts; }
+      } else if (skill === 'reading') {
+        readingTotal++;
+        readingMax += pts;
+        if (isRight) { readingCorrect++; readingPts += pts; }
+      } else {
+        grammarTotal++;
+        grammarMax += pts;
+        if (isRight) { grammarCorrect++; grammarPts += pts; }
+      }
+    });
+
+    const scaledScore = maxWeighted > 0 ? Math.round((totalWeighted / maxWeighted) * 120) : 0;
+    const passedCutoff = scaledScore >= 38;
+    const recommendedPass = isN5 ? 60 : 63;
+    const isPass = passedCutoff && scaledScore >= recommendedPass;
+
+    return {
+      score: correctCount,
+      total,
+      scaledScore,
+      maxScaledScore: 120,
+      passedCutoff,
+      recommendedPass,
+      isPass,
+      breakdown: {
+        vocab: { correct: vocabCorrect, total: vocabTotal, points: Math.round(vocabPts), maxPoints: Math.round(vocabMax) },
+        grammar: { correct: grammarCorrect, total: grammarTotal, points: Math.round(grammarPts), maxPoints: Math.round(grammarMax) },
+        reading: { correct: readingCorrect, total: readingTotal, points: Math.round(readingPts), maxPoints: Math.round(readingMax) }
+      }
+    };
+  }
+
+  function isQuestionBlockLocked(examCode, qId) {
+    const code = normalizeExamCode(examCode);
+    const locks = state.lockedBlocks[code];
+    if (!locks) return false;
+    if (qId <= 35 && locks.vocab) return true;
+    if (qId > 35 && locks.grammar_reading) return true;
+    return false;
+  }
+
+  function computeTotalElapsedSeconds(exam) {
+    if (state.examMode !== 'timed') return 900;
+    const blocks = getExamBlocksConfig(exam);
+    if (state.activeBlockIndex === 0) {
+      const b1Limit = blocks[0].timeLimitSeconds || 1200;
+      return Math.max(1, b1Limit - state.timeRemainingSeconds);
+    }
+    const b2Limit = blocks[1].timeLimitSeconds || 2400;
+    const b2Elapsed = Math.max(0, b2Limit - state.timeRemainingSeconds);
+    return Math.max(1, (state.block1ElapsedSeconds || 0) + b2Elapsed);
+  }
+
+  function renderJapaneseText(text, options) {
     if (!text || typeof text !== 'string') return '';
+    const opts = options || {};
+    if (opts.suppressAllFurigana) {
+      return esc(text.normalize('NFKC')).replace(/\n/g, '<br>');
+    }
     const fmap = root.EXAM_FURIGANA || {};
     let str = text.normalize('NFKC');
 
-    // 1. Bảo vệ các ký hiệu ô trống đề thi và định dạng đặc biệt
+    // 1. Bảo vệ các thẻ <u>...</u> và ký hiệu ô trống đề thi
     const placeholders = [];
-    let processed = str.replace(/【\s*\d+\s*】|[（(][\s\S]*?[)）]|＿＿＿|＿★＿|★|^\d+\.\s*/gm, (match) => {
+    let processed = str.replace(/<u>([\s\S]*?)<\/u>|【\s*\d+\s*】|[（(][\s\S]*?[)）]|＿＿＿|＿＿|＿★＿|★|^\d+\.\s*/gm, (match, uInner) => {
       const idx = placeholders.length;
-      placeholders.push(match);
+      if (uInner !== undefined) {
+        placeholders.push({ type: 'underline', content: uInner });
+      } else {
+        placeholders.push({ type: 'raw', content: match });
+      }
       return `___PH_${idx}___`;
     });
 
     // 2. Thay thế các từ Hán tự theo thứ tự độ dài giảm dần bằng Single-Pass Regex
-    if (Object.keys(fmap).length > 0) {
+    const annotateKanji = (segment) => {
+      if (!segment || Object.keys(fmap).length === 0) return esc(segment);
       const regex = getFuriganaRegex(fmap);
-      processed = processed.replace(regex, (match) => {
-        const h = fmap[match];
-        if (!h) return match;
-        return `<ruby class="furigana-ruby" data-kanji="${esc(match)}" data-hiragana="${esc(h)}"><span class="k-text">${esc(match)}</span><rt class="r-text">${esc(h)}</rt><span class="h-text">${esc(h)}</span></ruby>`;
-      });
-    }
-
-    // 3. Phục hồi lại các ký hiệu đề thi
-    for (let i = 0; i < placeholders.length; i++) {
-      let ph = placeholders[i];
-      if (/^【\s*\d+\s*】$/.test(ph.trim())) {
-        ph = `<span class="passage-blank">${esc(ph)}</span>`;
-      } else {
-        ph = esc(ph);
+      // Tách từng đoạn để escape text thường an toàn
+      let out = '';
+      let lastIdx = 0;
+      regex.lastIndex = 0;
+      let m;
+      while ((m = regex.exec(segment)) !== null) {
+        if (m.index > lastIdx) {
+          out += esc(segment.slice(lastIdx, m.index));
+        }
+        const matchStr = m[0];
+        const h = fmap[matchStr];
+        if (h) {
+          out += `<ruby class="furigana-ruby" data-kanji="${esc(matchStr)}" data-hiragana="${esc(h)}"><span class="k-text">${esc(matchStr)}</span><rt class="r-text">${esc(h)}</rt><span class="h-text">${esc(h)}</span></ruby>`;
+        } else {
+          out += esc(matchStr);
+        }
+        lastIdx = m.index + matchStr.length;
       }
-      processed = processed.replace(`___PH_${i}___`, ph);
+      if (lastIdx < segment.length) {
+        out += esc(segment.slice(lastIdx));
+      }
+      return out;
+    };
+
+    processed = annotateKanji(processed);
+
+    // 3. Phục hồi lại các ký hiệu đề thi & thẻ gạch chân <u>
+    for (let i = 0; i < placeholders.length; i++) {
+      const item = placeholders[i];
+      let replacement = '';
+      if (item.type === 'underline') {
+        const innerHtml = opts.suppressUnderlineFurigana
+          ? esc(item.content)
+          : annotateKanji(item.content);
+        replacement = `<u class="exam-target-underline">${innerHtml}</u>`;
+      } else {
+        const ph = item.content;
+        if (/^【\s*\d+\s*】$/.test(ph.trim())) {
+          replacement = `<span class="passage-blank">${esc(ph)}</span>`;
+        } else {
+          replacement = esc(ph);
+        }
+      }
+      processed = processed.replace(`___PH_${i}___`, replacement);
     }
 
-    return processed;
+    return processed.replace(/\n/g, '<br>');
   }
 
   /**
@@ -254,7 +412,7 @@
   }
 
   /**
-   * Khởi động đồng hồ đếm ngược
+   * Khởi động đồng hồ đếm ngược 2 Block độc lập (Block 1 Từ vựng ➔ Block 2 Ngữ pháp & Đọc hiểu)
    */
   function startTimer(examCode) {
     clearInterval(state.timerInterval); state.timerInterval = null;
@@ -266,12 +424,17 @@
         updateTimerDisplay();
         if (state.timeRemainingSeconds === 0) {
           clearInterval(state.timerInterval); state.timerInterval = null;
-      if (state.autoAdvanceTimeout) {
-        clearTimeout(state.autoAdvanceTimeout);
-        state.autoAdvanceTimeout = null;
-      }
-          if (root.showToast) root.showToast('⏰ Đã hết 30 phút làm bài! Hệ thống đang tự động nộp bài...');
-          ExamEngine.submitExam(examCode, true);
+          if (state.autoAdvanceTimeout) {
+            clearTimeout(state.autoAdvanceTimeout);
+            state.autoAdvanceTimeout = null;
+          }
+          if (state.activeBlockIndex === 0) {
+            if (root.showToast) root.showToast('⏰ Đã hết giờ Phần 1 (Từ vựng)! Tự động khóa Phần 1 và chuyển sang Phần 2 (Ngữ pháp & Đọc hiểu).');
+            ExamEngine.completeBlock1(examCode, true);
+          } else {
+            if (root.showToast) root.showToast('⏰ Đã hết thời gian Phần 2 (Ngữ pháp & Đọc hiểu)! Hệ thống đang tự động nộp bài...');
+            ExamEngine.submitExam(examCode, true);
+          }
         }
       }
     }, 1000);
@@ -559,27 +722,21 @@
     const answers = state.userAnswers[code] || {};
 
     // 2. Chấm điểm: toàn bộ đáp án đã tích chọn tính đến thời điểm thoát; các câu chưa chọn tính 0 điểm
-    let correctCount = 0;
-    if (exam && Array.isArray(exam.questions)) {
-      exam.questions.forEach(q => {
-        if (answers[q.id] === q.correct) {
-          correctCount++;
-        }
-      });
-    }
-
-    const elapsedSeconds = state.examMode === 'timed' 
-      ? (1800 - state.timeRemainingSeconds) 
-      : 900;
-
+    const evalScore = calculateJlptScore(exam, answers);
+    const elapsedSeconds = computeTotalElapsedSeconds(exam);
     const sessionId = state.activeSessionId || `sess_${code}_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`;
 
     const resultObj = {
       examCode: code,
       sessionId,
       level: exam ? exam.level : (code.startsWith('N5') ? 'N5' : 'N4'),
-      score: correctCount,
-      total: 20,
+      score: evalScore.score,
+      total: evalScore.total,
+      scaledScore: evalScore.scaledScore,
+      maxScaledScore: 120,
+      passedCutoff: evalScore.passedCutoff,
+      isPass: evalScore.isPass,
+      breakdown: evalScore.breakdown,
       timeSeconds: Math.max(10, elapsedSeconds),
       date: new Date().toISOString().split('T')[0],
       status: 'SUBMITTED',
@@ -592,6 +749,7 @@
 
     // 3. Ghi nhận kết quả và khóa phiên trên database/storage
     state.submittedExams[code] = resultObj;
+    state.lockedBlocks[code] = { vocab: true, grammar_reading: true };
     saveExamResultToStorage(resultObj);
 
     const lockedMap = getLockedSessions();
@@ -606,7 +764,9 @@
       locked: true,
       reason: reason || 'exit_trigger',
       answers,
-      clientScore: correctCount,
+      clientScore: evalScore.score,
+      total: evalScore.total,
+      scaledScore: evalScore.scaledScore,
       timestamp: Date.now()
     });
 
@@ -733,7 +893,10 @@
                     <span>Hãy chọn một đề thi bên dưới để bắt đầu thử sức và kiểm tra kết quả!</span>
                   </div>
                 ` : history.slice(0, 4).map(h => {
-                  const isPass = h.score >= 12;
+                  const hTotal = h.total || (h.level === 'N4' ? 70 : 67);
+                  const hasScaled = typeof h.scaledScore === 'number';
+                  const isPass = hasScaled ? (h.scaledScore >= 38 && (h.isPass !== false)) : (hTotal === 20 ? h.score >= 12 : Math.round((h.score / hTotal) * 120) >= 38);
+                  const scoreText = hasScaled ? `${h.scaledScore}/120 đ (${h.score}/${hTotal})` : `${h.score}/${hTotal}`;
                   return `
                     <div class="history-item">
                       <div class="hist-left">
@@ -742,7 +905,7 @@
                       </div>
                       <div class="hist-right">
                         <span class="hist-status ${isPass ? 'pass' : 'fail'}">${isPass ? 'ĐẠT ✓' : 'CHƯA ĐẠT'}</span>
-                        <strong class="hist-score">${h.score}/20</strong>
+                        <strong class="hist-score">${scoreText}</strong>
                       </div>
                     </div>
                   `;
@@ -764,13 +927,17 @@
               const best = bests[ex.code];
               const isDone = best !== undefined;
               const cleanTitle = ex.title.replace(/^Đề\s+[Nn][45]-\d+:\s*/, '').split('—')[0].trim();
+              const qCount = ex.questionCount || (ex.level === 'N5' ? 67 : 70);
+              const tMin = ex.timeLimitMinutes || (ex.level === 'N5' ? 60 : 80);
+              const b1Min = ex.block1Minutes || (ex.level === 'N5' ? 20 : 25);
+              const b2Min = ex.block2Minutes || (ex.level === 'N5' ? 40 : 55);
 
               return `
                 <article class="exam-card ${isDone ? 'is-completed' : ''}" id="card-${ex.code}">
                   <div class="exam-card-top">
                     <span class="exam-level-tag ${ex.level === 'N5' ? 'tag-n5' : 'tag-n4'}">${ex.code}</span>
                     ${isDone ? `
-                      <span class="exam-status-tag done">Điểm cao: ${best}/20 ✓</span>
+                      <span class="exam-status-tag done">Điểm cao: ${best}/${qCount} ✓</span>
                     ` : `
                       <span class="exam-status-tag new">Chưa làm</span>
                     `}
@@ -785,7 +952,7 @@
                     </span>
                     <span class="meta-item">
                       ${EXAM_ICONS.clock}
-                      30 phút • 20 câu
+                      ${tMin}p (${b1Min}p+${b2Min}p) • ${qCount} câu
                     </span>
                   </div>
 
@@ -884,7 +1051,11 @@
 
         state.activeSessionId = `sess_${code}_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`;
         if (!state.userAnswers[code]) state.userAnswers[code] = {};
-        state.timeRemainingSeconds = 1800; // Reset 30 phút
+        const blocks = getExamBlocksConfig(exam);
+        state.activeBlockIndex = 0;
+        state.block1ElapsedSeconds = 0;
+        state.lockedBlocks[code] = { vocab: false, grammar_reading: false };
+        state.timeRemainingSeconds = blocks[0].timeLimitSeconds || (exam.level === 'N4' ? 1500 : 1200);
 
         const isSub = Boolean(state.submittedExams[code]);
         state.isBarCollapsed = (Object.keys(state.userAnswers[code] || {}).length > 0 && !isSub);
@@ -910,13 +1081,196 @@
       });
     },
 
+    buildReadingPassageBlockHtml(pObj, qs, examCode, isSubmitted, answers) {
+      if (!pObj) return '';
+      let bodyHtml = '';
+      if (pObj.infoTable) {
+        const tbl = pObj.infoTable;
+        bodyHtml = `
+          ${pObj.content ? `<p class="info-table-intro jp-text">${renderJapaneseText(pObj.content)}</p>` : ''}
+          <div class="exam-info-table-wrap">
+            <div class="exam-info-table-heading jp-text">${renderJapaneseText(tbl.heading || '')}</div>
+            <table class="exam-info-table">
+              <thead>
+                <tr>${(tbl.headers || []).map(h => `<th class="jp-text">${renderJapaneseText(h)}</th>`).join('')}</tr>
+              </thead>
+              <tbody>
+                ${(tbl.rows || []).map(row => `
+                  <tr>${row.map(cell => `<td class="jp-text">${renderJapaneseText(cell)}</td>`).join('')}</tr>
+                `).join('')}
+              </tbody>
+            </table>
+            ${Array.isArray(tbl.notes) && tbl.notes.length > 0 ? `
+              <div class="exam-info-table-notes">
+                ${tbl.notes.map(n => `<p class="jp-text">${renderJapaneseText(n)}</p>`).join('')}
+              </div>
+            ` : ''}
+          </div>
+        `;
+      } else {
+        bodyHtml = `<div class="passage-content jp-text">${renderJapaneseText(pObj.content || '')}</div>`;
+      }
+
+      return `
+        <div class="exam-mondai3-layout reading-passage-layout">
+          <div class="exam-mondai3-passage-col">
+            <div class="passage-card jp-text" id="passage-card-${esc(pObj.id)}">
+              <div class="passage-header-bar">
+                <div class="passage-title">
+                  <span class="passage-icon">${EXAM_ICONS.book}</span>
+                  <span>${esc(pObj.title || 'Đoạn văn đọc hiểu')}</span>
+                </div>
+                <span class="passage-badge">${esc(pObj.mondaiCode || 'Đọc hiểu')}</span>
+              </div>
+              ${bodyHtml}
+            </div>
+          </div>
+          <div class="exam-mondai3-questions-col">
+            ${qs.map(q => ExamEngine.buildQuestionCardHtml(q, examCode, isSubmitted, answers[q.id])).join('')}
+          </div>
+        </div>
+      `;
+    },
+
     renderRunnerUI(container, exam, isSubmitted) {
       if (!container || !exam || !Array.isArray(exam.questions)) return;
       const code = exam.code;
       const answers = state.userAnswers[code] || {};
-      const answeredCount = Object.keys(answers).length;
+      const blocks = getExamBlocksConfig(exam);
+      const totalQ = exam.questions.length;
+      const isN5 = exam.level === 'N5' || code.startsWith('N5');
+      const activeIdx = state.activeBlockIndex === 1 ? 1 : 0;
+      const activeBlock = blocks[activeIdx] || blocks[0];
+      const [rangeStart, rangeEnd] = activeBlock.questionRange || [1, totalQ];
+
+      const blockQuestions = exam.questions.filter(q => q.id >= rangeStart && q.id <= rangeEnd);
+      const blockAnsweredCount = blockQuestions.filter(q => answers[q.id] !== undefined).length;
+      const totalAnsweredCount = Object.keys(answers).length;
       const isCollapsed = Boolean(state.isBarCollapsed && !isSubmitted);
       const isAutoAdvance = ExamEngine.isAutoAdvanceEnabled();
+      const locks = state.lockedBlocks[code] || { vocab: false, grammar_reading: false };
+
+      const initTimerLabel = state.examMode === 'timed'
+        ? `${String(Math.floor(state.timeRemainingSeconds / 60)).padStart(2, '0')}:${String(state.timeRemainingSeconds % 60).padStart(2, '0')}`
+        : 'Tự do';
+
+      // Xây dựng nội dung câu hỏi theo từng Block
+      let questionsFlowHtml = '';
+      if (activeIdx === 0) {
+        // BLOCK 1: TỪ VỰNG (V1..V4 cho N5, V1..V5 cho N4)
+        const vGroups = isN5
+          ? [
+              { code: 'V1', badge: 'MONDAI 1', title: 'Cách đọc Kanji (漢字読み • Câu 1 – 12)' },
+              { code: 'V2', badge: 'MONDAI 2', title: 'Viết Hiragana / Kanji (表記 • Câu 13 – 20)' },
+              { code: 'V3', badge: 'MONDAI 3', title: 'Điền từ theo ngữ cảnh (文脈規定 • Câu 21 – 30)' },
+              { code: 'V4', badge: 'MONDAI 4', title: 'Tìm từ đồng nghĩa (言い換え類義 • Câu 31 – 35)' }
+            ]
+          : [
+              { code: 'V1', badge: 'MONDAI 1', title: 'Cách đọc Kanji (漢字読み • Câu 1 – 9)' },
+              { code: 'V2', badge: 'MONDAI 2', title: 'Viết Hiragana / Kanji (表記 • Câu 10 – 15)' },
+              { code: 'V3', badge: 'MONDAI 3', title: 'Điền từ theo ngữ cảnh (文脈規定 • Câu 16 – 25)' },
+              { code: 'V4', badge: 'MONDAI 4', title: 'Tìm từ đồng nghĩa (言い換え類義 • Câu 26 – 30)' },
+              { code: 'V5', badge: 'MONDAI 5', title: 'Cách sử dụng từ đúng (用法 • Câu 31 – 35)' }
+            ];
+
+        questionsFlowHtml = vGroups.map((grp, gi) => {
+          const qs = blockQuestions.filter(q => q.mondaiCode === grp.code);
+          if (!qs.length) return '';
+          return `
+            <div class="mondai-group-header" ${gi > 0 ? 'style="margin-top: 32px;"' : ''}>
+              <span class="mondai-group-badge">${grp.badge}</span>
+              <h3>${grp.title}</h3>
+            </div>
+            ${qs.map(q => ExamEngine.buildQuestionCardHtml(q, code, isSubmitted, answers[q.id])).join('')}
+          `;
+        }).join('');
+      } else {
+        // BLOCK 2: NGỮ PHÁP (G1, G2, G3) & ĐỌC HIỂU (R1, R2, R3)
+        const g1Qs = blockQuestions.filter(q => q.mondaiCode === 'G1');
+        const g2Qs = blockQuestions.filter(q => q.mondaiCode === 'G2');
+        const g3Qs = blockQuestions.filter(q => q.mondaiCode === 'G3');
+        const rPassages = Array.isArray(exam.readingPassages) ? exam.readingPassages : [];
+        const r1Passages = rPassages.filter(p => p.mondaiCode === 'R1');
+        const r2Passages = rPassages.filter(p => p.mondaiCode === 'R2');
+        const r3Passages = rPassages.filter(p => p.mondaiCode === 'R3');
+
+        const g3Start = g3Qs.length ? g3Qs[0].id : (isN5 ? 57 : 56);
+        const g3End = g3Qs.length ? g3Qs[g3Qs.length - 1].id : (isN5 ? 61 : 60);
+
+        questionsFlowHtml = `
+          <div class="mondai-group-header">
+            <span class="mondai-group-badge">NGỮ PHÁP • MONDAI 1</span>
+            <h3>Chọn Dạng Ngữ Pháp Phù Hợp (Câu ${g1Qs[0]?.id || 36} – ${g1Qs[g1Qs.length - 1]?.id || (isN5 ? 51 : 50)})</h3>
+          </div>
+          ${g1Qs.map(q => ExamEngine.buildQuestionCardHtml(q, code, isSubmitted, answers[q.id])).join('')}
+
+          <div class="mondai-group-header" style="margin-top: 36px;">
+            <span class="mondai-group-badge">NGỮ PHÁP • MONDAI 2</span>
+            <h3>Sắp Xếp Trật Tự Từ — Câu Dấu Sao ★ (Câu ${g2Qs[0]?.id || (isN5 ? 52 : 51)} – ${g2Qs[g2Qs.length - 1]?.id || (isN5 ? 56 : 55)})</h3>
+          </div>
+          ${g2Qs.map(q => ExamEngine.buildQuestionCardHtml(q, code, isSubmitted, answers[q.id])).join('')}
+
+          <div class="mondai-group-header" style="margin-top: 36px;">
+            <span class="mondai-group-badge accent-sakura">NGỮ PHÁP • MONDAI 3</span>
+            <h3>Ngữ Pháp Theo Mạch Đoạn Văn Điền Khuyết (Câu ${g3Start} – ${g3End})</h3>
+          </div>
+
+          ${exam.passage ? `
+            <div class="exam-mondai3-layout">
+              <div class="exam-mondai3-passage-col">
+                <div class="passage-card jp-text" id="mondaiPassageCard">
+                  <div class="passage-header-bar">
+                    <div class="passage-title">
+                      <span class="passage-icon">${EXAM_ICONS.book}</span>
+                      <span>ĐOẠN VĂN BÀI ĐỌC (Mondai 3)</span>
+                    </div>
+                    <span class="passage-badge">Điền vào 5 ô trống: 【 ${g3Start} 】 – 【 ${g3End} 】</span>
+                  </div>
+                  <div class="passage-content" id="mondaiPassageContent">
+                    ${renderJapaneseText(exam.passage)}
+                  </div>
+                </div>
+              </div>
+              <div class="exam-mondai3-questions-col">
+                ${g3Qs.map(q => ExamEngine.buildQuestionCardHtml(q, code, isSubmitted, answers[q.id])).join('')}
+              </div>
+            </div>
+          ` : g3Qs.map(q => ExamEngine.buildQuestionCardHtml(q, code, isSubmitted, answers[q.id])).join('')}
+
+          ${r1Passages.length > 0 ? `
+            <div class="mondai-group-header" style="margin-top: 40px;">
+              <span class="mondai-group-badge accent-sakura">ĐỌC HIỂU • MONDAI 4</span>
+              <h3>Đọc Hiểu Đoạn Văn Ngắn (${r1Passages.length} Đoạn • ${isN5 ? 'Câu 62 – 64' : 'Câu 61 – 64'})</h3>
+            </div>
+            ${r1Passages.map(p => {
+              const qs = blockQuestions.filter(q => q.passageId === p.id);
+              return ExamEngine.buildReadingPassageBlockHtml(p, qs, code, isSubmitted, answers);
+            }).join('')}
+          ` : ''}
+
+          ${r2Passages.length > 0 ? `
+            <div class="mondai-group-header" style="margin-top: 40px;">
+              <span class="mondai-group-badge accent-sakura">ĐỌC HIỂU • MONDAI 5</span>
+              <h3>Đọc Hiểu Đoạn Văn Trung Bình (${isN5 ? 'Câu 65 – 66' : 'Câu 65 – 68'})</h3>
+            </div>
+            ${r2Passages.map(p => {
+              const qs = blockQuestions.filter(q => q.passageId === p.id);
+              return ExamEngine.buildReadingPassageBlockHtml(p, qs, code, isSubmitted, answers);
+            }).join('')}
+          ` : ''}
+
+          ${r3Passages.length > 0 ? `
+            <div class="mondai-group-header" style="margin-top: 40px;">
+              <span class="mondai-group-badge accent-sakura">ĐỌC HIỂU • MONDAI 6</span>
+              <h3>Tìm Kiếm Thông Tin Bảng Biểu, Tờ Rơi (${isN5 ? 'Câu 67' : 'Câu 69 – 70'})</h3>
+            </div>
+            ${r3Passages.map(p => {
+              const qs = blockQuestions.filter(q => q.passageId === p.id);
+              return ExamEngine.buildReadingPassageBlockHtml(p, qs, code, isSubmitted, answers);
+            }).join('')}
+          ` : ''}
+        `;
+      }
 
       let html = `
         <div class="exam-runner-container" id="examRunnerView">
@@ -928,6 +1282,7 @@
                   ${EXAM_ICONS.arrowLeft}
                 </button>
                 <span class="runner-code-pill">${exam.code}</span>
+                <span class="runner-block-pill" id="hudBlockBadge">${activeIdx === 0 ? 'Phần 1: Từ vựng' : 'Phần 2: NP & Đọc'}</span>
               </div>
 
               <div class="runner-bar-right">
@@ -938,12 +1293,12 @@
                      title="Nhấn để đổi chế độ bấm giờ / tự do">
                   <span class="hud-timer-icon">${EXAM_ICONS.clock}</span>
                   <strong class="hud-timer-val exam-timer-val" id="examCountdownText">
-                    ${state.examMode === 'timed' ? '30:00' : 'Tự do'}
+                    ${initTimerLabel}
                   </strong>
                 </div>
 
                 <!-- Tiến độ rút gọn -->
-                <strong class="runner-progress-val" id="hudAnsweredCount">${answeredCount}/20</strong>
+                <strong class="runner-progress-val" id="hudAnsweredCount">${blockAnsweredCount}/${activeBlock.questionCount}</strong>
 
                 <!-- Nút Nộp Bài / Thi Lại -->
                 <div class="hud-actions">
@@ -968,53 +1323,42 @@
             <div class="runner-mobile-title-row"></div>
           </div>
 
-          <!-- 2. WIDGET MINI NỔI GÓC TRÊN BÊN PHẢI (gắn trực tiếp document.body qua ensureMiniTimerWidget) -->
+          <!-- Thanh Chuyển 2 Block Thời Gian Độc Lập (Block Stepper) -->
+          <div class="exam-block-stepper" id="examBlockStepper" role="tablist" aria-label="Các phần thi JLPT">
+            <button type="button"
+                    class="block-step-tab ${activeIdx === 0 ? 'active' : ''} ${locks.vocab && !isSubmitted ? 'is-locked' : ''}"
+                    onclick="window.ExamEngine.switchBlock('${code}', 0)"
+                    role="tab"
+                    aria-selected="${activeIdx === 0}">
+              <span class="step-num">${locks.vocab && !isSubmitted ? EXAM_ICONS.lock : '1'}</span>
+              <span class="step-text">
+                <strong>Phần 1: Từ vựng</strong>
+                <small>${blocks[0].questionCount} câu • ${blocks[0].timeLimitMinutes} phút</small>
+              </span>
+            </button>
+            <button type="button"
+                    class="block-step-tab ${activeIdx === 1 ? 'active' : ''}"
+                    onclick="window.ExamEngine.switchBlock('${code}', 1)"
+                    role="tab"
+                    aria-selected="${activeIdx === 1}">
+              <span class="step-num">2</span>
+              <span class="step-text">
+                <strong>Phần 2: Ngữ pháp &amp; Đọc hiểu</strong>
+                <small>${blocks[1].questionCount} câu • ${blocks[1].timeLimitMinutes} phút</small>
+              </span>
+            </button>
+          </div>
 
           <!-- 3. Khu Vực Hiển Thị Kết Quả Sau Khi Nộp Bài (Nếu đã nộp) -->
           <div id="examResultBanner" class="exam-result-banner ${isSubmitted ? 'show' : ''}">
             ${isSubmitted ? ExamEngine.buildResultBannerHtml(code) : ''}
           </div>
 
-          <!-- 4. Danh Sách Câu Hỏi -->
+          <!-- 4. Danh Sách Câu Hỏi Của Block Hiện Tại -->
           <div class="exam-questions-flow" id="examQuestionsFlow">
-            <div class="mondai-group-header">
-              <span class="mondai-group-badge">PHẦN I</span>
-              <h3>Ngữ Pháp Câu Đơn &amp; Sắp Xếp Dấu Sao ★ (Câu 1 – 15)</h3>
-            </div>
+            ${questionsFlowHtml}
 
-            ${exam.questions.slice(0, 15).map(q => ExamEngine.buildQuestionCardHtml(q, code, isSubmitted, answers[q.id])).join('')}
-
-            <div class="mondai-group-header" style="margin-top: 40px;">
-              <span class="mondai-group-badge accent-sakura">PHẦN II</span>
-              <h3>Ngữ Pháp Trong Đoạn Văn Điền Khuyết (Câu 16 – 20)</h3>
-            </div>
-
-            <!-- Khối Đoạn Văn & Câu Hỏi Mondai 3 (Split-Passage Desktop & Drawer Mobile) -->
-            ${exam.passage ? `
-              <div class="exam-mondai3-layout">
-                <div class="exam-mondai3-passage-col">
-                  <div class="passage-card jp-text" id="mondaiPassageCard">
-                    <div class="passage-header-bar">
-                      <div class="passage-title">
-                        <span class="passage-icon">${EXAM_ICONS.book}</span>
-                        <span>ĐOẠN VĂN BÀI ĐỌC (Mondai 3)</span>
-                      </div>
-                      <span class="passage-badge">Điền vào 5 ô trống: 【 16 】 – 【 20 】</span>
-                    </div>
-                    <div class="passage-content" id="mondaiPassageContent">
-                      ${renderJapaneseText(exam.passage)}
-                    </div>
-                  </div>
-                </div>
-                <div class="exam-mondai3-questions-col">
-                  ${exam.questions.slice(15, 20).map(q => ExamEngine.buildQuestionCardHtml(q, code, isSubmitted, answers[q.id])).join('')}
-                </div>
-              </div>
-            ` : `
-              ${exam.questions.slice(15, 20).map(q => ExamEngine.buildQuestionCardHtml(q, code, isSubmitted, answers[q.id])).join('')}
-            `}
-
-            ${exam.passage && !isSubmitted ? `
+            ${activeIdx === 1 && exam.passage && !isSubmitted ? `
               <!-- Nút Nổi Mở Nhanh Đoạn Văn Trên Mobile (Mondai 3) -->
               <button type="button" class="btn-exam-passage-drawer-toggle" id="btnExamPassageDrawer" onclick="window.ExamEngine.togglePassageDrawer(true)" aria-label="Xem lại đoạn văn bài đọc Mondai 3" title="Xem đoạn văn">
                 <span class="passage-drawer-btn-icon">${EXAM_ICONS.book}</span>
@@ -1027,7 +1371,7 @@
                   <div class="passage-drawer-sheet-header">
                     <div class="passage-drawer-sheet-title">
                       <span class="drawer-header-icon">${EXAM_ICONS.book}</span>
-                      <span>Đoạn Văn Bài Đọc (Câu 16 – 20)</span>
+                      <span>Đoạn Văn Bài Đọc (Mondai 3)</span>
                     </div>
                     <button type="button" class="btn-passage-drawer-close" onclick="window.ExamEngine.togglePassageDrawer(false)" aria-label="Đóng">&times;</button>
                   </div>
@@ -1038,11 +1382,24 @@
               </div>
             ` : ''}
 
-            ${!isSubmitted ? `
+            ${!isSubmitted && activeIdx === 0 ? `
+              <div class="exam-bottom-submit-card" id="examBottomSubmitCard">
+                <div class="bottom-submit-info">
+                  <h4 class="bottom-submit-title">Hoàn thành Phần 1: Từ Vựng (${exam.code})</h4>
+                  <p class="bottom-submit-desc">Bạn đã chọn <strong id="bottomAnsweredCount">${blockAnsweredCount}</strong>/${blocks[0].questionCount} câu Phần 1. Chuyển sang Phần 2 (Ngữ pháp &amp; Đọc hiểu — ${blocks[1].timeLimitMinutes} phút)?${state.examMode === 'timed' ? ' <em>(Phần 1 sẽ được khóa sau khi chuyển)</em>' : ''}</p>
+                </div>
+                <button type="button" class="btn-exam-bottom-submit" onclick="window.ExamEngine.completeBlock1('${code}', false)" title="Khóa Phần 1 và chuyển sang Phần 2">
+                  <span>Sang Phần 2: Ngữ Pháp &amp; Đọc Hiểu</span>
+                  ${EXAM_ICONS.arrowRight}
+                </button>
+              </div>
+            ` : ''}
+
+            ${!isSubmitted && activeIdx === 1 ? `
               <div class="exam-bottom-submit-card" id="examBottomSubmitCard">
                 <div class="bottom-submit-info">
                   <h4 class="bottom-submit-title">Hoàn thành Đề Thi JLPT ${exam.code}</h4>
-                  <p class="bottom-submit-desc">Bạn đã trả lời được <strong id="bottomAnsweredCount">${answeredCount}</strong>/20 câu hỏi. Sẵn sàng nộp bài để xem điểm số &amp; giải thích?</p>
+                  <p class="bottom-submit-desc">Bạn đã trả lời tổng cộng <strong id="bottomAnsweredCount">${totalAnsweredCount}</strong>/${totalQ} câu hỏi (Phần 2: ${blockAnsweredCount}/${blocks[1].questionCount} câu). Sẵn sàng nộp bài để xem điểm thang 120 &amp; giải thích?</p>
                 </div>
                 <button type="button" class="btn-exam-bottom-submit" onclick="window.ExamEngine.submitExam('${code}')" title="Nộp bài và nhận đánh giá năng lực">
                   ${EXAM_ICONS.check}
@@ -1079,26 +1436,32 @@
         }
       }
 
-      let mLabel = 'Mondai ' + q.mondai;
-      if (q.mondai === 2) mLabel += ' (Dấu sao ★)';
-      if (q.mondai === 3) mLabel += ' (Điền đoạn văn)';
+      const mLabel = q.mondaiTitle
+        ? `${q.mondaiCode || ('M' + q.mondai)} • ${q.mondaiTitle.split('(')[0].trim()}`
+        : ('Mondai ' + q.mondai + (q.mondai === 2 ? ' (Dấu sao ★)' : (q.mondai === 3 ? ' (Điền đoạn văn)' : '')));
 
       let prompt = q.question;
-      if (q.mondai === 3 && /^【\s*\d+\s*】$/.test(q.question.trim())) {
+      if ((q.mondaiCode === 'G3' || q.mondai === 3) && /^【\s*\d+\s*】$/.test(String(q.question || '').trim())) {
         prompt = 'Chọn từ thích hợp điền vào vị trí ô trống ' + q.question.trim() + ' trong đoạn văn trên:';
       }
+
+      // Chống lộ Furigana cho Mondai 1 (V1) và Mondai 2 (V2) khi chưa nộp bài
+      const isV1 = q.mondaiCode === 'V1';
+      const isV2 = q.mondaiCode === 'V2';
+      const suppressPromptUnderlineFuri = !isSubmitted && (isV1 || isV2);
+      const suppressOptionFuri = !isSubmitted && (isV1 || isV2);
 
       return `
         <article class="exam-question-card ${isSubmitted ? 'results-mode' : ''}" id="q-card-${q.id}">
           <div class="q-card-header">
             <div class="q-card-left">
               <span class="q-num-badge">Câu ${q.id}</span>
-              <span class="q-mondai-badge">${mLabel}</span>
+              <span class="q-mondai-badge">${esc(mLabel)}</span>
             </div>
             ${statusBadge}
           </div>
 
-          <div class="q-prompt-text jp-text">${renderJapaneseText(prompt)}</div>
+          <div class="q-prompt-text jp-text">${renderJapaneseText(prompt, { suppressUnderlineFurigana: suppressPromptUnderlineFuri })}</div>
 
           <div class="q-options-grid">
             ${q.options.map((opt, idx) => {
@@ -1126,7 +1489,7 @@
                          ${isSubmitted ? 'disabled' : ''} 
                          class="option-radio-native">
                   <span class="choice-num">${optNum}</span>
-                  <span class="choice-text jp-text">${renderJapaneseText(cleanedOpt)}</span>
+                  <span class="choice-text jp-text">${renderJapaneseText(cleanedOpt, { suppressAllFurigana: suppressOptionFuri })}</span>
                 </label>
               `;
             }).join('')}
@@ -1139,7 +1502,7 @@
                 <span>Đáp án đúng: <strong>${q.correct} (${esc(q.correctText)})</strong></span>
               </div>
               <div class="exp-body">
-                <strong>Phân tích ngữ pháp:</strong> ${renderJapaneseText(q.explanation)}
+                <strong>Giải thích chi tiết:</strong> ${renderJapaneseText(q.explanation)}
               </div>
             </div>
           ` : ''}
@@ -1151,18 +1514,22 @@
       const res = state.submittedExams[examCode];
       if (!res) return '';
 
-      const isPass = res.score >= 12;
-      const pct = Math.round((res.score / 20) * 100);
+      const totalQ = res.total || (res.level === 'N4' ? 70 : 67);
+      const scaledScore = typeof res.scaledScore === 'number' ? res.scaledScore : Math.round((res.score / totalQ) * 120);
+      const passedCutoff = scaledScore >= 38;
+      const isPass = typeof res.isPass === 'boolean' ? res.isPass : (passedCutoff && scaledScore >= (res.level === 'N4' ? 63 : 60));
+      const pct = Math.round((res.score / totalQ) * 100);
       const m = Math.floor(res.timeSeconds / 60);
       const s = res.timeSeconds % 60;
       const timeStr = `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+      const bd = res.breakdown || null;
 
       const isLocked = Boolean(res.locked || res.autoSubmitted);
-      const lockedHtml = isLocked ? `
+      const lockedHtml = isLocked && res.autoSubmitted ? `
         <div class="exam-locked-notice">
           <div class="locked-icon-badge">${EXAM_ICONS.alert}</div>
           <div class="locked-text-wrap">
-            <h4 class="locked-heading">PHIÊN THI ĐÃ BỊ ĐÓNG & KHÓA (ANTI-CHEAT SESSION LOCK)</h4>
+            <h4 class="locked-heading">PHIÊN THI ĐÃ BỊ ĐÓNG &amp; KHÓA (ANTI-CHEAT SESSION LOCK)</h4>
             <p class="locked-desc">
               Hệ thống giám sát thi tự động ghi nhận bạn đã rời khỏi giao diện làm bài (${esc(getVietnameseExitReason(res.reason))}). 
               Toàn bộ bài thi đã được tự động kết thúc và nộp tính điểm ở thời điểm thoát. Các câu chưa chọn tính là 0 điểm.
@@ -1170,35 +1537,62 @@
             <div class="locked-meta-row">
               <span class="locked-meta-item">Mã phiên: <code>${esc(res.sessionId || 'SESSION-LOCK')}</code></span>
               <span class="locked-meta-item">Trạng thái: <strong class="text-danger">SUBMITTED (Nộp do thoát giao diện)</strong></span>
-              <span class="locked-meta-item">Điểm ghi nhận: <strong>${res.score}/20 câu</strong></span>
+              <span class="locked-meta-item">Điểm ghi nhận: <strong>${scaledScore}/120 điểm (${res.score}/${totalQ} câu)</strong></span>
             </div>
           </div>
         </div>
       ` : '';
+
+      const statusLabel = !passedCutoff
+        ? `${EXAM_ICONS.alert} 不合格 • DƯỚI ĐIỂM LIỆT (< 38/120)`
+        : (isPass
+            ? `${EXAM_ICONS.check} 合格 • ĐẠT CHUẨN JLPT (${scaledScore}/120)`
+            : `${EXAM_ICONS.alert} QUA ĐIỂM LIỆT (≥ 38) • CẦN CỐ GẮNG THÊM`);
 
       return `
         ${lockedHtml}
         <div class="result-banner-card ${isPass ? 'pass-theme' : 'fail-theme'}">
           <div class="result-ring-column">
             <div class="zen-score-ring">
-              <span class="ring-score-num">${res.score}</span>
-              <span class="ring-total">/ 20 câu</span>
+              <span class="ring-score-num">${scaledScore}</span>
+              <span class="ring-total">/ 120 điểm</span>
             </div>
-            <span class="ring-pct-tag">${pct}%</span>
+            <span class="ring-pct-tag">${res.score}/${totalQ} câu (${pct}%)</span>
           </div>
 
           <div class="result-info-column">
             <div class="result-status-badge ${isPass ? 'pass' : 'fail'}">
-              ${isPass ? `${EXAM_ICONS.check} 合格 • ĐẠT CHUẨN JLPT` : `${EXAM_ICONS.alert} 不合格 • CHƯA ĐẠT CHUẨN`}
+              ${statusLabel}
             </div>
             <h3 class="result-title">
-              ${isPass ? 'Chúc mừng bạn đã hoàn thành xuất sắc đề thi!' : 'Cần ôn luyện thêm các cấu trúc ngữ pháp còn sai.'}
+              ${!passedCutoff
+                ? 'Điểm khối Đọc/Viết chưa vượt ngưỡng chống điểm liệt (tối thiểu 38/120 điểm).'
+                : (isPass ? 'Chúc mừng bạn đã vượt mốc chuẩn JLPT khối Từ vựng • Ngữ pháp • Đọc hiểu!' : 'Bạn đã vượt điểm liệt (≥ 38/120), hãy ôn thêm các phần còn yếu để đạt chuẩn đỗ.')}
             </h3>
             <div class="result-metrics-row">
-              <span class="metric-item">${EXAM_ICONS.clock} Thời gian: <strong>${timeStr}</strong></span>
-              <span class="metric-item">${EXAM_ICONS.check} Đúng: <strong>${res.score}/20</strong></span>
-              <span class="metric-item">Sai: <strong>${20 - res.score}/20</strong></span>
+              <span class="metric-item">${EXAM_ICONS.clock} Tổng thời gian: <strong>${timeStr}</strong></span>
+              <span class="metric-item">${EXAM_ICONS.check} Đúng: <strong>${res.score}/${totalQ}</strong></span>
+              <span class="metric-item">Điểm liệt: <strong>${passedCutoff ? 'Đã qua (≥ 38đ)' : 'Chưa qua (< 38đ)'}</strong></span>
             </div>
+            ${bd ? `
+              <div class="result-skill-breakdown">
+                <div class="skill-stat-chip">
+                  <span class="skill-label">Từ vựng (文字・語彙)</span>
+                  <strong>${bd.vocab.correct}/${bd.vocab.total} câu</strong>
+                  <small>${bd.vocab.points}/${bd.vocab.maxPoints} đ</small>
+                </div>
+                <div class="skill-stat-chip">
+                  <span class="skill-label">Ngữ pháp (文法)</span>
+                  <strong>${bd.grammar.correct}/${bd.grammar.total} câu</strong>
+                  <small>${bd.grammar.points}/${bd.grammar.maxPoints} đ</small>
+                </div>
+                <div class="skill-stat-chip">
+                  <span class="skill-label">Đọc hiểu (読解)</span>
+                  <strong>${bd.reading.correct}/${bd.reading.total} câu</strong>
+                  <small>${bd.reading.points}/${bd.reading.maxPoints} đ</small>
+                </div>
+              </div>
+            ` : ''}
           </div>
         </div>
       `;
@@ -1258,10 +1652,15 @@
 
     selectOption(examCode, qId, optNum, evt) {
       if (evt && evt.preventDefault) evt.preventDefault();
-      if (state.submittedExams[examCode]) return;
+      const code = normalizeExamCode(examCode);
+      if (state.submittedExams[code] || state.submittedExams[examCode]) return;
+      if (state.examMode === 'timed' && isQuestionBlockLocked(code, qId)) {
+        if (root.showToast) root.showToast('Phần 1 (Từ vựng) đã khóa, không thể thay đổi đáp án.');
+        return;
+      }
 
-      if (!state.userAnswers[examCode]) state.userAnswers[examCode] = {};
-      state.userAnswers[examCode][qId] = optNum;
+      if (!state.userAnswers[code]) state.userAnswers[code] = {};
+      state.userAnswers[code][qId] = optNum;
 
       // 1. TRẠNG THÁI KÍCH HOẠT: Khi bắt đầu click chọn đáp án đầu tiên, tự động co thanh công cụ thành mini widget nổi
       if (!state.isBarCollapsed) {
@@ -1277,11 +1676,22 @@
         });
       }
 
-      const count = Object.keys(state.userAnswers[examCode]).length;
+      const exam = state.activeExamData || getExamByCode(code);
+      const blocks = getExamBlocksConfig(exam);
+      const activeIdx = state.activeBlockIndex === 1 ? 1 : 0;
+      const activeBlock = blocks[activeIdx] || blocks[0];
+      const [rStart, rEnd] = activeBlock.questionRange || [1, 35];
+      const ansMap = state.userAnswers[code] || {};
+      const blockCount = Object.keys(ansMap).filter(k => {
+        const n = Number(k);
+        return n >= rStart && n <= rEnd;
+      }).length;
+      const totalCount = Object.keys(ansMap).length;
+
       const countEl = document.getElementById('hudAnsweredCount');
-      if (countEl) countEl.textContent = `${count}/20`;
+      if (countEl) countEl.textContent = `${blockCount}/${activeBlock.questionCount}`;
       const bottomCountEl = document.getElementById('bottomAnsweredCount');
-      if (bottomCountEl) bottomCountEl.textContent = count;
+      if (bottomCountEl) bottomCountEl.textContent = activeIdx === 0 ? blockCount : totalCount;
 
       if (root.triggerHaptic) root.triggerHaptic(15);
 
@@ -1292,8 +1702,80 @@
       }
       if (ExamEngine.isAutoAdvanceEnabled()) {
         state.autoAdvanceTimeout = setTimeout(() => {
-          ExamEngine.triggerAutoAdvance(examCode, qId);
+          ExamEngine.triggerAutoAdvance(code, qId);
         }, 450);
+      }
+    },
+
+    /**
+     * Hoàn thành Block 1 (Từ vựng), khóa Block 1 (ở chế độ timed) và tự động chuyển sang Block 2 (Ngữ pháp & Đọc hiểu)
+     */
+    completeBlock1(examCode, isAuto = false) {
+      const code = normalizeExamCode(examCode);
+      if (state.submittedExams[code]) return;
+      const exam = state.activeExamData || getExamByCode(code);
+      if (!exam) return;
+
+      const blocks = getExamBlocksConfig(exam);
+      const answers = state.userAnswers[code] || {};
+      const b1Answered = Object.keys(answers).filter(k => Number(k) <= 35).length;
+
+      if (!isAuto && state.examMode === 'timed' && b1Answered < blocks[0].questionCount) {
+        const msg = `Bạn mới chọn ${b1Answered}/${blocks[0].questionCount} câu Phần 1 (Từ vựng).\nSau khi chuyển sang Phần 2 (Ngữ pháp & Đọc hiểu), Phần 1 sẽ bị KHÓA không thể quay lại sửa. Bạn có chắc muốn chuyển phần không?`;
+        if (typeof confirm === 'function' && !confirm(msg)) return;
+      }
+
+      if (state.examMode === 'timed') {
+        const b1Limit = blocks[0].timeLimitSeconds || (exam.level === 'N4' ? 1500 : 1200);
+        state.block1ElapsedSeconds = Math.max(1, b1Limit - state.timeRemainingSeconds);
+        if (!state.lockedBlocks[code]) state.lockedBlocks[code] = { vocab: false, grammar_reading: false };
+        state.lockedBlocks[code].vocab = true;
+      }
+
+      state.activeBlockIndex = 1;
+      state.timeRemainingSeconds = blocks[1].timeLimitSeconds || (exam.level === 'N4' ? 3300 : 2400);
+
+      if (state.examMode === 'timed') {
+        startTimer(code);
+      }
+
+      const container = document.getElementById('lesson-content');
+      if (container) {
+        ExamEngine.renderRunnerUI(container, exam, false);
+      }
+      if (root.showToast && !isAuto) {
+        root.showToast(`➔ Đã chuyển sang Phần 2: Ngữ pháp & Đọc hiểu (${blocks[1].timeLimitMinutes} phút).`);
+      }
+    },
+
+    /**
+     * Chuyển đổi xem giữa Block 1 (Từ vựng) và Block 2 (Ngữ pháp & Đọc hiểu)
+     */
+    switchBlock(examCode, targetIdx) {
+      const code = normalizeExamCode(examCode);
+      const exam = state.activeExamData || getExamByCode(code);
+      if (!exam) return;
+      const idx = targetIdx === 1 ? 1 : 0;
+      if (state.activeBlockIndex === idx) return;
+
+      const isSub = Boolean(state.submittedExams[code]);
+      const locks = state.lockedBlocks[code] || { vocab: false, grammar_reading: false };
+
+      if (!isSub && state.examMode === 'timed') {
+        if (idx === 0 && locks.vocab) {
+          if (root.showToast) root.showToast('🔒 Phần 1 (Từ vựng) đã khóa theo quy chế thi JLPT. Bạn không thể quay lại sửa.');
+          return;
+        }
+        if (idx === 1 && state.activeBlockIndex === 0) {
+          ExamEngine.completeBlock1(code, false);
+          return;
+        }
+      }
+
+      state.activeBlockIndex = idx;
+      const container = document.getElementById('lesson-content');
+      if (container) {
+        ExamEngine.renderRunnerUI(container, exam, isSub);
       }
     },
 
@@ -1305,10 +1787,11 @@
       if (!exam) return;
 
       const answers = state.userAnswers[code] || {};
+      const totalQ = exam.questions.length;
       const count = Object.keys(answers).length;
 
-      if (!isAuto && count < 20) {
-        const confirmMsg = `Bạn mới trả lời ${count}/20 câu hỏi.\nBạn có chắc chắn muốn nộp bài để xem điểm và đáp án ngay không?`;
+      if (!isAuto && count < totalQ) {
+        const confirmMsg = `Bạn mới trả lời ${count}/${totalQ} câu hỏi.\nBạn có chắc chắn muốn nộp bài để xem điểm quy đổi thang 120 và đáp án ngay không?`;
         if (typeof confirm === 'function' && !confirm(confirmMsg)) return;
       }
 
@@ -1329,22 +1812,21 @@
       state.isBarCollapsed = false;
       removeMiniTimerWidget();
 
-      let correctCount = 0;
-      exam.questions.forEach(q => {
-        if (answers[q.id] === q.correct) correctCount++;
-      });
-
-      const elapsedSeconds = state.examMode === 'timed' 
-        ? (1800 - state.timeRemainingSeconds) 
-        : 900;
+      const evalScore = calculateJlptScore(exam, answers);
+      const elapsedSeconds = computeTotalElapsedSeconds(exam);
 
       const sessionId = state.activeSessionId || `sess_${code}_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`;
       const resultObj = {
         examCode: code,
         sessionId,
         level: exam.level,
-        score: correctCount,
-        total: 20,
+        score: evalScore.score,
+        total: evalScore.total,
+        scaledScore: evalScore.scaledScore,
+        maxScaledScore: 120,
+        passedCutoff: evalScore.passedCutoff,
+        isPass: evalScore.isPass,
+        breakdown: evalScore.breakdown,
         timeSeconds: Math.max(10, elapsedSeconds),
         date: new Date().toISOString().split('T')[0],
         status: 'SUBMITTED',
@@ -1354,6 +1836,7 @@
       };
 
       state.submittedExams[code] = resultObj;
+      state.lockedBlocks[code] = { vocab: true, grammar_reading: true };
       saveExamResultToStorage(resultObj);
 
       const lockedMap = getLockedSessions();
@@ -1367,7 +1850,9 @@
         locked: true,
         reason: resultObj.reason,
         answers,
-        clientScore: correctCount,
+        clientScore: evalScore.score,
+        total: evalScore.total,
+        scaledScore: evalScore.scaledScore,
         timestamp: Date.now()
       });
 
@@ -1380,7 +1865,7 @@
       }
 
       if (root.showToast) {
-        root.showToast(`🎉 Nộp bài thành công! Bạn đạt ${correctCount}/20 câu (${Math.round((correctCount / 20) * 100)}%).`);
+        root.showToast(`🎉 Nộp bài thành công! Điểm quy đổi: ${evalScore.scaledScore}/120 (${evalScore.score}/${evalScore.total} câu).`);
       }
     },
 
@@ -1392,7 +1877,12 @@
       unlockExamSession(code);
       delete state.userAnswers[code];
       delete state.submittedExams[code];
-      state.timeRemainingSeconds = 1800;
+      const exam = state.activeExamData || getExamByCode(code);
+      const blocks = getExamBlocksConfig(exam);
+      state.activeBlockIndex = 0;
+      state.block1ElapsedSeconds = 0;
+      state.lockedBlocks[code] = { vocab: false, grammar_reading: false };
+      state.timeRemainingSeconds = blocks[0].timeLimitSeconds || (code.startsWith('N4') ? 1500 : 1200);
       state.isBarCollapsed = false;
       state.activeSessionId = `sess_${code}_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`;
       if (typeof document !== 'undefined' && document.body) {
@@ -1402,7 +1892,6 @@
 
       const container = document.getElementById('lesson-content');
       if (container) {
-        const exam = state.activeExamData || getExamByCode(code);
         if (exam) {
           if (state.examMode === 'timed') startTimer(code);
           ExamEngine.renderRunnerUI(container, exam, false);
@@ -1487,33 +1976,43 @@
     },
 
     triggerAutoAdvance(examCode, currentQId) {
-      if (state.submittedExams[examCode]) return;
       const code = normalizeExamCode(examCode);
+      if (state.submittedExams[code] || state.submittedExams[examCode]) return;
       const answers = state.userAnswers[code] || state.userAnswers[examCode] || {};
-      const answeredCount = Object.keys(answers).length;
+      const exam = state.activeExamData || getExamByCode(code);
+      const blocks = getExamBlocksConfig(exam);
+      const activeIdx = state.activeBlockIndex === 1 ? 1 : 0;
+      const activeBlock = blocks[activeIdx] || blocks[0];
+      const [rangeStart, rangeEnd] = activeBlock.questionRange || [1, 35];
 
-      // Nếu đã hoàn thành tất cả 20 câu
-      if (answeredCount >= 20) {
+      let blockAnswered = 0;
+      for (let i = rangeStart; i <= rangeEnd; i++) {
+        if (answers[i] !== undefined) blockAnswered++;
+      }
+
+      // Nếu đã hoàn thành tất cả câu của Block hiện tại
+      if (blockAnswered >= (rangeEnd - rangeStart + 1)) {
         const bottomCard = document.getElementById('examBottomSubmitCard');
         if (bottomCard && bottomCard.scrollIntoView) {
           bottomCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
           if (root.showToast) {
-            root.showToast('🎉 Bạn đã chọn đủ 20 câu hỏi! Hãy nhấn Nộp Bài để xem kết quả.');
+            root.showToast(activeIdx === 0
+              ? `🎉 Bạn đã chọn đủ ${activeBlock.questionCount} câu Phần 1 (Từ vựng)! Hãy chuyển sang Phần 2.`
+              : `🎉 Bạn đã chọn đủ ${activeBlock.questionCount} câu Phần 2! Hãy nhấn Nộp Bài để xem điểm thang 120.`);
           }
         }
         return;
       }
 
-      // Tìm câu hỏi kế tiếp chưa trả lời
+      // Tìm câu hỏi kế tiếp chưa trả lời trong phạm vi Block hiện tại
       let targetQId = null;
 
       // 1. Ưu tiên câu ngay sau câu hiện tại nếu chưa làm
       const nextQId = currentQId + 1;
-      if (nextQId <= 20 && answers[nextQId] === undefined) {
+      if (nextQId >= rangeStart && nextQId <= rangeEnd && answers[nextQId] === undefined) {
         targetQId = nextQId;
       } else {
-        // Tìm tiếp từ currentQId + 2 đến câu 20
-        for (let i = currentQId + 2; i <= 20; i++) {
+        for (let i = Math.max(rangeStart, currentQId + 2); i <= rangeEnd; i++) {
           if (answers[i] === undefined) {
             targetQId = i;
             break;
@@ -1521,9 +2020,9 @@
         }
       }
 
-      // 2. Nếu từ currentQId đến 20 đã làm hết, vòng lại tìm câu chưa làm từ câu 1 đến currentQId - 1
+      // 2. Nếu từ currentQId đến hết Block đã làm xong, vòng lại tìm câu chưa làm từ đầu Block
       if (!targetQId) {
-        for (let i = 1; i < currentQId; i++) {
+        for (let i = rangeStart; i < currentQId; i++) {
           if (answers[i] === undefined) {
             targetQId = i;
             break;
@@ -1672,7 +2171,7 @@
         }
       }
       if (root.showToast) {
-        root.showToast(state.examMode === 'timed' ? 'Đã bật chế độ thi 30 phút tiêu chuẩn' : 'Đã chuyển sang chế độ tự do (không bấm giờ)');
+        root.showToast(state.examMode === 'timed' ? 'Đã bật chế độ bấm giờ 2 Block chuẩn JLPT' : 'Đã chuyển sang chế độ tự do (không bấm giờ, tự do chuyển 2 Phần)');
       }
     },
 
@@ -1706,16 +2205,20 @@
         const best = bests[ex.code];
         const isDone = best !== undefined;
         const cleanTitle = ex.title.replace(/^Đề\s+[Nn][45]-\d+:\s*/, '').split('—')[0].trim();
+        const qCount = ex.questionCount || (ex.level === 'N5' ? 67 : 70);
+        const tMin = ex.timeLimitMinutes || (ex.level === 'N5' ? 60 : 80);
+        const b1Min = ex.block1Minutes || (ex.level === 'N5' ? 20 : 25);
+        const b2Min = ex.block2Minutes || (ex.level === 'N5' ? 40 : 55);
         return `
           <article class="exam-card ${isDone ? 'is-completed' : ''}" id="card-${ex.code}">
             <div class="exam-card-top">
               <span class="exam-level-tag ${ex.level === 'N5' ? 'tag-n5' : 'tag-n4'}">${ex.code}</span>
-              ${isDone ? `<span class="exam-status-tag done">Điểm cao: ${best}/20 ✓</span>` : `<span class="exam-status-tag new">Chưa làm</span>`}
+              ${isDone ? `<span class="exam-status-tag done">Điểm cao: ${best}/${qCount} ✓</span>` : `<span class="exam-status-tag new">Chưa làm</span>`}
             </div>
             <h3 class="exam-card-title jp-text">${renderJapaneseText(cleanTitle)}</h3>
             <div class="exam-card-meta">
               <span class="meta-item">${EXAM_ICONS.book} ${ex.minnaLesson ? 'Minna ' + esc(ex.minnaLesson) : 'Tổng hợp'}</span>
-              <span class="meta-item">${EXAM_ICONS.clock} 30 phút • 20 câu</span>
+              <span class="meta-item">${EXAM_ICONS.clock} ${tMin}p (${b1Min}p+${b2Min}p) • ${qCount} câu</span>
             </div>
             <div class="exam-card-actions">
               <button type="button" class="btn-start-exam" onclick="window.ExamEngine.startExam('${ex.code}')">
@@ -1743,7 +2246,9 @@
     getLockedSessions,
     saveLockedSessions,
     transmitExamSubmissionBeacon,
-    getVietnameseExitReason
+    getVietnameseExitReason,
+    calculateJlptScore,
+    getExamBlocksConfig
   };
 
   // LẮNG NGHE CÁC SỰ KIỆN RỜI GIAO DIỆN (EXIT TRIGGERS CHỐNG GIAN LẬN)

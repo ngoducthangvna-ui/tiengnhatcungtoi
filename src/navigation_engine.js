@@ -35,7 +35,9 @@
           return;
         }
 
-        const existing = document.querySelector(`script[src*="${src}"]`);
+        const existing = (typeof document.querySelector === 'function')
+          ? document.querySelector(`script[src*="${src}"]`)
+          : null;
         if (existing) {
           _loadedScriptUrls.add(src);
           if (typeof onSync === 'function') onSync();
@@ -43,8 +45,20 @@
           return;
         }
 
+        let resolvedSrc = src;
+        if (!/^(?:data|blob):/i.test(src) && !/[?&]v=/.test(src) && typeof document.querySelector === 'function') {
+          const appScriptEl = document.querySelector('script[src*="app.js?v="]');
+          const appAttr = appScriptEl
+            ? ((typeof appScriptEl.getAttribute === 'function' ? appScriptEl.getAttribute('src') : '') || appScriptEl.src || '')
+            : '';
+          const vMatch = appAttr.match(/[?&]v=([0-9A-Za-z_]+)/);
+          if (vMatch) {
+            resolvedSrc = src + (src.includes('?') ? '&' : '?') + 'v=' + vMatch[1];
+          }
+        }
+
         const script = document.createElement('script');
-        script.src = src;
+        script.src = resolvedSrc;
         script.async = true;
         script.onload = () => {
           _loadedScriptUrls.add(src);

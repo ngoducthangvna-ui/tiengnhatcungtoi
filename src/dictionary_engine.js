@@ -13,6 +13,36 @@
   const _maziiCache = new Map();
   const MAX_CACHE_SIZE = 150;
 
+  const DEFAULT_ROMAJI_MAP = {
+    kya: 'きゃ', kyu: 'きゅ', kyo: 'きょ',
+    sha: 'しゃ', shu: 'しゅ', sho: 'しょ',
+    cha: 'ちゃ', chu: 'ちゅ', cho: 'ちょ',
+    nya: 'にゃ', nyu: 'にゅ', nyo: 'にょ',
+    hya: 'ひゃ', hyu: 'ひゅ', hyo: 'ひょ',
+    mya: 'みゃ', myu: 'みゅ', myo: 'みょ',
+    rya: 'りゃ', ryu: 'りゅ', ryo: 'りょ',
+    gya: 'ぎゃ', gyu: 'ぎゅ', gyo: 'ぎょ',
+    ja: 'じゃ', ju: 'じゅ', jo: 'じょ',
+    bya: 'びゃ', byu: 'びゅ', byo: 'びょ',
+    pya: 'ぴゃ', pyu: 'ぴゅ', pyo: 'ぴょ',
+    tsu: 'つ', shi: 'し', chi: 'ち',
+    ka: 'か', ki: 'き', ku: 'く', ke: 'け', ko: 'こ',
+    sa: 'さ', si: 'し', su: 'す', se: 'せ', so: 'そ',
+    ta: 'た', ti: 'ち', tu: 'つ', te: 'て', to: 'と',
+    na: 'な', ni: 'に', nu: 'ぬ', ne: 'ね', no: 'の',
+    ha: 'は', hi: 'ひ', fu: 'ふ', hu: 'ふ', he: 'へ', ho: 'ほ',
+    ma: 'ま', mi: 'み', mu: 'む', me: 'め', mo: 'も',
+    ya: 'や', yu: 'ゆ', yo: 'よ',
+    ra: 'ら', ri: 'り', ru: 'る', re: 'れ', ro: 'ろ',
+    wa: 'わ', wo: 'を', nn: 'ん',
+    ga: 'が', gi: 'ぎ', gu: 'ぐ', ge: 'げ', go: 'ご',
+    za: 'ざ', zi: 'じ', ji: 'じ', zu: 'ず', ze: 'ぜ', zo: 'ぞ',
+    da: 'だ', di: 'ぢ', du: 'づ', de: 'で', do: 'ど',
+    ba: 'ば', bi: 'び', bu: 'ぶ', be: 'べ', bo: 'ぼ',
+    pa: 'ぱ', pi: 'ぴ', pu: 'ぷ', pe: 'ぺ', po: 'ぽ',
+    a: 'あ', i: 'い', u: 'う', e: 'え', o: 'お'
+  };
+
   const DictionaryEngine = {
     /**
      * Chuyển đổi chuỗi Romaji sang Hiragana với xử lý âm ngắt (sokuon) và âm ghép
@@ -21,9 +51,10 @@
       if (!raw || typeof raw !== 'string') return '';
       let str = raw.toLowerCase().trim();
 
-      const map = (root.ROMAJI_TO_HIRAGANA_MAP)
+      const map = (root && root.ROMAJI_TO_HIRAGANA_MAP)
         || (typeof window !== 'undefined' && window.ROMAJI_TO_HIRAGANA_MAP)
-        || {};
+        || (typeof globalThis !== 'undefined' && globalThis.ROMAJI_TO_HIRAGANA_MAP)
+        || DEFAULT_ROMAJI_MAP;
 
       // 1. Xử lý âm ngắt (phụ âm kép: kk, tt, pp, ss...)
       str = str.replace(/([bcdfghjklmpqrstvwxyz])\1/g, 'っ$1');
@@ -352,12 +383,12 @@
         let finalTranscript = '';
         const allAlternatives = [];
 
-        for (let i = event.resultIndex; i < event.results.length; ++i) {
+        for (let i = 0; i < event.results.length; ++i) {
           const res = event.results[i];
           if (res.isFinal) {
-            finalTranscript += res[0].transcript;
+            finalTranscript += (res[0] && res[0].transcript) || '';
             for (let j = 0; j < res.length; ++j) {
-              const alt = cleanText(res[j].transcript);
+              const alt = cleanText(res[j] && res[j].transcript);
               if (alt && !allAlternatives.includes(alt)) {
                 allAlternatives.push(alt);
                 // Nếu là tiếng Nhật và có chứa ký tự Latinh (Romaji) -> tự động bổ sung biến thể Hiragana
@@ -371,7 +402,7 @@
               }
             }
           } else {
-            interimTranscript += res[0].transcript;
+            interimTranscript += (res[0] && res[0].transcript) || '';
           }
         }
 
@@ -417,6 +448,311 @@
      */
     clearCache() {
       _maziiCache.clear();
+    },
+
+    /**
+     * Chuyển đổi chuỗi Hiragana sang Katakana
+     */
+    hiraganaToKatakana(str) {
+      if (!str || typeof str !== 'string') return '';
+      return str.replace(/[\u3041-\u3096]/g, (ch) => String.fromCharCode(ch.charCodeAt(0) + 0x60));
+    },
+
+    /**
+     * Chuyển đổi chuỗi Katakana sang Hiragana
+     */
+    katakanaToHiragana(str) {
+      if (!str || typeof str !== 'string') return '';
+      return str.replace(/[\u30a1-\u30f6]/g, (ch) => String.fromCharCode(ch.charCodeAt(0) - 0x60));
+    },
+
+    /**
+     * Sinh các biến thể ngữ âm tiếng Nhật (Hiragana, Katakana, Trường âm Katakana) từ chuỗi nhập vào
+     */
+    toPhoneticVariants(raw) {
+      if (!raw || typeof raw !== 'string') return { raw: '', hira: '', kata: '', kataLong: '' };
+      const clean = raw.trim().toLowerCase();
+      if (!clean) return { raw: '', hira: '', kata: '', kataLong: '' };
+      const hasLatin = /[a-z]/.test(clean);
+      const baseHira = hasLatin ? this.romajiToHiragana(clean) : this.katakanaToHiragana(clean);
+      const baseKata = this.hiraganaToKatakana(baseHira);
+      const kataLong = baseKata
+        .replace(/([アカサタナハマヤラワガザダバパァャ])ア/g, '$1ー')
+        .replace(/([イキシチニヒミリギジヂビピィ])イ/g, '$1ー')
+        .replace(/([ウクスツヌフムユルグズヅブプゥュ])ウ/g, '$1ー')
+        .replace(/([エケセテネヘメレゲゼデベペェ])(エ|イ)/g, '$1ー')
+        .replace(/([オコソトノホモヨロゴゾドボポォョ])(オ|ウ)/g, '$1ー');
+      return { raw: clean, hira: baseHira, kata: baseKata, kataLong };
+    },
+
+    /**
+     * Phân tích ngược (De-inflection) động từ & tính từ đang chia thể về Thể từ điển gốc (N5-N4)
+     * @param {string} input Chuỗi tiếng Nhật (Kanji/Hiragana hoặc Romaji)
+     * @returns {Array<{ root: string, formLabel: string, pos: string, group?: string }>}
+     */
+    deinflectJapanese(input) {
+      if (!input || typeof input !== 'string') return [];
+      const trimmed = input.trim();
+      if (!trimmed || trimmed.length < 2) return [];
+      const query = /^[a-zA-Z]+$/.test(trimmed) ? this.romajiToHiragana(trimmed) : this.katakanaToHiragana(trimmed);
+      const results = [];
+      const seen = new Set();
+      const addCandidate = (rootWord, formLabel, pos, group = '') => {
+        if (!rootWord || rootWord.length < 2 || rootWord === query) return;
+        const key = `${rootWord}|${formLabel}`;
+        if (seen.has(key)) return;
+        seen.add(key);
+        results.push({ root: rootWord, formLabel, pos, group });
+      };
+
+      // 1. Nhóm 3 bất quy tắc (する / くる) & Kính ngữ
+      const irregMap = [
+        { suffixes: ['します', 'しました', 'しません', 'して', 'しています', 'した', 'しない', 'しなかった', 'しよう', 'しましょう', 'しろ', 'できる', 'できます', 'される', 'させる'], replace: 'する', label: 'Chia từ động từ Nhóm III (する)' },
+        { suffixes: ['きます', 'きました', 'きません', 'きて', 'しています', 'きた', 'こない', 'こなかった', 'こよう', 'こられる', 'こさせる', 'こい'], replace: 'くる', label: 'Chia từ động từ Nhóm III (くる)' },
+        { suffixes: ['来ます', '来ました', '来ません', '来て', '来た', '来ない', '来なかった', '来よう', '来られる'], replace: '来る', label: 'Chia từ động từ Nhóm III (来る)' },
+        { suffixes: ['いきます', 'いきました', 'いって', 'いった', 'いかない', 'いかなかった', 'いこう', 'いける'], replace: 'いく', label: 'Chia từ động từ đặc biệt (いく)' },
+        { suffixes: ['行きます', '行きました', '行って', '行った', '行かない', '行かなかった', '行こう', '行ける'], replace: '行く', label: 'Chia từ động từ đặc biệt (行く)' },
+        { suffixes: ['よくない', 'よかった', 'よくなかった', 'よくて'], replace: 'いい', label: 'Chia từ tính từ đặc biệt (いい / よい)' }
+      ];
+      for (const ir of irregMap) {
+        for (const sfx of ir.suffixes) {
+          if (query === sfx || (query.endsWith(sfx) && sfx.length >= 2)) {
+            const prefix = query.slice(0, query.length - sfx.length);
+            addCandidate(prefix + ir.replace, `${ir.label} [${sfx}]`, 'verb', 'III');
+          }
+        }
+      }
+
+      // 2. Quy tắc hậu tố Động từ Nhóm I (Godan) & Nhóm II (Ichidan)
+      const iRowToU = { 'い': 'う', 'き': 'く', 'ぎ': 'ぐ', 'し': 'す', 'ち': 'つ', 'に': 'ぬ', 'び': 'ぶ', 'み': 'む', 'り': 'る' };
+      const aRowToU = { 'わ': 'う', 'か': 'く', 'が': 'ぐ', 'さ': 'す', 'た': 'つ', 'な': 'ぬ', 'ば': 'ぶ', 'ま': 'む', 'ら': 'る' };
+      const eRowToU = { 'え': 'う', 'け': 'く', 'げ': 'ぐ', 'せ': 'す', 'て': 'つ', 'ね': 'ぬ', 'べ': 'ぶ', 'め': 'む', 'れ': 'る' };
+      const oRowToU = { 'お': 'う', 'こ': 'く', 'ご': 'ぐ', 'そ': 'す', 'と': 'つ', 'の': 'ぬ', 'ぼ': 'ぶ', 'も': 'む', 'ろ': 'る' };
+
+      const masuSuffixes = [
+        { s: 'ませんでした', label: 'Thể ます quá khứ phủ định' },
+        { s: 'ましょう', label: 'Thể ます rủ rê (〜ましょう)' },
+        { s: 'ました', label: 'Thể ます quá khứ (〜ました)' },
+        { s: 'ません', label: 'Thể ます phủ định (〜ません)' },
+        { s: 'たいです', label: 'Thể mong muốn (〜たい)' },
+        { s: 'たい', label: 'Thể mong muốn (〜たい)' },
+        { s: 'ます', label: 'Thể lịch sự (〜ます)' }
+      ];
+      for (const m of masuSuffixes) {
+        if (query.endsWith(m.s) && query.length > m.s.length) {
+          const stem = query.slice(0, -m.s.length);
+          addCandidate(stem + 'る', `${m.label} (Nhóm II)`, 'verb', 'II');
+          const last = stem.slice(-1);
+          if (iRowToU[last]) {
+            addCandidate(stem.slice(0, -1) + iRowToU[last], `${m.label} (Nhóm I)`, 'verb', 'I');
+          }
+        }
+      }
+
+      const teTaRules = [
+        { suffixes: ['っています', 'っていた', 'ってください', 'ってもいい', 'って'], endings: ['う', 'つ', 'る'], label: 'Thể て (〜って)' },
+        { suffixes: ['ったことがあります', 'ったほうがいい', 'った'], endings: ['う', 'つ', 'る'], label: 'Thể た quá khứ (〜った)' },
+        { suffixes: ['んでいます', 'んでいた', 'んでください', 'んで'], endings: ['む', 'ぶ', 'ぬ'], label: 'Thể て (〜んで)' },
+        { suffixes: ['んだことがあります', 'んだ'], endings: ['む', 'ぶ', 'ぬ'], label: 'Thể た quá khứ (〜んだ)' },
+        { suffixes: ['いています', 'いてください', 'いて'], endings: ['く'], label: 'Thể て (〜いて)' },
+        { suffixes: ['いたことがあります', 'いた'], endings: ['く'], label: 'Thể た quá khứ (〜いた)' },
+        { suffixes: ['いでいます', 'いでください', 'いで'], endings: ['ぐ'], label: 'Thể て (〜いで)' },
+        { suffixes: ['いだ'], endings: ['ぐ'], label: 'Thể た quá khứ (〜いだ)' },
+        { suffixes: ['しています', 'してください', 'して'], endings: ['す'], label: 'Thể て (〜して)' },
+        { suffixes: ['した'], endings: ['す'], label: 'Thể た quá khứ (〜した)' }
+      ];
+      for (const rule of teTaRules) {
+        for (const sfx of rule.suffixes) {
+          if (query.endsWith(sfx) && query.length > sfx.length) {
+            const base = query.slice(0, -sfx.length);
+            for (const endChar of rule.endings) {
+              addCandidate(base + endChar, `${rule.label} (Nhóm I)`, 'verb', 'I');
+            }
+          }
+        }
+      }
+
+      const ichidanTeTa = [
+        { s: 'ています', label: 'Thể tiếp diễn (〜ています)' },
+        { s: 'てください', label: 'Thể yêu cầu (〜てください)' },
+        { s: 'てもいい', label: 'Thể xin phép (〜てもいい)' },
+        { s: 'てはいけない', label: 'Thể cấm đoán (〜てはいけない)' },
+        { s: 'たことがあります', label: 'Thể kinh nghiệm (〜たことがある)' },
+        { s: 'たほうがいい', label: 'Thể khuyên bảo (〜たほうがいい)' },
+        { s: 'られる', label: 'Thể Khả năng / Bị động (〜られる)' },
+        { s: 'られます', label: 'Thể Khả năng / Bị động (〜られます)' },
+        { s: 'させる', label: 'Thể Sai khiến (〜させる)' },
+        { s: 'よう', label: 'Thể Ý chí (〜よう)' },
+        { s: 'て', label: 'Thể て (Nhóm II)' },
+        { s: 'た', label: 'Thể た quá khứ (Nhóm II)' }
+      ];
+      for (const ic of ichidanTeTa) {
+        if (query.endsWith(ic.s) && query.length > ic.s.length) {
+          const stem = query.slice(0, -ic.s.length);
+          addCandidate(stem + 'る', ic.label, 'verb', 'II');
+        }
+      }
+
+      const naiSuffixes = [
+        { s: 'なければなりません', label: 'Thể nghĩa vụ (〜なければならない)' },
+        { s: 'なくてもいい', label: 'Thể không cần (〜なくてもいい)' },
+        { s: 'ないでください', label: 'Thể yêu cầu phủ định (〜ないで)' },
+        { s: 'なかった', label: 'Thể quá khứ phủ định (〜なかった)' },
+        { s: 'ない', label: 'Thể phủ định ngắn (〜ない)' },
+        { s: 'れる', label: 'Thể Bị động Nhóm I (〜れる)' },
+        { s: 'せる', label: 'Thể Sai khiến Nhóm I (〜せる)' }
+      ];
+      for (const ns of naiSuffixes) {
+        if (query.endsWith(ns.s) && query.length > ns.s.length) {
+          const stem = query.slice(0, -ns.s.length);
+          if (ns.s.includes('نا') || ns.s.startsWith('な')) {
+            addCandidate(stem + 'る', `${ns.label} (Nhóm II)`, 'verb', 'II');
+          }
+          const last = stem.slice(-1);
+          if (aRowToU[last]) {
+            addCandidate(stem.slice(0, -1) + aRowToU[last], `${ns.label} (Nhóm I)`, 'verb', 'I');
+          }
+        }
+      }
+
+      // Thể khả năng & ý chí Nhóm I
+      if (query.endsWith('루') || (query.endsWith('る') && query.length >= 3)) {
+        const prev = query.slice(-2, -1);
+        if (eRowToU[prev]) {
+          addCandidate(query.slice(0, -2) + eRowToU[prev], 'Thể Khả năng Nhóm I (〜える)', 'verb', 'I');
+        }
+      }
+      if (query.endsWith('う') && query.length >= 3) {
+        const prev = query.slice(-2, -1);
+        if (oRowToU[prev]) {
+          addCandidate(query.slice(0, -2) + oRowToU[prev], 'Thể Ý chí Nhóm I (〜おう)', 'verb', 'I');
+        }
+      }
+
+      // 3. Tính từ đuôi い & đuôi な
+      const iAdjSuffixes = [
+        { s: 'くなかったです', label: 'Tính từ い quá khứ phủ định' },
+        { s: 'くなかった', label: 'Tính từ い quá khứ phủ định (〜くなかった)' },
+        { s: 'くないです', label: 'Tính từ い phủ định (〜くない)' },
+        { s: 'くない', label: 'Tính từ い phủ định (〜くない)' },
+        { s: 'かったです', label: 'Tính từ い quá khứ (〜かった)' },
+        { s: 'かった', label: 'Tính từ い quá khứ (〜かった)' },
+        { s: 'くて', label: 'Tính từ い nối câu (〜くて)' }
+      ];
+      for (const ia of iAdjSuffixes) {
+        if (query.endsWith(ia.s) && query.length > ia.s.length) {
+          const stem = query.slice(0, -ia.s.length);
+          addCandidate(stem + 'い', ia.label, 'adj-i');
+        }
+      }
+
+      const naAdjSuffixes = [
+        { s: 'ではありませんでした', label: 'Tính từ な quá khứ phủ định' },
+        { s: 'じゃありませんでした', label: 'Tính từ な quá khứ phủ định' },
+        { s: 'ではなかった', label: 'Tính từ な quá khứ phủ định' },
+        { s: 'じゃなかった', label: 'Tính từ な quá khứ phủ định' },
+        { s: 'ではありません', label: 'Tính từ な phủ định' },
+        { s: 'じゃありません', label: 'Tính từ な phủ định' },
+        { s: 'ではない', label: 'Tính từ な phủ định' },
+        { s: 'じゃない', label: 'Tính từ な phủ định' },
+        { s: 'でした', label: 'Tính từ な quá khứ lịch sự' },
+        { s: 'だった', label: 'Tính từ な quá khứ ngắn' }
+      ];
+      for (const na of naAdjSuffixes) {
+        if (query.endsWith(na.s) && query.length > na.s.length) {
+          const stem = query.slice(0, -na.s.length);
+          addCandidate(stem, na.label, 'adj-na');
+        }
+      }
+
+      return results.slice(0, 6);
+    },
+
+    /**
+     * Tính khoảng cách chỉnh sửa Levenshtein có giới hạn (Bounded Damerau-Levenshtein) để bắt lỗi gõ phím
+     */
+    computeEditDistance(a, b, maxDist = 2) {
+      if (!a || !b) return 99;
+      if (a === b) return 0;
+      const lenA = a.length;
+      const lenB = b.length;
+      if (Math.abs(lenA - lenB) > maxDist) return maxDist + 1;
+      const dp = Array.from({ length: lenA + 1 }, () => new Array(lenB + 1).fill(0));
+      for (let i = 0; i <= lenA; i++) dp[i][0] = i;
+      for (let j = 0; j <= lenB; j++) dp[0][j] = j;
+      for (let i = 1; i <= lenA; i++) {
+        let rowMin = 99;
+        for (let j = 1; j <= lenB; j++) {
+          const cost = a[i - 1] === b[j - 1] ? 0 : 1;
+          dp[i][j] = Math.min(dp[i - 1][j] + 1, dp[i][j - 1] + 1, dp[i - 1][j - 1] + cost);
+          if (i > 1 && j > 1 && a[i - 1] === b[j - 2] && a[i - 2] === b[j - 1]) {
+            dp[i][j] = Math.min(dp[i][j], dp[i - 2][j - 2] + 1);
+          }
+          if (dp[i][j] < rowMin) rowMin = dp[i][j];
+        }
+        if (rowMin > maxDist) return maxDist + 1;
+      }
+      return dp[lenA][lenB];
+    },
+
+    /**
+     * Phân tích cú pháp truy vấn tìm kiếm Master (Command DSL & Shortcut Parser)
+     * Hỗ trợ: @vocab, @kanji, @grammar, @kaiwa, @ref, @exam, @dokkai, @quiz, @radical
+     * và phím tắt điều hướng nhanh: "bài 15", "b15", "kaiwa 5", "kanji 10", "đề n5", "kính ngữ"...
+     */
+    parseSearchDSL(rawQuery) {
+      if (!rawQuery || typeof rawQuery !== 'string') {
+        return { raw: '', cleanQuery: '', scope: 'all', directCommand: null };
+      }
+      const trimmed = rawQuery.trim();
+      let scope = 'all';
+      let cleanQuery = trimmed;
+
+      const prefixMap = {
+        '@vocab': 'vocab', '@tu': 'vocab', '@tuvung': 'vocab', 'v:': 'vocab',
+        '@kanji': 'kanji', '@han': 'kanji', 'k:': 'kanji',
+        '@grammar': 'grammar', '@nguphap': 'grammar', 'g:': 'grammar',
+        '@kaiwa': 'kaiwa', '@hoithoai': 'kaiwa',
+        '@ref': 'ref', '@tracuu': 'ref', '@bang': 'ref',
+        '@exam': 'exam', '@thi': 'exam', '@jlpt': 'exam',
+        '@dokkai': 'dokkai', '@doc': 'dokkai',
+        '@quiz': 'quiz', '@baitap': 'quiz',
+        '@radical': 'radical', '@bothu': 'radical'
+      };
+
+      const firstToken = trimmed.split(/\s+/)[0].toLowerCase();
+      if (prefixMap[firstToken]) {
+        scope = prefixMap[firstToken];
+        cleanQuery = trimmed.slice(firstToken.length).trim();
+      }
+
+      const norm = cleanQuery.normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/đ/g, 'd').replace(/Đ/g, 'D').toLowerCase().trim();
+      let directCommand = null;
+
+      const lessonMatch = norm.match(/^(?:bai|bai hoc|lesson|b)\s*(\d{1,2})$/);
+      const kaiwaMatch = norm.match(/^(?:kaiwa|hoi thoai|ht)\s*(\d{1,2})$/);
+      const kanjiMatch = norm.match(/^(?:kanji|chu han|ch)\s*(\d{1,2})$/);
+      const quizMatch = norm.match(/^(?:quiz|bai tap|trac nghiem|bt)\s*(\d{1,2})$/);
+      const dokkaiMatch = norm.match(/^(?:dokkai|doc hieu|dh)\s*(\d{1,2})$/);
+
+      if (lessonMatch) {
+        const n = Math.max(1, Math.min(50, parseInt(lessonMatch[1], 10)));
+        directCommand = { targetId: `bai-${n}`, title: `Mở nhanh: Bài ${n} (Từ vựng & Ngữ pháp)`, category: 'Điều Hướng Nhanh', badge: `Bài ${n}` };
+      } else if (kaiwaMatch) {
+        const n = Math.max(1, Math.min(50, parseInt(kaiwaMatch[1], 10)));
+        directCommand = { targetId: `kaiwa-${n}`, title: `Mở nhanh: Hội thoại Kaiwa Bài ${n}`, category: 'Điều Hướng Nhanh', badge: `Kaiwa ${n}` };
+      } else if (kanjiMatch) {
+        const n = Math.max(1, Math.min(50, parseInt(kanjiMatch[1], 10)));
+        directCommand = { targetId: `kanji-${n}`, title: `Mở nhanh: Chữ Hán & Mẹo nhớ Bài ${n}`, category: 'Điều Hướng Nhanh', badge: `Kanji ${n}` };
+      } else if (quizMatch) {
+        const n = Math.max(1, Math.min(50, parseInt(quizMatch[1], 10)));
+        directCommand = { targetId: `quiz-${n}`, title: `Mở nhanh: Trắc nghiệm Phản xạ Bài ${n}`, category: 'Điều Hướng Nhanh', badge: `Quiz ${n}` };
+      } else if (dokkaiMatch) {
+        const n = Math.max(1, Math.min(50, parseInt(dokkaiMatch[1], 10)));
+        directCommand = { targetId: `dokkai-${n}`, title: `Mở nhanh: Đọc hiểu Dokkai Bài ${n}`, category: 'Điều Hướng Nhanh', badge: `Dokkai ${n}` };
+      }
+
+      return { raw: trimmed, cleanQuery, scope, directCommand };
     }
   };
 

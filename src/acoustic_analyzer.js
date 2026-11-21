@@ -147,9 +147,9 @@
     const minHz = Math.min(...smoothed);
     const maxHz = Math.max(...smoothed);
     const hzSpan = maxHz - minHz;
-    // Khoảng biến thiên chuẩn tối thiểu cho ngữ điệu Tokyo là 45Hz (~4-5 bán âm)
-    // Nếu người học đọc ngang (hzSpan < 18Hz), effectiveSpan = 45Hz sẽ giữ đường cong phẳng quanh 0.50
-    const effectiveSpan = Math.max(45, hzSpan);
+    // Khoảng biến thiên chuẩn tối thiểu cho ngữ điệu Tokyo là 52Hz (~5-6 bán âm)
+    // Nếu người học đọc ngang hoặc ít nhấn nhá (hzSpan < 28Hz), giữ đường cong phẳng quanh 0.50
+    const effectiveSpan = Math.max(52, hzSpan);
     const midHz = (minHz + maxHz) / 2;
 
     const normalized = smoothed.map(hz => {
@@ -173,7 +173,7 @@
       const tailDelta = resampled[resampled.length - 1] - resampled[resampled.length - 2];
       const tailDelta2 = resampled[resampled.length - 1] - resampled[Math.max(0, resampled.length - 3)];
       const combinedTail = 0.6 * tailDelta + 0.4 * tailDelta2;
-      if (combinedTail > 0.035) userEndPitch = 'up';
+      if (combinedTail > 0.042) userEndPitch = 'up';
       else if (combinedTail < -0.035) userEndPitch = 'down';
     }
 
@@ -183,7 +183,7 @@
       minHz: Number(minHz.toFixed(1)),
       maxHz: Number(maxHz.toFixed(1)),
       hzSpan: Number(hzSpan.toFixed(1)),
-      isMonotone: hzSpan < 18
+      isMonotone: hzSpan < 28
     };
   }
 
@@ -487,8 +487,8 @@
     const uMax = Math.max(...userCurve);
     const uSpan = uMax - uMin;
 
-    // Phát hiện lỗi đọc ngang như robot (Monotone) khi câu mẫu có biến thiên rõ rệt (mSpan >= 0.18)
-    const isMonotone = mSpan >= 0.18 && uSpan < 0.075;
+    // Phát hiện lỗi đọc ngang như robot (Monotone) khi câu mẫu có biến thiên rõ rệt (mSpan >= 0.16)
+    const isMonotone = mSpan >= 0.16 && uSpan < 0.14;
 
     // Tính đạo hàm bậc 1 (Slope / Pitch step transitions)
     const dM = new Array(n).fill(0);
@@ -574,14 +574,14 @@
     const dtwDistance = Number((totalCost / pathLen).toFixed(4));
     const stepMatchRatio = stepTotal > 0 ? Number((stepMatches / stepTotal).toFixed(2)) : 1;
 
-    let similarity = Math.round((1 - dtwDistance * 2.15) * 100);
-    if (stepTotal > 0 && stepMatchRatio < 0.5) {
-      similarity = Math.min(similarity, Math.round(45 + stepMatchRatio * 35));
+    let similarity = Math.round((1 - dtwDistance * 2.55) * 100);
+    if (stepTotal > 0 && stepMatchRatio < 0.65) {
+      similarity = Math.min(similarity, Math.round(35 + stepMatchRatio * 38));
     }
     if (isMonotone) {
-      similarity = Math.min(similarity, 54);
+      similarity = Math.min(similarity, 42);
     }
-    similarity = Math.max(20, Math.min(100, similarity));
+    similarity = Math.max(15, Math.min(100, similarity));
 
     return {
       similarity,
@@ -654,6 +654,7 @@
       hzSpan: pitchData ? pitchData.hzSpan : 0,
       isMonotone: Boolean((pitchData && pitchData.isMonotone) || dtw.isMonotone),
       dtw,
+      accentProfile: analyzeTokyoAccentProfile(modelCurve, userCurve, targetMoras),
       rms: {
         peakRms: rmsData.peakRms,
         meanVoicedRms: rmsData.meanVoicedRms,
@@ -662,6 +663,124 @@
       },
       sokuon: sokuonAudit,
       chouon: chouonAudit
+    };
+  }
+
+  /**
+   * 6B. PHÂN TÍCH MÔ HÌNH TRỌNG ÂM TOKYO (4 KIỂU NHK) & ĐỊNH VỊ ĐIỂM RƠI TRỌNG ÂM (下がり目 - ACCENT NUCLEUS)
+   * - 平板型 (Heiban - Phẳng: Thấp -> Cao -> Giữ cao ngang)
+   * - 頭高型 (Atamadaka - Cao đầu: Mora 1 Cao -> Rơi mạnh xuống thấp ngay Mora 2)
+   * - 中高型 (Nakadaka - Cao giữa: Thấp -> Cao -> Rơi xuống thấp ở giữa câu)
+   * - 尾高型 (Odaka - Cao đuôi: Thấp -> Cao -> Hạ nhẹ ở trợ từ cuối)
+   */
+  function analyzeTokyoAccentProfile(modelCurve, userCurve, targetMoras) {
+    const mCurve = Array.isArray(modelCurve) && modelCurve.length >= 2 ? modelCurve : [0.32, 0.68, 0.62, 0.56, 0.44];
+    const uCurve = Array.isArray(userCurve) && userCurve.length >= 2 ? userCurve : mCurve;
+    const moras = Array.isArray(targetMoras) && targetMoras.length > 0 ? targetMoras : [];
+
+    // 1. Tìm điểm rơi trọng âm lớn nhất (Accent Nucleus / 下がり目) trên đường cong mẫu
+    let maxDropVal = 0;
+    let modelDropCurveIdx = -1;
+    for (let i = 1; i < mCurve.length; i++) {
+      const drop = mCurve[i - 1] - mCurve[i];
+      if (drop > maxDropVal) {
+        maxDropVal = drop;
+        modelDropCurveIdx = i - 1;
+      }
+    }
+
+    const hasDistinctDrop = maxDropVal >= 0.085;
+    let patternKey = 'heiban';
+    let patternLabel = '平板型 (Heiban · Bằng phẳng)';
+    if (mCurve[0] > mCurve[1] + 0.08) {
+      patternKey = 'atamadaka';
+      patternLabel = '頭高型 (Atamadaka · Cao âm đầu)';
+      modelDropCurveIdx = 0;
+    } else if (hasDistinctDrop) {
+      if (modelDropCurveIdx >= mCurve.length - 2) {
+        patternKey = 'odaka';
+        patternLabel = '尾高型 (Odaka · Cao âm cuối)';
+      } else {
+        patternKey = 'nakadaka';
+        patternLabel = '中高型 (Nakadaka · Cao âm giữa)';
+      }
+    }
+
+    // 2. Ánh xạ đường cong sang từng Mora (L / H) và tìm Mora có điểm rơi trọng âm (下がり目)
+    const moraLen = moras.length;
+    const moraSteps = [];
+    let dropMoraIndex = -1;
+    if (moraLen > 0) {
+      const mMean = mCurve.reduce((a, b) => a + b, 0) / mCurve.length;
+      const uMean = uCurve.reduce((a, b) => a + b, 0) / uCurve.length;
+      let maxMoraDrop = 0;
+      let prevModelVal = 0;
+
+      for (let k = 0; k < moraLen; k++) {
+        const cPos = (k / Math.max(1, moraLen - 1)) * (mCurve.length - 1);
+        const cIdx0 = Math.floor(cPos);
+        const cIdx1 = Math.min(mCurve.length - 1, cIdx0 + 1);
+        const frac = cPos - cIdx0;
+        const mVal = mCurve[cIdx0] * (1 - frac) + mCurve[cIdx1] * frac;
+
+        const uPos = (k / Math.max(1, moraLen - 1)) * (uCurve.length - 1);
+        const uIdx0 = Math.floor(uPos);
+        const uIdx1 = Math.min(uCurve.length - 1, uIdx0 + 1);
+        const uFrac = uPos - uIdx0;
+        const uVal = uCurve[uIdx0] * (1 - uFrac) + uCurve[uIdx1] * uFrac;
+
+        if (k > 0) {
+          const mDrop = prevModelVal - mVal;
+          if (mDrop > maxMoraDrop && mDrop >= 0.05) {
+            maxMoraDrop = mDrop;
+            dropMoraIndex = k - 1;
+          }
+        }
+        prevModelVal = mVal;
+
+        const modelLevel = mVal >= mMean - 0.01 ? 'H' : 'L';
+        const userLevel = uVal >= uMean - 0.01 ? 'H' : 'L';
+        const diff = Math.abs(mVal - uVal);
+        moraSteps.push({
+          mora: moras[k],
+          index: k,
+          modelLevel,
+          userLevel,
+          modelVal: Number(mVal.toFixed(2)),
+          userVal: Number(uVal.toFixed(2)),
+          diff: Number(diff.toFixed(2)),
+          isDropNucleus: false
+        });
+      }
+
+      if (patternKey === 'atamadaka' && moraSteps.length > 0) {
+        dropMoraIndex = 0;
+      }
+      if (dropMoraIndex >= 0 && moraSteps[dropMoraIndex]) {
+        moraSteps[dropMoraIndex].isDropNucleus = true;
+      }
+    }
+
+    // 3. Tìm vị trí Mora mà người học lệch cao độ nhiều nhất so với mẫu
+    let worstMoraStep = null;
+    for (let k = 0; k < moraSteps.length; k++) {
+      const st = moraSteps[k];
+      if (st.diff >= 0.14 && (!worstMoraStep || st.diff > worstMoraStep.diff)) {
+        worstMoraStep = st;
+      }
+    }
+
+    const dropMoraText = (dropMoraIndex >= 0 && moras[dropMoraIndex]) ? moras[dropMoraIndex] : null;
+    const afterDropMoraText = (dropMoraIndex >= 0 && moras[dropMoraIndex + 1]) ? moras[dropMoraIndex + 1] : null;
+
+    return {
+      patternKey,
+      patternLabel,
+      dropMoraIndex,
+      dropMoraText,
+      afterDropMoraText,
+      moraSteps,
+      worstMoraStep
     };
   }
 
@@ -714,6 +833,7 @@
     detectSilenceGaps,
     detectVowelElongation,
     computeDtwSimilarity,
+    analyzeTokyoAccentProfile,
     analyzeAudioBufferOffline,
     decodeAndAnalyzeBlob
   };

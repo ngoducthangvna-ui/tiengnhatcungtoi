@@ -1,6 +1,6 @@
 {
-  "releaseId": "REL-20261031-BQXW1R",
-  "deployedAt": "2026-10-31T15:51:23.993Z",
+  "releaseId": "REL-20261111-VB2QDQ",
+  "deployedAt": "2026-11-11T11:03:57.943Z",
   "status": "PRODUCTION_READY",
   "securityScore": {
     "mozillaObservatory": "A+ (125/100)",

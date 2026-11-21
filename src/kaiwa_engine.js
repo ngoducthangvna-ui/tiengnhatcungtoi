@@ -12,7 +12,18 @@
   'use strict';
 
   const STORAGE_KEY = 'minna_kaiwa_progress_v1';
-  const ASSET_VERSION = '20261117_03';
+  const ASSET_VERSION = '20261121_17';
+
+  function resolveSpriteRuntimeUrl(audioSrc) {
+    if (!audioSrc || typeof audioSrc !== 'string') return audioSrc;
+    if (/^(?:data|blob):/i.test(audioSrc) || /[?&]v=/.test(audioSrc)) return audioSrc;
+    const loc = (typeof window !== 'undefined' && window.location) ? window.location : (root && root.location);
+    const proto = loc && loc.protocol;
+    if (proto && /^https?:$/i.test(proto)) {
+      return audioSrc + (audioSrc.includes('?') ? '&' : '?') + 'v=' + ASSET_VERSION;
+    }
+    return audioSrc;
+  }
 
   // Ký hiệu số Zen tối giản phong cách Nhật Bản cho tab Luyện tập C
   const ZEN_CIRCLED_NUMS = ['①', '②', '③', '④', '⑤'];
@@ -96,6 +107,8 @@
   const scoreAttemptByLine = new Map();
   let activeMediaRecorder = null;
   let activeMediaStream = null;
+  let pendingRecorderStop = false;
+  let deferredStreamStopTimer = null;
   let activeUserAudio = null;
   let activeAudioCtx = null;
   let activePitchTimer = null;
@@ -118,9 +131,18 @@
   let activeSpriteAudio = null;
   let activeSpriteTimer = null;
   let activeSpriteLoadTimer = null;
+  let activeSpriteRafId = null;
   let activeSpriteTimeUpdate = null;
   let activeSpriteEndHandler = null;
   let activeSpriteErrHandler = null;
+  let activeSpriteSeekedHandler = null;
+  let activeContinuousAudio = null;
+  let activeContinuousRafId = null;
+  let activeContinuousLoadTimer = null;
+  let activeContinuousHandlers = null;
+  let activeContinuousBounds = null;
+  let lastMountContainer = null;
+  let lastSyncedActiveLineId = null;
   let currentKaiwaSessionId = 0;
 
   function loadProgress() {
@@ -368,15 +390,61 @@
   }
 
   /**
-   * Kiểm tra khắt khe 4 đặc trưng ngữ âm cốt lõi của tiếng Nhật (Phonetic Feature Audit - Kết hợp Văn bản & Sóng âm RMS):
-   * 1. Xúc âm (促音 っ): Kiểm tra văn bản + khoảng ngắt hơi thực tế (100-180ms) trên sóng âm RMS
-   * 2. Trường âm (長音 ー / long vowels): Kiểm tra văn bản + độ ngân nguyên âm trên sóng âm
-   * 3. Âm ghép (拗音)
-   * 4. Biến âm đục (濁音)
+   * Đếm tổng số Trường âm (長音) trong chuỗi Mora, bao gồm cả dấu「ー」Katakana và nguyên âm kéo dài Hiragana (おう, えい, ょう, ゅう, ああ, いい, うう...)
+   */
+  function countJapaneseLongVowels(moraArr) {
+    if (!Array.isArray(moraArr) || moraArr.length === 0) return { dashCount: 0, hiraLongCount: 0, total: 0, positions: [] };
+    const oEndMoras = new Set(['お','こ','ご','そ','ぞ','と','ど','の','ほ','ぼ','ぽ','も','よ','ろ','ょ','きょ','ぎょ','しょ','じょ','ちょ','にょ','ひょ','びょ','ぴょ','みょ','りょ']);
+    const uEndMoras = new Set(['う','く','ぐ','す','ず','つ','づ','ぬ','ふ','ぶ','ぷ','む','ゆ','る','ゅ','きゅ','ぎゅ','しゅ','じゅ','ちゅ','にゅ','ひゅ','びゅ','ぴゅ','みゅ','りゅ']);
+    const eEndMoras = new Set(['え','け','げ','せ','ぜ','て','で','ね','へ','べ','ぺ','め','れ']);
+    const iEndMoras = new Set(['い','き','ぎ','し','じ','ち','ぢ','に','ひ','び','ぴ','み','り']);
+    const aEndMoras = new Set(['あ','か','が','さ','ざ','た','だ','な','は','ば','ぱ','ま','や','ら','わ','ゃ','きゃ','ぎゃ','しゃ','じゃ','ちゃ','にゃ','ひゃ','びゃ','ぴゃ','みゃ','りゃ']);
+
+    let dashCount = 0;
+    let hiraLongCount = 0;
+    const positions = [];
+
+    for (let i = 0; i < moraArr.length; i++) {
+      const m = moraArr[i];
+      const prev = i > 0 ? moraArr[i - 1] : '';
+      if (m === 'ー') {
+        dashCount++;
+        positions.push(`${prev}ー`);
+      } else if (i > 0) {
+        if ((m === 'う' || m === 'お') && oEndMoras.has(prev)) {
+          hiraLongCount++;
+          positions.push(`${prev}${m}`);
+        } else if (m === 'у' || (m === 'う' && uEndMoras.has(prev))) {
+          hiraLongCount++;
+          positions.push(`${prev}${m}`);
+        } else if ((m === 'い' || m === 'え') && eEndMoras.has(prev)) {
+          hiraLongCount++;
+          positions.push(`${prev}${m}`);
+        } else if (m === 'い' && iEndMoras.has(prev)) {
+          hiraLongCount++;
+          positions.push(`${prev}${m}`);
+        } else if (m === 'あ' && aEndMoras.has(prev)) {
+          hiraLongCount++;
+          positions.push(`${prev}${m}`);
+        }
+      }
+    }
+    return { dashCount, hiraLongCount, total: dashCount + hiraLongCount, positions };
+  }
+
+  /**
+   * Kiểm tra khắt khe 7 đặc trưng ngữ âm cốt lõi của tiếng Nhật (Master 7-Dimension Phonetic Audit - Văn bản & Sóng âm DSP):
+   * 1. Xúc âm (促音 っ): Kiểm tra văn bản + khoảng ngắt hơi thanh môn (100-180ms) trên sóng âm RMS
+   * 2. Trường âm toàn diện (長音 ー + Hiragana Long Vowels おう/えい/ょう/ゅう): Kiểm tra văn bản + độ ngân nguyên âm
+   * 3. Bạc âm / Âm mũi (撥音 ん): Kiểm tra ngân âm mũi đủ 1 nhịp Mora & biến âm đồng hóa môi/lưỡi
+   * 4. Ảo âm / Âm ghép (拗音 きゃ/しゅ/ちょ/びょ): Phát hiện lỗi tách 2 âm tiết hoặc nuốt âm trượt
+   * 5. Thanh âm – Đục âm – Bán đục âm (濁音 が/ざ/だ/ば & 半濁音 ぱ): Kiểm tra độ rung dây thanh quản & bật hơi môi
+   * 6. Phụ âm đặc thù người Việt hay lệch (つ [ts], ふ [ɸ], ら行 [ɾ], し/ち/じ)
    */
   function auditJapanesePhonetics(targetMoraArr, spokenMoraArr, acousticReport, moraRatio) {
     let penalty = 0;
     const feedbackNotes = [];
+    const expertCards = [];
 
     // 1. Kiểm tra Xúc âm (促音 っ)
     const targetSokuonCount = targetMoraArr.filter(m => m === 'っ').length;
@@ -386,28 +454,98 @@
       sokuonOk = false;
       const diff = targetSokuonCount - spokenSokuonCount;
       penalty += diff * 25;
-      feedbackNotes.push(`Chưa ngắt nhịp xúc âm「っ」(${diff} vị trí). Cần khựng lại 1 nhịp giữa câu.`);
+      feedbackNotes.push(`Chưa ngắt nhịp xúc âm「っ」(${diff} vị trí). Cần đóng thanh môn/khẩu hình và nén hơi đúng 1 nhịp Mora (~130ms) trước khi bật phụ âm sau.`);
+      expertCards.push({
+        type: 'sokuon',
+        badge: 'Xúc âm「っ」',
+        diagnosis: `Thiếu nhịp nén hơi xúc âm「っ」(${diff} vị trí).`,
+        articulatoryTip: 'Kỹ thuật khẩu hình: Ngay sau nguyên âm trước「っ」, hãy khép nhanh khẩu hình của phụ âm kế tiếp (ví dụ đặt sẵn đầu lưỡi lên lợi cho t/k hoặc khép hai môi cho p) và giữ im lặng hoàn toàn trong 1 nhịp vỗ tay (~130ms) rồi mới bật hơi ra.'
+      });
     } else if (targetSokuonCount > 0 && acousticReport && acousticReport.sokuon && !acousticReport.sokuon.sokuonVerified) {
       sokuonOk = false;
       penalty += 24;
-      feedbackNotes.push('Chưa ngắt nhịp xúc âm「っ」trên sóng âm thực tế (cần khoảng lặng ngắt hơi 100-180ms).');
+      feedbackNotes.push('Chưa ngắt nhịp xúc âm「っ」trên sóng âm thực tế (cần khoảng lặng ngắt hơi 100-180ms giữa câu, tránh đọc lướt).');
+      expertCards.push({
+        type: 'sokuon',
+        badge: 'Sóng âm Xúc âm「っ」',
+        diagnosis: 'Sóng âm RMS chưa có khoảng lặng đóng thanh môn rõ rệt cho chữ「っ」.',
+        articulatoryTip: 'Kỹ thuật khẩu hình: Đừng chỉ đọc nhấn mạnh phụ âm, tiếng Nhật chuẩn yêu cầu một khoảng ngắt hơi thực sự (0 dB trong ~120–150ms) trước khi bật âm tiếp theo.'
+      });
     }
 
-    // 2. Kiểm tra Trường âm (長音 ー / long vowels)
-    const targetDashCount = targetMoraArr.filter(m => m === 'ー').length;
-    const spokenDashCount = spokenMoraArr.filter(m => m === 'ー').length;
+    // 2. Kiểm tra Trường âm toàn diện (長音 ー + Hiragana Long Vowels おう, えい, ょう, ゅう...)
+    const targetLong = countJapaneseLongVowels(targetMoraArr);
+    const spokenLong = countJapaneseLongVowels(spokenMoraArr);
     let chouonOk = true;
-    if (targetDashCount > spokenDashCount && !spokenMoraArr.some(m => ['う', 'お', 'い', 'あ', 'え'].includes(m))) {
+    if (targetLong.dashCount > spokenLong.dashCount && !spokenMoraArr.some(m => ['う', 'お', 'い', 'あ', 'え'].includes(m))) {
       chouonOk = false;
-      penalty += (targetDashCount - spokenDashCount) * 22;
-      feedbackNotes.push('Thiếu trường âm (âm kéo dài ー). Hãy ngân dài âm đúng 1 nhịp mora.');
-    } else if (targetDashCount > 0 && acousticReport && acousticReport.chouon && !acousticReport.chouon.chouonVerified) {
+      penalty += (targetLong.dashCount - spokenLong.dashCount) * 22;
+      const samplePos = targetLong.positions[0] || 'ー';
+      feedbackNotes.push(`Thiếu trường âm (âm kéo dài「${samplePos}」). Hãy giữ nguyên độ mở hàm và ngân dài nguyên âm đúng 2 nhịp Mora.`);
+      expertCards.push({
+        type: 'chouon',
+        badge: 'Trường âm「ー」',
+        diagnosis: `Đọc hụt trường âm tại「${samplePos}」.`,
+        articulatoryTip: 'Kỹ thuật khẩu hình: Giữ cố định vị trí môi và độ mở hàm của nguyên âm đứng trước, ngân luồng hơi đều đặn gấp đôi âm tiết thường (2 nhịp vỗ tay Mora), tuyệt đối không đổi khẩu hình giữa chừng.'
+      });
+    } else if (targetLong.hiraLongCount > spokenLong.hiraLongCount && spokenMoraArr.length < targetMoraArr.length) {
+      chouonOk = false;
+      const diffHira = targetLong.hiraLongCount - spokenLong.hiraLongCount;
+      penalty += diffHira * 18;
+      const samplePos = targetLong.positions[0] || 'おう/えい';
+      feedbackNotes.push(`Đọc hụt trường âm Hiragana tại「${samplePos}」. Lưu ý「おう」đọc là ō kéo dài,「えい」đọc là ē kéo dài 2 nhịp Mora.`);
+      expertCards.push({
+        type: 'chouon-hira',
+        badge: `Trường âm「${samplePos}」`,
+        diagnosis: `Nuốt mất nhịp ngân trường âm Hiragana tại「${samplePos}」.`,
+        articulatoryTip: 'Kỹ thuật khẩu hình: Với cụm「おう/ょう」, không đọc tách thành "ô-ư" mà giữ tròn môi âm [oː] kéo dài 2 nhịp; với「えい」, giữ dẹt môi âm [eː] kéo dài 2 nhịp.'
+      });
+    } else if (targetLong.dashCount > 0 && acousticReport && acousticReport.chouon && !acousticReport.chouon.chouonVerified) {
       chouonOk = false;
       penalty += 18;
-      feedbackNotes.push('Độ ngân trường âm「ー」trên sóng âm thực tế còn hơi ngắn, hãy ngân đủ 2 nhịp mora.');
+      feedbackNotes.push('Độ ngân trường âm「ー」trên sóng âm thực tế còn hơi ngắn, hãy ngân đủ 2 nhịp Mora.');
     }
 
-    // 3. Kiểm tra biến âm đục/trong (Voicing clarity)
+    // 3. Kiểm tra Bạc âm / Âm mũi「ん」(Hatsuon)
+    const targetHatsuonCount = targetMoraArr.filter(m => m === 'ん').length;
+    const spokenHatsuonCount = spokenMoraArr.filter(m => m === 'ん').length;
+    let hatsuonOk = true;
+    if (targetHatsuonCount > spokenHatsuonCount && spokenMoraArr.length < targetMoraArr.length) {
+      hatsuonOk = false;
+      const diffN = targetHatsuonCount - spokenHatsuonCount;
+      penalty += diffN * 18;
+      feedbackNotes.push('Thiếu hoặc lướt quá nhanh âm mũi Bạc âm「ん」. Trong tiếng Nhật, chữ「ん」chiếm trọn 1 nhịp Mora độc lập.');
+      expertCards.push({
+        type: 'hatsuon',
+        badge: 'Bạc âm「ん」',
+        diagnosis: 'Âm mũi「ん」bị nuốt hoặc ngân chưa đủ 1 nhịp Mora.',
+        articulatoryTip: 'Kỹ thuật khẩu hình: Đưa luồng hơi ngân qua khoang mũi trọn 1 nhịp. Lưu ý đồng hóa âm:「ん」đứng trước hàng バ/パ/マ thì khép hai môi đọc thành [m]; đứng trước カ/ガ đọc ở cuống lưỡi [ŋ]; đứng trước タ/ダ/ナ/ラ đặt đầu lưỡi chạm chân răng trên [n].'
+      });
+    }
+
+    // 4. Kiểm tra Ảo âm / Âm ghép (拗音 Yoon: きゃ, しゅ, ちょ, びょ...)
+    const yoonRegex = /^[きぎしじちぢにひびぴみり][ゃゅょ]$/;
+    const targetYoon = targetMoraArr.filter(m => yoonRegex.test(m));
+    let yoonMissCount = 0;
+    targetYoon.forEach(ym => {
+      if (!spokenMoraArr.includes(ym)) {
+        yoonMissCount++;
+      }
+    });
+    const yoonOk = yoonMissCount === 0;
+    if (yoonMissCount > 0 && spokenMoraArr.length > 0) {
+      penalty += Math.min(24, yoonMissCount * 12);
+      const sampleYoon = targetYoon[0];
+      feedbackNotes.push(`Lưu ý ảo âm ghép「${sampleYoon}」: cần lướt liền thành 1 nhịp Mora duy nhất, không tách rời thành 2 âm tiết.`);
+      expertCards.push({
+        type: 'yoon',
+        badge: `Ảo âm「${sampleYoon}」`,
+        diagnosis: `Âm ghép「${sampleYoon}」chưa tròn hoặc bị tách nhịp.`,
+        articulatoryTip: `Kỹ thuật khẩu hình: Nâng mặt lưỡi áp gần vòm cứng (tạo thế âm vòm hóa [j]) ngay từ lúc phát phụ âm đầu của「${sampleYoon}」, bật gọn trong đúng 1 nhịp Mora duy nhất.`
+      });
+    }
+
+    // 5. Kiểm tra biến âm đục/bán đục (Voicing clarity: Dakuon & Handakuon)
     const voicingPairs = {
       'が':'か','ぎ':'き','ぐ':'く','げ':'け','ご':'こ',
       'ざ':'さ','じ':'し','ず':'す','ぜ':'せ','ぞ':'そ',
@@ -416,15 +554,23 @@
       'ぱ':'は','ぴ':'ひ','ぷ':'ふ','ぺ':'へ','ぽ':'ほ'
     };
     let voicingMissCount = 0;
+    let missedVoicedSample = '';
     targetMoraArr.forEach(tM => {
       const base = voicingPairs[tM];
       if (base && spokenMoraArr.includes(base) && !spokenMoraArr.includes(tM)) {
         voicingMissCount++;
+        if (!missedVoicedSample) missedVoicedSample = `${tM} (nghe thành ${base})`;
       }
     });
     if (voicingMissCount > 0) {
       penalty += Math.min(36, voicingMissCount * 15);
-      feedbackNotes.push('Lưu ý phát âm rõ âm đục (rung thanh quản với が, ざ, だ, ば).');
+      feedbackNotes.push(`Lưu ý phát âm rõ âm đục/bán đục tại「${missedVoicedSample}」(rung dây thanh quản với が, ざ, だ, ば; mím môi bật hơi với ぱ).`);
+      expertCards.push({
+        type: 'voicing',
+        badge: 'Đục âm / Bán đục âm',
+        diagnosis: `Độ rung thanh quản chưa rõ tại「${missedVoicedSample}」.`,
+        articulatoryTip: 'Kỹ thuật khẩu hình: Với âm đục (が/ざ/だ/ば), hãy kích hoạt rung dây thanh quản ngay từ đầu âm tiết (đặt ngón tay lên cổ họng sẽ thấy rung nhẹ). Với âm bán đục (ぱ/ぴ/ぷ/ぺ/ぽ), mím chặt hai môi rồi bật luồng hơi dứt khoát.'
+      });
     }
 
     let featureScore = Math.max(20, Math.min(100, Math.round(100 - penalty)));
@@ -435,8 +581,11 @@
       featureScore,
       sokuonOk,
       chouonOk,
+      hatsuonOk,
+      yoonOk,
       voicingMissCount,
-      feedbackNotes
+      feedbackNotes,
+      expertCards
     };
   }
 
@@ -797,80 +946,119 @@
       allNotes.push('Giọng đọc đang ngang đều (monotone). Hãy nhấn cao-thấp theo đường cong trọng âm Tokyo.');
     }
 
-    let pitchScore = Math.round(0.62 * pitchSimilarity + 0.38 * endPitchPoints);
-    if (isMonotone) {
-      pitchScore = Math.min(pitchScore, 58);
+    const accentProfile = (acousticReport && acousticReport.accentProfile)
+      || (analyzer && typeof analyzer.analyzeTokyoAccentProfile === 'function'
+        ? analyzer.analyzeTokyoAccentProfile(mCurve, userCurve, targetMoras)
+        : null);
+
+    // Kiểm phạt Điểm rơi Trọng âm (下がり目 Nucleus Penalty & Pitch Step Mismatch)
+    let nucleusPenalty = 0;
+    if (hasAcousticPitch && accentProfile && Array.isArray(accentProfile.moraSteps) && pitchSimilarity < 86) {
+      const mismatchCount = accentProfile.moraSteps.filter(st => st.diff >= 0.22).length;
+      if (mismatchCount > 0) {
+        nucleusPenalty += Math.min(20, mismatchCount * 6);
+      }
+      if (accentProfile.dropMoraIndex >= 0 && accentProfile.moraSteps[accentProfile.dropMoraIndex]) {
+        const dropSt = accentProfile.moraSteps[accentProfile.dropMoraIndex];
+        if (dropSt.diff >= 0.20) {
+          nucleusPenalty += 10;
+        }
+      }
     }
 
-    // --- TRỤ CỘT 4: NHỊP ĐỘ & ĐỘ TRÔI CHẢY (TEMPO) ---
+    let pitchScore = Math.max(15, Math.round(0.64 * pitchSimilarity + 0.36 * endPitchPoints) - nucleusPenalty);
+    if (isMonotone) {
+      pitchScore = Math.min(pitchScore, 48);
+    }
+
+    // --- TRỤ CỘT 4: NHỊP ĐỘ & ĐỘ TRÔI CHẢY (TEMPO ISOCHRONY) ---
     let tempoScore = 100;
     let tempoRatio = 1.0;
     const effectiveUserDuration = opts.userDurationSec ||
       (acousticReport && acousticReport.rms && acousticReport.rms.voicedDurationSec > 0 ? acousticReport.rms.voicedDurationSec : null);
+    const computedTargetDuration = (opts.targetDurationSec && opts.targetDurationSec > 0)
+      ? opts.targetDurationSec
+      : (effectiveUserDuration && targetMoras.length >= 2 ? Number((targetMoras.length * 0.135).toFixed(2)) : null);
 
-    if (effectiveUserDuration && opts.targetDurationSec && opts.targetDurationSec > 0) {
-      tempoRatio = Number((effectiveUserDuration / opts.targetDurationSec).toFixed(2));
-      if (tempoRatio >= 0.75 && tempoRatio <= 1.35) {
+    if (effectiveUserDuration && computedTargetDuration && computedTargetDuration > 0) {
+      tempoRatio = Number((effectiveUserDuration / computedTargetDuration).toFixed(2));
+      if (tempoRatio >= 0.78 && tempoRatio <= 1.28) {
         tempoScore = 100;
-      } else if (tempoRatio > 1.35 && tempoRatio <= 1.70) {
-        tempoScore = 78;
-        allNotes.push(`Tốc độ nói hơi chậm (${tempoRatio}x so với câu mẫu).`);
-      } else if (tempoRatio > 1.70) {
-        tempoScore = Math.max(40, Math.round(100 - (tempoRatio - 1.35) * 65));
-        allNotes.push('Đọc ngập ngừng nhiều chỗ. Hãy luyện đọc liền mạch hơn.');
-      } else {
+      } else if (tempoRatio > 1.28 && tempoRatio <= 1.65) {
         tempoScore = 72;
-        allNotes.push('Đọc hơi vội vàng so với nhịp câu mẫu.');
+        allNotes.push(`Tốc độ nói hơi chậm (${tempoRatio}x so với nhịp chuẩn Mora).`);
+      } else if (tempoRatio > 1.65) {
+        tempoScore = Math.max(30, Math.round(100 - (tempoRatio - 1.25) * 75));
+        allNotes.push('Đọc ngập ngừng nhiều chỗ. Hãy luyện đọc liền mạch theo nhịp vỗ tay Mora.');
+      } else {
+        tempoScore = Math.max(40, Math.round(66 * (tempoRatio / 0.78)));
+        allNotes.push('Đọc hơi vội vàng so với nhịp câu mẫu, dễ làm nuốt trường âm/xúc âm.');
       }
     }
 
-    // Hệ số phạt thứ hạng & độ tự tin ASR (siết chặt chống chọn bừa alternative thấp)
+    // Hệ số phạt thứ hạng & độ tự tin ASR (Hardcore Shadowing Mode: siết chặt phát âm mờ / đoán chữ)
     const rankPenalty = typeof opts.candidateRank === 'number'
-      ? Math.min(30, opts.candidateRank === 1 ? 10 : opts.candidateRank * 10)
+      ? Math.min(36, opts.candidateRank === 1 ? 14 : opts.candidateRank * 16)
       : 0;
-    const confPenalty = (typeof opts.confidence === 'number' && opts.confidence > 0 && opts.confidence < 0.82)
-      ? Math.round((0.82 - opts.confidence) * 35)
+    const confPenalty = (typeof opts.confidence === 'number' && opts.confidence > 0 && opts.confidence < 0.90)
+      ? Math.round((0.90 - opts.confidence) * 55)
       : 0;
 
-    // Tổng hợp điểm cơ sở 4 Trụ Cột: 55% Mora + 15% Features + 20% Pitch + 10% Tempo
+    // Tổng hợp điểm cơ sở 4 Trụ Cột chuẩn NHK Hardcore: 40% Mora + 20% Features + 25% Pitch + 15% Tempo
     let weightedScore = Math.round(
-      0.55 * moraScore +
-      0.15 * featureScore +
-      0.20 * pitchScore +
-      0.10 * tempoScore
+      0.40 * moraScore +
+      0.20 * featureScore +
+      0.25 * pitchScore +
+      0.15 * tempoScore
     );
     weightedScore = Math.max(0, weightedScore - rankPenalty - confPenalty);
 
-    // --- CƠ CHẾ CỬA ẢI KHÔNG BÙ TRỪ (NON-COMPENSATORY GATED SCORING) ---
-    // Cửa ải 1 (Mora Gate): Nếu phát âm thiếu/sai chữ quá nhiều (moraScore < 75), Pitch/Tempo không được kéo điểm lên
-    if (moraScore < 75) {
-      weightedScore = Math.min(weightedScore, Math.round(moraScore * 1.05));
+    // --- ĐƯỜNG CONG KHẮT KHE LŨY TIẾN (HARDCORE EXPONENTIAL CALIBRATION: x^1.28) ---
+    // Giữ nguyên dải Xuất sắc (>= 94 và không mắc lỗi cửa ải) cho giọng đọc chuẩn bản xứ;
+    // các bài đọc mức trung bình-khá (< 94) áp dụng đường cong mũ 1.28 để ép điểm về thực chất (85 -> 76, 75 -> 64)
+    const isNativeClean = moraRatio >= 1.0 && featureScore === 100 && endPitchOk && !isMonotone && pitchSimilarity >= 86;
+    if (!isNativeClean || weightedScore < 94) {
+      weightedScore = Math.round(Math.pow(weightedScore / 100, 1.28) * 100);
     }
 
-    // Cửa ải 2 (Phonetic Feature Gate): Sai Xúc âm「っ」, Trường âm「ー」hoặc Âm đục sẽ bị khống chế trần điểm
+    // --- CƠ CHẾ CỬA ẢI KHÔNG BÙ TRỪ (NON-COMPENSATORY GATED SCORING - HARDCORE CAPS) ---
+    // Cửa ải 1 (Mora Gate): Nếu phát âm thiếu/sai chữ (moraScore < 85), khống chế trần nghiêm ngặt
+    if (moraScore < 75) {
+      weightedScore = Math.min(weightedScore, Math.round(moraScore * 0.96));
+    } else if (moraScore < 88) {
+      weightedScore = Math.min(weightedScore, 74);
+    }
+
+    // Cửa ải 2 (Phonetic Feature Gate): Sai Xúc âm「っ」, Trường âm「ー/おう/えい」, Bạc âm「ん」hoặc Âm đục
     if (!phoneticAudit.sokuonOk) {
-      weightedScore = Math.min(weightedScore - 10, 76);
+      weightedScore = Math.min(weightedScore - 8, 66);
     }
     if (!phoneticAudit.chouonOk) {
-      weightedScore = Math.min(weightedScore - 8, 76);
+      weightedScore = Math.min(weightedScore - 8, 66);
+    }
+    if (phoneticAudit.hatsuonOk === false) {
+      weightedScore = Math.min(weightedScore - 6, 68);
     }
     if (phoneticAudit.voicingMissCount > 0) {
-      weightedScore = Math.min(weightedScore - 6, 78);
+      weightedScore = Math.min(weightedScore - 6, 68);
     }
 
-    // Cửa ải 3 (Prosody & Monotone Gate): Đọc ngang như robot hoặc ngược ngữ điệu cuối câu không thể đạt điểm Giỏi
+    // Cửa ải 3 (Prosody & Monotone Gate): Đọc ngang như robot hoặc ngược ngữ điệu cuối câu bị khống chế trần thấp
     if (isMonotone) {
-      weightedScore = Math.min(weightedScore - 5, 80);
+      weightedScore = Math.min(weightedScore - 6, 65);
     }
     if (!endPitchOk) {
-      weightedScore = Math.min(weightedScore, 84);
+      weightedScore = Math.min(weightedScore, 72);
+    }
+    if (typeof opts.candidateRank === 'number' && opts.candidateRank >= 1) {
+      weightedScore = Math.min(weightedScore, 72);
     }
 
     const hasMiss = charDiffs.some(d => d.status === 'miss');
     const hasNear = charDiffs.some(d => d.status === 'near');
-    let finalScore = matchedMoras === 0 ? 0 : Math.max(15, Math.min(100, weightedScore));
-    if ((hasMiss || hasNear || !endPitchOk || !phoneticAudit.sokuonOk || !phoneticAudit.chouonOk || isMonotone) && finalScore === 100) {
-      finalScore = hasMiss ? 90 : 94;
+    let finalScore = matchedMoras === 0 ? 0 : Math.max(12, Math.min(100, weightedScore));
+    if ((hasMiss || hasNear || !endPitchOk || !phoneticAudit.sokuonOk || !phoneticAudit.chouonOk || isMonotone) && finalScore >= 90) {
+      finalScore = hasMiss ? 78 : 84;
     }
 
     if (
@@ -878,7 +1066,9 @@
       featureScore === 100 &&
       endPitchOk &&
       !isMonotone &&
-      pitchSimilarity >= 85 &&
+      pitchSimilarity >= 88 &&
+      nucleusPenalty === 0 &&
+      tempoScore >= 95 &&
       rankPenalty === 0 &&
       confPenalty === 0 &&
       !hasMiss &&
@@ -889,6 +1079,28 @@
 
     if (allNotes.length === 0) {
       allNotes.push(finalScore >= 85 ? 'Phát âm tự nhiên và chuẩn nhịp Tokyo!' : 'Đọc rõ ràng, tiếp tục phát huy!');
+    }
+
+    const expertCoaching = buildMasterExpertCoaching({
+      finalScore,
+      moraScore,
+      charDiffs,
+      targetMoras,
+      phoneticAudit,
+      accentProfile,
+      isMonotone,
+      endPitchOk,
+      expectedEnd,
+      userEndPitch,
+      tempoRatio
+    });
+
+    if (accentProfile && accentProfile.worstMoraStep && accentProfile.worstMoraStep.diff >= 0.18) {
+      const ws = accentProfile.worstMoraStep;
+      const pitchStepNote = `Tại nhịp「${ws.mora}」cao độ đang ${ws.userVal > ws.modelVal ? 'cao hơn' : 'thấp hơn'} giọng mẫu (${accentProfile.patternLabel}).`;
+      if (!allNotes.includes(pitchStepNote)) {
+        allNotes.push(pitchStepNote);
+      }
     }
 
     return {
@@ -904,22 +1116,164 @@
       pitchSimilarity,
       modelEndPitch: expectedEnd,
       userEndPitch,
+      expertCoaching,
       diagnostics: {
         chouonOk: phoneticAudit.chouonOk,
         sokuonOk: phoneticAudit.sokuonOk,
+        hatsuonOk: phoneticAudit.hatsuonOk !== false,
+        yoonOk: phoneticAudit.yoonOk !== false,
         endPitchOk,
         acousticVerified: hasAcousticPitch,
         isMonotone,
         tempoRatio,
+        accentPattern: expertCoaching.patternLabel,
+        dropMoraText: expertCoaching.dropMoraText,
         feedbackNotes: allNotes
       }
     };
   }
 
   /**
-   * Highlight mispronounced words/characters (red for 'miss', yellow for 'near')
-   * directly on the Japanese sentence HTML while preserving 100% <ruby><rt> furigana tags.
+   * Hệ thống Huấn luyện viên Ngữ âm & Khẩu hình Tokyo (AI Tokyo Phonetics & Articulatory Coach)
+   * Sinh lời khuyên chuyên sâu 3 tầng:
+   * 1. Chẩn đoán chính xác âm vị / điểm rơi trọng âm (Pinpoint Diagnosis)
+   * 2. Kỹ thuật Khẩu hình – Vị trí lưỡi – Hơi thở (Articulatory Technique)
+   * 3. Bài tập sửa lỗi nhanh 1 nhịp (Actionable Micro-Drill)
    */
+  function buildMasterExpertCoaching(params) {
+    const {
+      finalScore,
+      moraScore,
+      charDiffs,
+      targetMoras,
+      phoneticAudit,
+      accentProfile,
+      isMonotone,
+      endPitchOk,
+      expectedEnd,
+      userEndPitch,
+      tempoRatio
+    } = params;
+
+    const cards = Array.isArray(phoneticAudit && phoneticAudit.expertCards)
+      ? phoneticAudit.expertCards.slice()
+      : [];
+
+    // 1. Chẩn đoán chữ phát âm thiếu/sai hoặc gần đúng từ charDiffs
+    const missedChars = (charDiffs || []).filter(d => d.status === 'miss').map(d => d.char);
+    const nearChars = (charDiffs || []).filter(d => d.status === 'near').map(d => d.char);
+
+    if (missedChars.length > 0) {
+      const sampleMiss = missedChars.slice(0, 4).join('・');
+      let specialArticulation = 'Mở rõ khẩu hình nguyên âm (a-i-u-e-o) và giữ nhịp vỗ tay đều đặn cho từng chữ, tránh lướt âm cuối hoặc nuốt trợ từ.';
+      const joinedHira = (targetMoras || []).join('');
+      if (joinedHira.includes('つ')) {
+        specialArticulation = 'Với âm「つ」[tsɯ]: Đặt đầu lưỡi chạm mặt sau răng cửa trên, nén nhẹ rồi xì hơi ngắn qua khe răng (giống tổ hợp t+s), môi giữ tự nhiên không chu tròn như "chư".';
+      } else if (joinedHira.includes('ふ')) {
+        specialArticulation = 'Với âm「ふ」[ɸɯ]: Khép hờ hai môi gần chạm nhau (không cắn môi dưới như chữ F tiếng Việt) và thổi luồng hơi nhẹ qua khe giữa hai môi.';
+      } else if (/[らりるれろ]/.test(joinedHira)) {
+        specialArticulation = 'Với hàng「ら・り・る・れ・ろ」[ɾ]: Đầu lưỡi chỉ búng nhẹ 1 lần vào lợi trên (giữa âm L và R nhẹ, tuyệt đối không rung lưỡi nhiều lần).';
+      } else if (/[しちじ]/.test(joinedHira)) {
+        specialArticulation = 'Với cụm「し・ち・じ」: Nâng mặt lưỡi gần vòm cứng để tạo âm xát mềm [ɕ / tɕ], nhẹ và êm hơn âm "s/tr" nặng của tiếng Việt.';
+      }
+      cards.unshift({
+        type: 'mora-miss',
+        badge: `Âm vị cần sửa:「${sampleMiss}」`,
+        diagnosis: `Máy chưa bắt rõ âm tại「${sampleMiss}」(${moraScore}/100 điểm Mora).`,
+        articulatoryTip: `Kỹ thuật khẩu hình: ${specialArticulation}`
+      });
+    } else if (nearChars.length > 0 && cards.length === 0) {
+      const sampleNear = nearChars.slice(0, 3).join('・');
+      cards.push({
+        type: 'mora-near',
+        badge: `Tinh chỉnh âm:「${sampleNear}」`,
+        diagnosis: `Âm「${sampleNear}」đã gần chuẩn nhưng độ bật phụ âm/thanh quản hơi mờ.`,
+        articulatoryTip: 'Kỹ thuật khẩu hình: Giữ luồng hơi từ cơ hoành ổn định, phát âm dứt khoát từng đơn vị Mora với độ dài bằng nhau.'
+      });
+    }
+
+    // 2. Chẩn đoán Trọng âm Tokyo & Điểm rơi trọng âm (下がり目 - Accent Nucleus)
+    if (accentProfile) {
+      if (isMonotone) {
+        const dropHint = accentProfile.dropMoraText
+          ? `Sau nhịp「${accentProfile.dropMoraText}」cần hạ thấp cao độ rõ rệt xuống nhịp「${accentProfile.afterDropMoraText || 'tiếp theo'}」.`
+          : 'Mora đầu tiên đọc trầm hơn, từ Mora thứ 2 nâng cao độ lên và giữ nhịp.';
+        cards.push({
+          type: 'pitch-monotone',
+          badge: `Trọng âm ${accentProfile.patternLabel}`,
+          diagnosis: 'Đường cong F0 đang phẳng (Monotone < 18Hz biến thiên).',
+          articulatoryTip: `Kỹ thuật ngữ điệu Tokyo: Tiếng Nhật dùng Trọng âm Cao–Thấp (Pitch Accent) chứ không nhấn mạnh lực hơi. ${dropHint}`
+        });
+      } else if (accentProfile.worstMoraStep && accentProfile.worstMoraStep.diff >= 0.18) {
+        const ws = accentProfile.worstMoraStep;
+        const dirFix = ws.userVal > ws.modelVal
+          ? 'hạ trầm giọng xuống (thả lỏng dây thanh)'
+          : 'nâng cao độ giọng lên khoảng 3–4 bán âm';
+        cards.push({
+          type: 'pitch-nucleus',
+          badge: `Điểm lệch cao độ: nhịp「${ws.mora}」`,
+          diagnosis: `Tại nhịp Mora thứ ${ws.index + 1}「${ws.mora}」, cao độ của bạn đang ${ws.userVal > ws.modelVal ? 'cao hơn' : 'thấp hơn'} giọng mẫu Tokyo.`,
+          articulatoryTip: `Kỹ thuật ngữ điệu: Khi lướt tới「${ws.mora}」, hãy ${dirFix}${accentProfile.dropMoraText ? ` và giữ điểm rơi trọng âm (下がり目 ┐) ngay sau「${accentProfile.dropMoraText}」` : ''}.`
+        });
+      }
+    }
+
+    // 3. Chẩn đoán Ngữ điệu cuối câu (Intonation Tail) & Nhịp độ Đẳng thời (Isochrony Tempo)
+    if (!endPitchOk) {
+      if (expectedEnd === 'up') {
+        cards.push({
+          type: 'tail-up',
+          badge: 'Ngữ điệu câu hỏi (↗)',
+          diagnosis: 'Cuối câu hỏi chưa vuốt cao độ lên.',
+          articulatoryTip: 'Kỹ thuật ngữ điệu: Ở âm tiết cuối cùng (như「か」), hãy nâng nhanh tần số F0 lên cao ở 1/2 nửa sau của nguyên âm để tạo sắc thái hỏi lịch sự.'
+        });
+      } else if (userEndPitch === 'up') {
+        cards.push({
+          type: 'tail-down',
+          badge: 'Ngữ điệu trần thuật (↘)',
+          diagnosis: 'Cuối câu trần thuật đang bị hất giọng lên.',
+          articulatoryTip: 'Kỹ thuật ngữ điệu: Thu nhẹ cằm và buông trùng luồng hơi ở chữ cuối (「ます / です」) để câu kết thúc đĩnh đạc, tự nhiên.'
+        });
+      }
+    }
+
+    if (typeof tempoRatio === 'number' && (tempoRatio > 1.38 || tempoRatio < 0.74)) {
+      cards.push({
+        type: 'tempo',
+        badge: tempoRatio > 1.38 ? `Nhịp chậm (${tempoRatio}x)` : `Nhịp vội (${tempoRatio}x)`,
+        diagnosis: tempoRatio > 1.38
+          ? 'Khoảng dừng giữa các từ còn hơi dài làm đứt mạch câu.'
+          : 'Tốc độ đọc hơi nhanh làm các Mora bị dính vào nhau.',
+        articulatoryTip: 'Kỹ thuật Đẳng thời (Isochrony): Tiếng Nhật là ngôn ngữ đẳng thời theo Mora (mỗi nhịp ~110–130ms). Hãy gõ nhẹ ngón tay đều như máy đếm nhịp cho mỗi Mora (kể cả「っ」,「ー」,「ん」).'
+      });
+    }
+
+    // Nếu người học đã đạt xuất sắc (>= 88 điểm) và không có lỗi lớn -> lời khen & bí quyết nâng tầm bản xứ
+    if (cards.length === 0) {
+      const dropInfo = (accentProfile && accentProfile.dropMoraText)
+        ? `Bạn đã đặt điểm rơi trọng âm (下がり目 ┐) ngay sau nhịp「${accentProfile.dropMoraText}」rất chuẩn xác.`
+        : 'Độ chuyển tiếp từ âm đầu thấp lên âm thứ hai cao tuân thủ đúng quy luật Heiban Tokyo.';
+      cards.push({
+        type: 'master-praise',
+        badge: `Đẳng cấp Bản xứ (${accentProfile ? accentProfile.patternLabel : 'Chuẩn Tokyo'})`,
+        diagnosis: `Phát âm tròn vành rõ chữ (${finalScore}/100), nhịp Mora đều đặn và tự nhiên.`,
+        articulatoryTip: `Nhận xét Chuyên gia: ${dropInfo} Để đạt độ mượt hoàn hảo như phát thanh viên NHK, hãy duy trì hơi thở bụng nhẹ nhàng và nối âm mượt qua các trợ từ.`
+      });
+    }
+
+    const topCard = cards[0];
+    const summaryHeadline = `${topCard.badge}: ${topCard.diagnosis} ${topCard.articulatoryTip}`;
+
+    return {
+      patternKey: accentProfile ? accentProfile.patternKey : 'heiban',
+      patternLabel: accentProfile ? accentProfile.patternLabel : '平板型 (Heiban · Bằng phẳng)',
+      dropMoraIndex: accentProfile ? accentProfile.dropMoraIndex : -1,
+      dropMoraText: accentProfile ? accentProfile.dropMoraText : null,
+      moraSteps: accentProfile ? accentProfile.moraSteps : [],
+      expertCards: cards.slice(0, 3),
+      summaryHeadline
+    };
+  }
   function renderHighlightedJapanese(jpHtml, evalInfo) {
     if (!jpHtml || !evalInfo || !Array.isArray(evalInfo.charDiffs) || evalInfo.charDiffs.length === 0) {
       return jpHtml || '';
@@ -1036,7 +1390,7 @@
     `;
   }
 
-  function getPitchCoachingText(modelEnd, userEnd) {
+  function getPitchCoachingText(modelEnd, userEnd, expertCoaching) {
     const dirLabel = {
       up: 'lên ↗',
       down: 'xuống ↘',
@@ -1044,17 +1398,50 @@
     };
     const m = dirLabel[modelEnd] || 'lên ↗';
     const u = dirLabel[userEnd] || 'ngang →';
+    const dropExtra = (expertCoaching && expertCoaching.dropMoraText)
+      ? ` Điểm rơi trọng âm (下がり目 ┐) nằm ngay sau nhịp「${expertCoaching.dropMoraText}」.`
+      : '';
     if (modelEnd === userEnd) {
-      return `Cuối câu — mẫu: ${m} · bạn: ${u}. Ngữ điệu cuối câu của bạn rất tự nhiên và khớp với giọng mẫu!`;
+      return `Cuối câu — mẫu: ${m} · bạn: ${u}. Ngữ điệu cuối câu của bạn rất tự nhiên và khớp với giọng mẫu!${dropExtra}`;
     }
     if (modelEnd === 'up') {
-      return `Cuối câu — mẫu: ${m} · bạn: ${u}. Mẫu lên giọng ở cuối câu, bạn thử nhấn theo.`;
+      return `Cuối câu — mẫu: ${m} · bạn: ${u}. Mẫu lên giọng ở cuối câu hỏi, bạn hãy nâng cao độ ở nửa sau âm tiết cuối.${dropExtra}`;
     }
-    return `Cuối câu — mẫu: ${m} · bạn: ${u}. Mẫu hạ giọng tự nhiên ở cuối câu trần thuật, bạn thử hạ nhẹ giọng nhé.`;
+    return `Cuối câu — mẫu: ${m} · bạn: ${u}. Mẫu hạ giọng tự nhiên ở cuối câu trần thuật, bạn hãy thu nhẹ cằm và hạ giọng nhé.${dropExtra}`;
   }
 
   /**
-   * Khung đánh giá phát âm & so sánh đường cong ngữ điệu chi tiết theo 4 Trụ Cột Chuẩn Nhật
+   * Render thanh chỉ báo Điểm rơi Trọng âm NHK gọn nhẹ (Compact Mora Pitch Step Strip L/H + 下がり目 ┐)
+   */
+  function renderCompactMoraPitchStrip(expertCoaching) {
+    if (!expertCoaching || !Array.isArray(expertCoaching.moraSteps) || expertCoaching.moraSteps.length === 0) {
+      return '';
+    }
+    const steps = expertCoaching.moraSteps.slice(0, 18);
+    const itemsHtml = steps.map((st) => {
+      const levelCls = st.modelLevel === 'H' ? 'is-high' : 'is-low';
+      const dropCls = st.isDropNucleus ? 'has-drop-nucleus' : '';
+      const mismatchCls = st.diff >= 0.18 ? 'is-pitch-mismatch' : '';
+      return `
+        <span class="kaiwa-mora-step ${levelCls} ${dropCls} ${mismatchCls}" title="Nhịp「${st.mora}」: Mẫu ${st.modelLevel === 'H' ? 'Cao (高)' : 'Thấp (低)'}${st.isDropNucleus ? ' · Điểm rơi trọng âm (下がり目 ┐)' : ''}">
+          <span class="kaiwa-mora-txt" lang="ja">${st.mora}</span>
+        </span>
+      `;
+    }).join('');
+
+    return `
+      <div class="kaiwa-accent-strip-wrap">
+        <div class="kaiwa-accent-strip-meta">
+          <span class="kaiwa-accent-pattern-badge">${expertCoaching.patternLabel || '平板型 (Heiban)'}</span>
+          ${expertCoaching.dropMoraText ? `<span class="kaiwa-accent-drop-tag">Điểm rơi 下がり目: <strong>${expertCoaching.dropMoraText}┐</strong></span>` : ''}
+        </div>
+        <div class="kaiwa-mora-pitch-strip" aria-label="Bậc thang trọng âm từng nhịp Mora">${itemsHtml}</div>
+      </div>
+    `;
+  }
+
+  /**
+   * Khung đánh giá phát âm & so sánh đường cong ngữ điệu chi tiết theo 4 Trụ Cột Chuẩn Nhật + Lời khuyên Chuyên gia
    */
   function buildEvalPanelHtml(lineId, evalInfo, defaultEndPitch, onPlaySampleCall) {
     if (!evalInfo) return '';
@@ -1075,18 +1462,35 @@
 
     const getScoreColorClass = (s) => s >= 85 ? 'is-good' : (s >= 70 ? 'is-warn' : 'is-low');
 
+    const expert = evalInfo.expertCoaching || null;
+    const expertCards = (expert && Array.isArray(expert.expertCards)) ? expert.expertCards : [];
     const feedbackList = (evalInfo.diagnostics && evalInfo.diagnostics.feedbackNotes) || [];
-    const feedbackHtml = feedbackList.length > 0 ? `
+
+    const expertCardsHtml = expertCards.length > 0
+      ? `<div class="kaiwa-expert-cards-stack">
+          ${expertCards.map(c => `
+            <div class="kaiwa-expert-card is-${c.type || 'general'}">
+              <div class="kaiwa-expert-card-head">
+                <span class="kaiwa-expert-badge">${c.badge}</span>
+                <span class="kaiwa-expert-diag">${c.diagnosis}</span>
+              </div>
+              <div class="kaiwa-expert-tip">${c.articulatoryTip}</div>
+            </div>
+          `).join('')}
+        </div>`
+      : '';
+
+    const feedbackHtml = (expertCardsHtml || feedbackList.length > 0) ? `
       <div class="kaiwa-diagnostic-box">
-        <div class="kaiwa-diag-title">💡 Góp ý ngữ âm chuẩn Tokyo:</div>
-        <ul class="kaiwa-diag-list">
-          ${feedbackList.map(item => `<li>${item}</li>`).join('')}
-        </ul>
+        <div class="kaiwa-diag-title">💡 Chuyên gia Ngữ âm &amp; Khẩu hình Tokyo tư vấn:</div>
+        ${expertCardsHtml}
+        ${feedbackList.length > 0 ? `<ul class="kaiwa-diag-list">${feedbackList.map(item => `<li>${item}</li>`).join('')}</ul>` : ''}
       </div>
     ` : '';
 
     const pitchSvg = renderPitchChartSvg(evalInfo.modelCurve, evalInfo.userCurve);
-    const coachingText = getPitchCoachingText(evalInfo.modelEndPitch, evalInfo.userEndPitch);
+    const moraStripHtml = renderCompactMoraPitchStrip(expert);
+    const coachingText = getPitchCoachingText(evalInfo.modelEndPitch, evalInfo.userEndPitch, expert);
     const playSampleFn = onPlaySampleCall || `KaiwaEngine.playLine('${lineId}')`;
     const isPlayingUser = state.playingUserVoiceLineId === lineId;
     const isAcousticVerified = Boolean(evalInfo.diagnostics && evalInfo.diagnostics.acousticVerified);
@@ -1147,6 +1551,7 @@
             </div>
             <div>Ngữ điệu giống mẫu: <strong>${evalInfo.pitchSimilarity}%</strong></div>
           </div>
+          ${moraStripHtml}
           ${pitchSvg}
           <div class="kaiwa-pitch-advice">${coachingText}</div>
         </div>
@@ -1234,7 +1639,7 @@
         ${isOpenExp ? buildExpPopoverHtml(line) : ''}
 
         <div class="kaiwa-line-middle">
-          <div class="kaiwa-bubble">
+          <div class="kaiwa-bubble" onclick="KaiwaEngine.onBubbleClick('${line.id}', event)" style="cursor:pointer;" title="Chạm vào câu thoại để nghe riêng câu này">
             <div class="kaiwa-line-jp">${highlightedJpHtml}</div>
             <div class="kaiwa-line-vi">${line.vi}</div>
           </div>
@@ -1317,7 +1722,9 @@
       });
 
       let replacedVi = String(line.vi || '');
-      if (
+      if (Array.isArray(chosen.viLines) && typeof chosen.viLines[lineIdx] === 'string' && chosen.viLines[lineIdx]) {
+        replacedVi = chosen.viLines[lineIdx];
+      } else if (
         subIdx > 0 &&
         baseSub &&
         Array.isArray(baseSub.viValues) &&
@@ -1329,8 +1736,22 @@
         indicesToTry.forEach(idx => {
           const fromVi = baseSub.viValues[idx];
           const toVi = chosen.viValues[idx];
-          if (fromVi && toVi && fromVi !== toVi && replacedVi.includes(fromVi)) {
-            replacedVi = replacedVi.replace(fromVi, toVi);
+          if (!fromVi || !toVi || fromVi === toVi) return;
+          const exactIdx = replacedVi.indexOf(fromVi);
+          if (exactIdx !== -1) {
+            replacedVi = replacedVi.slice(0, exactIdx) + toVi + replacedVi.slice(exactIdx + fromVi.length);
+            return;
+          }
+          const escaped = String(fromVi).replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+          const match = replacedVi.match(new RegExp(escaped, 'i'));
+          if (match && typeof match.index === 'number') {
+            const matchedStr = match[0];
+            const firstCh = matchedStr.charAt(0);
+            const startsUpper = Boolean(firstCh && firstCh === firstCh.toUpperCase() && firstCh !== firstCh.toLowerCase());
+            const adjustedTo = startsUpper
+              ? toVi.charAt(0).toUpperCase() + toVi.slice(1)
+              : toVi;
+            replacedVi = replacedVi.slice(0, match.index) + adjustedTo + replacedVi.slice(match.index + matchedStr.length);
           }
         });
       }
@@ -1419,7 +1840,7 @@
           <div class="kaiwa-line-card ${rcScore !== null && rcScore >= 70 ? 'is-passed' : ''} ${isRcPlaying ? 'is-playing' : ''}" id="kaiwa-card-${rcLineId}" style="margin-bottom:10px;">
             <div class="kaiwa-line-middle">
               <span class="${getSpkBadgeClass(l.speaker, spkColor)}">${l.speaker}</span>
-              <div class="kaiwa-bubble">
+              <div class="kaiwa-bubble" onclick="KaiwaEngine.onBubbleClick('${rcLineId}', event)" style="cursor:pointer;" title="Chạm vào câu thoại để nghe riêng câu này">
                 <div class="kaiwa-line-jp">${highlightedRcJp}</div>
                 <div class="kaiwa-line-vi">${l.vi}</div>
               </div>
@@ -1564,8 +1985,11 @@
         renderDialogueLineCard(line, idx, lessonData)
       ).join('');
 
-      const totalSec = Math.max(15, totalLines * 3 - 4);
-      const totalTimeStr = `0:${totalSec < 10 ? '0' + totalSec : totalSec}`;
+      const bounds = getDialogueTimeBounds(lessonData);
+      const totalSec = bounds
+        ? Math.max(1, Math.round(bounds.endSec - bounds.startSec))
+        : Math.max(15, totalLines * 3 - 4);
+      const totalTimeStr = formatClockSec(totalSec);
 
       const currentIdx = state.playingLineId
         ? (lessonData.dialogue || []).findIndex(l => l.id === state.playingLineId)
@@ -1576,7 +2000,7 @@
       const elapsedSec = currentIdx >= 0
         ? Math.min(totalSec, Math.max(1, Math.round(((currentIdx + 1) / Math.max(1, totalLines)) * totalSec)))
         : 0;
-      const elapsedStr = `0:${elapsedSec < 10 ? '0' + elapsedSec : elapsedSec}`;
+      const elapsedStr = formatClockSec(elapsedSec);
       const statusTimerStr = currentIdx >= 0
         ? `Câu ${currentIdx + 1}/${totalLines} · ${elapsedStr} / ${totalTimeStr}`
         : `0:00 / ${totalTimeStr}`;
@@ -1717,11 +2141,27 @@
 
   function renderKaiwaModule(moduleId, containerEl) {
     ensureStylesheetLoaded();
-    if (moduleId && moduleId !== state.currentLessonId) cancelRecording(false);
+    if (moduleId && moduleId !== state.currentLessonId) {
+      cancelRecording(false);
+      state.isPlayingAll = false;
+      state.playingLineId = null;
+      state.loopingLineId = null;
+      state.isRoleplaying = false;
+      if (masterTimer) {
+        clearTimeout(masterTimer);
+        masterTimer = null;
+      }
+      if (roleplayTimer) {
+        clearTimeout(roleplayTimer);
+        roleplayTimer = null;
+      }
+      stopKaiwaAudioResources();
+    }
     if (moduleId) state.currentLessonId = moduleId;
     const lessonData = getLessonData(state.currentLessonId);
 
     const target = containerEl || (typeof document !== 'undefined' ? document.getElementById('lesson-content') : null);
+    if (target) lastMountContainer = target;
     if (!lessonData) {
       const emptyHtml = `<div class="kaiwa-container"><div class="kaiwa-shell">Đang tải dữ liệu Hội thoại (${state.currentLessonId})...</div></div>`;
       if (target) target.innerHTML = emptyHtml;
@@ -1765,8 +2205,56 @@
     }
   }
 
-  function stopAllKaiwaAudio() {
+  function stopContinuousPlaybackResources() {
+    if (activeContinuousRafId !== null) {
+      try {
+        if (typeof root.cancelAnimationFrame === 'function') {
+          root.cancelAnimationFrame(activeContinuousRafId);
+        }
+      } catch (e) {}
+      activeContinuousRafId = null;
+    }
+    if (activeContinuousLoadTimer) {
+      clearTimeout(activeContinuousLoadTimer);
+      activeContinuousLoadTimer = null;
+    }
+    if (activeContinuousAudio) {
+      try {
+        if (activeContinuousHandlers && typeof activeContinuousAudio.removeEventListener === 'function') {
+          if (activeContinuousHandlers.timeupdate) activeContinuousAudio.removeEventListener('timeupdate', activeContinuousHandlers.timeupdate);
+          if (activeContinuousHandlers.ended) activeContinuousAudio.removeEventListener('ended', activeContinuousHandlers.ended);
+          if (activeContinuousHandlers.error) activeContinuousAudio.removeEventListener('error', activeContinuousHandlers.error);
+          if (activeContinuousHandlers.loadedmetadata) activeContinuousAudio.removeEventListener('loadedmetadata', activeContinuousHandlers.loadedmetadata);
+          if (activeContinuousHandlers.seeked) activeContinuousAudio.removeEventListener('seeked', activeContinuousHandlers.seeked);
+        }
+        activeContinuousAudio.pause();
+      } catch (e) {}
+      activeContinuousAudio = null;
+    }
+    activeContinuousHandlers = null;
+    activeContinuousBounds = null;
+  }
+
+  function applyPreservePitch(audioEl) {
+    if (!audioEl) return;
+    try {
+      if ('preservesPitch' in audioEl) audioEl.preservesPitch = true;
+      if ('mozPreservesPitch' in audioEl) audioEl.mozPreservesPitch = true;
+      if ('webkitPreservesPitch' in audioEl) audioEl.webkitPreservesPitch = true;
+    } catch (e) {}
+  }
+
+  function stopKaiwaAudioResources() {
     currentKaiwaSessionId++;
+    stopContinuousPlaybackResources();
+    if (activeSpriteRafId !== null) {
+      try {
+        if (typeof root.cancelAnimationFrame === 'function') {
+          root.cancelAnimationFrame(activeSpriteRafId);
+        }
+      } catch (e) {}
+      activeSpriteRafId = null;
+    }
     if (activeSpriteTimer) {
       clearTimeout(activeSpriteTimer);
       activeSpriteTimer = null;
@@ -1789,6 +2277,7 @@
           if (activeSpriteTimeUpdate) activeSpriteAudio.removeEventListener('timeupdate', activeSpriteTimeUpdate);
           if (activeSpriteEndHandler) activeSpriteAudio.removeEventListener('ended', activeSpriteEndHandler);
           if (activeSpriteErrHandler) activeSpriteAudio.removeEventListener('error', activeSpriteErrHandler);
+          if (activeSpriteSeekedHandler) activeSpriteAudio.removeEventListener('seeked', activeSpriteSeekedHandler);
         }
         activeSpriteAudio.pause();
       } catch (e) {}
@@ -1796,6 +2285,7 @@
       activeSpriteTimeUpdate = null;
       activeSpriteEndHandler = null;
       activeSpriteErrHandler = null;
+      activeSpriteSeekedHandler = null;
     }
     if (activeUserAudio) {
       try {
@@ -1816,6 +2306,21 @@
       } finally {
         root._suppressKaiwaCrossStop = false;
       }
+    }
+  }
+
+  function stopAllKaiwaAudio() {
+    const hadUiPlayback = Boolean(state.isPlayingAll || state.playingLineId || state.loopingLineId);
+    if (masterTimer) {
+      clearTimeout(masterTimer);
+      masterTimer = null;
+    }
+    state.isPlayingAll = false;
+    state.playingLineId = null;
+    state.loopingLineId = null;
+    stopKaiwaAudioResources();
+    if (hadUiPlayback) {
+      syncPlaybackDomState(getLessonData(state.currentLessonId));
     }
   }
 
@@ -1846,7 +2351,7 @@
       return spriteBufferPending[audioSrc];
     }
 
-    const pendingPromise = root.fetch(audioSrc)
+    const pendingPromise = root.fetch(resolveSpriteRuntimeUrl(audioSrc))
       .then(function(res) {
         const ct = (res && res.headers && typeof res.headers.get === 'function')
           ? (res.headers.get('content-type') || res.headers.get('Content-Type') || '')
@@ -1878,7 +2383,7 @@
     return pendingPromise;
   }
 
-  function playBufferSpriteSegment(ctx, audioBuffer, startSec, endSec, playbackRate, finishOnce, fallbackOnce) {
+  function playBufferSpriteSegment(ctx, audioBuffer, startSec, endSec, playbackRate, finishOnce, fallbackOnce, sessionId) {
     if (!ctx || !audioBuffer) {
       if (typeof fallbackOnce === 'function') fallbackOnce();
       return;
@@ -1887,27 +2392,56 @@
     const safeEnd = Math.max(safeStart + 0.08, Number(endSec) || (safeStart + 1.0));
     const safeRate = playbackRate > 0 ? playbackRate : 1.0;
     const safeDuration = Math.max(0.08, safeEnd - safeStart);
-    const durationMs = Math.ceil((safeDuration / safeRate) * 1000) + 80;
+    const durationMs = Math.ceil((safeDuration / safeRate) * 1000) + 900;
 
-    try {
-      const source = ctx.createBufferSource();
-      source.buffer = audioBuffer;
-      if (source.playbackRate) source.playbackRate.value = safeRate;
-      source.connect(ctx.destination);
-      activeSpriteSource = source;
-      source.onended = finishOnce;
-      activeSpriteTimer = setTimeout(finishOnce, durationMs);
-      source.start(0, safeStart, safeDuration);
-    } catch (e) {
-      if (typeof fallbackOnce === 'function') fallbackOnce();
+    const launchSource = function() {
+      if (typeof sessionId === 'number' && sessionId !== currentKaiwaSessionId) return;
+      try {
+        const source = ctx.createBufferSource();
+        source.buffer = audioBuffer;
+        if (source.playbackRate) source.playbackRate.value = safeRate;
+        if (typeof ctx.createGain === 'function' && typeof ctx.currentTime === 'number') {
+          const gainNode = ctx.createGain();
+          const now = ctx.currentTime;
+          const playWallSec = safeDuration / safeRate;
+          const fadeSec = Math.min(0.018, playWallSec * 0.2);
+          gainNode.gain.setValueAtTime(1.0, now);
+          if (playWallSec > fadeSec) {
+            gainNode.gain.setValueAtTime(1.0, now + playWallSec - fadeSec);
+            gainNode.gain.linearRampToValueAtTime(0.001, now + playWallSec);
+          }
+          source.connect(gainNode);
+          gainNode.connect(ctx.destination);
+        } else {
+          source.connect(ctx.destination);
+        }
+        activeSpriteSource = source;
+        source.onended = finishOnce;
+        activeSpriteTimer = setTimeout(finishOnce, durationMs);
+        source.start(0, safeStart, safeDuration);
+      } catch (e) {
+        if (typeof fallbackOnce === 'function') fallbackOnce();
+      }
+    };
+
+    if (ctx.state === 'suspended' && typeof ctx.resume === 'function') {
+      try {
+        const resPromise = ctx.resume();
+        if (resPromise && typeof resPromise.then === 'function') {
+          resPromise.then(launchSource, launchSource);
+          return;
+        }
+      } catch (e) {}
     }
+
+    launchSource();
   }
 
   function playHtmlAudioSpriteSegment(audioSrc, startSec, endSec, playbackRate, finishOnce, fallbackOnce, sessionId) {
     let audio = spriteAudioCache[audioSrc];
     if (!audio) {
       try {
-        audio = new root.Audio(audioSrc);
+        audio = new root.Audio(resolveSpriteRuntimeUrl(audioSrc));
         audio.preload = 'auto';
         spriteAudioCache[audioSrc] = audio;
       } catch (err) {
@@ -1916,19 +2450,65 @@
       }
     }
 
+    applyPreservePitch(audio);
     activeSpriteAudio = audio;
-    const durationMs = Math.ceil(((endSec - startSec) / playbackRate) * 1000) + 160;
+    const tailEndSec = endSec + 0.04;
+    const expectedMs = Math.ceil(((tailEndSec - startSec) / playbackRate) * 1000);
+    const durationMs = expectedMs + 450;
+    const initialPos = Number(audio.currentTime) || 0;
+    let seekSettled = Math.abs(initialPos - startSec) <= 0.04 && initialPos < tailEndSec - 0.15 && !audio.seeking;
+    let watchdogRetries = 0;
 
-    activeSpriteTimeUpdate = function() {
-      if (audio.seeking) return;
-      if (audio.currentTime >= endSec - 0.03) {
-        finishOnce();
+    const checkBoundary = function() {
+      if (sessionId !== currentKaiwaSessionId || activeSpriteAudio !== audio) return true;
+      if (audio.seeking) return false;
+      const cur = Number(audio.currentTime) || 0;
+      if (!seekSettled) {
+        if (cur >= startSec - 0.08 && cur <= tailEndSec - 0.03) {
+          seekSettled = true;
+        } else {
+          return false;
+        }
       }
+      if (cur >= tailEndSec) {
+        finishOnce();
+        return true;
+      }
+      return false;
+    };
+
+    const pollFrame = function() {
+      if (checkBoundary()) return;
+      if (typeof root.requestAnimationFrame === 'function') {
+        activeSpriteRafId = root.requestAnimationFrame(pollFrame);
+      }
+    };
+
+    const scheduleWatchdog = function(waitMs) {
+      activeSpriteTimer = setTimeout(function() {
+        if (sessionId !== currentKaiwaSessionId || activeSpriteAudio !== audio) return;
+        const cur = Number(audio.currentTime) || 0;
+        if (!audio.paused && !audio.ended && cur < tailEndSec - 0.06 && watchdogRetries < 3) {
+          watchdogRetries++;
+          const remainingMs = Math.max(250, Math.ceil(((tailEndSec - Math.max(startSec, cur)) / playbackRate) * 1000) + 250);
+          scheduleWatchdog(remainingMs);
+          return;
+        }
+        finishOnce();
+      }, waitMs);
+    };
+
+    activeSpriteSeekedHandler = function() {
+      seekSettled = true;
+    };
+    activeSpriteTimeUpdate = function() {
+      checkBoundary();
     };
     activeSpriteEndHandler = finishOnce;
     activeSpriteErrHandler = fallbackOnce;
 
     if (typeof audio.addEventListener === 'function') {
+      audio.addEventListener('seeked', activeSpriteSeekedHandler, { once: true });
       audio.addEventListener('timeupdate', activeSpriteTimeUpdate);
       audio.addEventListener('ended', activeSpriteEndHandler, { once: true });
       audio.addEventListener('error', activeSpriteErrHandler, { once: true });
@@ -1938,14 +2518,26 @@
       if (sessionId !== currentKaiwaSessionId) return;
       activeSpriteLoadTimer = setTimeout(fallbackOnce, 5000);
       try {
+        applyPreservePitch(audio);
         audio.playbackRate = playbackRate;
+        const beforeSeek = Number(audio.currentTime) || 0;
+        seekSettled = Math.abs(beforeSeek - startSec) <= 0.04 && beforeSeek < tailEndSec - 0.15 && !audio.seeking;
         audio.currentTime = startSec;
+        const afterSeek = Number(audio.currentTime) || 0;
+        if (Math.abs(afterSeek - startSec) <= 0.08 && afterSeek < tailEndSec - 0.12 && !audio.seeking) {
+          seekSettled = true;
+        }
         const playPromise = audio.play();
         const afterStart = function() {
           if (sessionId !== currentKaiwaSessionId || activeSpriteAudio !== audio) return;
+          applyPreservePitch(audio);
+          audio.playbackRate = playbackRate;
           clearTimeout(activeSpriteLoadTimer);
           activeSpriteLoadTimer = null;
-          activeSpriteTimer = setTimeout(finishOnce, durationMs);
+          scheduleWatchdog(durationMs);
+          if (typeof root.requestAnimationFrame === 'function') {
+            activeSpriteRafId = root.requestAnimationFrame(pollFrame);
+          }
         };
         if (playPromise && typeof playPromise.then === 'function') {
           playPromise.then(afterStart, fallbackOnce);
@@ -1997,11 +2589,19 @@
     const endSec = Math.max(startSec + 0.08, Number(timeRange[1]) || (startSec + 2.0));
     const playbackRate = previewSpeed ?? (state.slowAudio ? 0.78 : 1);
 
-    stopAllKaiwaAudio();
+    stopKaiwaAudioResources();
     const sessionId = ++currentKaiwaSessionId;
 
     let settled = false;
     const cleanup = function() {
+      if (activeSpriteRafId !== null) {
+        try {
+          if (typeof root.cancelAnimationFrame === 'function') {
+            root.cancelAnimationFrame(activeSpriteRafId);
+          }
+        } catch (e) {}
+        activeSpriteRafId = null;
+      }
       if (activeSpriteTimer) {
         clearTimeout(activeSpriteTimer);
         activeSpriteTimer = null;
@@ -2024,6 +2624,7 @@
             if (activeSpriteTimeUpdate) activeSpriteAudio.removeEventListener('timeupdate', activeSpriteTimeUpdate);
             if (activeSpriteEndHandler) activeSpriteAudio.removeEventListener('ended', activeSpriteEndHandler);
             if (activeSpriteErrHandler) activeSpriteAudio.removeEventListener('error', activeSpriteErrHandler);
+            if (activeSpriteSeekedHandler) activeSpriteAudio.removeEventListener('seeked', activeSpriteSeekedHandler);
           } catch (e) {}
         }
         try { activeSpriteAudio.pause(); } catch (e) {}
@@ -2032,6 +2633,7 @@
       activeSpriteTimeUpdate = null;
       activeSpriteEndHandler = null;
       activeSpriteErrHandler = null;
+      activeSpriteSeekedHandler = null;
     };
 
     const finishOnce = function() {
@@ -2053,13 +2655,13 @@
 
     if (ctx && (previewSpeed === undefined || playbackRate === 1)) {
       if (spriteBufferCache[audioSrc]) {
-        playBufferSpriteSegment(ctx, spriteBufferCache[audioSrc], startSec, endSec, playbackRate, finishOnce, fallbackOnce);
+        playBufferSpriteSegment(ctx, spriteBufferCache[audioSrc], startSec, endSec, playbackRate, finishOnce, fallbackOnce, sessionId);
         return;
       }
       fetchAndDecodeSpriteBuffer(audioSrc, ctx).then(function(buf) {
         if (settled || sessionId !== currentKaiwaSessionId) return;
         if (buf) {
-          playBufferSpriteSegment(ctx, buf, startSec, endSec, playbackRate, finishOnce, fallbackOnce);
+          playBufferSpriteSegment(ctx, buf, startSec, endSec, playbackRate, finishOnce, fallbackOnce, sessionId);
         } else {
           playHtmlAudioSpriteSegment(audioSrc, startSec, endSec, playbackRate, finishOnce, fallbackOnce, sessionId);
         }
@@ -2093,7 +2695,7 @@
       }
     }
 
-    stopAllKaiwaAudio();
+    stopKaiwaAudioResources();
     const sessionId = ++currentKaiwaSessionId;
 
     if (typeof root.speechSynthesis !== 'undefined' && typeof root.SpeechSynthesisUtterance !== 'undefined') {
@@ -2243,23 +2845,344 @@
     return null;
   }
 
-  function playLine(lineId, onComplete) {
-    const line = findLineById(lineId);
-    if (!line) return;
+  function formatClockSec(sec) {
+    const safeSec = Math.max(0, Math.round(Number(sec) || 0));
+    const mins = Math.floor(safeSec / 60);
+    const rem = safeSec % 60;
+    return `${mins}:${rem < 10 ? '0' + rem : rem}`;
+  }
 
-    // Bấm lần 2 vào nút loa của câu đang phát đơn lẻ -> dừng phát ngay
-    if (state.playingLineId === lineId && !state.isPlayingAll && !state.isRoleplaying && !onComplete) {
-      state.playingLineId = null;
-      state.loopingLineId = null;
-      stopAllKaiwaAudio();
+  function getDialogueTimeBounds(lessonData) {
+    if (!lessonData || !Array.isArray(lessonData.dialogue) || lessonData.dialogue.length === 0) {
+      return null;
+    }
+    const dialogue = lessonData.dialogue;
+    const allTimed = dialogue.every(l => Array.isArray(l.time) && l.time.length === 2 && Number(l.time[1]) > Number(l.time[0]));
+    if (!allTimed) return null;
+    const startSec = Math.max(0, Number(dialogue[0].time[0]) || 0);
+    const lastEnd = Number(dialogue[dialogue.length - 1].time[1]) || startSec;
+    const rawDuration = Number(lessonData.audioDuration) || 0;
+    const endSec = rawDuration > lastEnd
+      ? Math.min(rawDuration, lastEnd + 0.35)
+      : lastEnd + 0.35;
+    return { startSec, lastEnd, endSec };
+  }
+
+  function getActiveContainer() {
+    if (typeof document !== 'undefined' && typeof document.getElementById === 'function') {
+      const liveEl = document.getElementById('lesson-content');
+      if (liveEl) return liveEl;
+    }
+    return lastMountContainer;
+  }
+
+  /**
+   * Pure Function: Xác định chỉ số câu thoại đang phát tại mốc currentTimeSec.
+   * Giữ ổn định câu đang hiển thị trong khoảng nghỉ tự nhiên giữa 2 lượt thoại,
+   * không nhảy sớm hay nhấp nháy tắt/bật khi băng gốc có khoảng lặng.
+   */
+  function resolveActiveLineIndexAtTime(dialogue, currentTimeSec) {
+    if (!Array.isArray(dialogue) || dialogue.length === 0) return -1;
+    const t = Number(currentTimeSec);
+    if (!Number.isFinite(t)) return 0;
+
+    const LOOKAHEAD_SEC = 0.02;
+    let activeIdx = 0;
+
+    for (let i = 0; i < dialogue.length; i++) {
+      const time = dialogue[i] && dialogue[i].time;
+      if (!Array.isArray(time) || time.length < 2) continue;
+      const lineStart = Number(time[0]) || 0;
+      const lineEnd = Number(time[1]) || lineStart;
+      if (t >= lineStart - LOOKAHEAD_SEC && t <= lineEnd) {
+        return i;
+      }
+      if (t >= lineStart - LOOKAHEAD_SEC) {
+        activeIdx = i;
+      }
+    }
+    return activeIdx;
+  }
+
+  /**
+   * Zero-Flicker DOM Sync: Cập nhật trực tiếp class `.is-playing`, nút phát chính
+   * và thanh tiến trình mà không phá hủy/dựng lại toàn bộ innerHTML.
+   * Tự động fallback sang rerender() nếu container không hỗ trợ querySelectorAll (môi trường test giả lập).
+   */
+  function syncPlaybackDomState(lessonData, currentTimeSec) {
+    const activeContainer = getActiveContainer();
+    if (!activeContainer || typeof activeContainer.querySelectorAll !== 'function') {
       rerender();
       return;
     }
 
-    state.playingLineId = lineId;
-    rerender();
+    const activeLineId = state.playingLineId;
+    const cards = activeContainer.querySelectorAll('.kaiwa-line-card');
+    let newlyActiveCard = null;
+    cards.forEach(function(card) {
+      const shouldPlay = Boolean(activeLineId && card.id === `kaiwa-card-${activeLineId}`);
+      if (shouldPlay) newlyActiveCard = card;
+      if (card.classList.contains('is-playing') !== shouldPlay) {
+        card.classList.toggle('is-playing', shouldPlay);
+      }
+      const spkBtn = card.querySelector('.kaiwa-btn-speaker');
+      if (spkBtn && spkBtn.classList.contains('is-playing') !== shouldPlay) {
+        spkBtn.classList.toggle('is-playing', shouldPlay);
+      }
+    });
 
+    if (activeLineId && activeLineId !== lastSyncedActiveLineId) {
+      lastSyncedActiveLineId = activeLineId;
+      if ((state.isPlayingAll || state.isRoleplaying) && newlyActiveCard && typeof newlyActiveCard.scrollIntoView === 'function') {
+        try {
+          newlyActiveCard.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        } catch (e) {}
+      }
+    } else if (!activeLineId) {
+      lastSyncedActiveLineId = null;
+    }
+
+    const masterBtn = activeContainer.querySelector('.kaiwa-master-play-btn');
+    if (masterBtn) {
+      const targetIcon = state.isPlayingAll ? KAIWA_ICONS.pause : KAIWA_ICONS.masterPlay;
+      if (masterBtn.dataset.playingState !== String(state.isPlayingAll)) {
+        masterBtn.innerHTML = targetIcon;
+        masterBtn.dataset.playingState = String(state.isPlayingAll);
+      }
+    }
+
+    const data = lessonData || getLessonData(state.currentLessonId);
+    const dialogue = (data && Array.isArray(data.dialogue)) ? data.dialogue : [];
+    const totalLines = dialogue.length;
+    const progressEl = activeContainer.querySelector('#kaiwa-master-progress');
+    const timerEl = activeContainer.querySelector('#kaiwa-master-timer');
+    if (!progressEl && !timerEl) return;
+
+    const bounds = activeContinuousBounds || getDialogueTimeBounds(data);
+    const totalSec = bounds
+      ? Math.max(1, bounds.endSec - bounds.startSec)
+      : Math.max(15, totalLines * 3 - 4);
+
+    let progressPct = 0;
+    let elapsedSec = 0;
+    const currentIdx = activeLineId ? dialogue.findIndex(l => l.id === activeLineId) : -1;
+
+    if (bounds && typeof currentTimeSec === 'number' && Number.isFinite(currentTimeSec)) {
+      elapsedSec = Math.max(0, Math.min(totalSec, currentTimeSec - bounds.startSec));
+      progressPct = Math.max(0, Math.min(100, (elapsedSec / totalSec) * 100));
+    } else if (currentIdx >= 0 && totalLines > 0) {
+      progressPct = Math.min(100, Math.round(((currentIdx + 1) / totalLines) * 100));
+      elapsedSec = Math.min(totalSec, Math.max(1, Math.round(((currentIdx + 1) / totalLines) * totalSec)));
+    }
+
+    if (progressEl) {
+      progressEl.style.width = `${progressPct.toFixed(1)}%`;
+    }
+    if (timerEl) {
+      const totalStr = formatClockSec(totalSec);
+      const elapsedStr = formatClockSec(elapsedSec);
+      timerEl.textContent = currentIdx >= 0
+        ? `Câu ${currentIdx + 1}/${totalLines} · ${elapsedStr} / ${totalStr}`
+        : `0:00 / ${totalStr}`;
+    }
+  }
+
+  function playContinuousDialogue(lessonData, startIndex, fallbackToSegmented) {
+    const bounds = getDialogueTimeBounds(lessonData);
+    if (!lessonData || !lessonData.audioSrc || !bounds || typeof root.Audio !== 'function') {
+      if (typeof fallbackToSegmented === 'function') fallbackToSegmented();
+      return;
+    }
+
+    const dialogue = lessonData.dialogue;
+    const safeStartIdx = Math.max(0, Math.min(dialogue.length - 1, Number(startIndex) || 0));
+    const seekStart = Math.max(0, Number(dialogue[safeStartIdx].time[0]) || bounds.startSec);
+    const audioSrc = lessonData.audioSrc;
+
+    stopKaiwaAudioResources();
+    const sessionId = ++currentKaiwaSessionId;
+
+    let audio = spriteAudioCache[audioSrc];
+    if (!audio) {
+      try {
+        audio = new root.Audio(resolveSpriteRuntimeUrl(audioSrc));
+        audio.preload = 'auto';
+        spriteAudioCache[audioSrc] = audio;
+      } catch (err) {
+        if (typeof fallbackToSegmented === 'function') fallbackToSegmented();
+        return;
+      }
+    }
+
+    applyPreservePitch(audio);
+    activeContinuousAudio = audio;
+    activeContinuousBounds = bounds;
+    state.isPlayingAll = true;
+    state.playingLineId = dialogue[safeStartIdx].id;
+    syncPlaybackDomState(lessonData, seekStart);
+
+    let settled = false;
+    let seekSettled = Math.abs((Number(audio.currentTime) || 0) - seekStart) <= 0.35;
+
+    const finishStream = function() {
+      if (settled || sessionId !== currentKaiwaSessionId) return;
+      settled = true;
+      state.isPlayingAll = false;
+      state.playingLineId = null;
+      stopContinuousPlaybackResources();
+      syncPlaybackDomState(lessonData, bounds.startSec);
+    };
+
+    const failToFallback = function() {
+      if (settled || sessionId !== currentKaiwaSessionId) return;
+      settled = true;
+      stopContinuousPlaybackResources();
+      if (typeof fallbackToSegmented === 'function') fallbackToSegmented();
+    };
+
+    const onSeeked = function() {
+      seekSettled = true;
+    };
+
+    const handleTimeTick = function() {
+      if (audio.seeking) return false;
+      const curTime = Number(audio.currentTime) || 0;
+      if (!seekSettled) {
+        if (curTime >= seekStart - 0.15 && curTime < bounds.endSec) {
+          seekSettled = true;
+        } else {
+          return false;
+        }
+      }
+      if (curTime >= bounds.endSec) {
+        finishStream();
+        return true;
+      }
+      const lineIdx = resolveActiveLineIndexAtTime(dialogue, curTime);
+      if (lineIdx >= 0 && dialogue[lineIdx]) {
+        state.playingLineId = dialogue[lineIdx].id;
+      }
+      syncPlaybackDomState(lessonData, curTime);
+      return false;
+    };
+
+    const syncFrame = function() {
+      if (settled || sessionId !== currentKaiwaSessionId || !state.isPlayingAll || activeContinuousAudio !== audio) {
+        return;
+      }
+      if (handleTimeTick()) return;
+      if (typeof root.requestAnimationFrame === 'function') {
+        activeContinuousRafId = root.requestAnimationFrame(syncFrame);
+      }
+    };
+
+    const onTimeUpdate = function() {
+      if (settled || sessionId !== currentKaiwaSessionId || !state.isPlayingAll || activeContinuousAudio !== audio) return;
+      handleTimeTick();
+    };
+
+    const onEnded = function() {
+      finishStream();
+    };
+
+    const onError = function() {
+      failToFallback();
+    };
+
+    const startPlayback = function() {
+      if (settled || sessionId !== currentKaiwaSessionId || activeContinuousAudio !== audio) return;
+      activeContinuousLoadTimer = setTimeout(failToFallback, 6000);
+      try {
+        applyPreservePitch(audio);
+        audio.playbackRate = state.slowAudio ? 0.78 : 1.0;
+        audio.currentTime = seekStart;
+        if (Math.abs((Number(audio.currentTime) || 0) - seekStart) <= 0.35 && !audio.seeking) {
+          seekSettled = true;
+        }
+        const playPromise = audio.play();
+        const afterStart = function() {
+          if (settled || sessionId !== currentKaiwaSessionId || activeContinuousAudio !== audio) return;
+          applyPreservePitch(audio);
+          audio.playbackRate = state.slowAudio ? 0.78 : 1.0;
+          if (activeContinuousLoadTimer) {
+            clearTimeout(activeContinuousLoadTimer);
+            activeContinuousLoadTimer = null;
+          }
+          if (typeof root.requestAnimationFrame === 'function') {
+            activeContinuousRafId = root.requestAnimationFrame(syncFrame);
+          }
+        };
+        if (playPromise && typeof playPromise.then === 'function') {
+          playPromise.then(afterStart, failToFallback);
+        } else {
+          afterStart();
+        }
+      } catch (e) {
+        failToFallback();
+      }
+    };
+
+    const onLoadedMetadata = function() {
+      if (settled || sessionId !== currentKaiwaSessionId || activeContinuousAudio !== audio) return;
+      if (activeContinuousLoadTimer) {
+        clearTimeout(activeContinuousLoadTimer);
+        activeContinuousLoadTimer = null;
+      }
+      startPlayback();
+    };
+
+    activeContinuousHandlers = {
+      timeupdate: onTimeUpdate,
+      ended: onEnded,
+      error: onError,
+      loadedmetadata: onLoadedMetadata,
+      seeked: onSeeked
+    };
+
+    if (typeof audio.addEventListener === 'function') {
+      audio.addEventListener('seeked', onSeeked, { once: true });
+      audio.addEventListener('timeupdate', onTimeUpdate);
+      audio.addEventListener('ended', onEnded, { once: true });
+      audio.addEventListener('error', onError, { once: true });
+    }
+
+    if (typeof audio.readyState === 'number' && audio.readyState === 0 && typeof audio.addEventListener === 'function') {
+      activeContinuousLoadTimer = setTimeout(failToFallback, 6000);
+      audio.addEventListener('loadedmetadata', onLoadedMetadata, { once: true });
+      return;
+    }
+
+    startPlayback();
+  }
+
+  function playLine(lineId, onComplete) {
+    const line = findLineById(lineId);
+    if (!line) return;
+
+    const isStandaloneClick = typeof onComplete !== 'function';
+
+    // Khi người dùng nhấn riêng vào 1 câu thoại trong lúc đang Nghe cả bài -> dừng hẳn phiên Nghe cả bài
+    if (isStandaloneClick && state.isPlayingAll) {
+      state.isPlayingAll = false;
+      if (masterTimer) {
+        clearTimeout(masterTimer);
+        masterTimer = null;
+      }
+    }
+
+    // Bấm lần 2 vào nút loa của câu đang phát đơn lẻ -> dừng phát ngay
+    if (state.playingLineId === lineId && !state.isPlayingAll && !state.isRoleplaying && isStandaloneClick) {
+      state.playingLineId = null;
+      state.loopingLineId = null;
+      stopAllKaiwaAudio();
+      syncPlaybackDomState(getLessonData(state.currentLessonId));
+      return;
+    }
+
+    state.playingLineId = lineId;
     const lessonData = getLessonData(state.currentLessonId) || {};
+    syncPlaybackDomState(lessonData);
+
     const charObj = (lessonData.characters || []).find(c => c.id === line.speakerId) ||
       (root.AudioEngine && typeof root.AudioEngine.getCharacterVoiceProfile === 'function'
         ? root.AudioEngine.getCharacterVoiceProfile(line.speakerId)
@@ -2279,7 +3202,7 @@
         return;
       }
       state.playingLineId = null;
-      rerender();
+      syncPlaybackDomState(lessonData);
       if (typeof onComplete === 'function') onComplete();
     };
 
@@ -2306,6 +3229,22 @@
         ratio = Math.max(0, Math.min(0.999, (ev.clientX - rect.left) / rect.width));
       }
     }
+
+    // Nếu đang phát liên tục ở chế độ Tự do, tua mượt ngay trên luồng đang chạy không cần khởi tạo lại
+    if (state.isPlayingAll && state.practiceMode !== 'shadowing' && activeContinuousAudio && activeContinuousBounds) {
+      const span = Math.max(0.5, activeContinuousBounds.endSec - activeContinuousBounds.startSec);
+      const targetTime = activeContinuousBounds.startSec + ratio * span;
+      try {
+        activeContinuousAudio.currentTime = targetTime;
+        const lineIdx = resolveActiveLineIndexAtTime(lessonData.dialogue, targetTime);
+        if (lineIdx >= 0 && lessonData.dialogue[lineIdx]) {
+          state.playingLineId = lessonData.dialogue[lineIdx].id;
+        }
+        syncPlaybackDomState(lessonData, targetTime);
+        return;
+      } catch (e) {}
+    }
+
     const targetIdx = Math.floor(ratio * lessonData.dialogue.length);
     togglePlayAll(targetIdx);
   }
@@ -2314,10 +3253,18 @@
     if (state.loopingLineId === lineId) {
       state.loopingLineId = null;
       state.playingLineId = null;
-      stopAllKaiwaAudio();
+      stopKaiwaAudioResources();
       rerender();
     } else {
+      if (state.isPlayingAll) {
+        state.isPlayingAll = false;
+        if (masterTimer) {
+          clearTimeout(masterTimer);
+          masterTimer = null;
+        }
+      }
       state.loopingLineId = lineId;
+      rerender();
       playLine(lineId);
     }
   }
@@ -2325,8 +3272,6 @@
   function computeTurnTransitionDelay(currLine, nextLine, usedSprite = false) {
     if (state.practiceMode === 'shadowing') return 1450;
     if (!currLine || !nextLine) return usedSprite ? 80 : 400;
-    // Khi phát bằng Audio Sprite (đã cắt chính xác theo WordBoundary kèm đệm tự nhiên),
-    // chỉ giữ khoảng chuyển lượt ngắn (240ms - 380ms) để không bị cộng dồn nghỉ kép
     if (usedSprite) {
       if (currLine.speakerId && currLine.speakerId === nextLine.speakerId) {
         return 220;
@@ -2341,17 +3286,14 @@
       }
       return 280;
     }
-    // Cùng một nhân vật nói tiếp lượt kế tiếp -> nhịp nối câu tự nhiên 300ms
     if (currLine.speakerId && currLine.speakerId === nextLine.speakerId) {
       return 300;
     }
     const currText = String(currLine.rawJp || currLine.jp || '');
     const nextText = String(nextLine.rawJp || nextLine.jp || '');
-    // Câu hỏi chuyển sang người trả lời -> nghỉ 480ms
     if (currLine.endPitch === 'up' || /[？?]|か[。]?$/.test(currText.trim())) {
       return 480;
     }
-    // Câu tiếp theo mở đầu bằng từ ngập ngừng / chuyển chủ đề -> nghỉ 520ms
     if (/^(?:あのう|実は|ところで|それでは|では)/.test(nextText.trim())) {
       return 520;
     }
@@ -2363,47 +3305,105 @@
     if (state.isPlayingAll && !hasCustomStart) {
       state.isPlayingAll = false;
       state.playingLineId = null;
-      if (masterTimer) clearTimeout(masterTimer);
+      if (masterTimer) {
+        clearTimeout(masterTimer);
+        masterTimer = null;
+      }
       stopAllKaiwaAudio();
-      rerender();
+      syncPlaybackDomState(getLessonData(state.currentLessonId));
       return;
     }
 
     const lessonData = getLessonData(state.currentLessonId);
     if (!lessonData || !lessonData.dialogue || lessonData.dialogue.length === 0) return;
 
-    if (masterTimer) clearTimeout(masterTimer);
-    stopAllKaiwaAudio();
+    if (masterTimer) {
+      clearTimeout(masterTimer);
+      masterTimer = null;
+    }
+    stopKaiwaAudioResources();
 
     state.isPlayingAll = true;
-    let idx = hasCustomStart ? startIndex : 0;
+    const startIdx = hasCustomStart ? Math.min(lessonData.dialogue.length - 1, startIndex) : 0;
 
-    function playNext() {
-      if (!state.isPlayingAll || idx >= lessonData.dialogue.length) {
-        state.isPlayingAll = false;
-        state.playingLineId = null;
-        rerender();
-        return;
+    function runSegmentedPlayback() {
+      let idx = startIdx;
+      function playNext() {
+        if (!state.isPlayingAll || idx >= lessonData.dialogue.length) {
+          state.isPlayingAll = false;
+          state.playingLineId = null;
+          syncPlaybackDomState(lessonData);
+          return;
+        }
+        const line = lessonData.dialogue[idx++];
+        const nextLine = idx < lessonData.dialogue.length ? lessonData.dialogue[idx] : null;
+        const hasSprite = Boolean(
+          (line.audioSrc || lessonData.audioSrc) &&
+          Array.isArray(line.time) &&
+          line.time.length === 2 &&
+          typeof root.Audio === 'function'
+        );
+        playLine(line.id, function() {
+          if (!state.isPlayingAll) return;
+          const delay = computeTurnTransitionDelay(line, nextLine, hasSprite);
+          masterTimer = setTimeout(playNext, delay);
+        });
       }
-      const line = lessonData.dialogue[idx++];
-      const nextLine = idx < lessonData.dialogue.length ? lessonData.dialogue[idx] : null;
-      const hasSprite = Boolean(
-        (line.audioSrc || lessonData.audioSrc) &&
-        Array.isArray(line.time) &&
-        line.time.length === 2 &&
-        typeof root.Audio === 'function'
-      );
-      playLine(line.id, function() {
-        if (!state.isPlayingAll) return;
-        const delay = computeTurnTransitionDelay(line, nextLine, hasSprite);
-        masterTimer = setTimeout(playNext, delay);
-      });
+      playNext();
     }
 
-    playNext();
+    // Chế độ Tự do (Nghe cả bài): Phát liền mạch 1 luồng audio gốc từ đầu đến cuối, không cắt giữa các câu
+    if (state.practiceMode !== 'shadowing' && lessonData.audioSrc && getDialogueTimeBounds(lessonData)) {
+      playContinuousDialogue(lessonData, startIdx, runSegmentedPlayback);
+      return;
+    }
+
+    // Chế độ Shadowing (cần khoảng nghỉ 1.45s sau mỗi câu để người học nhại theo) hoặc fallback TTS
+    runSegmentedPlayback();
   }
 
-  function cleanupAudioCapture() {
+  function stopStreamTracks(stream) {
+    if (!stream || typeof stream.getTracks !== 'function') return;
+    try {
+      stream.getTracks().forEach(t => {
+        try { t.stop(); } catch (e) {}
+      });
+    } catch (e) {}
+  }
+
+  function createSafeMediaRecorder(stream, isIOS) {
+    if (!stream || typeof root.MediaRecorder !== 'function') {
+      return { recorder: null, mimeType: '' };
+    }
+    const candidates = isIOS
+      ? ['audio/mp4;codecs=mp4a.40.2', 'audio/mp4', 'audio/webm;codecs=opus', 'audio/webm']
+      : ['audio/webm;codecs=opus', 'audio/webm', 'audio/mp4;codecs=mp4a.40.2', 'audio/mp4', 'audio/ogg;codecs=opus'];
+    let selectedMime = '';
+    if (typeof root.MediaRecorder.isTypeSupported === 'function') {
+      for (let i = 0; i < candidates.length; i++) {
+        try {
+          if (root.MediaRecorder.isTypeSupported(candidates[i])) {
+            selectedMime = candidates[i];
+            break;
+          }
+        } catch (e) {}
+      }
+    }
+    if (selectedMime) {
+      try {
+        return {
+          recorder: new root.MediaRecorder(stream, { mimeType: selectedMime }),
+          mimeType: selectedMime
+        };
+      } catch (e) {}
+    }
+    return {
+      recorder: new root.MediaRecorder(stream),
+      mimeType: ''
+    };
+  }
+
+  function cleanupAudioCapture(deferStreamStop = false) {
     clearTimeout(activeRecognitionEndTimer);
     activeRecognitionEndTimer = null;
     if (activeSilenceTimer) {
@@ -2425,8 +3425,24 @@
       activeAudioCtx = null;
     }
     if (activeMediaStream) {
-      try { activeMediaStream.getTracks().forEach(t => t.stop()); } catch (e) {}
-      activeMediaStream = null;
+      const streamRef = activeMediaStream;
+      if (deferStreamStop && pendingRecorderStop) {
+        if (deferredStreamStopTimer) clearTimeout(deferredStreamStopTimer);
+        deferredStreamStopTimer = setTimeout(() => {
+          deferredStreamStopTimer = null;
+          pendingRecorderStop = false;
+          stopStreamTracks(streamRef);
+          if (activeMediaStream === streamRef) activeMediaStream = null;
+        }, 2000);
+      } else {
+        if (deferredStreamStopTimer) {
+          clearTimeout(deferredStreamStopTimer);
+          deferredStreamStopTimer = null;
+        }
+        pendingRecorderStop = false;
+        stopStreamTracks(streamRef);
+        activeMediaStream = null;
+      }
     }
   }
 
@@ -2434,7 +3450,12 @@
     const recorder = activeMediaRecorder;
     activeMediaRecorder = null;
     if (recorder && recorder.state !== 'inactive') {
-      try { recorder.stop(); } catch (e) {}
+      pendingRecorderStop = true;
+      try {
+        recorder.stop();
+      } catch (e) {
+        pendingRecorderStop = false;
+      }
     }
   }
 
@@ -2453,7 +3474,7 @@
       roleplayTimer = null;
     }
     try { rec?.abort(); } catch (e) {}
-    cleanupAudioCapture();
+    cleanupAudioCapture(false);
     if (shouldRender) rerender();
   }
 
@@ -2520,17 +3541,21 @@
     const mediaDevices = root.navigator?.mediaDevices;
     const canRecord = typeof root.MediaRecorder === 'function' && typeof mediaDevices?.getUserMedia === 'function';
     const ua = root.navigator?.userAgent || '';
-    const mobile = /Android|iPhone|iPad|iPod/i.test(ua) ||
+    const isIOS = /iPhone|iPad|iPod/i.test(ua) ||
       (/Macintosh/i.test(ua) && root.navigator?.maxTouchPoints > 1);
+    const mobile = /Android/i.test(ua) || isIOS;
+    const loc = root.location;
+    const isInsecureHttp = root.isSecureContext === false &&
+      !(loc && (loc.hostname === 'localhost' || loc.hostname === '127.0.0.1'));
     const lessonId = state.currentLessonId;
     const recordingKey = lessonId + ':' + lineId;
     const recognitionOnly = mobile && recognitionOnlyLines.delete(recordingKey);
     const attempt = { key: recordingKey };
     let rec = null;
     try { if (SpeechRec) rec = new SpeechRec(); } catch (e) {}
-    if (!rec && !canRecord) {
+    if (isInsecureHttp || (!rec && !canRecord)) {
       state.recordingLineId = null;
-      root.showToast?.(root.isSecureContext === false
+      root.showToast?.(isInsecureHttp || root.isSecureContext === false
         ? 'Micro cần kết nối HTTPS. Hãy mở trang qua HTTPS để thu âm.'
         : 'Trình duyệt này không hỗ trợ thu âm hoặc nhận giọng.');
       rerender();
@@ -2549,6 +3574,7 @@
     let stopping = false;
     let errorCode = '';
     let recognitionEnded = !rec;
+    let recStarted = false;
     let captureError = null;
     let recordingStarted = false;
     let lastVoiceTime = null;
@@ -2610,15 +3636,22 @@
 
       let bestEval = null;
       let bestRank = 0;
-      let bestConf = 0.9;
+      let bestConf = 0.85;
       const candidates = bestCapturedAlternatives.length > 0
         ? bestCapturedAlternatives
-        : [{ transcript: bestCapturedTranscript, confidence: 0.9 }];
+        : [{ transcript: bestCapturedTranscript, confidence: 0.85 }];
 
       for (let i = 0; i < candidates.length; i++) {
         const candidate = candidates[i] && candidates[i].transcript;
         if (!candidate) continue;
-        const candidateConf = typeof candidates[i].confidence === 'number' ? candidates[i].confidence : 0.85;
+        const candidateConf = typeof candidates[i].confidence === 'number' && candidates[i].confidence > 0
+          ? candidates[i].confidence
+          : (i === 0 ? 0.84 : 0.72);
+        // Hardcore Mode: Ưu tiên tuyệt đối candidate[0] (âm thanh thô đầu tiên mic nghe được).
+        // Nếu candidate[0] đã khớp được >= 55% âm vị Mora thì không lấy candidate phụ đã qua đoán ngữ cảnh.
+        if (i > 0 && bestEval && bestEval.moraScore >= 55) {
+          break;
+        }
         const candidateEval = evaluatePronunciation(
           line.rawJp || line.jp,
           candidate,
@@ -2666,7 +3699,7 @@
       if (!isCurrent()) return;
       activeRecognition = null;
       activeRecording = null;
-      cleanupAudioCapture();
+      cleanupAudioCapture(true);
       if (state.currentLessonId === lessonId) return finalizeEvaluation();
       state.recordingLineId = null;
       rerender();
@@ -2678,7 +3711,10 @@
       stopping = true;
       recordStopTime = Date.now();
       stopRecorder();
-      if (recognitionEnded) return completeRecognition();
+      if (recognitionEnded || (rec && !recStarted)) {
+        recognitionEnded = true;
+        return completeRecognition();
+      }
       activeRecognitionEndTimer = setTimeout(() => {
         completeRecognition();
         try { rec.abort(); } catch (e) {}
@@ -2691,24 +3727,43 @@
       return finishRecordingDueToSilence();
     };
 
+    const startRecognitionEngine = function() {
+      if (!rec || recStarted || !isCurrent() || stopping || recognitionEnded) return;
+      recStarted = true;
+      try {
+        rec.start();
+      } catch (e) {
+        errorCode = e?.name === 'NotAllowedError' ? 'not-allowed' : 'start-failed';
+        recognitionEnded = true;
+        if (!canRecord || recognitionOnly) completeRecognition();
+      }
+    };
+
     const AudioCtxClass = root.AudioContext || root.webkitAudioContext;
     const wantsCapture = !(rec && recognitionOnly) && (canRecord ||
       (!mobile && rec && AudioCtxClass && typeof mediaDevices?.getUserMedia === 'function'));
     const captureFailed = (error) => {
       if (!isCurrent()) return;
-      captureError = error?.name === 'NotAllowedError' ? 'Không thể thu âm vì chưa có quyền micro.'
-        : error?.name === 'NotReadableError' ? 'Không thể thu âm. Hãy kiểm tra mic có đang được ứng dụng khác sử dụng.'
-        : 'Không thể lưu bản thu âm trên trình duyệt này.';
+      const errName = error?.name || '';
+      captureError = (errName === 'NotAllowedError' || errName === 'PermissionDeniedError' || errName === 'SecurityError')
+        ? 'Không thể thu âm vì chưa có quyền micro. Vui lòng cho phép Micro trong cài đặt trình duyệt.'
+        : (errName === 'NotFoundError' || errName === 'DevicesNotFoundError')
+          ? 'Không tìm thấy thiết bị Micro trên máy.'
+          : errName === 'NotReadableError'
+            ? 'Không thể thu âm. Hãy kiểm tra mic có đang được ứng dụng khác sử dụng.'
+            : 'Không thể lưu bản thu âm trên trình duyệt này.';
       if (activeMediaStream) {
-        activeMediaStream.getTracks().forEach(track => track.stop());
+        stopStreamTracks(activeMediaStream);
         activeMediaStream = null;
       }
       stopRecorder();
+      if (!recStarted) recognitionEnded = true;
       if (recognitionEnded) completeRecognition();
       else root.showToast?.(captureError);
     };
     if (wantsCapture) {
-      if (mobile && AudioCtxClass) {
+      const shouldUseAudioCtx = Boolean(AudioCtxClass && (!isIOS || !rec));
+      if (mobile && shouldUseAudioCtx) {
         try {
           activeAudioCtx = new AudioCtxClass();
           activeAudioCtx.resume?.()?.catch(() => {});
@@ -2719,11 +3774,11 @@
       catch (error) { captureFailed(error); }
       streamRequest?.then(stream => {
         if (!isCurrent() || stopping) {
-          stream.getTracks().forEach(t => t.stop());
+          stopStreamTracks(stream);
           return;
         }
         activeMediaStream = stream;
-        if (AudioCtxClass) {
+        if (shouldUseAudioCtx) {
           try {
             if (activePitchTimer) clearInterval(activePitchTimer);
             if (!activeAudioCtx) activeAudioCtx = new AudioCtxClass();
@@ -2744,6 +3799,7 @@
               const f0 = mobile ? null : detectPitchF0FromBuffer(timeBuf, activeAudioCtx.sampleRate);
               if (f0) capturedPitchSamples.push(f0);
               if (f0 || rms > 0.02) markVoice();
+              else if (mobile && rms > 0.006) markVoice();
             }, 50);
           } catch (ctxErr) {}
         }
@@ -2751,28 +3807,31 @@
         // 2. Khởi tạo MediaRecorder & Phân tích AudioBuffer Offline khi kết thúc thu âm (5s im lặng)
         if (canRecord) {
           const chunks = [];
-          let mimeType = '';
-          if (typeof root.MediaRecorder.isTypeSupported === 'function') {
-            if (root.MediaRecorder.isTypeSupported('audio/webm;codecs=opus')) mimeType = 'audio/webm;codecs=opus';
-            else if (root.MediaRecorder.isTypeSupported('audio/webm')) mimeType = 'audio/webm';
-            else if (root.MediaRecorder.isTypeSupported('audio/mp4')) mimeType = 'audio/mp4';
-          }
-          activeMediaRecorder = mimeType
-            ? new root.MediaRecorder(stream, { mimeType })
-            : new root.MediaRecorder(stream);
+          const created = createSafeMediaRecorder(stream, isIOS);
+          const mimeType = created.mimeType;
+          activeMediaRecorder = created.recorder;
 
           const recorder = activeMediaRecorder;
           recorder.onerror = event => captureFailed(event.error);
           recorder.ondataavailable = e => { if (e.data && e.data.size > 0) chunks.push(e.data); };
           recorder.onstop = () => {
+            pendingRecorderStop = false;
+            if (deferredStreamStopTimer) {
+              clearTimeout(deferredStreamStopTimer);
+              deferredStreamStopTimer = null;
+            }
             try {
               if (!isLatest()) return;
-              if (!chunks.length) {
+              const validChunks = chunks.filter(c => c && c.size > 0);
+              if (!validChunks.length) {
                 if (!captureError && recordingStarted) root.showToast?.('Bản thu âm không có dữ liệu. Hãy thử ghi lại.');
                 return;
               }
-              const finalMime = recorder.mimeType || mimeType || chunks[0].type;
-              const blob = new Blob(chunks, { type: finalMime });
+              const firstType = validChunks[0] && validChunks[0].type ? validChunks[0].type : '';
+              const finalMime = recorder.mimeType || mimeType || firstType;
+              const blob = finalMime
+                ? new Blob(validChunks, { type: finalMime })
+                : new Blob(validChunks);
               if (state.userBlobs[lineId] && typeof URL !== 'undefined' && typeof URL.revokeObjectURL === 'function') {
                 try { URL.revokeObjectURL(state.userBlobs[lineId]); } catch (e) {}
               }
@@ -2783,7 +3842,7 @@
               }
               // Giải mã AudioBuffer Offline bằng AcousticAnalyzer (YIN + RMS Silence Gap + DTW)
               const analyzer = getAcousticAnalyzer();
-              if (analyzer && typeof analyzer.decodeAndAnalyzeBlob === 'function' && chunks.length > 0) {
+              if (analyzer && typeof analyzer.decodeAndAnalyzeBlob === 'function' && validChunks.length > 0) {
                 const targetHiraForLine = extractKanaReadingFromRubyHtml(line.jp) ||
                   katakanaToHiragana(normalizeNumbersToHiragana(normalizeJapaneseForCompare(line.rawJp || line.jp)));
                 const targetMorasForLine = splitIntoMoraTokens(targetHiraForLine);
@@ -2808,15 +3867,22 @@
                 }).catch(() => {});
               }
             } catch (err) {} finally {
+              stopStreamTracks(stream);
               if (activeMediaStream === stream) {
-                stream.getTracks().forEach(t => t.stop());
                 activeMediaStream = null;
               }
             }
           };
-          recorder.start();
+          try {
+            recorder.start(250);
+          } catch (_sliceErr) {
+            recorder.start();
+          }
           recordingStarted = true;
           resetSilenceTimer();
+        }
+        if (mobile && rec) {
+          startRecognitionEngine();
         }
       }).catch(captureFailed);
     }
@@ -2829,7 +3895,7 @@
 
     rec.lang = 'ja-JP';
     rec.continuous = true;
-    if (/Android/i.test(ua) || recognitionOnly) rec.continuous = false;
+    if (mobile || recognitionOnly) rec.continuous = false;
     rec.interimResults = true;
     rec.maxAlternatives = 3;
 
@@ -2891,7 +3957,7 @@
       if (!isCurrent() || recognitionEnded) return;
       recognitionEnded = true;
       recognitionEndTime = Date.now();
-      // Android may end recognition after one phrase while the recorder is still running.
+      // Android/iOS may end recognition after one phrase while the recorder is still running.
       if (mobile && wantsCapture && !captureError && !stopping) return;
       completeRecognition();
     };
@@ -2901,14 +3967,10 @@
     };
     rec.onend = onRecognitionEnd;
 
-    try {
-      if (!mobile || !wantsCapture) resetSilenceTimer();
-      activeMaxRecordTimer = setTimeout(finishRecordingDueToSilence, MAX_RECORD_TIMEOUT_MS);
-      rec.start();
-    } catch (e) {
-      errorCode = e?.name === 'NotAllowedError' ? 'not-allowed' : 'start-failed';
-      recognitionEnded = true;
-      if (!canRecord || recognitionOnly) completeRecognition();
+    if (!mobile || !wantsCapture) resetSilenceTimer();
+    activeMaxRecordTimer = setTimeout(finishRecordingDueToSilence, MAX_RECORD_TIMEOUT_MS);
+    if (!mobile || !wantsCapture) {
+      startRecognitionEngine();
     }
     return null;
   }
@@ -2932,6 +3994,8 @@
         rerender();
 
         const audio = new root.Audio(blobUrl);
+        audio.preload = 'auto';
+        if ('playsInline' in audio) audio.playsInline = true;
         activeUserAudio = audio;
         audio.onended = function() {
           if (state.playingUserVoiceLineId === lineId) {
@@ -3003,6 +4067,18 @@
       toggleLoopLine(lineId);
       return;
     }
+    playLine(lineId);
+  }
+
+  function onBubbleClick(lineId, ev) {
+    // Bỏ qua nếu người dùng đang bôi đen chữ để copy hoặc tra từ
+    try {
+      const sel = (typeof window !== 'undefined' && typeof window.getSelection === 'function')
+        ? window.getSelection()
+        : null;
+      if (sel && String(sel.toString() || '').trim().length > 0) return;
+    } catch (e) {}
+    if (ev && typeof ev.stopPropagation === 'function') ev.stopPropagation();
     playLine(lineId);
   }
 
@@ -3112,6 +4188,25 @@
 
   function toggleSlowAudio() {
     state.slowAudio = !state.slowAudio;
+    const nextRate = state.slowAudio ? 0.78 : 1.0;
+    if (activeContinuousAudio) {
+      try {
+        applyPreservePitch(activeContinuousAudio);
+        activeContinuousAudio.playbackRate = nextRate;
+      } catch (e) {}
+    }
+    if (activeSpriteAudio) {
+      try {
+        applyPreservePitch(activeSpriteAudio);
+        activeSpriteAudio.playbackRate = nextRate;
+      } catch (e) {}
+    }
+    const activeContainer = getActiveContainer();
+    if ((activeContinuousAudio || activeSpriteAudio) && activeContainer && typeof activeContainer.querySelectorAll === 'function') {
+      const slowBtns = activeContainer.querySelectorAll('button[onclick*="toggleSlowAudio"]');
+      slowBtns.forEach(btn => btn.classList.toggle('active', state.slowAudio));
+      return;
+    }
     rerender();
   }
 
@@ -3127,7 +4222,22 @@
 
   function setTab(tabName) {
     if (['dialogue', 'renshuu'].includes(tabName)) {
-      if (state.activeTab !== tabName) cancelRecording(false);
+      if (state.activeTab !== tabName) {
+        cancelRecording(false);
+        state.isPlayingAll = false;
+        state.playingLineId = null;
+        state.loopingLineId = null;
+        state.isRoleplaying = false;
+        if (masterTimer) {
+          clearTimeout(masterTimer);
+          masterTimer = null;
+        }
+        if (roleplayTimer) {
+          clearTimeout(roleplayTimer);
+          roleplayTimer = null;
+        }
+        stopKaiwaAudioResources();
+      }
       state.activeTab = tabName;
       rerender();
     }
@@ -3206,6 +4316,7 @@
 
   function selectRenshuuSub(rcId, subIdx) {
     cancelRecording(false);
+    stopAllKaiwaAudio();
     state.rcSubIndex[rcId] = subIdx;
     rerender();
   }
@@ -3250,12 +4361,15 @@
     playVoiceSample,
     playSpriteSegment,
     stopAllKaiwaAudio,
+    resolveActiveLineIndexAtTime,
+    getDialogueTimeBounds,
     cancelRecording,
     seekMasterPlayer,
     toggleLoopLine,
     onSpeakerDown,
     onSpeakerUp,
     onSpeakerClick,
+    onBubbleClick,
     onSpeakerContextMenu,
     togglePlayAll,
     recordLine,

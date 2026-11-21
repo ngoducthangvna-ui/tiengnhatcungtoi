@@ -352,10 +352,14 @@
   }
 
   function initHubState(initialTab) {
-    const validTabs = ['conjugation', 'notebook', 'reference', 'analytics'];
-    const safeTab = validTabs.includes(initialTab) ? initialTab : 'conjugation';
+    const validSubs = ['kana', 'counters', 'particles', 'time', 'keigo'];
+    let safeSub = 'kana';
+    if (typeof initialTab === 'string') {
+      const clean = initialTab.replace(/^ref-/, '');
+      if (validSubs.includes(clean)) safeSub = clean;
+    }
     return {
-      activeTab: safeTab,
+      activeTab: 'reference',
       conjMode: 'all',
       conjIndex: 0,
       conjScore: 0,
@@ -370,17 +374,14 @@
       nbFilter: 'all',
       nbSection: 'bookmarks',
       showAddBookmark: false,
-      refSubTab: 'kana',
+      refSubTab: safeSub,
       timeSection: 'timeline',
       checkedInToday: false
     };
   }
 
   const hubTabs = [
-    { id: 'conjugation', icon: 'bolt', label: 'Phản xạ', title: 'Trung tâm phản xạ' },
-    { id: 'notebook', icon: 'notebook', label: 'Sổ tay', title: 'Sổ tay cá nhân' },
-    { id: 'reference', icon: 'reference', label: 'Tra cứu', title: 'Tra cứu tiếng Nhật' },
-    { id: 'analytics', icon: 'radar', label: 'Phân tích JLPT', title: 'Phân tích JLPT' }
+    { id: 'reference', icon: 'reference', label: 'Tra cứu', title: 'Tra cứu tiếng Nhật' }
   ];
 
   function renderTabsNav(activeTab) {
@@ -846,18 +847,72 @@
     `;
   }
 
+  const referenceTopicsMeta = {
+    kana: {
+      id: 'kana',
+      icon: 'reference',
+      label: 'Kana & Biến Âm (150)',
+      heroTitle: 'Bảng Chữ Cái Kana & Biến Âm (五十音)',
+      heroBadge: '150 Chữ Kana'
+    },
+    counters: {
+      id: 'counters',
+      icon: 'cards',
+      label: 'Lượng Từ (10 nhóm)',
+      heroTitle: 'Bảng Đếm Lượng Từ & Biến Âm Rendaku (助数詞)',
+      heroBadge: '10 Nhóm Lượng Từ'
+    },
+    particles: {
+      id: 'particles',
+      icon: 'bolt',
+      label: 'Trợ Từ Đối Chiếu (16 cặp)',
+      heroTitle: 'Bảng Đối Chiếu 16 Cặp Trợ Từ Trọng Tâm N5 – N4',
+      heroBadge: '16 Cặp Trợ Từ'
+    },
+    time: {
+      id: 'time',
+      icon: 'timer',
+      label: 'Thời gian &amp; 5W1H',
+      heroTitle: 'Hệ Thống Mốc Thời Gian, Phó Từ &amp; Từ Hỏi 5W1H',
+      heroBadge: '6 Nhóm Thời Gian'
+    },
+    keigo: {
+      id: 'keigo',
+      icon: 'star',
+      label: 'Tự–tha động từ &amp; Kính ngữ',
+      heroTitle: 'Cặp Tự – Tha Động Từ &amp; Bảng Kính Ngữ N4 Trọng Tâm',
+      heroBadge: '12 Cặp & Kính Ngữ'
+    }
+  };
+
   function renderReferenceSubTabsNav(activeSub) {
     const subs = [
-      { id: 'kana', label: '五十音 Kana & Biến Âm (150)' },
-      { id: 'counters', label: '助数詞 Lượng Từ (10 nhóm)' },
-      { id: 'particles', label: '⚡ Trợ Từ Đối Chiếu (16 cặp)' },
-      { id: 'time', label: 'Thời gian &amp; 5W1H' },
-      { id: 'keigo', label: 'Tự–tha động từ &amp; Kính ngữ' }
+      referenceTopicsMeta.kana,
+      referenceTopicsMeta.counters,
+      referenceTopicsMeta.particles,
+      referenceTopicsMeta.time,
+      referenceTopicsMeta.keigo
     ];
     const buttons = subs.map((s) => (
-      `<button type="button" class="ms-subtab-btn ${activeSub === s.id ? 'is-active' : ''}" data-ms-action="ref-subtab" data-sub="${s.id}">${s.label}</button>`
+      `<button type="button" role="tab" aria-selected="${activeSub === s.id ? 'true' : 'false'}" class="ms-subtab-btn ${activeSub === s.id ? 'is-active' : ''}" data-ms-action="ref-subtab" data-sub="${s.id}">${getMsIcon(s.icon)} <span>${s.label}</span></button>`
     )).join('');
-    return `<div class="ms-subtab-bar">${buttons}</div>`;
+    return `<div class="ms-subtab-bar" role="tablist" aria-label="Chuyên đề tra cứu tiếng Nhật">${buttons}</div>`;
+  }
+
+  function renderReferenceHeroCard(activeSub) {
+    const meta = referenceTopicsMeta[activeSub] || referenceTopicsMeta.kana;
+    return `
+      <div class="lesson-hero-card">
+        <div class="hero-top-row">
+          <div class="hero-meta">
+            <span class="badge badge-sakura">Tra Cứu Nhanh</span>
+            <span class="badge badge-green">5 Chuyên Đề</span>
+            <span class="badge badge-primary">${meta.heroBadge}</span>
+          </div>
+        </div>
+        <h2 class="lesson-title" id="ms-hub-title">${meta.heroTitle}</h2>
+      </div>
+    `;
   }
 
   function renderKanaTopic(ref) {
@@ -883,11 +938,35 @@
     }).join('');
 
     return `
-      <div class="ms-grid-2col">
-        <div class="ms-card"><h4 class="ms-section-subtitle">Bảng Hiragana (46 chữ cơ bản - Chạm để nghe)</h4><div class="ms-kana-grid">${hiraCards}</div></div>
-        <div class="ms-card"><h4 class="ms-section-subtitle">Bảng Katakana (46 chữ cơ bản - Chạm để nghe)</h4><div class="ms-kana-grid">${kataCards}</div></div>
-        <div class="ms-card"><h4 class="ms-section-subtitle">Bảng Đục Âm Dakuon / Handakuon (25 chữ - Kèm từ mẫu)</h4><div class="ms-kana-grid">${dakuonCards}</div></div>
-        <div class="ms-card"><h4 class="ms-section-subtitle">Bảng Ảo Âm Yoon (33 chữ ghép - Kèm từ mẫu)</h4><div class="ms-kana-grid">${yoonCards}</div></div>
+      <div class="ms-panel-stack">
+        <details class="ms-details-drawer ms-topic-card">
+          <summary class="ms-details-summary ms-topic-summary">
+            <span class="ms-topic-title">Bảng Hiragana (46 chữ cơ bản - Chạm để nghe)</span>
+            <span class="ms-badge-indigo">46 chữ</span>
+          </summary>
+          <div class="ms-details-body"><div class="ms-kana-grid">${hiraCards}</div></div>
+        </details>
+        <details class="ms-details-drawer ms-topic-card">
+          <summary class="ms-details-summary ms-topic-summary">
+            <span class="ms-topic-title">Bảng Katakana (46 chữ cơ bản - Chạm để nghe)</span>
+            <span class="ms-badge-indigo">46 chữ</span>
+          </summary>
+          <div class="ms-details-body"><div class="ms-kana-grid">${kataCards}</div></div>
+        </details>
+        <details class="ms-details-drawer ms-topic-card">
+          <summary class="ms-details-summary ms-topic-summary">
+            <span class="ms-topic-title">Bảng Đục Âm Dakuon / Handakuon (25 chữ - Kèm từ mẫu)</span>
+            <span class="ms-badge-crimson">25 chữ</span>
+          </summary>
+          <div class="ms-details-body"><div class="ms-kana-grid">${dakuonCards}</div></div>
+        </details>
+        <details class="ms-details-drawer ms-topic-card">
+          <summary class="ms-details-summary ms-topic-summary">
+            <span class="ms-topic-title">Bảng Ảo Âm Yoon (33 chữ ghép - Kèm từ mẫu)</span>
+            <span class="ms-badge-crimson">33 chữ</span>
+          </summary>
+          <div class="ms-details-body"><div class="ms-kana-grid">${yoonCards}</div></div>
+        </details>
       </div>
     `;
   }
@@ -916,19 +995,18 @@
       }).join('');
 
       phoneticHtml = `
-        <div class="ms-card ms-phonetic-rules-card" style="grid-column: 1 / -1;margin-bottom:0.5rem;">
-          <details class="ms-details-drawer" open>
-            <summary class="ms-details-summary" style="padding:0.2rem 0;font-size:0.95rem;font-weight:700;">
-              <span class="ms-badge-crimson" style="display:inline-flex;">${getMsIcon('lightbulb')} ${escapeHtml(phoneticData.title || 'Hộp Quy Tắc Biến Âm Rendaku')}</span>
-            </summary>
-            <div class="ms-details-body" style="padding-top:0.4rem;">
-              ${phoneticData.summary ? `<p class="ms-subtext" style="margin-bottom:0.4rem;">${escapeHtml(phoneticData.summary)}</p>` : ''}
-              <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(260px, 1fr));gap:0.4rem;">
-                ${ruleItems}
-              </div>
+        <details class="ms-details-drawer ms-topic-card ms-phonetic-rules-card">
+          <summary class="ms-details-summary ms-topic-summary">
+            <span class="ms-topic-title">${getMsIcon('lightbulb')} ${escapeHtml(phoneticData.title || 'Hộp Quy Tắc Biến Âm Rendaku')}</span>
+            <span class="ms-badge-crimson">${phoneticData.rules.length} quy tắc</span>
+          </summary>
+          <div class="ms-details-body">
+            ${phoneticData.summary ? `<p class="ms-subtext" style="margin-bottom:0.5rem;">${escapeHtml(phoneticData.summary)}</p>` : ''}
+            <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(260px, 1fr));gap:0.5rem;">
+              ${ruleItems}
             </div>
-          </details>
-        </div>
+          </div>
+        </details>
       `;
     }
 
@@ -938,17 +1016,19 @@
       )).join('');
 
       return `
-        <div class="ms-card">
-          <div class="ms-card-header">
+        <details class="ms-details-drawer ms-topic-card ms-card">
+          <summary class="ms-details-summary ms-topic-summary">
             <strong class="ms-jp-text">${escapeHtml(c.kanji)} (${escapeHtml(c.reading)})</strong>
             <span class="ms-badge-indigo">${escapeHtml(c.meaning)}</span>
+          </summary>
+          <div class="ms-details-body">
+            <p class="ms-subtext" style="margin-bottom:0.55rem;">${escapeHtml(c.usage || '')}</p>
+            <div class="ms-counter-chips">${chips}</div>
           </div>
-          <p class="ms-subtext">${escapeHtml(c.usage || '')}</p>
-          <div class="ms-counter-chips">${chips}</div>
-        </div>
+        </details>
       `;
     }).join('');
-    return `<div class="ms-grid-2col">${phoneticHtml}${cards}</div>`;
+    return `<div class="ms-panel-stack">${phoneticHtml}${cards}</div>`;
   }
 
   function renderParticlesTopic(ref) {
@@ -971,20 +1051,20 @@
     }
 
     const cards = uniqueParticles.map((p) => {
-      const p1Desc = p.p1 ? `<div class="ms-subtext" style="margin-bottom:2px;"><strong class="ms-badge-indigo" style="font-size:0.75rem;padding:0.1rem 0.4rem;margin-right:0.3rem;">${escapeHtml(p.p1.name)}</strong>${escapeHtml(p.p1.coreRole || '')}</div>` : '';
-      const p2Desc = p.p2 ? `<div class="ms-subtext" style="margin-bottom:2px;"><strong class="ms-badge-crimson" style="font-size:0.75rem;padding:0.1rem 0.4rem;margin-right:0.3rem;">${escapeHtml(p.p2.name)}</strong>${escapeHtml(p.p2.coreRole || '')}</div>` : '';
+      const p1Desc = p.p1 ? `<div class="ms-subtext" style="margin-bottom:4px;"><strong class="ms-badge-indigo" style="font-size:0.75rem;padding:0.1rem 0.45rem;margin-right:0.35rem;">${escapeHtml(p.p1.name)}</strong>${escapeHtml(p.p1.coreRole || '')}</div>` : '';
+      const p2Desc = p.p2 ? `<div class="ms-subtext" style="margin-bottom:4px;"><strong class="ms-badge-crimson" style="font-size:0.75rem;padding:0.1rem 0.45rem;margin-right:0.35rem;">${escapeHtml(p.p2.name)}</strong>${escapeHtml(p.p2.coreRole || '')}</div>` : '';
       const formulaHtml = p.formula ? `<div class="ms-formula-tag" style="margin:0.35rem 0;">${escapeHtml(p.formula)}</div>` : '';
 
       const examplesHtml = (p.examples || []).map((ex) => {
         const speakText = ex.reading || ex.jp || '';
         return `
-          <div class="ms-example-item" style="padding:0.35rem 0.5rem;background:rgba(255,255,255,0.03);border-radius:6px;margin-top:0.35rem;display:flex;align-items:flex-start;justify-content:space-between;gap:0.5rem;">
+          <div class="ms-example-item">
             <div>
-              <div class="ms-jp-text" style="font-size:0.95rem;font-weight:600;">${escapeHtml(ex.jp || '')}</div>
-              <div class="ms-subtext" style="font-size:0.8rem;color:var(--ms-muted);">${escapeHtml(ex.reading || '')}</div>
-              <div style="font-size:0.85rem;margin-top:2px;">${escapeHtml(ex.vi || '')}</div>
+              <div class="ms-jp-text" lang="ja">${escapeHtml(ex.jp || '')}</div>
+              <div class="ms-subtext ms-reference-reading" lang="ja">${escapeHtml(ex.reading || '')}</div>
+              <div style="font-size:0.88rem;margin-top:2px;">${escapeHtml(ex.vi || '')}</div>
             </div>
-            ${speakText ? `<button type="button" class="ms-action-btn-sm" data-ms-action="speak-jp" data-jp="${escapeHtml(speakText)}" title="Nghe câu ví dụ" style="flex-shrink:0;">${getMsIcon('speaker')}</button>` : ''}
+            ${speakText ? `<button type="button" class="speak-btn ms-audio-mini-btn" data-ms-action="speak-jp" data-jp="${escapeHtml(speakText)}" title="Nghe câu ví dụ" aria-label="Nghe câu ví dụ">${getMsIcon('speaker')}</button>` : ''}
           </div>
         `;
       }).join('');
@@ -992,24 +1072,22 @@
       const count = (p.examples || []).length;
 
       return `
-        <div class="ms-card">
-          <div class="ms-card-header"><strong class="ms-jp-text">${escapeHtml(p.pairTitle)}</strong></div>
-          ${formulaHtml}
-          ${p1Desc}
-          ${p2Desc}
-          <div class="ms-rule-box" style="margin:0.4rem 0;">${getMsIcon('lightbulb')} <strong>Quy tắc cốt lõi:</strong> ${escapeHtml(p.keyRule || '')}</div>
-          ${examplesHtml ? `
-            <details class="ms-details-drawer" open>
-              <summary class="ms-details-summary">▸ Ví dụ song ngữ (${count} câu)</summary>
-              <div class="ms-details-body">
-                <div class="ms-example-list">${examplesHtml}</div>
-              </div>
-            </details>
-          ` : ''}
-        </div>
+        <details class="ms-details-drawer ms-topic-card ms-card">
+          <summary class="ms-details-summary ms-topic-summary">
+            <strong class="ms-jp-text">${escapeHtml(p.pairTitle)}</strong>
+            <span class="ms-badge-indigo">${count} ví dụ</span>
+          </summary>
+          <div class="ms-details-body">
+            ${formulaHtml}
+            ${p1Desc}
+            ${p2Desc}
+            <div class="ms-rule-box" style="margin:0.4rem 0;">${getMsIcon('lightbulb')} <strong>Quy tắc cốt lõi:</strong> ${escapeHtml(p.keyRule || '')}</div>
+            ${examplesHtml ? `<div class="ms-example-list"><div class="ms-subtext" style="font-weight:700;margin-top:0.2rem;">Ví dụ song ngữ (${count} câu):</div>${examplesHtml}</div>` : ''}
+          </div>
+        </details>
       `;
     }).join('');
-    return `<div class="ms-grid-2col">${cards}</div>`;
+    return `<div class="ms-panel-stack">${cards}</div>`;
   }
 
   const timeSections = [
@@ -1020,7 +1098,7 @@
 
   function renderReferenceAudio(text, label) {
     if (!text) return '';
-    return `<button type="button" class="ms-audio-mini-btn" data-ms-action="speak-jp" data-jp="${escapeHtml(text)}" aria-label="${escapeHtml(label)}">${getMsIcon('speaker')}</button>`;
+    return `<button type="button" class="speak-btn ms-audio-mini-btn" data-ms-action="speak-jp" data-jp="${escapeHtml(text)}" aria-label="${escapeHtml(label)}" title="${escapeHtml(label)}">${getMsIcon('speaker')}</button>`;
   }
 
   function renderReferenceTerm(jp, reading, meaning) {
@@ -1036,7 +1114,7 @@
     `;
   }
 
-  function renderTimeGroup(row, index) {
+  function renderTimeGroup(row) {
     const cells = [row.twoAgo || row.past2, row.oneAgo || row.past1, row.current || row.present, row.oneAhead || row.future1, row.twoAhead || row.future2];
     const entries = cells.map((cell, position) => {
       if (!cell) return '';
@@ -1044,9 +1122,14 @@
       return `<li class="ms-reference-entry ${position === 2 ? 'is-current' : ''}">${renderReferenceTerm(term.kanji, term.reading, term.vi)}</li>`;
     }).join('');
     return `
-      <details class="ms-details-drawer ms-time-group" name="ms-time-units" ${index === 0 ? 'open' : ''}>
-        <summary class="ms-details-summary">${escapeHtml(row.rowTitle || row.dimension || 'Mốc thời gian')}</summary>
-        <ul class="ms-time-list ms-time-timeline">${entries}</ul>
+      <details class="ms-details-drawer ms-topic-card ms-time-group" name="ms-time-units">
+        <summary class="ms-details-summary ms-topic-summary">
+          <span class="ms-topic-title">${escapeHtml(row.rowTitle || row.dimension || 'Mốc thời gian')}</span>
+          <span class="ms-badge-indigo">5 mốc</span>
+        </summary>
+        <div class="ms-details-body">
+          <ul class="ms-time-list ms-time-timeline">${entries}</ul>
+        </div>
       </details>
     `;
   }
@@ -1056,18 +1139,23 @@
     const example = entry.exampleJp || entry.example;
     return `
       <li class="ms-reference-entry">
-        ${renderReferenceTerm(entry.jp, entry.reading, entry.meaning)}
-        ${usage ? `<p class="ms-time-usage">${escapeHtml(usage)}</p>` : ''}
-        ${example ? `<details class="ms-details-drawer ms-reference-example">
-          <summary class="ms-details-summary">Ví dụ</summary>
-          <div class="ms-reference-term">
-            <div>
-              <p lang="ja">${escapeHtml(example)}</p>
-              ${entry.exampleVi ? `<p class="ms-time-usage">${escapeHtml(entry.exampleVi)}</p>` : ''}
-            </div>
-            ${renderReferenceAudio(entry.exampleJp, `Nghe ví dụ cho ${entry.jp}`)}
+        <details class="ms-details-drawer ms-topic-card">
+          <summary class="ms-details-summary ms-topic-summary">
+            <span class="ms-topic-title"><strong class="ms-jp-text" lang="ja">${escapeHtml(entry.jp)}</strong> ${entry.reading && entry.reading !== entry.jp ? `<span class="ms-reference-reading" lang="ja">(${escapeHtml(entry.reading)})</span>` : ''}</span>
+            <span class="ms-badge-indigo">${escapeHtml(entry.meaning || '')}</span>
+          </summary>
+          <div class="ms-details-body">
+            ${renderReferenceTerm(entry.jp, entry.reading, entry.meaning)}
+            ${usage ? `<p class="ms-time-usage">${escapeHtml(usage)}</p>` : ''}
+            ${example ? `<div class="ms-reference-term" style="margin-top:0.4rem;padding-top:0.4rem;border-top:1px dashed var(--ms-border);">
+              <div>
+                <p class="ms-jp-text" lang="ja" style="margin:0;">${escapeHtml(example)}</p>
+                ${entry.exampleVi ? `<p class="ms-time-usage">${escapeHtml(entry.exampleVi)}</p>` : ''}
+              </div>
+              ${renderReferenceAudio(entry.exampleJp, `Nghe ví dụ cho ${entry.jp}`)}
+            </div>` : ''}
           </div>
-        </details>` : ''}
+        </details>
       </li>
     `;
   }
@@ -1105,7 +1193,7 @@
           <details class="ms-details-drawer ms-reference-example">
             <summary class="ms-details-summary">Ví dụ</summary>
             <div class="ms-reference-term">
-              <p lang="ja">${escapeHtml(term.example)}</p>
+              <p class="ms-jp-text" lang="ja" style="margin:0;">${escapeHtml(term.example)}</p>
               ${renderReferenceAudio(term.example, `Nghe ví dụ cho ${term.jp}`)}
             </div>
           </details>` : ''}
@@ -1117,14 +1205,16 @@
     const keigoRows = (ref.keigoTable || []).map((k) => {
       const plain = k.dict || k.plain || '';
       const egHtml = k.exampleJp
-        ? `<div style="font-size:0.78rem;color:var(--ms-muted);margin-top:2px;">
-            VD: <span class="ms-jp-text">${escapeHtml(k.exampleJp)}</span>
-            ${k.exampleVi ? `<br><span style="color:var(--ms-text);">${escapeHtml(k.exampleVi)}</span>` : ''}
-            <button type="button" class="ms-action-btn-sm" data-ms-action="speak-jp" data-jp="${escapeHtml(k.exampleJp)}" style="padding:1px 4px;font-size:0.68rem;">${getMsIcon('speaker')}</button>
+        ? `<div class="ms-keigo-example">
+            <div>
+              <span class="ms-subtext">VD:</span> <span class="ms-jp-text">${escapeHtml(k.exampleJp)}</span>
+              ${k.exampleVi ? `<div class="ms-subtext" style="color:var(--ms-text);margin-top:2px;">${escapeHtml(k.exampleVi)}</div>` : ''}
+            </div>
+            <button type="button" class="speak-btn ms-audio-mini-btn" data-ms-action="speak-jp" data-jp="${escapeHtml(k.exampleJp)}" aria-label="Nghe ví dụ ${escapeHtml(plain)}" title="Nghe câu ví dụ">${getMsIcon('speaker')}</button>
           </div>`
         : '';
       return `
-        <tr>
+        <tr class="vocab-row">
           <td class="ms-jp-text"><strong>${escapeHtml(plain)}</strong></td>
           <td class="ms-jp-text" style="color:var(--ms-crimson);"><strong>${escapeHtml(k.sonkeigo || '')}</strong></td>
           <td class="ms-jp-text" style="color:var(--ms-indigo);"><strong>${escapeHtml(k.kenjougo || '')}</strong></td>
@@ -1139,27 +1229,42 @@
 
     const transCards = (ref.transitivityPairs || []).map((t) => {
       const ruleText = t.ruleHint || t.note || '';
+      const intr = t.intransitive && typeof t.intransitive === 'object' ? t.intransitive.jp : '';
+      const tr = t.transitive && typeof t.transitive === 'object' ? t.transitive.jp : '';
+      const pairPreview = (intr && tr) ? `${intr} ⇄ ${tr}` : 'Tự – Tha';
       return `
-        <li class="ms-card ms-transitivity-card">
-          <h3 class="ms-section-subtitle">${escapeHtml(t.meaning || 'Cặp động từ')}</h3>
-          <div class="ms-transitivity-sides">
-            ${renderTransitivitySide(t.intransitive, 'Tự động từ')}
-            ${renderTransitivitySide(t.transitive, 'Tha động từ')}
-          </div>
-          ${ruleText ? `<p class="ms-time-usage">${escapeHtml(ruleText)}</p>` : ''}
+        <li class="ms-transitivity-item">
+          <details class="ms-details-drawer ms-topic-card ms-card ms-transitivity-card">
+            <summary class="ms-details-summary ms-topic-summary">
+              <span class="ms-topic-title">${escapeHtml(t.meaning || 'Cặp động từ')}</span>
+              <span class="ms-badge-indigo" lang="ja">${escapeHtml(pairPreview)}</span>
+            </summary>
+            <div class="ms-details-body">
+              <div class="ms-transitivity-sides">
+                ${renderTransitivitySide(t.intransitive, 'Tự động từ')}
+                ${renderTransitivitySide(t.transitive, 'Tha động từ')}
+              </div>
+              ${ruleText ? `<div class="ms-rule-box" style="margin:0.45rem 0 0 0;">${getMsIcon('lightbulb')} ${escapeHtml(ruleText)}</div>` : ''}
+            </div>
+          </details>
         </li>
       `;
     }).join('');
 
     return `
       <div class="ms-panel-stack">
-        <details class="ms-details-drawer ms-reference-example">
-          <summary class="ms-details-summary">Bảng kính ngữ N4</summary>
-          <div class="ms-table-wrap">
-            <table class="ms-table">
-              <thead><tr><th>Thể thường</th><th>Tôn kính ngữ (Sonkeigo)</th><th>Khiêm nhường ngữ (Kenjougo)</th><th>Lịch sự (Teineigo)</th><th>Ý nghĩa &amp; Câu ví dụ</th></tr></thead>
-              <tbody>${keigoRows}</tbody>
-            </table>
+        <details class="ms-details-drawer ms-topic-card ms-card ms-reference-example">
+          <summary class="ms-details-summary ms-topic-summary">
+            <span class="ms-topic-title">${getMsIcon('star')} Bảng Kính Ngữ N4 Trọng Tâm (12 Động Từ Đặc Biệt)</span>
+            <span class="ms-badge-crimson">12 động từ</span>
+          </summary>
+          <div class="ms-details-body">
+            <div class="table-container ms-table-wrap">
+              <table class="vocab-table ms-table">
+                <thead><tr><th>Thể thường</th><th>Tôn kính ngữ (Sonkeigo)</th><th>Khiêm nhường ngữ (Kenjougo)</th><th>Lịch sự (Teineigo)</th><th>Ý nghĩa &amp; Câu ví dụ</th></tr></thead>
+                <tbody>${keigoRows}</tbody>
+              </table>
+            </div>
           </div>
         </details>
         <ul class="ms-transitivity-list" aria-label="Các cặp tự động từ và tha động từ">${transCards}</ul>
@@ -1167,7 +1272,7 @@
     `;
   }
 
-  function buildReferenceTabHtml(state) {
+  function buildReferenceStageHtml(state) {
     const ref = refData || root.REFERENCE_HUB_DATA || { hiragana: [], katakana: [], counters: [], particles: [] };
     const sub = state.refSubTab || 'kana';
 
@@ -1179,8 +1284,16 @@
     else bodyHtml = renderKeigoTopic(ref);
 
     return `
+      ${renderReferenceHeroCard(sub)}
+      <div class="ms-reference-body">${bodyHtml}</div>
+    `;
+  }
+
+  function buildReferenceTabHtml(state) {
+    const sub = state.refSubTab || 'kana';
+    return `
       ${renderReferenceSubTabsNav(sub)}
-      <div style="margin-top:0.75rem;">${bodyHtml}</div>
+      ${buildReferenceStageHtml(state)}
     `;
   }
 
@@ -1380,6 +1493,10 @@
     const validTabs = ['conjugation', 'notebook', 'reference', 'analytics'];
     if (!validTabs.includes(targetTab)) return false;
     if (state.activeTab === targetTab) return true;
+    const prevIdx = validTabs.indexOf(state.activeTab);
+    const nextIdx = validTabs.indexOf(targetTab);
+    state._navDir = nextIdx >= prevIdx ? 'next' : 'prev';
+    state._shouldAnimateTab = true;
     state.activeTab = targetTab;
     state.conjFeedback = null;
     updateView();
@@ -1608,13 +1725,7 @@
       return true;
     }
     if (action === 'ref-subtab') {
-      const sub = actionBtn.getAttribute('data-sub') || 'kana';
-      const validSubs = ['kana', 'counters', 'particles', 'time', 'keigo'];
-      const safeSub = validSubs.includes(sub) ? sub : 'kana';
-      if (state.refSubTab === safeSub) return true;
-      state.refSubTab = safeSub;
-      updateView();
-      return true;
+      return activateRefSubtab(actionBtn, state, updateView);
     }
     if (action === 'speak-jp') {
       speakItem(actionBtn.getAttribute('data-jp'), 'ja-JP', actionBtn);
@@ -1695,6 +1806,149 @@
     return false;
   }
 
+  function activateRefSubtab(actionBtn, state, updateView) {
+    const sub = actionBtn.getAttribute('data-sub') || 'kana';
+    const validSubs = ['kana', 'counters', 'particles', 'time', 'keigo'];
+    const safeSub = validSubs.includes(sub) ? sub : 'kana';
+    if (state.refSubTab === safeSub) return true;
+    const prevSubIdx = validSubs.indexOf(state.refSubTab || 'kana');
+    const nextSubIdx = validSubs.indexOf(safeSub);
+    state._navDir = nextSubIdx >= prevSubIdx ? 'next' : 'prev';
+    state._shouldAnimateTab = true;
+    state.refSubTab = safeSub;
+    updateView();
+
+    const modId = `ref-${safeSub}`;
+    if (typeof root.syncActiveModuleRoute === 'function') {
+      root.syncActiveModuleRoute(modId);
+      return true;
+    }
+    if (typeof root.currentActiveId !== 'undefined') {
+      root.currentActiveId = modId;
+    }
+    if (typeof root.safeSetStorage === 'function') {
+      root.safeSetStorage('minna_last_active_id', modId);
+    }
+    if (typeof window !== 'undefined' && window.location) {
+      try { window.location.hash = modId; } catch (_err) {}
+    }
+    if (typeof document !== 'undefined' && document.querySelectorAll) {
+      document.querySelectorAll('.menu-item-btn').forEach(btn => {
+        const bid = btn.getAttribute('data-id');
+        if (bid) {
+          btn.classList.toggle('active', bid === modId || (safeSub === 'kana' && bid === 'reference-hub'));
+        }
+      });
+    }
+    return true;
+  }
+
+  function syncSubtabBarScroll(bar) {
+    if (!bar || typeof bar.querySelector !== 'function') return;
+    if (!bar.scrollWidth || !bar.clientWidth || bar.scrollWidth <= bar.clientWidth) return;
+    const activeBtn = bar.querySelector('.ms-subtab-btn.is-active');
+    if (!activeBtn) return;
+    const targetLeft = activeBtn.offsetLeft - ((bar.clientWidth - activeBtn.offsetWidth) / 2);
+    const maxLeft = Math.max(0, bar.scrollWidth - bar.clientWidth);
+    const clamped = Math.max(0, Math.min(maxLeft, targetLeft));
+    if (typeof bar.scrollTo === 'function') {
+      try { bar.scrollTo({ left: clamped, behavior: 'smooth' }); return; } catch (_err) {}
+    }
+    bar.scrollLeft = clamped;
+  }
+
+  function startMouseBarDrag(bar, downEvent) {
+    if (downEvent.button !== 0 || bar.scrollWidth <= bar.clientWidth) return;
+    const startX = downEvent.clientX;
+    const startScrollLeft = bar.scrollLeft;
+    let dragged = false;
+    const onMove = (mv) => {
+      if (mv.pointerId !== downEvent.pointerId) return;
+      const dx = mv.clientX - startX;
+      if (!dragged && Math.abs(dx) > 6) {
+        dragged = true;
+        bar.classList.add('is-dragging');
+      }
+      if (dragged) bar.scrollLeft = startScrollLeft - dx;
+    };
+    const onEnd = (up) => {
+      if (up.pointerId !== downEvent.pointerId) return;
+      if (typeof window !== 'undefined' && window.removeEventListener) {
+        window.removeEventListener('pointermove', onMove);
+        window.removeEventListener('pointerup', onEnd);
+        window.removeEventListener('pointercancel', onEnd);
+      }
+      bar.classList.remove('is-dragging');
+      if (dragged) bar._msSuppressClickUntil = Date.now() + 140;
+    };
+    if (typeof window !== 'undefined' && window.addEventListener) {
+      window.addEventListener('pointermove', onMove, { passive: true });
+      window.addEventListener('pointerup', onEnd, { passive: true });
+      window.addEventListener('pointercancel', onEnd, { passive: true });
+    }
+  }
+
+  function bindSubtabBarGestures(bar, onActivateSub) {
+    if (!bar || typeof bar.addEventListener !== 'function') return;
+    if (bar.dataset && bar.dataset.msGesturesBound === '1') return;
+    if (bar.dataset) bar.dataset.msGesturesBound = '1';
+
+    let tapState = null;
+    const startTap = (id, target, x, y) => {
+      const btn = target && target.closest ? target.closest('.ms-subtab-btn') : null;
+      tapState = { id, btn, sub: btn ? btn.getAttribute('data-sub') : null, x, y, t: Date.now(), moved: false };
+    };
+    const trackTapMove = (id, x, y) => {
+      if (!tapState || tapState.id !== id || tapState.moved) return;
+      if (Math.hypot(x - tapState.x, y - tapState.y) > 10) tapState.moved = true;
+    };
+    const finishTap = (id) => {
+      if (!tapState || tapState.id !== id) return;
+      const cur = tapState;
+      tapState = null;
+      if (cur.moved || !cur.btn || (Date.now() - cur.t) >= 700) return;
+      bar._msTouchHandledUntil = Date.now() + 450;
+      bar._msTouchHandledSub = cur.sub;
+      onActivateSub(cur.btn);
+    };
+
+    if (typeof root.PointerEvent !== 'undefined') {
+      bar.addEventListener('pointerdown', (e) => (
+        e.pointerType === 'mouse' ? startMouseBarDrag(bar, e) : startTap(e.pointerId, e.target, e.clientX, e.clientY)
+      ), { passive: true });
+      bar.addEventListener('pointermove', (e) => {
+        if (e.pointerType !== 'mouse') trackTapMove(e.pointerId, e.clientX, e.clientY);
+      }, { passive: true });
+      bar.addEventListener('pointerup', (e) => {
+        if (e.pointerType !== 'mouse') finishTap(e.pointerId);
+      }, { passive: true });
+      bar.addEventListener('pointercancel', (e) => {
+        if (tapState && tapState.id === e.pointerId) tapState = null;
+      }, { passive: true });
+      return;
+    }
+    bar.addEventListener('touchstart', (e) => {
+      if (e.touches && e.touches.length === 1) startTap(e.touches[0].identifier, e.target, e.touches[0].clientX, e.touches[0].clientY);
+    }, { passive: true });
+    bar.addEventListener('touchmove', (e) => {
+      if (e.touches && e.touches.length === 1) trackTapMove(e.touches[0].identifier, e.touches[0].clientX, e.touches[0].clientY);
+    }, { passive: true });
+    bar.addEventListener('touchend', (e) => {
+      const t = e.changedTouches && e.changedTouches[0];
+      if (t) finishTap(t.identifier);
+    }, { passive: true });
+    bar.addEventListener('touchcancel', () => { tapState = null; }, { passive: true });
+  }
+
+  function shouldIgnoreSubtabClick(actionBtn) {
+    const bar = actionBtn.closest ? actionBtn.closest('.ms-subtab-bar') : null;
+    if (!bar) return false;
+    const now = Date.now();
+    if (bar._msSuppressClickUntil && now < bar._msSuppressClickUntil) return true;
+    const sub = actionBtn.getAttribute('data-sub');
+    return Boolean(bar._msTouchHandledUntil && now < bar._msTouchHandledUntil && bar._msTouchHandledSub === sub);
+  }
+
   function handleContainerClick(e, state, updateView, container) {
     if (handleTabSwitch(e, state, updateView, container)) return;
     const actionBtn = e.target && e.target.closest ? e.target.closest('[data-ms-action]') : null;
@@ -1702,6 +1956,7 @@
     const tagName = actionBtn.tagName ? actionBtn.tagName.toUpperCase() : '';
     if (tagName === 'SELECT' || tagName === 'OPTION') return;
     const action = actionBtn.getAttribute('data-ms-action');
+    if (action === 'ref-subtab' && shouldIgnoreSubtabClick(actionBtn)) return;
     if (handleConjAction(action, actionBtn, state, updateView)) return;
     if (handleNotebookAction(action, actionBtn, state, updateView, container)) return;
     handleToolsAction(action, actionBtn, state, updateView, container);
@@ -1758,23 +2013,52 @@
     }
   }
 
-  function renderMasterHub(container, initialTab = 'conjugation') {
+  function renderMasterHub(container, initialTab = 'reference') {
     if (!container) return null;
     const state = initHubState(initialTab);
+    if (root && root.StudyToolsEngine) {
+      root.StudyToolsEngine.state = state;
+    }
     const updateView = () => {
-      let tabContent = '';
-      if (state.activeTab === 'conjugation') tabContent = buildConjugationTabHtml(state);
-      else if (state.activeTab === 'notebook') tabContent = buildNotebookTabHtml(state);
-      else if (state.activeTab === 'reference') tabContent = buildReferenceTabHtml(state);
-      else tabContent = buildAnalyticsToolsTabHtml(state);
+      const sub = state.refSubTab || 'kana';
+      const animClass = state._shouldAnimateTab ? ' ms-tab-panel-entering' : '';
+      const navDir = state._navDir || 'up';
+      const shouldAnimate = Boolean(state._shouldAnimateTab);
+      const animDirAttr = shouldAnimate ? ` data-ms-dir="${navDir}"` : '';
+      state._shouldAnimateTab = false;
+
+      const existingBar = typeof container.querySelector === 'function' ? container.querySelector('.ms-subtab-bar') : null;
+      const existingPanel = typeof container.querySelector === 'function' ? container.querySelector('.ms-tab-panel') : null;
+
+      if (existingBar && existingPanel && existingPanel.parentNode) {
+        existingBar.querySelectorAll('.ms-subtab-btn').forEach((btn) => {
+          const isActive = btn.getAttribute('data-sub') === sub;
+          btn.classList.toggle('is-active', isActive);
+          btn.setAttribute('aria-selected', isActive ? 'true' : 'false');
+        });
+        const nextPanel = existingPanel.cloneNode(false);
+        nextPanel.className = `ms-tab-panel${animClass}`;
+        if (shouldAnimate) nextPanel.setAttribute('data-ms-dir', navDir);
+        else nextPanel.removeAttribute('data-ms-dir');
+        nextPanel.innerHTML = buildReferenceStageHtml(state);
+        existingPanel.parentNode.replaceChild(nextPanel, existingPanel);
+        syncSubtabBarScroll(existingBar);
+        return;
+      }
 
       container.innerHTML = `
         <section class="ms-hub-wrapper" aria-labelledby="ms-hub-title">
-          <h2 class="ms-hub-title" id="ms-hub-title">${hubTabs.find(tab => tab.id === state.activeTab).title}</h2>
-          ${renderTabsNav(state.activeTab)}
-          <div class="ms-tab-panel">${tabContent}</div>
+          ${renderReferenceSubTabsNav(sub)}
+          <div class="ms-tab-panel${animClass}"${animDirAttr}>${buildReferenceStageHtml(state)}</div>
         </section>
       `;
+      if (typeof container.querySelector === 'function') {
+        const mountedBar = container.querySelector('.ms-subtab-bar');
+        if (mountedBar) {
+          bindSubtabBarGestures(mountedBar, (btn) => activateRefSubtab(btn, state, updateView));
+          syncSubtabBarScroll(mountedBar);
+        }
+      }
     };
 
     container.onclick = (e) => handleContainerClick(e, state, updateView, container);

@@ -65,13 +65,13 @@
 
   // Mẫu giọng Studio Neural thật (cắt từ Audio Sprite Kaiwa) dùng cho nút "Nghe thử" trong bảng Cài đặt giọng
   const VOICE_PREVIEW_SAMPLES = {
-    rotate: { src: 'audio/kaiwa/lesson_1.mp3',  start: 0,    end: 3.41, text: 'みなさん、こんにちは！マイク・ミラーです。' },
-    sato:   { src: 'audio/kaiwa/lesson_6.mp3',  start: 2.81, end: 5.06, text: 'あした 友だちと お花見を します。' },
-    karina: { src: 'audio/kaiwa/lesson_14.mp3', start: 0,    end: 1.87, text: '梅田まで 行って ください。' },
-    maria:  { src: 'audio/kaiwa/lesson_3.mp3',  start: 0,    end: 2.81, text: 'すみません。ワイン売り場は どこですか。' },
-    yamada: { src: 'audio/kaiwa/lesson_1.mp3',  start: 3.41, end: 6.41, text: '佐藤さん、こちらは マイク・ミラーさんです。' },
-    miller: { src: 'audio/kaiwa/lesson_4.mp3',  start: 2.64, end: 6.6,  text: 'すみません。そちらは 何時から 何時までですか。' },
-    santos: { src: 'audio/kaiwa/lesson_2.mp3',  start: 4.54, end: 6.62, text: 'こんにちは。サントスです。' }
+    rotate: { src: 'audio/kaiwa/lesson_1.mp3',    start: 9.62,  end: 12.92, text: '佐藤さん、こちらは マイク・ミラーさんです。' },
+    sato:   { src: 'audio/kaiwa/lesson_6.mp3',    start: 8.65,  end: 10.89, text: 'あした 友だちと お花見を します。' },
+    karina: { src: 'audio/kaiwa/lesson_14.mp3',   start: 7.21,  end: 9.08,  text: 'みどり町まで お願いします。' },
+    maria:  { src: 'audio/kaiwa/lesson_3.mp3',    start: 7.48,  end: 11.04, text: 'すみません。ワイン売り場は どこですか。' },
+    yamada: { src: 'audio/kaiwa/lesson_1.mp3',    start: 9.62,  end: 12.92, text: '佐藤さん、こちらは マイク・ミラーさんです。' },
+    miller: { src: 'audio/kaiwa/lesson_4.mp3',    start: 27.37, end: 30.36, text: 'すみません。そちらは 何時から 何時までですか。' },
+    santos: { src: 'audio/kaiwa/lesson_2.mp3',    start: 19.69, end: 21.7,  text: 'こんにちは。サントスです。' }
   };
 
   // Bảng ánh xạ phong cách cảm xúc biểu cảm (Neural Expressive Styles) theo từng nhân vật

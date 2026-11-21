@@ -4,8 +4,8 @@
  */
 'use strict';
 
-const ASSET_VERSION = '20261117_22';
-const CACHE_VERSION = `minna-pwa-v${ASSET_VERSION}`;
+const ASSET_VERSION = '20261121_17';
+const CACHE_VERSION = 'minna-pwa-v20261121_17';
 
 const CORE_ASSETS = [
   './',
@@ -14,6 +14,7 @@ const CORE_ASSETS = [
   `./style.css?v=${ASSET_VERSION}`,
   `./app.js?v=${ASSET_VERSION}`,
   `./src/study_voice_engine.js?v=${ASSET_VERSION}`,
+  `./data/study_audio_manifest.json?v=${ASSET_VERSION}`,
   './manifest.json',
   './icons/shiba-favicon-16.png',
   './icons/shiba-favicon-32.png',

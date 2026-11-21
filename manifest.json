@@ -20,7 +20,7 @@
     },
     {
       "src": "icons/shiba-favicon-32.png",
-      "sizes": "32x32",
+      "sizes": "16x16 32x32 48x48",
       "type": "image/png",
       "purpose": "any"
     },
